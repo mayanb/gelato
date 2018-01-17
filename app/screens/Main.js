@@ -35,20 +35,48 @@ export default class Login extends Component {
 			</View>
 		);
 	}
+
+	// Asynchronously load the data
+	// Note that this is currently slow due to an inefficient query
+	// TODO: See query
 	async loadData() {
 		// Make the request
-		const teamData = await Compute.classifyTasks(this.props.teamID);
-		console.log(teamData);
+		const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
 		// Send the data into our state
 		await this.setState({tasks: teamData});
 	}
+
+	// Helper function to render individual task cells
 	renderRow = ({item}) => (
-		<TaskRow title={item.display} key={item.id} name={item.process_type.name} date={DateFormatter.shorten(item.updated_at)} />
+		<TaskRow
+			title={item.display}
+			key={item.id}
+			id={item.id}
+			name={item.process_type.name}
+			date={DateFormatter.shorten(item.updated_at)}
+			onPress={this.openTask.bind(this)}
+		/>
 	);
+
+	// Helper function to render headers
 	renderSectionHeader = ({section}) => (
 		<TaskRowHeader title={section.title} />
 	)
+
+	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => item.id;
+
+	// Event for navigating to task detail page
+	openTask(id, name) {
+		this.props.navigator.push({
+			screen: 'gelato.Task',
+			title: name,
+			animated: true,
+			passProps: {
+				id: id
+			}
+		});
+	}
 	static navigatorStyle = {
 		navBarHidden: false,
 		navBarBackgroundColor: Colors.base,

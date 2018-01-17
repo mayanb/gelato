@@ -45,12 +45,17 @@ export class TaskRow extends Component {
 			}
 		});
 		return (
-			<View style={styles.container}>
-				<Text style={styles.display}>{this.props.name}</Text>
-				<Text style={styles.title}>{this.props.title}</Text>
-				<Text style={styles.date}>{this.props.date}</Text>
-			</View>
+			<TouchableOpacity activeOpacity={0.5} onPress={this.openTask.bind(this)}>
+				<View style={styles.container}>
+					<Text style={styles.display}>{this.props.name}</Text>
+					<Text style={styles.title}>{this.props.title}</Text>
+					<Text style={styles.date}>{this.props.date}</Text>
+				</View>
+			</TouchableOpacity>
 		);
+	}
+	openTask() {
+		this.props.onPress(this.props.id, this.props.title);
 	}
 }
 

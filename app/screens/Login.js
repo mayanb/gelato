@@ -26,6 +26,7 @@ export default class Login extends Component {
 			username: null,
 			password: null
 		};
+		// Bind our functions for external use
 		this.setTeam = this.setTeam.bind(this);
 		this.setUsername = this.setUsername.bind(this);
 		this.setPassword = this.setPassword.bind(this);
@@ -61,6 +62,7 @@ export default class Login extends Component {
 		let validInputs = this.state.team && this.state.username && this.state.password;
 		return validInputs;
 	}
+
 	// Set corresponding states
 	async setTeam(team) {
 		await this.setState({team: team});
@@ -74,6 +76,9 @@ export default class Login extends Component {
 		await this.setState({password: password});
 		this.checkInputs();
 	}
+
+	// Check the login information
+	// Log the user in if their information is valid
 	async login() {
 		if (this.checkInputs()) {
 			// Make the request
@@ -85,12 +90,14 @@ export default class Login extends Component {
 			// Check response code
 			if (loginRequest && loginRequest.status >= 200 && loginRequest.status < 300) {
 				const data = await loginRequest.json();
+				// Save the user's data
 				await Storage.save("token", data.token);
 				await Storage.save("username", data.user.username_display);
 				await Storage.save("teamID", data.user.team);
 				await Storage.save("userID", data.user.profile_id);
 				await Storage.save("accountType", data.user.account_type);
 				await Storage.save("teamName", data.user.team_name);
+				// Redirect to the main screen
 				this.props.navigator.resetTo({
 					screen: 'gelato.Main',
 					animated: true
