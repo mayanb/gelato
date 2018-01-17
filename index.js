@@ -10,20 +10,30 @@ registerScreens(); // Register the screens
 // We package the startup code into an async function to handle awaits inside
 async function startup() {
 	// Set the screen to load
+	// await Storage.remove("token");
 	let startScreen = "gelato.Login";
 	// Data to pass into screen
 	let passProps = {};
 
 	// Check user login state
-	const loggedIn = await Storage.get("TeamID");
+	const loggedIn = await Storage.get("token");
 
 	if (loggedIn === null) {
 		startScreen = "gelato.Login";
 	} else {
 		startScreen = "gelato.Main";
+		const username = await Storage.get("username");
+		const team = await Storage.get("teamName");
+		const teamID = await Storage.get("teamID");
+		passProps = {
+			username: username,
+			team: team,
+			teamID: teamID
+		};
 	}
 	Navigation.startSingleScreenApp({
 		screen: {
+			title: passProps !== {} ? (passProps.username + "@" + passProps.team) : null,
 			screen: startScreen,
 			navigatorStyle: {}
 		},
