@@ -26,7 +26,7 @@ export default class Login extends Component {
 		this.state = {
 			tasks: []
 		};
-		// this.loadData();
+		this.loadData();
 	}
 	render() {
 		return (
@@ -35,7 +35,9 @@ export default class Login extends Component {
 			</View>
 		);
 	}
-	// async loadData() {
+	async loadData() {
+		const data = await Compute.getTask(this.props.id);
+		console.log(data);
 	// 	// Make the request
 	// 	const teamData = await Compute.classifyTasks(this.props.teamID);
 	// 	// Send the data into our state
@@ -63,7 +65,7 @@ export default class Login extends Component {
 	// 			id: id
 	// 		}
 	// 	});
-	// }
+	}
 	static navigatorStyle = {
 		navBarHidden: false,
 		navBarBackgroundColor: Colors.base,

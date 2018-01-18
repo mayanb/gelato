@@ -97,10 +97,16 @@ export default class Login extends Component {
 				await Storage.save("userID", data.user.profile_id);
 				await Storage.save("accountType", data.user.account_type);
 				await Storage.save("teamName", data.user.team_name);
+		
 				// Redirect to the main screen
 				this.props.navigator.resetTo({
 					screen: 'gelato.Main',
-					animated: true
+					animated: true,
+					passProps: {
+						username: data.user.username_display,
+						team: data.user.team,
+						teamID: data.user.team
+					}
 				});
 			} else {
 				// Display error message

@@ -69,4 +69,13 @@ export default class Compute {
 			}
 		];
 	}
+
+	static async getTask(taskID) {
+		const data = await Networking.request('ics/v7/taskAttributes/', 'GET', {task: taskID});
+		if (data && data.status >= 200 && data.status < 300) {
+			const dataJSON = await data.json();
+			return dataJSON;
+		}
+		return [];
+	}
 }
