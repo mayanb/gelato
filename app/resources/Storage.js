@@ -16,6 +16,7 @@ export default class Storage {
 			return null;
 		}
 	}
+	
 	static async get(key) {
 		try {
 			const result = await AsyncStorage.getItem(key);
@@ -24,6 +25,7 @@ export default class Storage {
 			return null;
 		}
 	}
+
 	static async remove(key) {
 		try {
 			await AsyncStorage.removeItem(key);

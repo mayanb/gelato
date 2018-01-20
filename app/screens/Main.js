@@ -1,11 +1,9 @@
-// Copyright 2018 Addison Leong
-
-import { TaskRow, TaskRowHeader } from '../components/Cells';
-import Colors from '../resources/Colors';
-import Compute from '../resources/Compute';
-// import Fonts from '../resources/Fonts';
-// import Images from '../resources/Images';
-import React, { Component } from 'react';
+// Copyright 2018 Addison Leong for Polymerize, Inc.
+import { connect } from 'react-redux'
+import { TaskRow, TaskRowHeader } from '../components/Cells'
+import Colors from '../resources/Colors'
+import Compute from '../resources/Compute'
+import React, { Component } from 'react'
 import {
 	Dimensions,
 	Image,
@@ -16,47 +14,92 @@ import {
 	TouchableOpacity,
 	View
 } from 'react-native';
-import { Navigation } from 'react-native-navigation';
-import Networking from '../resources/Networking';
-import { DateFormatter } from '../resources/Utility';
+import { Navigation } from 'react-native-navigation'
+import Networking from '../resources/Networking'
+import { DateFormatter } from '../resources/Utility'
+import * as actions from '../actions/TaskListActions'
+import ActionButton from 'react-native-action-button'
 
-export default class Login extends Component {
+class Main extends Component {
 	constructor(props) {
-		super(props);
-		this.state = {
-			tasks: []
-		};
-		this.loadData();
+		super(props)
 	}
+
+	componentDidMount() {
+		this.props.dispatch(actions.fetchOpenTasks())
+		this.props.dispatch(actions.fetchCompletedTasks())
+	}
+
+	// <ActionButton buttonColor={Colors.base} onPress={() => console.log("FAB!!")} />
+
 	render() {
+		let sections = this.loadData()
+		console.log(sections)
 		return (
 			<View style={styles.container}>
-				<SectionList style={styles.table} renderItem={this.renderRow} renderSectionHeader={this.renderSectionHeader} sections={this.state.tasks} keyExtractor={this.keyExtractor} />
+				<SectionList 
+					style={styles.table} 
+					renderItem={this.renderRow} 
+					renderSectionHeader={this.renderSectionHeader} 
+					sections={sections} 
+					keyExtractor={this.keyExtractor} 
+				/>
+				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
 		);
 	}
 
-	// Asynchronously load the data
-	// Note that this is currently slow due to an inefficient query
-	// TODO: See query
-	async loadData() {
-		// Make the request
-		const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
-		// Send the data into our state
-		await this.setState({tasks: teamData});
+	handleCreateTask() {
+		this.props.navigator.push({
+			screen: 'gelato.CreateTask',
+			title: "Create a new task",
+			animated: true,
+			passProps: {}
+		});
+	}
+
+	loadData() {
+		// // Make the request
+		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
+		// // Send the data into our state
+		// await this.setState({tasks: teamData});
+		let open = this.props.openTasks.data
+		let completed = this.props.completedTasks.data
+		console.log(open)
+		return [
+			{
+				data: open,
+				key: "open",
+				title: "OPEN TASKS"
+			},
+			{
+				data: completed,
+				key: "completed",
+				title: "RECENTLY COMPLETED"
+			},
+			{
+				data: [],
+				key: "space",
+				title: "SPACE"
+			}
+		];
 	}
 
 	// Helper function to render individual task cells
-	renderRow = ({item}) => (
+	renderRow = ({item}) => {
+		return (
 		<TaskRow
 			title={item.display}
 			key={item.id}
 			id={item.id}
+			imgpath={item.process_type.icon}
+			open={item.is_open}
 			name={item.process_type.name}
 			date={DateFormatter.shorten(item.updated_at)}
 			onPress={this.openTask.bind(this)}
 		/>
-	);
+		)
+	}
 
 	// Helper function to render headers
 	renderSectionHeader = ({section}) => (
@@ -67,15 +110,17 @@ export default class Login extends Component {
 	keyExtractor = (item, index) => item.id;
 
 	// Event for navigating to task detail page
-	openTask(id, name) {
+	openTask(id, name, open) {
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: name,
 			animated: true,
 			passProps: {
-				id: id
+				id: id, 
+				name: name,
+				open: open,
 			}
-		});
+		})
 	}
 	static navigatorStyle = {
 		navBarHidden: false,
@@ -86,7 +131,7 @@ export default class Login extends Component {
 	}
 }
 
-const width = Dimensions.get('window').width;
+const width =Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
 	container: {
@@ -94,5 +139,14 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 		backgroundColor: Colors.white
+	},
+})
+
+const mapStateToProps = (state, props) => {
+	return {
+		openTasks: state.openTasks,
+		completedTasks: state.completedTasks,
 	}
-});
+}
+
+export default connect(mapStateToProps)(Main)
