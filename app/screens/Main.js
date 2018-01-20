@@ -52,6 +52,7 @@ export default class Login extends Component {
 			title={item.display}
 			key={item.id}
 			id={item.id}
+			imgpath={item.process_type.icon}
 			name={item.process_type.name}
 			date={DateFormatter.shorten(item.updated_at)}
 			onPress={this.openTask.bind(this)}
