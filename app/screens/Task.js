@@ -14,6 +14,7 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
 import { AttributeRow, TaskRowHeader } from '../components/Cells'
+import ActionButton from 'react-native-action-button'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
@@ -22,15 +23,15 @@ const CANCEL_INDEX = 0
 class Task extends Component { 
 	static navigatorButtons = {
 		rightButtons: [
-			{
-				title: 'Camera',
-				id: 'camera',
-				disabled: false,
-				showAsAction: 'ifRoom',
-				buttonColor: 'white',
-				buttonFontSize: 15,
-				buttonFontWeight: '600',
-			}, 
+			// {
+			// 	title: 'Camera',
+			// 	id: 'camera',
+			// 	disabled: false,
+			// 	showAsAction: 'ifRoom',
+			// 	buttonColor: 'white',
+			// 	buttonFontSize: 15,
+			// 	buttonFontWeight: '600',
+			// }, 
 			{
 				title: 'More',
 				id: 'more',
@@ -51,12 +52,13 @@ class Task extends Component {
 	}
 
 	onNavigatorEvent(event) {
-	  if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
-    	if (event.id === 'more') { // this is the same id field from the static navigatorButtons definition
-      	this.showActionSheet()
-    	} else if (event.id === 'camera') {
-  			this.showCamera()
-    	}
+		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+			if (event.id === 'more') { // this is the same id field from the static navigatorButtons definition
+				this.showActionSheet()
+			} 
+		// else if (event.id === 'camera') {
+			// this.showCamera()
+		// }
 		}
 	}
 
@@ -85,12 +87,12 @@ class Task extends Component {
 		return (
 			<View style={styles.container}>
 				<ActionSheet
-          ref={o => this.ActionSheet = o}
-          title={ACTION_TITLE}
-          options={ACTION_OPTIONS}
-          cancelButtonIndex={CANCEL_INDEX}
-          onPress={this.handlePress}
-        />
+					ref={o => this.ActionSheet = o}
+					title={ACTION_TITLE}
+					options={ACTION_OPTIONS}
+					cancelButtonIndex={CANCEL_INDEX}
+					onPress={this.handlePress}
+				/>
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -98,7 +100,18 @@ class Task extends Component {
 					sections={sections} 
 					keyExtractor={this.keyExtractor} 
 				/>
-
+				<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
+					<ActionButton.Item
+						buttonColor={'green'}
+						title="Add Inputs"
+						onPress={this.showCamera.bind(this)}
+					><Text/></ActionButton.Item>
+					<ActionButton.Item
+						buttonColor={'blue'}
+						title="Add Outputs"
+						onPress={this.showCamera.bind(this)}
+					><Text/></ActionButton.Item>
+				</ActionButton>
 			</View>
 		)
 	}
