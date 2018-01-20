@@ -55,7 +55,7 @@ export class TaskRow extends Component {
 		);
 	}
 	openTask() {
-		this.props.onPress(this.props.id, this.props.title);
+		this.props.onPress(this.props.id, this.props.title, this.props.organized_attributes);
 	}
 }
 
@@ -89,5 +89,39 @@ export class TaskRowHeader extends Component {
 				<Text style={styles.title}>{this.props.title}</Text>
 			</View>
 		);
+	}
+}
+
+export class AttributeRow extends Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		const width= Dimensions.get('window').width;
+		const styles = StyleSheet.create({
+			container: {
+				width: width,
+				minHeight: 30,
+				borderBottomWidth: 1,
+				borderBottomColor: Colors.ultraLightGray,
+				alignItems: 'flex-start',
+				justifyContent: 'center',
+				paddingTop: 10,
+				paddingBottom: 10,
+				paddingLeft: 20,
+				paddingRight: 20
+			},
+			title: {
+				fontSize: 15,
+				colors: Colors.lightGray
+			}
+		})
+		return (
+			<View style={styles.container}>
+				<Text style={styles.title}>{this.props.title}</Text>
+				<Text style={styles.value}>{this.props.value}</Text>
+			</View>
+		)
 	}
 }

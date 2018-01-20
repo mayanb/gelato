@@ -20,7 +20,7 @@ import { Navigation } from 'react-native-navigation';
 import Networking from '../resources/Networking';
 import { DateFormatter } from '../resources/Utility';
 
-export default class Login extends Component {
+export default class Main extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -47,16 +47,18 @@ export default class Login extends Component {
 	}
 
 	// Helper function to render individual task cells
-	renderRow = ({item}) => (
+	renderRow = ({item}) => {
+		return (
 		<TaskRow
 			title={item.display}
 			key={item.id}
-			id={item.id}
+			attributes={item}
 			name={item.process_type.name}
 			date={DateFormatter.shorten(item.updated_at)}
 			onPress={this.openTask.bind(this)}
 		/>
-	);
+		)
+	}
 
 	// Helper function to render headers
 	renderSectionHeader = ({section}) => (
@@ -68,12 +70,14 @@ export default class Login extends Component {
 
 	// Event for navigating to task detail page
 	openTask(id, name) {
+
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: name,
 			animated: true,
 			passProps: {
-				id: id
+				id: id, 
+				name: name,
 			}
 		});
 	}
