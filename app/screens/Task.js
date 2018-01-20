@@ -1,4 +1,4 @@
-// Copyright 2018 Addison Leong
+// Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {
