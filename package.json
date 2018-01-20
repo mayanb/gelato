@@ -12,6 +12,7 @@
     "react": "16.2.0",
     "react-native": "0.52.0",
     "react-native-action-button": "^2.8.3",
+    "react-native-actionsheet": "^2.3.0",
     "react-native-autocomplete-input": "^3.5.0",
     "react-native-camera": "^0.13.0",
     "react-native-collapsible": "^0.10.0",

@@ -1,30 +1,76 @@
 // Copyright 2018 Addison Leong
-
+import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import { AttributeRow, TaskRowHeader } from '../components/Cells';
-import Colors from '../resources/Colors';
-import Compute from '../resources/Compute';
-// import Fonts from '../resources/Fonts';
-// import Images from '../resources/Images';
-import React, { Component } from 'react';
 import {
 	Dimensions,
-	Image,
-	Platform,
 	SectionList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View
-} from 'react-native';
-import { Navigation } from 'react-native-navigation';
-import Networking from '../resources/Networking';
-import { DateFormatter } from '../resources/Utility'
+} from 'react-native'
+import ActionSheet from 'react-native-actionsheet'
+import Colors from '../resources/Colors'
+import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
+import { AttributeRow, TaskRowHeader } from '../components/Cells'
 
-class Task extends Component {
+const ACTION_TITLE = 'More'
+const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
+const CANCEL_INDEX = 0
+
+class Task extends Component { 
+	static navigatorButtons = {
+		rightButtons: [
+			{
+				title: 'Camera',
+				id: 'camera',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			}, 
+			{
+				title: 'More',
+				id: 'more',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			}, 
+		]
+	}
+
 	constructor(props) {
 		super(props)
+		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+		this.showActionSheet = this.showActionSheet.bind(this)
+		this.showCamera = this.showCamera.bind(this)
+	}
+
+	onNavigatorEvent(event) {
+	  if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+    	if (event.id === 'more') { // this is the same id field from the static navigatorButtons definition
+      	this.showActionSheet()
+    	} else if (event.id === 'camera') {
+  			this.showCamera()
+    	}
+		}
+	}
+
+	showActionSheet() {
+	  this.ActionSheet.show()
+	}
+
+	showCamera() {
+		this.props.navigator.showModal({
+		  screen: "gelato.QRScanner",
+		  passProps: {},
+		  navigatorStyle: { navBarHidden: true },
+		  animationType: 'slide-up' 
+		})
 	}
 
 	componentDidMount() {
@@ -38,6 +84,13 @@ class Task extends Component {
 		console.log(this.props.task.organized_attributes)
 		return (
 			<View style={styles.container}>
+				<ActionSheet
+          ref={o => this.ActionSheet = o}
+          title={ACTION_TITLE}
+          options={ACTION_OPTIONS}
+          cancelButtonIndex={CANCEL_INDEX}
+          onPress={this.handlePress}
+        />
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -45,6 +98,7 @@ class Task extends Component {
 					sections={sections} 
 					keyExtractor={this.keyExtractor} 
 				/>
+
 			</View>
 		)
 	}
@@ -79,6 +133,8 @@ class Task extends Component {
 		navBarTextColor: Colors.white,
 		navBarButtonColor: Colors.white
 	}
+
+
 }
 
 const width = Dimensions.get('window').width;
