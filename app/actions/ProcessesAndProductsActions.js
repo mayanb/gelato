@@ -1,4 +1,4 @@
-import { Storage } from '../resources/Storage'
+import Storage from '../resources/Storage'
 import Networking from '../resources/Networking-superagent'
 import Compute from '../resources/Compute'
 import { 
@@ -23,8 +23,19 @@ function fetch(name) {
 	let endpoint = name === PROCESSES ? 'processes' : 'products'
 	return (dispatch) => {
 	    dispatch(request(name))
-			return Networking.get(`/ics/${endpoint}/`)
-				.query({team_created_by: 1})
+
+
+	    let team = 1
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			team = localStorage['teamID']
+			Networking.get(`/ics/${endpoint}/`)
+				.query({team_created_by: team})
 				.end(function(err, res) {
 					if (err || !res.ok) {
 						dispatch(requestFailure(name, err))
@@ -32,7 +43,9 @@ function fetch(name) {
 						dispatch(requestSuccess(name, res.body))
 					}
 				})
-	  }
+		});
+
+	}
 }
 
 

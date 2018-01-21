@@ -30,7 +30,9 @@ export class LoginInput extends Component {
 				marginBottom: 20,
 				padding: 10,
 				textAlign: 'center'
-			}]} keyboardType={this.props.keyboardType}
+			}]} 
+			returnKeyType={this.props.returnKeyType}
+			keyboardType={this.props.keyboardType}
 			placeholder={this.props.placeholder}
 			onChangeText={this.props.onChangeText}
 			secureTextEntry={this.props.isPassword}

@@ -7,7 +7,8 @@ import {
 	StyleSheet,
 	Text,
 	TouchableOpacity,
-	View
+	View,
+	AlertIOS
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
@@ -48,6 +49,7 @@ class Task extends Component {
 		super(props)
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		this.showActionSheet = this.showActionSheet.bind(this)
+		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 	}
 
@@ -63,19 +65,47 @@ class Task extends Component {
 	}
 
 	showActionSheet() {
-	  this.ActionSheet.show()
+		this.ActionSheet.show()
 	}
+
+	showCustomNameAlert() {
+		AlertIOS.prompt(
+			'Enter a value',
+			null,
+			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text)),
+			'plain-text', 
+			this.props.task.display,
+		)
+	}
+
+	handlePress(i) {
+		if(ACTION_OPTIONS[i] === 'Rename') {
+			this.showCustomNameAlert()
+		}
+		if(ACTION_OPTIONS[i] === 'Flag') {
+			this.props.dispatch(actions.requestFlagTask(this.props.task))
+		}
+		if(ACTION_OPTIONS[i] === 'Delete') {
+			let success = () => {
+				this.props.navigator.pop({
+					animated: true,
+				})
+			}
+			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
+		}
+	}
+
 
 	showCamera(mode) {
 		this.props.navigator.showModal({
-		  screen: "gelato.QRScanner",
-		  passProps: {
-		  	task_id: this.props.task.id,
-		  	open: this.props.task.is_open,
-		  	mode: mode
-		  },
-		  navigatorStyle: { navBarHidden: true },
-		  animationType: 'slide-up' 
+			screen: "gelato.QRScanner",
+			passProps: {
+				task_id: this.props.task.id,
+				open: this.props.task.is_open,
+				mode: mode
+			},
+			navigatorStyle: { navBarHidden: true },
+			animationType: 'slide-up' 
 		})
 	}
 
@@ -84,6 +114,9 @@ class Task extends Component {
 	}
 
 	render() {
+		if(!this.props.task) {
+			return null
+		}
 		let sections = [
 			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
 		]
@@ -97,6 +130,7 @@ class Task extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
+				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 

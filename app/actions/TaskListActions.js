@@ -1,7 +1,8 @@
-import { Storage } from '../resources/Storage'
+import Storage from '../resources/Storage'
 import Networking from '../resources/Networking-superagent'
 import Compute from '../resources/Compute'
 import { DateFormatter } from '../resources/Utility';
+
 import { 
 	REQUEST, 
 	REQUEST_SUCCESS, 
@@ -9,6 +10,10 @@ import {
 	REQUEST_CREATE_SUCCESS,
 	REQUEST_CREATE_FAILURE,
 	FAILURE,
+	REQUEST_DELETE_SUCCESS,
+	REQUEST_DELETE_FAILURE,
+	REQUEST_EDIT_ITEM_SUCCESS,
+	REQUEST_EDIT_ITEM_FAILURE,
 } from '../reducers/BasicReducer'
 import {
 	UPDATE_ATTRIBUTE_SUCCESS,
@@ -26,48 +31,68 @@ const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
 
 export function fetchOpenTasks() {
-  	return (dispatch) => {
-	    dispatch(requestTasks(OPEN_TASKS))
+	return (dispatch) => {
+		dispatch(requestTasks(OPEN_TASKS))
 
 		let open = []
 		var yesterday = new Date();
 		yesterday.setDate(yesterday.getDate() - 1);
 		
 		// Get all open tasks
-		const openPayload = {
-			team: 1, //Storage.get('teamID'),
+		let openPayload = {
+			team: 1,
 			ordering: "-updated_at",
 			is_open: true,
 			start: DateFormatter.format(yesterday),
 			end: DateFormatter.format((new Date()))
 		}
 		
-		return Networking.get('/ics/tasks/')
+
+
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			openPayload["team"] = localStorage['teamID']
+			Networking.get('/ics/tasks/')
 			.query(openPayload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
 					dispatch(requestTasksFailure(OPEN_TASKS, err))
 				} else {
 					let organized = Compute.organizeAttributesForTasks(res.body)
-					console.log(organized)
 					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
 				}
 			})
-  	}
+		});
+		
+	}
 }
 
 export function fetchCompletedTasks() {
-  	return (dispatch) => {
-	    dispatch(requestTasks(COMPLETED_TASKS))
+	return (dispatch) => {
+		dispatch(requestTasks(COMPLETED_TASKS))
 
 		let completed = []
 		const completedPayload = {
-			team: 1, //Storage.get('teamID'),
+			team: 1,
 			ordering: "-updated_at",
 			is_open: false
 		};
 		
-		return Networking.get('/ics/tasks/search')
+
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			completedPayload["team"] = localStorage['teamID']
+			Networking.get('/ics/tasks/search')
 			.query(completedPayload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
@@ -77,7 +102,9 @@ export function fetchCompletedTasks() {
 					dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
 				}
 			})
-  	}
+		});
+		
+	}
 }
 
 
@@ -123,7 +150,7 @@ export function updateAttribute(task, attribute_id, new_value) {
 				}
 			})
 
-  	}
+	}
 }
 
 function updateAttributeSuccess(name, data) {
@@ -152,7 +179,6 @@ export function requestCreateTask(data) {
 				if (err || !res.ok) {
 					dispatch(createTaskFailure(OPEN_TASKS, err))
 				} else {
-					console.log(data)
 					res.body.process_type = data.processType
 					res.body.product_type = data.productType
 					res.body.attribute_values = []
@@ -160,7 +186,7 @@ export function requestCreateTask(data) {
 					dispatch(createTaskSuccess(res.body))
 				}
 			})
-  	}
+	}
 }
 
 function createTaskSuccess(data) {
@@ -186,23 +212,6 @@ export function resetJustCreated() {
 	}
 }
 
-// export function requestDeleteTask() {
-// 	return (dispatch) => {
-// 		return Networking.put('/ics/tasks/edit/')
-// 			.send({is_trashed: }
-// 			.end(function(err, res) {
-// 				if (err || !res.ok) {
-// 					dispatch(createTaskFailure(OPEN_TASKS, err))
-// 				} else {
-// 					res.body.process_type = data.processType
-// 					res.body.product_type = data.productType
-// 					res.body.attribute_values = []
-// 					res.body.organized_attributes = Compute.organizeAttributes(res.body)
-// 					dispatch(createTaskSuccess(res.body))
-// 				}
-// 			})
-//   	}
-// }
 
 export function addInput(task, item, success, failure) {
 	let payload = {task: task.id, input_item: item.id }
@@ -305,3 +314,91 @@ function removeSuccess(type, task, index) {
 		index: index
 	}
 }
+
+export function requestDeleteTask(task, success) {
+	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+	let payload = {is_trashed: true}
+	return (dispatch) => {
+		return Networking.put(`/ics/tasks/edit/${task.id}/`)
+			.send(payload)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(deleteTaskFailure(name, err))
+				} else {
+					dispatch(deleteTaskSuccess(name, task))
+					success()
+				}
+			})
+	}
+}
+
+function deleteTaskSuccess(name, data) {
+	return {
+		name: name, 
+		type: REQUEST_DELETE_SUCCESS, 
+		item: data,
+	}
+}
+
+
+function deleteTaskFailure(name, err) {
+	return {
+		name: name,
+		type: REQUEST_DELETE_FAILURE,
+		error: err,
+	}
+}
+
+export function requestFlagTask(task) {
+	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+	let payload = {is_flagged: true}
+	return (dispatch) => {
+		return Networking.put(`/ics/tasks/edit/${task.id}/`)
+			.send(payload)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(requestEditItemFailure(name, err))
+				} else {
+					dispatch(requestEditItemSuccess(name, task, 'is_flagged', true))
+				}
+			})
+	}
+}
+
+function requestEditItemFailure(name, err) {
+	return {
+		name: name,
+		type: REQUEST_EDIT_ITEM_FAILURE,
+		error: err
+	}
+}
+
+function requestEditItemSuccess(name, item, key, value) {
+	return {
+		name: name,
+		type: REQUEST_EDIT_ITEM_SUCCESS,
+		item: item,
+		field: key,
+		value: value
+	}
+}
+
+export function requestRenameTask(task, custom_display) {
+	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+	let payload = {custom_display: custom_display}
+	return (dispatch) => {
+		return Networking.put(`/ics/tasks/edit/${task.id}/`)
+			.send(payload)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(requestEditItemFailure(name, err))
+				} else {
+					dispatch(requestEditItemSuccess(name, task, 'custom_display', custom_display))
+					if (custom_display.length) {
+						dispatch(requestEditItemSuccess(name, task, 'display', custom_display))
+					}
+				}
+			})
+	}
+}
+
