@@ -1,12 +1,12 @@
 export function getBackend() {
-	let k = 'local'
+	let k = 'staging'
 	switch(k) {
 		case 'production':
 			return 'https://41aty886e1.execute-api.us-west-1.amazonaws.com/production'
 		case 'staging':
 			return 'https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging'
 		default:
-			return 'http://127.0.0.1:8000'
+			return 'http://192.168.1.72:8000'
 	}
 }
 

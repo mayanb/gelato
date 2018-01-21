@@ -66,10 +66,14 @@ class Task extends Component {
 	  this.ActionSheet.show()
 	}
 
-	showCamera() {
+	showCamera(mode) {
 		this.props.navigator.showModal({
 		  screen: "gelato.QRScanner",
-		  passProps: {},
+		  passProps: {
+		  	task_id: this.props.task.id,
+		  	open: this.props.task.is_open,
+		  	mode: mode
+		  },
 		  navigatorStyle: { navBarHidden: true },
 		  animationType: 'slide-up' 
 		})
@@ -104,13 +108,17 @@ class Task extends Component {
 					<ActionButton.Item
 						buttonColor={'green'}
 						title="Add Inputs"
-						onPress={this.showCamera.bind(this)}
-					><Text/></ActionButton.Item>
+						onPress={() => this.showCamera('inputs')}
+					>
+						<Text/>
+					</ActionButton.Item>
 					<ActionButton.Item
 						buttonColor={'blue'}
 						title="Add Outputs"
-						onPress={this.showCamera.bind(this)}
-					><Text/></ActionButton.Item>
+						onPress={() => this.showCamera('items')}
+					>
+						<Text/>
+					</ActionButton.Item>
 				</ActionButton>
 			</View>
 		)

@@ -178,3 +178,22 @@ export function resetJustCreated() {
 		type: RESET_JUST_CREATED,
 	}
 }
+
+export function requestDeleteTask() {
+	return (dispatch) => {
+		return Networking.put('/ics/tasks/edit/')
+			.send(payload)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(createTaskFailure(OPEN_TASKS, err))
+				} else {
+					console.log(data)
+					res.body.process_type = data.processType
+					res.body.product_type = data.productType
+					res.body.attribute_values = []
+					res.body.organized_attributes = Compute.organizeAttributes(res.body)
+					dispatch(createTaskSuccess(res.body))
+				}
+			})
+  	}
+}

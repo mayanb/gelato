@@ -7,8 +7,8 @@ export default class Networking {
 	constructor() {
 
 	}
-	 static host = "http://localhost:8000/"; // Development
-	//static host = "https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging/"; // Staging
+	//static host = "http://localhost:8000/"; // Development
+	static host = "https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging/"; // Staging
 	// static host = "https://41aty886e1.execute-api.us-west-1.amazonaws.com/production/"; // Production
 
 	static async request(url, method, data) {
@@ -20,6 +20,7 @@ export default class Networking {
 				.join('&');
 			url += "?" + query;
 		}
+		console.log(url)
 		try {
 			let response = await fetch(url, {
 			  method: method,
