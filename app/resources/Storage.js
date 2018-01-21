@@ -26,9 +26,27 @@ export default class Storage {
 		}
 	}
 
+	static async multiGet(keys) {
+		try {
+			const result = await AsyncStorage.multiGet(keys);
+			return result;
+		} catch (error) {
+			return null;
+		}
+	}
+
 	static async remove(key) {
 		try {
 			await AsyncStorage.removeItem(key);
+			return true;
+		} catch (error) {
+			return null;
+		}
+	}
+
+	static async clear() {
+		try {
+			await AsyncStorage.clear();
 			return true;
 		} catch (error) {
 			return null;

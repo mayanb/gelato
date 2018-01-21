@@ -15,10 +15,17 @@ import {
 } from 'react-native';
 import { LoginButton, LoginInput } from '../components/Forms';
 import { Navigation } from 'react-native-navigation';
-import Networking from '../resources/Networking';
+import Networking from '../resources/Networking-superagent'
 import Storage from '../resources/Storage';
+import {connect} from 'react-redux'
 
-export default class Login extends Component {
+import { 
+	REQUEST, 
+	REQUEST_SUCCESS, 
+	REQUEST_FAILURE 
+} from '../reducers/BasicReducer'
+
+class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -32,6 +39,7 @@ export default class Login extends Component {
 		this.setPassword = this.setPassword.bind(this);
 		this.login = this.login.bind(this);
 		this.checkInputs = this.checkInputs.bind(this);
+
 	}
 	render() {
 		return (
@@ -80,42 +88,82 @@ export default class Login extends Component {
 	// Check the login information
 	// Log the user in if their information is valid
 	async login() {
+		dispatch = this.props.dispatch
+		nav = this.props.navigator
 		if (this.checkInputs()) {
 			// Make the request
 			const loginPayload = {
 				username: this.state.username + "_" + this.state.team,
 				password: this.state.password
 			};
-			const loginRequest = await Networking.request('auth/login/', 'POST', loginPayload);
-			// Check response code
-			if (loginRequest && loginRequest.status >= 200 && loginRequest.status < 300) {
-				const data = await loginRequest.json();
-				// Save the user's data
-				await Storage.save("token", data.token);
-				await Storage.save("username", data.user.username_display);
-				await Storage.save("teamID", data.user.team);
-				await Storage.save("userID", data.user.profile_id);
-				await Storage.save("accountType", data.user.account_type);
-				await Storage.save("teamName", data.user.team_name);
-		
-				// Redirect to the main screen
-				this.props.navigator.resetTo({
-					screen: 'gelato.Main',
-					animated: true,
-					passProps: {
-						username: data.user.username_display,
-						team: data.user.team,
-						teamID: data.user.team
-					}
-				});
-			} else {
-				// Display error message
-			}
-		} else {
+
+			dispatch(request('LOGIN'))
+			Networking.post(`/auth/login/`)
+			.send(loginPayload)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(requestFailure('LOGIN', err))
+				} else {
+					dispatch(requestSuccess('LOGIN', res.body))
+					data = res.body
+					Storage.save("token", data.token);
+					Storage.save("token", data.token);
+					Storage.save("username", data.user.username_display);
+					Storage.save("teamID", data.user.team);
+					Storage.save("userID", data.user.profile_id);
+					Storage.save("accountType", data.user.account_type);
+					Storage.save("teamName", data.user.team_name);
+					nav.resetTo({
+						screen: 'gelato.Main',
+						animated: true,
+						passProps: {
+							username: data.user.username_display,
+							team: data.user.team,
+							teamID: data.user.team,
+						}
+					});
+
+				}
+			})
+
+	  	} else {
 			// Display error message
 		}
 	}
 }
+
+
+export function request(name) {
+	return {
+		type: REQUEST,
+		name: name,
+	}
+}
+
+export function requestSuccess(name, data) {
+	return {
+		type: REQUEST_SUCCESS,
+		name: name,
+		data: data
+	}
+}
+
+export function requestFailure(name, err) {
+	return {
+		type: REQUEST_FAILURE,
+		name: name,
+		error: err
+	}
+}
+
+const mapStateToProps = (state, props) => {
+	return {
+	}
+}
+
+export default connect(mapStateToProps)(Login)
+
+
 
 const width = Dimensions.get('window').width;
 

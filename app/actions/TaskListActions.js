@@ -1,7 +1,8 @@
-import { Storage } from '../resources/Storage'
+import Storage from '../resources/Storage'
 import Networking from '../resources/Networking-superagent'
 import Compute from '../resources/Compute'
 import { DateFormatter } from '../resources/Utility';
+
 import { 
 	REQUEST, 
 	REQUEST_SUCCESS, 
@@ -27,25 +28,36 @@ export function fetchOpenTasks() {
 		yesterday.setDate(yesterday.getDate() - 1);
 		
 		// Get all open tasks
-		const openPayload = {
-			team: 1, //Storage.get('teamID'),
+		let openPayload = {
+			team: 1,
 			ordering: "-updated_at",
 			is_open: true,
 			start: DateFormatter.format(yesterday),
 			end: DateFormatter.format((new Date()))
 		}
 		
-		return Networking.get('/ics/tasks/')
+
+
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			openPayload["team"] = localStorage['teamID']
+			Networking.get('/ics/tasks/')
 			.query(openPayload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
 					dispatch(requestTasksFailure(OPEN_TASKS, err))
 				} else {
 					let organized = Compute.organizeAttributesForTasks(res.body)
-					console.log(organized)
 					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
 				}
 			})
+		});
+		
   	}
 }
 
@@ -55,12 +67,21 @@ export function fetchCompletedTasks() {
 
 		let completed = []
 		const completedPayload = {
-			team: 1, //Storage.get('teamID'),
+			team: 1,
 			ordering: "-updated_at",
 			is_open: false
 		};
 		
-		return Networking.get('/ics/tasks/search')
+
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			completedPayload["team"] = localStorage['teamID']
+			Networking.get('/ics/tasks/search')
 			.query(completedPayload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
@@ -70,6 +91,8 @@ export function fetchCompletedTasks() {
 					dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
 				}
 			})
+		});
+		
   	}
 }
 
@@ -145,7 +168,6 @@ export function requestCreateTask(data) {
 				if (err || !res.ok) {
 					dispatch(createTaskFailure(OPEN_TASKS, err))
 				} else {
-					console.log(data)
 					res.body.process_type = data.processType
 					res.body.product_type = data.productType
 					res.body.attribute_values = []
@@ -187,7 +209,6 @@ export function requestDeleteTask() {
 				if (err || !res.ok) {
 					dispatch(createTaskFailure(OPEN_TASKS, err))
 				} else {
-					console.log(data)
 					res.body.process_type = data.processType
 					res.body.product_type = data.productType
 					res.body.attribute_values = []

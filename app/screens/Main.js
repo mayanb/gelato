@@ -16,14 +16,38 @@ import {
 } from 'react-native';
 import { Navigation } from 'react-native-navigation'
 import Networking from '../resources/Networking'
+import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
 import ActionButton from 'react-native-action-button'
+import ActionSheet from 'react-native-actionsheet'
+
+const ACTION_TITLE = 'Settings'
+const ACTION_OPTIONS = ['Close', 'Logout']
+const CANCEL_INDEX = 0
 
 class Main extends Component {
+	static navigatorButtons = {
+		rightButtons: [
+			{
+				title: 'Settings',
+				id: 'settings',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			}, 
+		]
+	}
+
 	constructor(props) {
 		super(props)
 		console.disableYellowBox = true
+		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+		this.showActionSheet = this.showActionSheet.bind(this)
+		this.handlePress = this.handlePress.bind(this)
+		// Storage.clear()
 	}
 
 	componentDidMount() {
@@ -31,13 +55,46 @@ class Main extends Component {
 		this.props.dispatch(actions.fetchCompletedTasks())
 	}
 
-	// <ActionButton buttonColor={Colors.base} onPress={() => console.log("FAB!!")} />
+
+	onNavigatorEvent(event) {
+		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+			if (event.id === 'settings') { // this is the same id field from the static navigatorButtons definition
+				this.showActionSheet()
+			} 
+		}
+	}
+
+	showActionSheet() {
+	  this.ActionSheet.show()
+	}
+
+	handlePress(i) {
+
+		if(ACTION_OPTIONS[i] === 'Logout') {
+			Storage.clear()
+			this.props.navigator.resetTo({
+				screen: 'gelato.Login',
+				animated: true,
+			});
+
+		}
+	}
+
 
 	render() {
+
+
+
 		let sections = this.loadData()
-		console.log(sections)
 		return (
 			<View style={styles.container}>
+				<ActionSheet
+					ref={o => this.ActionSheet = o}
+					title={ACTION_TITLE}
+					options={ACTION_OPTIONS}
+					cancelButtonIndex={CANCEL_INDEX}
+					onPress={this.handlePress}
+				/>
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -66,7 +123,6 @@ class Main extends Component {
 		// await this.setState({tasks: teamData});
 		let open = this.props.openTasks.data
 		let completed = this.props.completedTasks.data
-		console.log(open)
 		return [
 			{
 				data: open,
