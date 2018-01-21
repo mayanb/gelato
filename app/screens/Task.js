@@ -48,6 +48,7 @@ class Task extends Component {
 		super(props)
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		this.showActionSheet = this.showActionSheet.bind(this)
+		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 	}
 
@@ -65,6 +66,24 @@ class Task extends Component {
 	showActionSheet() {
 	  this.ActionSheet.show()
 	}
+
+	handlePress(i) {
+		// if(ACTION_OPTIONS[i] === 'Rename') {
+		// 	this.props.dispatch(actions.requestRenameTask(data))
+		// }
+		// if(ACTION_OPTIONS[i] === 'Flag') {
+		// 	this.props.dispatch(actions.requestFlagTask(data))
+		// }
+		if(ACTION_OPTIONS[i] === 'Delete') {
+			let success = () => {
+				this.props.navigator.pop({
+					animated: true,
+				})
+			}
+			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
+		}
+	}
+
 
 	showCamera(mode) {
 		this.props.navigator.showModal({
@@ -84,6 +103,9 @@ class Task extends Component {
 	}
 
 	render() {
+		if(!this.props.task) {
+			return null
+		}
 		let sections = [
 			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
 		]

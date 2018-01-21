@@ -9,6 +9,8 @@ import {
 	REQUEST_FAILURE,
 	REQUEST_CREATE_SUCCESS,
 	REQUEST_CREATE_FAILURE,
+	REQUEST_DELETE_SUCCESS,
+	REQUEST_DELETE_FAILURE,
 } from '../reducers/BasicReducer'
 import {
 	UPDATE_ATTRIBUTE_SUCCESS,
@@ -201,20 +203,38 @@ export function resetJustCreated() {
 	}
 }
 
-export function requestDeleteTask() {
+export function requestDeleteTask(task, success) {
+	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+	let payload = {is_trashed: true}
 	return (dispatch) => {
-		return Networking.put('/ics/tasks/edit/')
+		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
-					dispatch(createTaskFailure(OPEN_TASKS, err))
+					dispatch(deleteTaskFailure(name, err))
 				} else {
-					res.body.process_type = data.processType
-					res.body.product_type = data.productType
-					res.body.attribute_values = []
-					res.body.organized_attributes = Compute.organizeAttributes(res.body)
-					dispatch(createTaskSuccess(res.body))
+					dispatch(deleteTaskSuccess(name, task))
+					success()
 				}
 			})
   	}
 }
+
+function deleteTaskSuccess(name, data) {
+	return {
+		name: name, 
+		type: REQUEST_DELETE_SUCCESS, 
+		item: data,
+	}
+}
+
+
+function deleteTaskFailure(name, err) {
+	return {
+		name: name,
+		type: REQUEST_DELETE_FAILURE,
+		error: err,
+	}
+}
+
+

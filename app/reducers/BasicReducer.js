@@ -1,5 +1,5 @@
 import update from 'immutability-helper'
-
+import Compute from '../resources/Compute'
 export const REQUEST = 'REQUEST'
 export const REQUEST_SUCCESS = 'REQUEST_SUCCESS'
 export const REQUEST_FAILURE = 'REQUEST_FAILURE'
@@ -163,9 +163,13 @@ function requestDelete(state, action) {
 }
 
 function requestDeleteSuccess(state, action) {
+  let task_index = state.data.findIndex(e => Compute.equate(e.id, action.item.id))
+  console.log(task_index)
+  if (task_index === undefined) 
+    return state
   return update(state, {
 	data: {
-      $splice: [[action.index, 1, ]]
+      $splice: [[task_index, 1, ]]
     },
     ui: {
       isDeletingItem: {
