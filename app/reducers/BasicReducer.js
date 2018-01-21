@@ -19,6 +19,8 @@ export const SELECT = 'SELECT'
 export const PAGE = 'PAGE'
 export const TOGGLE_EDITING = 'TOGGLE_EDITING'
 
+export const FAILURE = 'FAILURE'
+
 export function BasicReducer(state, action) {
   switch (action.type) {
   	case REQUEST:
@@ -163,9 +165,14 @@ function requestDelete(state, action) {
 }
 
 function requestDeleteSuccess(state, action) {
+  let index = state.data.find(e => Compute.equate(e.id, action.id))
+  
+  if (index === undefined) 
+    return state
+
   return update(state, {
 	data: {
-      $splice: [[action.index, 1, ]]
+      $splice: [[index, 1, ]]
     },
     ui: {
       isDeletingItem: {

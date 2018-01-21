@@ -2,6 +2,8 @@ import * as Networking from './Networking-superagent'
 import update from 'immutability-helper'
 import moment from 'moment'
 
+import { NOT_OUTPUT, ALREADY_OUTPUT, ALREADY_ADDED, INVALID_QR} from './QRSemantics'
+
 export default class Compute {
 	constructor() {}
 
@@ -47,6 +49,33 @@ export default class Compute {
 			is_trashed: false
 		}
 		return task
+	}
+
+	static getQRSemantic(mode, foundQR) {
+		if (mode === 'inputs') {
+			// if this QR code wasn't from any task
+			if (!foundQR) {
+				return NOT_OUTPUT
+			}
+		}
+
+		if (mode === 'items') {
+			// if this QR code WAS from a task
+			if (foundQR) {
+				return ALREADY_OUTPUT
+			}
+		}
+
+		return ''
+	}
+
+	static isOkay(semantic) {
+		return !semantic.length
+	}
+
+	// VALIDATE THE QR CODE SEQ
+	static validateQR(data) {
+		return true
 	}
 
 	// static async getOpenTasks(teamID) {

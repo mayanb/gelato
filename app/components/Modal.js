@@ -23,13 +23,8 @@ export default class Modal extends Component {
 
 	render() {
 		return (
-			<View style={styles.container}>
-				<TouchableOpacity onPress={this.props.onToggle}>
-					<View style={styles.container} />
-				</TouchableOpacity>
-				<View style={styles.modal}>
-					{this.props.children}
-				</View>
+			<View style={styles.modal}>
+				{this.props.children}
 			</View>
 		)
 	}
@@ -54,5 +49,8 @@ const styles = StyleSheet.create({
 		maxHeight: (52 * 5),
 		minHeight: (52*5),
 		flex: 1,
+		marginLeft: 16,
+		marginRight: 16,
+		marginTop: 100,
 	}
 })
