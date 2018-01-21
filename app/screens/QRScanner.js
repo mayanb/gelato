@@ -175,7 +175,7 @@ class QRScanner extends Component {
 				<View>
 					<Image source={ImageUtility.requireIcon('qr_icon')} />
 					<Text>{creating_task ? creating_task.display : ""}</Text>
-					<Text>{barcode.substring(barcde.length - 6)}</Text>
+					<Text>{barcode.substring(barcode.length - 6)}</Text>
 				</View>
 				<View>
 					<Text>{ error }</Text>
