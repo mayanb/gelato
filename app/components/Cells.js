@@ -2,6 +2,7 @@ import Colors from '../resources/Colors';
 import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react';
 import {
+	ActivityIndicator,
 	Dimensions,
 	Image,
 	Platform,
@@ -88,7 +89,7 @@ export class TaskRowHeader extends Component {
 		const styles = StyleSheet.create({
 			container: {
 				width: width,
-				height: 75,
+				height: this.props.isLoading ? 140 : 75,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,
 				alignItems: 'flex-start',
@@ -102,11 +103,19 @@ export class TaskRowHeader extends Component {
 			title: {
 				fontSize: 15,
 				color: Colors.lightGray
+			},
+			indicator: {
+				alignSelf: 'center',
+				marginTop: 20,
+				marginBottom: 20
 			}
 		});
 		return (
 			<View style={styles.container}>
 				<Text style={styles.title}>{this.props.title}</Text>
+				{
+					this.props.isLoading && <ActivityIndicator size="large" color={Colors.base} style={styles.indicator} />
+				}
 			</View>
 		);
 	}
