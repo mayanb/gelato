@@ -1,11 +1,13 @@
 // Copyright 2018 Addison Leong
+import store from './create_store.js'
+import {Provider} from 'react-redux'
 
 import { AppRegistry } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './app/start'; // This is where we register all screens
 import Storage from './app/resources/Storage';
 
-registerScreens(); // Register the screens
+registerScreens(store, Provider); // Register the screens
 
 // We package the startup code into an async function to handle awaits inside
 async function startup() {
@@ -33,7 +35,7 @@ async function startup() {
 	}
 	Navigation.startSingleScreenApp({
 		screen: {
-			title: passProps !== {} ? (passProps.username + "@" + passProps.team) : null,
+			title: passProps !== {} ? (passProps.team) : null,
 			screen: startScreen,
 			navigatorStyle: {}
 		},
