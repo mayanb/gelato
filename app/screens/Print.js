@@ -1,0 +1,84 @@
+import { connect } from 'react-redux'
+import { TaskRow, TaskRowHeader } from '../components/Cells'
+import Colors from '../resources/Colors'
+import Compute from '../resources/Compute'
+import React, { Component } from 'react'
+import {
+	AppRegistry,
+	Button,
+	StyleSheet,
+	NativeModules,
+	Platform,
+	Text,
+	View
+} from 'react-native';
+import { Navigation } from 'react-native-navigation'
+import Networking from '../resources/Networking'
+import Storage from '../resources/Storage'
+import ActionButton from 'react-native-action-button'
+import ActionSheet from 'react-native-actionsheet'
+import RNPrint from 'react-native-print'
+
+
+export default class Print extends Component {
+	state = {
+		selectedPrinter: null
+	}
+
+	selectPrinter = async () => {
+		const selectedPrinter = await RNPrint.selectPrinter()
+		this.setState({ selectedPrinter })
+	}
+
+	silentPrint = async () => {
+		if (!this.state.selectedPrinter) {
+			alert('Must Select Printer First')
+		}
+		const jobName = await RNPrint.print({
+			printerURL: this.state.selectedPrinter.url,
+			html: '<h1>Silent Print</h1>'
+		})
+	}
+
+	async printHTML() {
+		await RNPrint.print({
+			html: '<img src="data:image/png;base64,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"></img><h3>Heading 3</h3>'
+		})
+	}
+
+	customOptions = () => {
+		return (
+			<View>
+				{this.state.selectedPrinter &&
+					<View>
+						<Text>{`Selected Printer Name: ${this.state.selectedPrinter.name}`}</Text>
+						<Text>{`Selected Printer URI: ${this.state.selectedPrinter.url}`}</Text>
+					</View>
+				}
+			<Button onPress={this.selectPrinter} title="Select Printer" />
+			<Button onPress={this.silentPrint} title="Silent Print" /></View>
+
+		)
+	}
+
+	render() {
+		console.log(this.state)
+		console.log(this.props)
+		return (
+			<View style={styles.container}>
+				{Platform.OS === 'ios' && this.customOptions()}
+				<Button onPress={this.printHTML} title="Print HTML" />
+			</View>
+		);
+	}
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#F5FCFF',
+	},
+});
+

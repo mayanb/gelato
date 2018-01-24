@@ -6,6 +6,8 @@ import Main from '../screens/Main'
 import CreateTask from '../screens/CreateTask'
 import Task from '../screens/Task'
 import QRScanner from '../screens/QRScanner'
+import Print from '../screens/Print'
+
 
 // Register the screens for the navigator
 // export function registerScreens() {
@@ -20,4 +22,5 @@ export  function registerScreens(store, Provider) {
 	Navigation.registerComponent('gelato.CreateTask', () => CreateTask, store, Provider)
 	Navigation.registerComponent('gelato.Task', () => Task, store, Provider)
 	Navigation.registerComponent('gelato.QRScanner', () => QRScanner, store, Provider)
+	Navigation.registerComponent('gelato.Print', () => Print, store, Provider)
 }
