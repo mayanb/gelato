@@ -3,10 +3,12 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {
 	Dimensions,
+	Keyboard,
 	SectionList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 	AlertIOS
 } from 'react-native'
@@ -122,39 +124,41 @@ class Task extends Component {
 		]
 		console.log(this.props.task.organized_attributes)
 		return (
-			<View style={styles.container}>
-				<ActionSheet
-					ref={o => this.ActionSheet = o}
-					title={ACTION_TITLE}
-					options={ACTION_OPTIONS}
-					cancelButtonIndex={CANCEL_INDEX}
-					onPress={this.handlePress}
-				/>
-				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
-				<SectionList 
-					style={styles.table} 
-					renderItem={this.renderRow} 
-					renderSectionHeader={this.renderSectionHeader} 
-					sections={sections} 
-					keyExtractor={this.keyExtractor} 
-				/>
-				<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
-					<ActionButton.Item
-						buttonColor={'green'}
-						title="Add Inputs"
-						onPress={() => this.showCamera('inputs')}
-					>
-						<Text/>
-					</ActionButton.Item>
-					<ActionButton.Item
-						buttonColor={'blue'}
-						title="Add Outputs"
-						onPress={() => this.showCamera('items')}
-					>
-						<Text/>
-					</ActionButton.Item>
-				</ActionButton>
-			</View>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+				<View style={styles.container}>
+					<ActionSheet
+						ref={o => this.ActionSheet = o}
+						title={ACTION_TITLE}
+						options={ACTION_OPTIONS}
+						cancelButtonIndex={CANCEL_INDEX}
+						onPress={this.handlePress}
+					/>
+					<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
+					<SectionList 
+						style={styles.table} 
+						renderItem={this.renderRow} 
+						renderSectionHeader={this.renderSectionHeader} 
+						sections={sections} 
+						keyExtractor={this.keyExtractor} 
+					/>
+					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Add Inputs"
+							onPress={() => this.showCamera('inputs')}
+						>
+							<Text/>
+						</ActionButton.Item>
+						<ActionButton.Item
+							buttonColor={'blue'}
+							title="Add Outputs"
+							onPress={() => this.showCamera('items')}
+						>
+							<Text/>
+						</ActionButton.Item>
+					</ActionButton>
+				</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 

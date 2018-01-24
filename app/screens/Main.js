@@ -136,8 +136,7 @@ class Main extends Component {
 			},
 			{
 				data: [],
-				key: "space",
-				title: "SPACE"
+				key: "space"
 			}
 		];
 	}
