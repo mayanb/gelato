@@ -2,10 +2,6 @@
 
 This is the codebase for Gelato, the mobile side of Polymer. This version is written in React Native and compiles to both Android and iOS. 
 
-## TODO
-
-* Store TODOs here
-
 ## Getting Started
 
 These instructions will help you get up and running with the codebase as soon as possible. They will guide you through the process of setting it up for testing on your local machine.
