@@ -8,6 +8,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
+	Alert,
 	AlertIOS
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
@@ -20,6 +21,7 @@ import ActionButton from 'react-native-action-button'
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
 const CANCEL_INDEX = 0
+const DESTRUCTIVE_INDEX = 3
 
 class Task extends Component { 
 	static navigatorButtons = {
@@ -78,6 +80,20 @@ class Task extends Component {
 		)
 	}
 
+	showConfirmDeleteAlert() {
+		let {task} = this.props
+		// Works on both iOS and Android
+		Alert.alert(
+			`Delete ${task.display}`,
+			`Are you sure you want to delete ${task.display}?`,
+			[
+				{text: 'Cancel', onPress: () => {}, style: 'cancel'},
+				{text: 'Yes, delete', onPress: this.handleDeleteTask.bind(this), style: 'destructive'},
+			],
+			{ cancelable: false }
+		)
+	}
+
 	handlePress(i) {
 		if(ACTION_OPTIONS[i] === 'Rename') {
 			this.showCustomNameAlert()
@@ -86,15 +102,18 @@ class Task extends Component {
 			this.props.dispatch(actions.requestFlagTask(this.props.task))
 		}
 		if(ACTION_OPTIONS[i] === 'Delete') {
-			let success = () => {
+			this.showConfirmDeleteAlert()
+		}
+	}
+
+	handleDeleteTask() {
+		let success = () => {
 				this.props.navigator.pop({
 					animated: true,
 				})
 			}
 			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
-		}
 	}
-
 
 	showCamera(mode) {
 		this.props.navigator.showModal({
@@ -128,6 +147,7 @@ class Task extends Component {
 					title={ACTION_TITLE}
 					options={ACTION_OPTIONS}
 					cancelButtonIndex={CANCEL_INDEX}
+					destructiveButtonIndex={DESTRUCTIVE_INDEX}
 					onPress={this.handlePress}
 				/>
 				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
