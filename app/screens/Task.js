@@ -107,7 +107,7 @@ class Task extends Component {
 				open: this.props.task.is_open,
 				mode: mode
 			},
-			navigatorStyle: { navBarHidden: true },
+			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 			animationType: 'slide-up' 
 		})
 	}
