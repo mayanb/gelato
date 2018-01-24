@@ -14,7 +14,8 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { AttributeRow, TaskRowHeader } from '../components/Cells'
+import { TaskRowHeader } from '../components/Cells'
+import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 
 const ACTION_TITLE = 'More'
@@ -130,7 +131,6 @@ class Task extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -159,7 +159,7 @@ class Task extends Component {
 	}
 
 	renderRow = ({item}) => (
-		<AttributeRow
+		<AttributeCell
 			title={item.display}
 			key={item.id}
 			id={item.id}
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		backgroundColor: Colors.white
+		backgroundColor: Colors.bluishGray,
 	}
 });
 

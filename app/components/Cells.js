@@ -112,65 +112,6 @@ export class TaskRowHeader extends Component {
 	}
 }
 
-export class AttributeRow extends Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			typedValue: this.props.value,
-		}
-	}
-
-	render() {
-		let {name, id, onSubmitEditing} = this.props
-		const width= Dimensions.get('window').width;
-		const styles = StyleSheet.create({
-			container: {
-				width: width,
-				minHeight: 30,
-				borderBottomWidth: 1,
-				borderBottomColor: Colors.ultraLightGray,
-				alignItems: 'flex-start',
-				justifyContent: 'center',
-				paddingTop: 10,
-				paddingBottom: 10,
-				paddingLeft: 20,
-				paddingRight: 20,
-				display: 'flex',
-				flexDirection: 'row'
-			},
-			title: {
-				fontSize: 15,
-				color: Colors.lightGray,
-				flex: 1,
-			},
-			value: {
-				fontSize: 15,
-				color: Colors.lightGray,
-				flex: 1,
-				textAlign: 'right',
-			}
-		})
-		return (
-			<View style={styles.container}>
-				<Text style={styles.name}>{name}</Text>
-				<TextInput 
-					style={styles.value} 
-					onChangeText={this.handleChangeText.bind(this)}
-					onSubmitEditing={() => onSubmitEditing(id, this.state.typedValue)} 
-					onBlur={() => onSubmitEditing(id, this.state.typedValue)}
-					returnKeyType='done'
-					value={this.state.typedValue}
-				/>
-			</View>
-		)
-	}
-
-	handleChangeText(text) {
-		this.setState({ typedValue: text })
-	}
-}
-
-
 export class CreateTaskSelect extends Component {
 	constructor(props) {
 		super(props);
