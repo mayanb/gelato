@@ -74,3 +74,4 @@ The `app` folder contains the main app logic. It is divided into the following f
 An important part of maintaining a project is consistent style.
 * We don't like semicolons, sorry :( 
 * Try to use async/await
+* Try to put each component in its own file
