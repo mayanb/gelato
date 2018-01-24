@@ -68,5 +68,15 @@ export function requireIcon(process_icon) {
 			img = require('../resources/assets/processicons/default.png')
 	}
 	return img
+}
 
+export function systemIcon(icon) {
+	img = ''
+	switch(icon) {
+		case "more_vert":
+			img = require('../resources/assets/system_icons/more_vert.png')
+		default:
+			img = require('../resources/assets/system_icons/more_vert.png')
+	}
+	return img
 }

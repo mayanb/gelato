@@ -16,6 +16,8 @@ import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
 import { AttributeRow, TaskRowHeader } from '../components/Cells'
 import ActionButton from 'react-native-action-button'
+import Flag from '../components/Flag'
+import {systemIcon} from '../resources/ImageUtility'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
@@ -35,6 +37,7 @@ class Task extends Component {
 			// }, 
 			{
 				title: 'More',
+				icon: systemIcon('more_vert'),
 				id: 'more',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -114,13 +117,16 @@ class Task extends Component {
 	}
 
 	render() {
-		if(!this.props.task) {
+		let {task} = this.props
+
+		if(!task) {
 			return null
 		}
+
 		let sections = [
-			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
+			{key: 'attributes', title: 'Task data', data: task.organized_attributes}
 		]
-		console.log(this.props.task.organized_attributes)
+
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -130,7 +136,7 @@ class Task extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
+				{ task.is_flagged ? <Flag /> : null }
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
