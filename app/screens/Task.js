@@ -170,7 +170,13 @@ class Task extends Component {
 	)
 
 	handleSubmitEditing(id, newValue) {
-		task = this.props.task
+		let task = this.props.task
+		let attributeIndex = task.organized_attributes.findIndex(e => Compute.equate(e.id, id))
+		let currValue = task.organized_attributes[attributeIndex].value
+		if (newValue === currValue) {
+			return
+		}
+
 		this.props.dispatch(actions.updateAttribute(task, id, newValue))
 	}
 
