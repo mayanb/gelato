@@ -83,16 +83,13 @@ class Main extends Component {
 				screen: 'gelato.Print',
 				title: "Print a label",
 				animated: true,
-				passProps: {selectedTask: 'sadf'}
+				passProps: {selectedTask: null}
 			});
 		}
 	}
 
 
 	render() {
-
-
-
 		let sections = this.loadData()
 		return (
 			<View style={styles.container}>

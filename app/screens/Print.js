@@ -11,26 +11,22 @@ import {
 	Platform,
 	Text,
 	View,
-	TextInput
+	TextInput,
 } from 'react-native';
 import { Navigation } from 'react-native-navigation'
 import Networking from '../resources/Networking'
 import Storage from '../resources/Storage'
+import { PrintButton, PrintNumberInput } from '../components/Forms';
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import RNPrint from 'react-native-print'
 import QRCode from 'qrcode'
 import { Dropdown } from '../components/Dropdown'
-// import uuid from 'react-native-uuid'
 import uuid from 'uuid/v4'
-// import RNUUIDGenerator from 'react-native-uuid-generator';
 
 
 export default class Print extends Component {
-	// state = {
-	// 	selectedPrinter: null,
-	// 	updatedUrl: "asdfdsafadsfadfs"
-	// }
+
 	constructor(props) {
 		super(props);
 		console.log(props.selectedTask)
@@ -42,6 +38,7 @@ export default class Print extends Component {
 		}
 		this.printHTML = this.printHTML.bind(this)
 		this.onChangedNumber = this.onChangedNumber.bind(this)
+		// this.showTaskSearch = this.showTaskSearch.bind(this)
     }
 
 	makeid(num_labels) {
@@ -101,21 +98,15 @@ export default class Print extends Component {
 		this.setState({numberLabels: numLabels})
 	}
 
-
 	render() {
 		console.log(this.state)
 		console.log(this.props)
 		return (
 			<View style={styles.container}>
-				<Text>{this.props.selectedTask.display}</Text>
-				<TextInput
-					keyboardType = 'numeric'
-					onChangeText = {(text)=> this.onChangedNumber(text)}
-					value = {this.state.numberLabels}
-					placeholder="Number of Labels"
-				/>
-				<Button onPress={this.printHTML} title={`Print ${this.state.numberLabels} Labels`}/>
-				<Text>{this.state.numberLabels}</Text>
+				<Text style={styles.taskTitle}>{this.props.selectedTask.display}</Text>
+				<Text style={styles.inputTitle}>Select the number of labels to print</Text>
+				<PrintNumberInput keyboardType = 'numeric' placeholder="1" autoCapitalize="none" autoCorrect={false} onChangeText={(text)=> this.onChangedNumber(text)} returnKeyType='done'/>
+				<PrintButton onPress={this.printHTML} buttonText={`Print ${this.state.numberLabels} Labels`} />
 			</View>
 		);
 	}
@@ -124,9 +115,22 @@ export default class Print extends Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
+		backgroundColor: Colors.white,
+		marginTop: 48,
 	},
+	inputTitle: {
+		fontSize: 16,
+		color: Colors.black,
+		marginBottom: 10,
+		alignSelf: 'center'
+	},
+	taskTitle: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		marginBottom: 24,
+		marginTop: 12,
+		alignSelf: 'center',
+	}
 });
 
