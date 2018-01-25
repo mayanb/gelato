@@ -8,6 +8,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
+	Alert,
 	AlertIOS
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
@@ -17,10 +18,13 @@ import * as actions from '../actions/TaskListActions'
 import { TaskRowHeader } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
+import Flag from '../components/Flag'
+import {systemIcon} from '../resources/ImageUtility'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
 const CANCEL_INDEX = 0
+const DESTRUCTIVE_INDEX = 3
 
 class Task extends Component { 
 	static navigatorButtons = {
@@ -36,6 +40,7 @@ class Task extends Component {
 			// }, 
 			{
 				title: 'More',
+				icon: systemIcon('more_vert'),
 				id: 'more',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -79,6 +84,20 @@ class Task extends Component {
 		)
 	}
 
+	showConfirmDeleteAlert() {
+		let {task} = this.props
+		// Works on both iOS and Android
+		Alert.alert(
+			`Delete ${task.display}`,
+			`Are you sure you want to delete ${task.display}?`,
+			[
+				{text: 'Cancel', onPress: () => {}, style: 'cancel'},
+				{text: 'Yes, delete', onPress: this.handleDeleteTask.bind(this), style: 'destructive'},
+			],
+			{ cancelable: false }
+		)
+	}
+
 	handlePress(i) {
 		if(ACTION_OPTIONS[i] === 'Rename') {
 			this.showCustomNameAlert()
@@ -87,15 +106,18 @@ class Task extends Component {
 			this.props.dispatch(actions.requestFlagTask(this.props.task))
 		}
 		if(ACTION_OPTIONS[i] === 'Delete') {
-			let success = () => {
+			this.showConfirmDeleteAlert()
+		}
+	}
+
+	handleDeleteTask() {
+		let success = () => {
 				this.props.navigator.pop({
 					animated: true,
 				})
 			}
 			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
-		}
 	}
-
 
 	showCamera(mode) {
 		this.props.navigator.showModal({
@@ -105,7 +127,7 @@ class Task extends Component {
 				open: this.props.task.is_open,
 				mode: mode
 			},
-			navigatorStyle: { navBarHidden: true },
+			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 			animationType: 'slide-up' 
 		})
 	}
@@ -115,13 +137,16 @@ class Task extends Component {
 	}
 
 	render() {
-		if(!this.props.task) {
+		let {task} = this.props
+
+		if(!task) {
 			return null
 		}
+
 		let sections = [
-			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
+			{key: 'attributes', title: 'Task data', data: task.organized_attributes}
 		]
-		console.log(this.props.task.organized_attributes)
+
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -129,8 +154,10 @@ class Task extends Component {
 					title={ACTION_TITLE}
 					options={ACTION_OPTIONS}
 					cancelButtonIndex={CANCEL_INDEX}
+					destructiveButtonIndex={DESTRUCTIVE_INDEX}
 					onPress={this.handlePress}
 				/>
+				{ task.is_flagged && <Flag /> }
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 

@@ -13,7 +13,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View
-} from 'react-native';
+} from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import Networking from '../resources/Networking'
 import Storage from '../resources/Storage'
@@ -28,7 +28,7 @@ const CANCEL_INDEX = 0
 
 class Main extends Component {
 	static navigatorButtons = {
-		rightButtons: [
+		leftButtons: [
 			{
 				title: 'Settings',
 				id: 'settings',
@@ -188,7 +188,7 @@ class Main extends Component {
 	}
 }
 
-const width =Dimensions.get('window').width;
+const width =Dimensions.get('window').width
 
 const styles = StyleSheet.create({
 	container: {
