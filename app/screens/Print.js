@@ -10,7 +10,8 @@ import {
 	NativeModules,
 	Platform,
 	Text,
-	View
+	View,
+	TextInput
 } from 'react-native';
 import { Navigation } from 'react-native-navigation'
 import Networking from '../resources/Networking'
@@ -40,10 +41,10 @@ export default class Print extends Component {
 			// selectedTask: {name: "", qrcode: ""},
 		}
 		this.printHTML = this.printHTML.bind(this)
+		this.onChangedNumber = this.onChangedNumber.bind(this)
     }
 
 	makeid(num_labels) {
-
 		let text = "dande.li/ics/"
 		const data = Array(num_labels).fill(0).map(() => uuid())
 		const data_urls = data.map(x => (text + x))
@@ -54,7 +55,7 @@ export default class Print extends Component {
 
 	generateQRCode(data, qrdocument) {
 		console.log("hi")
-		let text = `<style>#rotate-text { margin-left: 100px; width: 200px; transform: rotate(90deg); transform-origin: top left; font-size:30px;}</style><div id="rotate-text"><p>${this.props.selectedTask.display}</p></div>`
+		let text = `<style>#rotate-text { margin-left: 100px; margin-bottom: 200px; width: 200px; transform: rotate(90deg); transform-origin: top left; font-size:30px;}</style><div id="rotate-text"><p>${this.props.selectedTask.display}</p></div>`
 		return new Promise((resolve, reject)=>{
 			QRCode.toString(data, function(err, string) {
 				if(err) {
@@ -84,7 +85,9 @@ export default class Print extends Component {
 
 	printHTML() {
 		let qrdoc = []
-		this.repeatFunction(3, qrdoc).then(function(results) {
+		// const numLabels = this.state.numberLabels
+		const numLabels = 4
+		this.repeatFunction(numLabels, qrdoc).then(function(results) {
 			results.join("")
 			RNPrint.print({html: `${results}`})
 			// console.log(JSON.stringify(results))
@@ -93,13 +96,25 @@ export default class Print extends Component {
 		})
 	}
 
+	onChangedNumber(num) {
+		this.setState({numberLabels: num})
+	}
+
+
 	render() {
 		console.log(this.state)
 		console.log(this.props)
 		return (
 			<View style={styles.container}>
-				<Button onPress={this.printHTML} title="Print HTML" />
-				<Text>{this.state.updatedUrl}</Text>
+				<Text>{this.props.selectedTask.display}</Text>
+				<TextInput
+					keyboardType = 'numeric'
+					onChangeText = {(text)=> this.onChangedNumber(text)}
+					value = {this.state.numberLabels}
+					placeholder="Number of Labels"
+				/>
+				<Button onPress={this.printHTML} title={`Print ${this.state.numberLabels} Labels`}/>
+				<Text>{this.state.numberLabels}</Text>
 			</View>
 		);
 	}
