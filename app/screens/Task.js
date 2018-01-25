@@ -51,6 +51,7 @@ class Task extends Component {
 		this.showActionSheet = this.showActionSheet.bind(this)
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
+		this.printTask = this.printTask.bind(this)
 	}
 
 	onNavigatorEvent(event) {
@@ -109,6 +110,15 @@ class Task extends Component {
 		})
 	}
 
+	printTask(mode) {
+		this.props.navigator.push({
+			screen: 'gelato.Print',
+			title: "Print labels",
+			animated: true,
+			passProps: {selectedTask: this.props.task}
+		});
+	}
+
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
 	}
@@ -150,6 +160,13 @@ class Task extends Component {
 						buttonColor={'blue'}
 						title="Add Outputs"
 						onPress={() => this.showCamera('items')}
+					>
+						<Text/>
+					</ActionButton.Item>
+					<ActionButton.Item
+						buttonColor={'purple'}
+						title="Print Task Label"
+						onPress={() => this.printTask()}
 					>
 						<Text/>
 					</ActionButton.Item>

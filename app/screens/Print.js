@@ -19,53 +19,78 @@ import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import RNPrint from 'react-native-print'
 import QRCode from 'qrcode'
+import { Dropdown } from '../components/Dropdown'
+// import uuid from 'react-native-uuid'
+import uuid from 'uuid/v4'
+// import RNUUIDGenerator from 'react-native-uuid-generator';
 
 
 export default class Print extends Component {
-	state = {
-		selectedPrinter: null,
-	}
-
-	selectPrinter = async () => {
-		const selectedPrinter = await RNPrint.selectPrinter()
-		this.setState({ selectedPrinter })
-	}
-
-	silentPrint = async () => {
-		if (!this.state.selectedPrinter) {
-			alert('Must Select Printer First')
+	// state = {
+	// 	selectedPrinter: null,
+	// 	updatedUrl: "asdfdsafadsfadfs"
+	// }
+	constructor(props) {
+		super(props);
+		console.log(props.selectedTask)
+        this.state = {
+			selectedPrinter: null,
+			updatedUrl: "hi",
+			numberLabels: 1,
+			// selectedTask: {name: "", qrcode: ""},
 		}
-		const jobName = await RNPrint.print({
-			printerURL: this.state.selectedPrinter.url,
-			html: '<h1>Silent Print</h1>'
-		})
+		this.printHTML = this.printHTML.bind(this)
+    }
+
+	makeid(num_labels) {
+
+		let text = "dande.li/ics/"
+		const data = Array(num_labels).fill(0).map(() => uuid())
+		const data_urls = data.map(x => (text + x))
+		console.log(data_urls)
+		return data_urls
 	}
 
-	async printHTML() {
-		let url = await QRCode.toString('asdfasdfadsf', {type: "svg"})
-		let updatedUrl = url.slice(0, 4) + ` height="150px" width="150px"` + url.slice(4)
-		await console.log(updatedUrl)
-		await RNPrint.print({
-			html: `${updatedUrl}`
-		})
 
-	}
-
-	customOptions = () => {
-		return (
-			<View>
-				{this.state.selectedPrinter &&
-					<View>
-						<Text>{`Selected Printer Name: ${this.state.selectedPrinter.name}`}</Text>
-						<Text>{`Selected Printer URI: ${this.state.selectedPrinter.url}`}</Text>
-					</View>
+	generateQRCode(data, qrdocument) {
+		console.log("hi")
+		let text = `<style>#rotate-text { margin-left: 100px; width: 200px; transform: rotate(90deg); transform-origin: top left; font-size:30px;}</style><div id="rotate-text"><p>${this.props.selectedTask.display}</p></div>`
+		return new Promise((resolve, reject)=>{
+			QRCode.toString(data, function(err, string) {
+				if(err) {
+					console.log("error")
+					console.log(err)
+					reject(err)
+				} else {
+					let updatedUrl = string.slice(0, 4) + ` height="130px" width="130px"` + string.slice(4)
+					updatedUrl += text
+					console.log(updatedUrl)
+					qrdocument.push(updatedUrl)
+					resolve(updatedUrl)
 				}
-				<Button onPress={this.selectPrinter} title="Select Printer" />
-				<Button onPress={this.silentPrint} title="Silent Print" />
-			</View>
+			})
+		})
+	}
 
 
-		)
+	repeatFunction(num_qrs, qrdocument) {
+		let pictexts = this.makeid(num_qrs)
+		var promises = []
+		for (var i=0; i < num_qrs; i++) {
+			promises.push(this.generateQRCode(pictexts[i], qrdocument))
+		}
+		return Promise.all(promises)
+	}
+
+	printHTML() {
+		let qrdoc = []
+		this.repeatFunction(3, qrdoc).then(function(results) {
+			results.join("")
+			RNPrint.print({html: `${results}`})
+			// console.log(JSON.stringify(results))
+		}, function(err) {
+			console.log(err)
+		})
 	}
 
 	render() {
@@ -73,8 +98,8 @@ export default class Print extends Component {
 		console.log(this.props)
 		return (
 			<View style={styles.container}>
-				{Platform.OS === 'ios' && this.customOptions()}
 				<Button onPress={this.printHTML} title="Print HTML" />
+				<Text>{this.state.updatedUrl}</Text>
 			</View>
 		);
 	}

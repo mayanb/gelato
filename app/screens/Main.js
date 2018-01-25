@@ -83,7 +83,7 @@ class Main extends Component {
 				screen: 'gelato.Print',
 				title: "Print a label",
 				animated: true,
-				passProps: {taskname: 'sadf'}
+				passProps: {selectedTask: 'sadf'}
 			});
 		}
 	}
