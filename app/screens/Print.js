@@ -85,8 +85,8 @@ export default class Print extends Component {
 
 	printHTML() {
 		let qrdoc = []
-		// const numLabels = this.state.numberLabels
-		const numLabels = 4
+		let numLabels = this.state.numberLabels
+		// const numLabels = 4
 		this.repeatFunction(numLabels, qrdoc).then(function(results) {
 			results.join("")
 			RNPrint.print({html: `${results}`})
@@ -97,7 +97,8 @@ export default class Print extends Component {
 	}
 
 	onChangedNumber(num) {
-		this.setState({numberLabels: num})
+		let numLabels = (num !== "") ? parseInt(num) : 0
+		this.setState({numberLabels: numLabels})
 	}
 
 
