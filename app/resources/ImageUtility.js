@@ -68,5 +68,16 @@ export function requireIcon(process_icon) {
 			img = require('../resources/assets/processicons/default.png')
 	}
 	return img
+}
 
+export function systemIcon(icon) {
+	switch(icon) {
+		case "more_vert":
+			return require('../resources/assets/system_icons/more_vert.png')
+		case "close_camera":
+			return require('../resources/assets/system_icons/close_camera.png')
+		default:
+			return require('../resources/assets/system_icons/more_vert.png')
+	}
+	return ''
 }
