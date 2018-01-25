@@ -18,6 +18,7 @@ import * as actions from '../actions/LoginActions'
 import { Navigation } from 'react-native-navigation';
 import Networking from '../resources/Networking-superagent'
 import Storage from '../resources/Storage';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux'
 
 class Login extends Component {
@@ -38,25 +39,59 @@ class Login extends Component {
 		this.loginSuccess = this.loginSuccess.bind(this)
 		this.loginFailure = this.loginFailure.bind(this)
 
+		this.inputs = {};
+		this.focusNextField = this.focusNextField.bind(this);
 	}
 	render() {
 		return (
 			<View style={styles.container}>
 				<View style={styles.bottom}>
+					<KeyboardAwareScrollView>
 					<View style={styles.inputArea}>
 						{FormError(this.state.formError)}
 						<Text style={styles.inputTitle}>Team</Text>
-						<LoginInput placeholder="Team" autoCapitalize="none" autoCorrect={false} onChangeText={this.setTeam} returnKeyType='next'/>
+						<LoginInput
+							placeholder="Team"
+							onChangeText={this.setTeam}
+							returnKeyType='next'
+							registerInput={this.registerInputFunction('Team')}
+							blurOnSubmit={false}
+							onSubmitEditing={() => this.focusNextField('Username')}
+						/>
 						<Text style={styles.inputTitle}>Username</Text>
-						<LoginInput placeholder="Username" autoCapitalize="none" autoCorrect={false} onChangeText={this.setUsername} returnKeyType='next' />
+						<LoginInput
+							placeholder="Username"
+							onChangeText={this.setUsername}
+							returnKeyType='next'
+							registerInput={this.registerInputFunction('Username')}
+							blurOnSubmit={false}
+							onSubmitEditing={() => this.focusNextField('Password')}
+						/>
 						<Text style={styles.inputTitle}>Password</Text>
-						<LoginInput placeholder="Password" autoCapitalize="none" autoCorrect={false} isPassword={true} onChangeText={this.setPassword} returnKeyType='done'/>
+						<LoginInput
+							placeholder="Password"
+							isPassword={true}
+							onChangeText={this.setPassword}
+							returnKeyType='done'
+							registerInput={this.registerInputFunction('Password')}
+							onSubmitEditing={this.login}
+						/>
 						<LoginButton onPress={this.login} />
 					</View>
+					</KeyboardAwareScrollView>
 				</View>
 			</View>
 		);
 	}
+
+	registerInputFunction (name) {
+		return (input) => this.inputs[name] = input
+	}
+
+	focusNextField(key) {
+		this.inputs[key].focus()
+	}
+
 	static navigatorStyle = {
 		navBarHidden: true,
 		navBarBackgroundColor: Colors.base,
