@@ -49,6 +49,9 @@ export function requireIcon(process_icon) {
 		case "rcpull.png":
 			img = require('../resources/assets/processicons/rcpull.png')
 			break;
+		case "rightarrow.png":
+			img = require('../resources/assets/rightarrow.png')
+			break;
 		case "rotaryconche.png":
 			img = require('../resources/assets/processicons/rotaryconche.png')
 			break;

@@ -24,6 +24,7 @@ import { DateFormatter } from '../resources/Utility'
 import ActionButton from 'react-native-action-button'
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as taskActions from '../actions/TaskListActions'
+import * as ImageUtility from "../resources/ImageUtility"
 
 class CreateTask extends Component {
 	constructor(props) {
@@ -68,6 +69,7 @@ class CreateTask extends Component {
 						activeOpacity={0.5} 
 						onPress={this.handleCreate.bind(this)} 
 						buttonText='>'
+						icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 					/> :
 					null
 				}
