@@ -15,7 +15,10 @@ export function requireIcon(process_icon) {
 			break;
 		case "conche.png":
 			img = require('../resources/assets/processicons/conche.png')
-			break;	
+			break;
+		case "downarrow.png":
+			img = require('../resources/assets/downarrow.png')
+			break;
 		case "foil.png":
 			img = require('../resources/assets/processicons/foil.png')
 			break;

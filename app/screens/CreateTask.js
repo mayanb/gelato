@@ -30,8 +30,8 @@ class CreateTask extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			selectedProcess: {name: "choose", id: -1},
-			selectedProduct: {name: "choose", id: -1},
+			selectedProcess: {name: 'Choose a process', id: -1},
+			selectedProduct: {name: 'Choose a product', id: -1},
 		}
 	}
 
@@ -52,13 +52,17 @@ class CreateTask extends Component {
 
 		return (
 			<View style={styles.container}>
+				<Text style={styles.title}>I want to...</Text>
 				<Dropdown 
 					selectedItem={selectedProcess} 
 					data={processes} 
-					onSelect={(item) => this.handleSelect('processes', item)} 
+					onSelect={(item) => this.handleSelect('processes', item)}
+					style={styles.dropdown}
 				/>
-				<Dropdown 
-					selectedItem={selectedProduct} 
+				<Text style={styles.title}>I'm working with ...</Text>
+				<Dropdown
+					style={styles.dropdown}
+					selectedItem={selectedProduct}
 					data={products} 
 					onSelect={(item) => this.handleSelect('products', item)} 
 				/>
@@ -133,6 +137,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
+	title: {
+  	color: Colors.black,
+  	fontSize: 17,
+  	marginLeft: 16,
+		marginBottom: 8
+	},
+	dropdown: {
+  	marginBottom: 50,
+		backgroundColor: Colors.bluishGray
+	}
 })
 
 const mapStateToProps = (state, props) => {

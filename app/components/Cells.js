@@ -126,24 +126,30 @@ export class CreateTaskSelect extends Component {
 				flex: 1,
 				flexDirection: 'row',
 				width: width,
-				minHeight: 30,
+				minHeight: 60,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,
-				alignItems: 'flex-start',
 				paddingTop: 8,
 				paddingBottom: 8,
 				paddingLeft: 20,
 				paddingRight: 20,
 				alignItems: 'center',
+				justifyContent: 'space-between',
 				backgroundColor: 'white',
 			},
 			display: {
 				fontSize: 17,
+				color: Colors.lightGray,
+				flexGrow: 1
 			},
 			process_icon: {
 				width: imgSize,
 				height: imgSize,
 				marginRight: 8,
+				flexGrow: 0
+			},
+			arrow: {
+				flexGrow: 0
 			}
 		})
 		return (
@@ -155,6 +161,11 @@ export class CreateTaskSelect extends Component {
 						null
 					}
 					<Text style={styles.display}>{name}</Text>
+					{
+						this.props.header ?
+							<Image style={styles.arrow} source={ImageUtility.requireIcon('downarrow.png')} /> :
+							null
+					}
 				</View>
 			</TouchableOpacity>
 		);
