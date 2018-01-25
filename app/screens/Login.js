@@ -8,6 +8,7 @@ import {
 	Dimensions,
 	Image,
 	Platform,
+	AlertIOS,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -28,7 +29,6 @@ class Login extends Component {
 			team: null,
 			username: null,
 			password: null,
-			formError: null
 		};
 		// Bind our functions for external use
 		this.setTeam = this.setTeam.bind(this);
@@ -48,7 +48,6 @@ class Login extends Component {
 				<View style={styles.bottom}>
 					<KeyboardAwareScrollView>
 					<View style={styles.inputArea}>
-						{FormError(this.state.formError)}
 						<Text style={styles.inputTitle}>Team</Text>
 						<LoginInput
 							placeholder="Team"
@@ -137,7 +136,7 @@ class Login extends Component {
 				.then(this.loginSuccess)
 				.catch(this.loginFailure)
 		} else {
-			this.setState({ formError: 'Please enter a team, username, and password' })
+			AlertIOS.alert('Please enter a team, username, and password')
 		}
 	}
 
@@ -167,15 +166,8 @@ class Login extends Component {
 		let message = err.status === 400 ?
 			'Unable to log in with provided credentials' :
 			'Problem logging in'
-		this.setState({ formError: message })
+		AlertIOS.alert(message)
 	}
-}
-
-function FormError(error) {
-	if (error)
-		return (
-			<View style={styles.formError}><Text style={styles.formErrorText}>{error}</Text></View>
-		)
 }
 
 const mapStateToProps = (state, props) => {
@@ -212,15 +204,5 @@ const styles = StyleSheet.create({
 		color: Colors.white,
 		marginBottom: 10,
 		alignSelf: 'center'
-	},
-	formError: {
-		width: width * 0.8,
-		padding: 10,
-		marginBottom: 20,
-		borderRadius: 3,
-		backgroundColor: Colors.red,
-	},
-	formErrorText: {
-		color: Colors.white
 	}
 });
