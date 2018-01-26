@@ -39,16 +39,19 @@ class QRScanner extends Component {
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
 				<View style={styles.button}>
-				<TouchableOpacity
-					onPress={this.handleClose.bind(this)}
-				>
-					<Image 
-						style={styles.close}
-						source={systemIcon('close_camera')}
-						title=""
-						color="white"
-					/>
-				</TouchableOpacity>
+					<TouchableOpacity
+						onPress={this.handleClose.bind(this)}
+					>
+						<Image 
+							style={styles.close}
+							source={systemIcon('close_camera')}
+							title=""
+							color="white"
+						/>
+					</TouchableOpacity>
+				</View>
+				<View style={styles.title}>
+					{ this.showInputsOutputsLabel() }
 				</View>
 				{ (expanded || barcode) ? this.renderScrim() : null }
 				{ expanded ? this.renderItemListModal() : null }
@@ -71,6 +74,15 @@ class QRScanner extends Component {
 	 */
 	testBarCodeRead() {
 		setTimeout(() => this.onBarCodeRead({data: 'hgjkdhfjgklds'}), 1000)
+	}
+
+	showInputsOutputsLabel() {
+		console.log(this.props.mode)
+		if (this.props.mode === 'inputs') {
+			return <Image source={ImageUtility.requireIcon("add_inputs_text.png")} />
+		} else {
+			return <Image source={ImageUtility.requireIcon("add_outputs_text.png")} />
+		}
 	}
 
 	renderScrim() {
@@ -272,6 +284,10 @@ const styles = StyleSheet.create({
 		position: 'absolute', 
 		top: 20 + 16,
 		left: 16,
+	},
+	title: {
+		alignItems: 'center',
+		marginTop: 20,
 	}
 })
 
