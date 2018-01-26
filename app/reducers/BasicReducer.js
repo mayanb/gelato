@@ -166,7 +166,7 @@ function requestDelete(state, action) {
 
 function requestDeleteSuccess(state, action) {
   let task_index = state.data.findIndex(e => Compute.equate(e.id, action.item.id))
-  if (task_index === undefined) 
+  if (task_index === -1)
     return state
   return update(state, {
 	data: {
@@ -205,7 +205,7 @@ function requestEditItem(state, action) {
 
 function requestEditItemSuccess(state, action) {
   let task_index = state.data.findIndex(e => Compute.equate(e.id, action.item.id))
-  if (task_index === undefined) 
+  if (task_index === -1)
     return state
   let obj = {[action.field]: action.value}
   return update(state, {
