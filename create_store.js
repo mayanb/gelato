@@ -7,6 +7,7 @@ const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
+const TASK = 'TASK'
 
 let defaultState = {
 	data: [],
@@ -29,7 +30,8 @@ var reducer = combineReducers({
   	openTasks: createFilteredReducer(_taskAttribute, action => action.name === OPEN_TASKS, defaultState),
     completedTasks: createFilteredReducer(_taskAttribute, action => action.name === COMPLETED_TASKS, defaultState),
     processes: createFilteredReducer(BasicReducer, action => action.name === PROCESSES, defaultState),
-    products: createFilteredReducer(BasicReducer, action => action.name === PRODUCTS, defaultState)
+    products: createFilteredReducer(BasicReducer, action => action.name === PRODUCTS, defaultState),
+    task: createFilteredReducer(BasicReducer, action => action.name === TASK, defaultState)
   })
 
 export default createStore(reducer, applyMiddleware(thunkMiddleware))

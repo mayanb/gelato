@@ -14,6 +14,8 @@ import {
 	REQUEST_DELETE_FAILURE,
 	REQUEST_EDIT_ITEM_SUCCESS,
 	REQUEST_EDIT_ITEM_FAILURE,
+	UPDATE_ATTRIBUTE_SEARCH_SUCCESS,
+	UPDATE_ATTRIBUTE_SEARCH_FAILURE,
 } from '../reducers/BasicReducer'
 import {
 	UPDATE_ATTRIBUTE_SUCCESS,
@@ -29,6 +31,7 @@ import {
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
+const TASK = 'TASK'
 
 export function fetchOpenTasks() {
 	return (dispatch) => {
@@ -107,6 +110,31 @@ export function fetchCompletedTasks() {
 	}
 }
 
+export function fetchTask(task_id) {
+	return (dispatch) => {
+		dispatch(requestTasks(TASK))		
+		return Storage.multiGet(['teamID', 'userID']).then((values) => {
+			let localStorage = {}
+			values.forEach((element, i) => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			Networking.get(`/ics/tasks/${task_id}`)
+			.end(function(err, res) {
+				if (err || !res.ok) {
+					dispatch(requestTasksFailure(TASK, err))
+				} else {
+					let organized = Compute.organizeAttributes(res.body)
+					res.body.organized_attributes = organized
+					dispatch(requestTasksSuccess(TASK, res.body))
+				}
+			})
+		});
+		
+	}
+}
+
 
 function requestTasks(name) {
 	return {
@@ -131,8 +159,19 @@ function requestTasksFailure(name, err) {
 	}
 }
 
-export function updateAttribute(task, attribute_id, new_value) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+export function updateAttribute(task, attribute_id, new_value, isSearched) {
+	let name = TASK
+	let successtype = UPDATE_ATTRIBUTE_SUCCESS
+	let errtype = UPDATE_ATTRIBUTE_FAILURE
+	if(isSearched) {
+		name = TASK
+		successtype = UPDATE_ATTRIBUTE_SEARCH_SUCCESS
+		errtype = UPDATE_ATTRIBUTE_SEARCH_FAILURE
+	} else {
+		name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+		successtype = UPDATE_ATTRIBUTE_SUCCESS
+		errtype = UPDATE_ATTRIBUTE_FAILURE
+	}
 	return (dispatch) => {
 		let payload = {
 			task: task.id,
@@ -144,27 +183,27 @@ export function updateAttribute(task, attribute_id, new_value) {
 			.send(payload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
-					dispatch(updateAttributeFailure(name, err))
+					dispatch(updateAttributeFailure(name, err, errtype))
 				} else {
-					dispatch(updateAttributeSuccess(name, res.body))
+					dispatch(updateAttributeSuccess(name, res.body, successtype))
 				}
 			})
 
 	}
 }
 
-function updateAttributeSuccess(name, data) {
+function updateAttributeSuccess(name, data, type) {
 	return {
 		name: name,
-		type: UPDATE_ATTRIBUTE_SUCCESS,
+		type: type,
 		data: data,
 	}
 }
 
-function updateAttributeFailure(name, err) {
+function updateAttributeFailure(name, err, type) {
 	return {
 		name: name,
-		type: UPDATE_ATTRIBUTE_FAILURE,
+		type: type,
 		error: err
 	}
 }

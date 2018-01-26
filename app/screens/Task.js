@@ -52,6 +52,7 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
+		console.log(this.props)
 	}
 
 	onNavigatorEvent(event) {
@@ -121,16 +122,27 @@ class Task extends Component {
 
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
+		if(this.props.taskSearch) {
+			this.props.dispatch(actions.fetchTask(this.props.id))
+		}
+
+	}
+
+	componentWillMount() {
+
 	}
 
 	render() {
+		console.log(this.props)
 		if(!this.props.task) {
+			return null
+		}
+		if(!this.props.task || this.props.task.length == 0) {
 			return null
 		}
 		let sections = [
 			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
 		]
-		console.log(this.props.task.organized_attributes)
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -188,7 +200,7 @@ class Task extends Component {
 
 	handleSubmitEditing(id, newValue) {
 		task = this.props.task
-		this.props.dispatch(actions.updateAttribute(task, id, newValue))
+		this.props.dispatch(actions.updateAttribute(task, id, newValue, this.props.taskSearch))
 	}
 
 
@@ -222,7 +234,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	let arr = props.open ? state.openTasks.data : state.completedTasks.data
-	return {
+	if (props.taskSearch) {
+		console.log(state.task)
+		return {
+			task: state.task.data
+		}
+	}
+	else return {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}
 }

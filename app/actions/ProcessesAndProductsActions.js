@@ -73,6 +73,7 @@ function requestFailure(name, err) {
 }
 
 export function updateAttribute(task, attribute_id, new_value) {
+	console.log("is this even being used")
 	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
 	return (dispatch) => {
 		let payload = {

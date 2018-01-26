@@ -4,6 +4,7 @@ import Compute from '../resources/Compute'
 
 export const UPDATE_ATTRIBUTE_SUCCESS = 'UPDATE_ATTRIBUTE_SUCCESS'
 export const UPDATE_ATTRIBUTE_FAILURE = 'UPDATE_ATTRIBUTE_FAILURE'
+
 export const RESET_JUST_CREATED = 'RESET_JUST_CREATED'
 export const ADD_INPUT_SUCCESS = 'ADD_INPUT_SUCCESS'
 export const ADD_OUTPUT_SUCCESS = 'ADD_OUTPUT_SUCCSS'
@@ -48,6 +49,9 @@ function startAdding(state, action) {
 }
 
 function updateAttributeSuccess(state, action) {
+	console.log("updateAttribute")
+	console.log(state.data)
+	console.log(action.data.task)
 	let taskIndex = state.data.findIndex(e => Compute.equate(e.id, action.data.task))
 	let attributeIndex = state.data[taskIndex].organized_attributes.findIndex(e => Compute.equate(e.id, action.data.attribute))
 	return update(state, {
@@ -62,6 +66,7 @@ function updateAttributeSuccess(state, action) {
 		}
 	})
 }
+
 
 function updateAttributeFailure(state, action) {
 	console.log('failed')

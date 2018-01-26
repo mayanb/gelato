@@ -20,7 +20,6 @@ export default class Compute {
 	}
 
 	static organizeAttributes(task) {
-		console.log(task)
 		var attributes = []
 		let allAttributes = task.process_type.attributes
 		allAttributes.forEach((attr, i) => {

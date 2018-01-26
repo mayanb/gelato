@@ -38,6 +38,7 @@ export default class Print extends Component {
 		}
 		this.printHTML = this.printHTML.bind(this)
 		this.onChangedNumber = this.onChangedNumber.bind(this)
+		// this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		// this.showTaskSearch = this.showTaskSearch.bind(this)
     }
 
