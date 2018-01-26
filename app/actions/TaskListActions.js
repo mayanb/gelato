@@ -183,14 +183,8 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 
 		return Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(updateAttributeFailure(name, err))
-				} else {
-					dispatch(updateAttributeSuccess(name, res.body))
-				}
-			})
-
+			.then(res => dispatch(updateAttributeSuccess(name, res.body)))
+			.catch(err => dispatch(updateAttributeFailure(name, err)))
 	}
 }
 
