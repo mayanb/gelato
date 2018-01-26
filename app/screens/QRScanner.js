@@ -281,7 +281,7 @@ const mapStateToProps = (state, props) => {
 	if (!taskSearch && task.is_open) {
 		arr = state.openTasks.data		
 	} else if (!taskSearch) {
-		name = state.completedTasks.data
+		arr = state.completedTasks.data
 	}
 	
 	return {

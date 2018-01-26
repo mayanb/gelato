@@ -31,15 +31,6 @@ const DESTRUCTIVE_INDEX = 3
 class Task extends Component { 
 	static navigatorButtons = {
 		rightButtons: [
-			// {
-			// 	title: 'Camera',
-			// 	id: 'camera',
-			// 	disabled: false,
-			// 	showAsAction: 'ifRoom',
-			// 	buttonColor: 'white',
-			// 	buttonFontSize: 15,
-			// 	buttonFontWeight: '600',
-			// }, 
 			{
 				title: 'More',
 				icon: systemIcon('more_vert'),
@@ -262,15 +253,14 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, props) => {
-	let {taskSearch, task} = props
+	let {taskSearch, open} = props
 	let arr = state.searchedTasks.data
-	if (!taskSearch && task.is_open) {
+	if (!taskSearch && open) {
 		arr = state.openTasks.data		
 	} else if (!taskSearch) {
-		name = state.completedTasks.data
+		arr = state.completedTasks.data
 	}
-	
-	console.log(arr)
+
 	return {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}
