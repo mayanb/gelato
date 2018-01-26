@@ -1,19 +1,24 @@
 import React from 'react'
-import { 
+import {
+	Image,
 	View, 
 	Text,
 	TextInput,
 	Dimensions,
-	StyleSheet
+	StyleSheet,
+	TouchableOpacity
 } from 'react-native'
 import Colors from '../resources/Colors'
+import * as ImageUtility from '../resources/ImageUtility'
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			typedValue: this.props.value,
+			editing: this.props.value !== ""
 		}
+		this.edit = this.edit.bind(this)
 	}
 
 	render() {
@@ -22,20 +27,32 @@ export default class AttributeCell extends React.Component {
 		return (
 			<View style={styles.container}>
 				<Text style={styles.name}>{name}</Text>
-				<TextInput 
-					style={styles.value} 
-					onChangeText={this.handleChangeText.bind(this)}
-					onSubmitEditing={() => onSubmitEditing(id, this.state.typedValue)} 
-					onBlur={() => onSubmitEditing(id, this.state.typedValue)}
-					returnKeyType='done'
-					value={this.state.typedValue}
-				/>
+				{ this.state.editing &&
+					<TextInput 
+						style={styles.value} 
+						onChangeText={this.handleChangeText.bind(this)}
+						onSubmitEditing={() => onSubmitEditing(id, this.state.typedValue)} 
+						onBlur={() => onSubmitEditing(id, this.state.typedValue)}
+						returnKeyType='done'
+						value={this.state.typedValue}
+						placeholder="Value"
+					/>
+				}
+				{ !this.state.editing &&
+					<TouchableOpacity activeOpacity={0.5} onPress={this.edit}>
+						<Image source={ImageUtility.uxIcon("edit")} />
+					</TouchableOpacity>
+				}
 			</View>
 		)
 	}
 
 	handleChangeText(text) {
 		this.setState({ typedValue: text })
+	}
+
+	edit() {
+		this.setState({editing: true})
 	}
 }
 

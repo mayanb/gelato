@@ -186,19 +186,17 @@ export class BottomTablePadding extends Component {
 				flex: 1,
 				flexDirection: 'row',
 				width: width,
-				borderBottomWidth: 1,
-				borderBottomColor: Colors.ultraLightGray,
 				paddingTop: 20,
 				paddingBottom: 100,
 				paddingLeft: 16,
 				paddingRight: 16,
-				alignItems: 'flex-start'
+				alignItems: 'center',
+				justifyContent: 'center'
 			},
 			title: {
 				marginBottom: 5,
 				fontSize: 18,
-				color: Colors.gray,
-				alignSelf: 'center'
+				color: Colors.lightGray
 			}
 		})
 		return (
