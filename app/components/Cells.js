@@ -230,17 +230,15 @@ export class CreateTaskSelect extends Component {
 				paddingLeft: 20,
 				paddingRight: 20,
 				alignItems: 'center',
-				justifyContent: 'space-between',
+				//justifyContent: 'space-between',
 				backgroundColor: 'white',
-				justifyContent: 'space-between'
-			},
-			content: {
-				flexDirection: 'row'
+				//justifyContent: 'space-between'
 			},
 			display: {
 				fontSize: 17,
 				color: Colors.textblack,
-				opacity: this.props.id === -1 ? 0.65 : 1
+				opacity: this.props.id === -1 ? 0.65 : 1,
+				flex: 1,
 			},
 			process_icon: {
 				width: imgSize,
@@ -249,7 +247,7 @@ export class CreateTaskSelect extends Component {
 				flexGrow: 0
 			},
 			arrow: {
-				flexGrow: 0
+				flexGrow: 0,
 			}
 		})
 		return (

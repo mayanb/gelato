@@ -65,6 +65,7 @@ export class Dropdown extends Component {
 				imgpath={selectedItem.icon}
 				key={selectedItem.id}
 				id={selectedItem.id}
+				header={true}
 				onPress={this.handleToggle.bind(this)} 
 			/>
 		)
