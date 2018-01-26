@@ -74,7 +74,11 @@ export default class Compute {
 
 	// VALIDATE THE QR CODE SEQ
 	static validateQR(data) {
-		return true
+		if( data.startsWith("dande.li/ics/") ) {
+			return true
+		} else {
+			return false
+		}
 	}
 
 	// static async getOpenTasks(teamID) {
