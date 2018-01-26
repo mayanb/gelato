@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
 		paddingRight: 16,
 		display: 'flex',
 		flexDirection: 'row',
-		fontSize: 17,
 		backgroundColor: Colors.white,
 	},
 	name: {
