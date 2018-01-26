@@ -72,7 +72,7 @@ export class TaskRow extends Component {
 	}
 
 	openTask() {
-		this.props.onPress(this.props.id, this.props.title, this.props.open);
+		this.props.onPress(this.props.id, this.props.title, this.props.open, this.props.imgpath, this.props.name, this.props.date);
 	}
 
 	
@@ -107,6 +107,103 @@ export class TaskRowHeader extends Component {
 		return (
 			<View style={styles.container}>
 				<Text style={styles.title}>{this.props.title}</Text>
+			</View>
+		);
+	}
+}
+
+export class AttributeHeaderCell extends Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		const width = Dimensions.get('window').width;
+		const styles = StyleSheet.create({
+			container: {
+				flex: 1,
+				flexDirection: 'row',
+				width: width,
+				borderBottomWidth: 1,
+				borderBottomColor: Colors.ultraLightGray,
+				paddingTop: 20,
+				paddingBottom: 20,
+				paddingLeft: 16,
+				paddingRight: 16
+			},
+
+			text_container: {
+				flex: 1,
+				minHeight: 30,
+				alignItems: 'flex-start',
+				justifyContent: 'center',
+			},
+			title: {
+				marginBottom: 5
+			},
+			display: {
+				fontWeight: 'bold',
+				fontSize: 17,
+				marginBottom: 5
+			},
+			date: {
+				fontSize: 13,
+				color: Colors.lightGray
+			},
+			process_icon: {
+				width: 38,
+				height: 38,
+				marginRight: 8,
+			}
+		})
+		if (this.props.type !== "Bottom") {
+			return (
+				<View style={styles.container}>
+					<View>
+						<Image source={ImageUtility.requireIcon(this.props.imgpath)} style={styles.process_icon} />
+					</View>
+					<View style={styles.text_container}>
+						<Text style={styles.display}>{this.props.name}</Text>
+						<Text style={styles.date}>{this.props.date}</Text>
+					</View>
+				</View>
+			);
+		} else {
+			return (
+				<BottomTablePadding title={this.props.title} />
+			)
+		}
+	}
+}
+
+export class BottomTablePadding extends Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		const width = Dimensions.get('window').width;
+		const styles = StyleSheet.create({
+			container: {
+				flex: 1,
+				flexDirection: 'row',
+				width: width,
+				borderBottomWidth: 1,
+				borderBottomColor: Colors.ultraLightGray,
+				paddingTop: 20,
+				paddingBottom: 100,
+				paddingLeft: 16,
+				paddingRight: 16,
+				alignItems: 'flex-start'
+			},
+			title: {
+				marginBottom: 5,
+				fontSize: 18,
+				color: Colors.gray,
+				alignSelf: 'center'
+			}
+		})
+		return (
+			<View style={styles.container}>
+				<Text style={styles.title}>That's all for this task!</Text>
 			</View>
 		);
 	}

@@ -18,6 +18,7 @@ export default class AttributeCell extends React.Component {
 
 	render() {
 		let {name, id, onSubmitEditing} = this.props
+		name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 		return (
 			<View style={styles.container}>
 				<Text style={styles.name}>{name}</Text>

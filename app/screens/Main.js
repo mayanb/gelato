@@ -167,7 +167,7 @@ class Main extends Component {
 	keyExtractor = (item, index) => item.id;
 
 	// Event for navigating to task detail page
-	openTask(id, name, open) {
+	openTask(id, name, open, imgpath, title, date) {
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: name,
@@ -176,6 +176,9 @@ class Main extends Component {
 				id: id, 
 				name: name,
 				open: open,
+				imgpath: imgpath,
+				title: title,
+				date: date
 			}
 		})
 	}
