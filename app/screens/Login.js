@@ -153,9 +153,10 @@ class Login extends Component {
 		nav.resetTo({
 			screen: 'gelato.Main',
 			animated: true,
+      title: data.user.team_name,
 			passProps: {
 				username: data.user.username_display,
-				team: data.user.team,
+				team: data.user.team_name,
 				teamID: data.user.team,
 			}
 		});

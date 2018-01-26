@@ -3,10 +3,12 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {
 	Dimensions,
+	Keyboard,
 	SectionList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 	Alert,
 	AlertIOS
@@ -149,40 +151,41 @@ class Task extends Component {
 		]
 
 		return (
-			<View style={styles.container}>
-				<ActionSheet
-					ref={o => this.ActionSheet = o}
-					title={ACTION_TITLE}
-					options={ACTION_OPTIONS}
-					cancelButtonIndex={CANCEL_INDEX}
-					destructiveButtonIndex={DESTRUCTIVE_INDEX}
-					onPress={this.handlePress}
-				/>
-				{ task.is_flagged && <Flag /> }
-				<SectionList 
-					style={styles.table} 
-					renderItem={this.renderRow} 
-					renderSectionHeader={this.renderSectionHeader} 
-					sections={sections} 
-					keyExtractor={this.keyExtractor} 
-				/>
-				<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
-					<ActionButton.Item
-						buttonColor={'green'}
-						title="Add Inputs"
-						onPress={() => this.showCamera('inputs')}
-					>
-						<Text/>
-					</ActionButton.Item>
-					<ActionButton.Item
-						buttonColor={'blue'}
-						title="Add Outputs"
-						onPress={() => this.showCamera('items')}
-					>
-						<Text/>
-					</ActionButton.Item>
-				</ActionButton>
-			</View>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+				<View style={styles.container}>
+					<ActionSheet
+						ref={o => this.ActionSheet = o}
+						title={ACTION_TITLE}
+						options={ACTION_OPTIONS}
+						cancelButtonIndex={CANCEL_INDEX}
+						onPress={this.handlePress}
+					/>
+					{ task.is_flagged && <Flag /> }
+					<SectionList 
+						style={styles.table} 
+						renderItem={this.renderRow} 
+						renderSectionHeader={this.renderSectionHeader} 
+						sections={sections} 
+						keyExtractor={this.keyExtractor} 
+					/>
+					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Add Inputs"
+							onPress={() => this.showCamera('inputs')}
+						>
+							<Text/>
+						</ActionButton.Item>
+						<ActionButton.Item
+							buttonColor={'blue'}
+							title="Add Outputs"
+							onPress={() => this.showCamera('items')}
+						>
+							<Text/>
+						</ActionButton.Item>
+					</ActionButton>
+				</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 
