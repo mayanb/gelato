@@ -28,7 +28,7 @@ export class TaskRow extends Component {
 				paddingTop: 8,
 				paddingBottom: 8,
 				paddingLeft: 16,
-				paddingRight: 16
+				paddingRight: 16,
 			},
 
 			text_container: {
@@ -128,7 +128,8 @@ export class AttributeHeaderCell extends Component {
 				paddingTop: 20,
 				paddingBottom: 20,
 				paddingLeft: 16,
-				paddingRight: 16
+				paddingRight: 16,
+				backgroundColor: Colors.bluishGray
 			},
 
 			text_container: {
