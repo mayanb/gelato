@@ -8,22 +8,19 @@ import {
 	Dimensions,
 	Image,
 	Platform,
+	AlertIOS,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View
 } from 'react-native';
 import { LoginButton, LoginInput } from '../components/Forms';
+import * as actions from '../actions/LoginActions'
 import { Navigation } from 'react-native-navigation';
 import Networking from '../resources/Networking-superagent'
 import Storage from '../resources/Storage';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux'
-
-import { 
-	REQUEST, 
-	REQUEST_SUCCESS, 
-	REQUEST_FAILURE 
-} from '../reducers/BasicReducer'
 
 class Login extends Component {
 	constructor(props) {
@@ -31,7 +28,7 @@ class Login extends Component {
 		this.state = {
 			team: null,
 			username: null,
-			password: null
+			password: null,
 		};
 		// Bind our functions for external use
 		this.setTeam = this.setTeam.bind(this);
@@ -39,25 +36,61 @@ class Login extends Component {
 		this.setPassword = this.setPassword.bind(this);
 		this.login = this.login.bind(this);
 		this.checkInputs = this.checkInputs.bind(this);
+		this.loginSuccess = this.loginSuccess.bind(this)
+		this.loginFailure = this.loginFailure.bind(this)
 
+		this.inputs = {};
+		this.focusNextField = this.focusNextField.bind(this);
 	}
 	render() {
 		return (
 			<View style={styles.container}>
 				<View style={styles.bottom}>
+					<KeyboardAwareScrollView>
 					<View style={styles.inputArea}>
 						<Text style={styles.inputTitle}>Team</Text>
-						<LoginInput placeholder="Team" autoCapitalize="none" autoCorrect={false} onChangeText={this.setTeam} returnKeyType='next'/>
+						<LoginInput
+							placeholder="Team"
+							onChangeText={this.setTeam}
+							returnKeyType='next'
+							registerInput={this.registerInputFunction('Team')}
+							blurOnSubmit={false}
+							onSubmitEditing={() => this.focusNextField('Username')}
+						/>
 						<Text style={styles.inputTitle}>Username</Text>
-						<LoginInput placeholder="Username" autoCapitalize="none" autoCorrect={false} onChangeText={this.setUsername} returnKeyType='next' />
+						<LoginInput
+							placeholder="Username"
+							onChangeText={this.setUsername}
+							returnKeyType='next'
+							registerInput={this.registerInputFunction('Username')}
+							blurOnSubmit={false}
+							onSubmitEditing={() => this.focusNextField('Password')}
+						/>
 						<Text style={styles.inputTitle}>Password</Text>
-						<LoginInput placeholder="Password" autoCapitalize="none" autoCorrect={false} isPassword={true} onChangeText={this.setPassword} returnKeyType='done'/>
+						<LoginInput
+							placeholder="Password"
+							isPassword={true}
+							onChangeText={this.setPassword}
+							returnKeyType='done'
+							registerInput={this.registerInputFunction('Password')}
+							onSubmitEditing={this.login}
+						/>
 						<LoginButton onPress={this.login} />
 					</View>
+					</KeyboardAwareScrollView>
 				</View>
 			</View>
 		);
 	}
+
+	registerInputFunction (name) {
+		return (input) => this.inputs[name] = input
+	}
+
+	focusNextField(key) {
+		this.inputs[key].focus()
+	}
+
 	static navigatorStyle = {
 		navBarHidden: true,
 		navBarBackgroundColor: Colors.base,
@@ -97,62 +130,44 @@ class Login extends Component {
 				password: this.state.password
 			};
 
-			dispatch(request('LOGIN'))
+			dispatch(actions.request('LOGIN'))
 			Networking.post(`/auth/login/`)
-			.send(loginPayload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(requestFailure('LOGIN', err))
-				} else {
-					dispatch(requestSuccess('LOGIN', res.body))
-					data = res.body
-					Storage.save("token", data.token);
-					Storage.save("token", data.token);
-					Storage.save("username", data.user.username_display);
-					Storage.save("teamID", data.user.team);
-					Storage.save("userID", data.user.profile_id);
-					Storage.save("accountType", data.user.account_type);
-					Storage.save("teamName", data.user.team_name);
-					nav.resetTo({
-						screen: 'gelato.Main',
-						animated: true,
-						passProps: {
-							username: data.user.username_display,
-							team: data.user.team,
-							teamID: data.user.team,
-						}
-					});
-
-				}
-			})
-
-	  	} else {
-			// Display error message
+				.send(loginPayload)
+				.then(this.loginSuccess)
+				.catch(this.loginFailure)
+		} else {
+			AlertIOS.alert('Please enter a team, username, and password')
 		}
 	}
-}
 
-
-export function request(name) {
-	return {
-		type: REQUEST,
-		name: name,
+	loginSuccess(res) {
+		dispatch(actions.requestSuccess('LOGIN', res.body))
+		data = res.body
+		Storage.save("token", data.token);
+		Storage.save("token", data.token);
+		Storage.save("username", data.user.username_display);
+		Storage.save("teamID", data.user.team);
+		Storage.save("userID", data.user.profile_id);
+		Storage.save("accountType", data.user.account_type);
+		Storage.save("teamName", data.user.team_name);
+		nav.resetTo({
+			screen: 'gelato.Main',
+			animated: true,
+      title: data.user.team_name,
+			passProps: {
+				username: data.user.username_display,
+				team: data.user.team_name,
+				teamID: data.user.team,
+			}
+		});
 	}
-}
 
-export function requestSuccess(name, data) {
-	return {
-		type: REQUEST_SUCCESS,
-		name: name,
-		data: data
-	}
-}
-
-export function requestFailure(name, err) {
-	return {
-		type: REQUEST_FAILURE,
-		name: name,
-		error: err
+	loginFailure(err) {
+		dispatch(actions.requestFailure('LOGIN', err))
+		let message = err.status === 400 ?
+			'Unable to log in with provided credentials' :
+			'Problem logging in'
+		AlertIOS.alert(message)
 	}
 }
 

@@ -1,6 +1,6 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import { connect } from 'react-redux'
-import { TaskRow, TaskRowHeader } from '../components/Cells'
+import { LoaderRow, TaskRow, TaskRowHeader } from '../components/Cells'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import React, { Component } from 'react'
@@ -100,12 +100,12 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<SectionList 
-					style={styles.table} 
-					renderItem={this.renderRow} 
-					renderSectionHeader={this.renderSectionHeader} 
-					sections={sections} 
-					keyExtractor={this.keyExtractor} 
+				<SectionList
+					style={styles.table}
+					renderItem={this.renderRow}
+					renderSectionHeader={this.renderSectionHeader}
+					sections={sections}
+					keyExtractor={this.keyExtractor}
 				/>
 				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
@@ -128,21 +128,23 @@ class Main extends Component {
 		// await this.setState({tasks: teamData});
 		let open = this.props.openTasks.data
 		let completed = this.props.completedTasks.data
+
 		return [
 			{
 				data: open,
 				key: "open",
-				title: "OPEN TASKS"
+				title: "OPEN TASKS",
+				isLoading: this.props.openTasks.ui.isFetchingData
 			},
 			{
 				data: completed,
 				key: "completed",
-				title: "RECENTLY COMPLETED"
+				title: "RECENTLY COMPLETED",
+				isLoading: this.props.completedTasks.ui.isFetchingData
 			},
 			{
 				data: [],
-				key: "space",
-				title: "SPACE"
+				key: "space"
 			}
 		];
 	}
@@ -150,29 +152,29 @@ class Main extends Component {
 	// Helper function to render individual task cells
 	renderRow = ({item}) => {
 		return (
-		<TaskRow
-			title={item.display}
-			key={item.id}
-			id={item.id}
-			imgpath={item.process_type.icon}
-			open={item.is_open}
-			name={item.process_type.name}
-			date={DateFormatter.shorten(item.updated_at)}
-			onPress={this.openTask.bind(this)}
-		/>
+			<TaskRow
+				title={item.display}
+				key={item.id}
+				id={item.id}
+				imgpath={item.process_type.icon}
+				open={item.is_open}
+				name={item.process_type.name}
+				date={DateFormatter.shorten(item.updated_at)}
+				onPress={this.openTask.bind(this)}
+			/>
 		)
 	}
 
 	// Helper function to render headers
 	renderSectionHeader = ({section}) => (
-		<TaskRowHeader title={section.title} />
+		<TaskRowHeader title={section.title} isLoading={section.isLoading} />
 	)
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => item.id;
 
 	// Event for navigating to task detail page
-	openTask(id, name, open) {
+	openTask(id, name, open, imgpath, title, date) {
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: name,
@@ -181,6 +183,9 @@ class Main extends Component {
 				id: id, 
 				name: name,
 				open: open,
+				imgpath: imgpath,
+				title: title,
+				date: date
 			}
 		})
 	}

@@ -3,10 +3,12 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {
 	Dimensions,
+	Keyboard,
 	SectionList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 	Alert,
 	AlertIOS
@@ -15,7 +17,7 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { TaskRowHeader } from '../components/Cells'
+import { TaskRowHeader, AttributeHeaderCell } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
@@ -162,51 +164,53 @@ class Task extends Component {
 		}
 
 		let sections = [
-			{key: 'attributes', title: 'Task data', data: task.organized_attributes}
+			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top"},
+			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
 
 		return (
-			<View style={styles.container}>
-				<ActionSheet
-					ref={o => this.ActionSheet = o}
-					title={ACTION_TITLE}
-					options={ACTION_OPTIONS}
-					cancelButtonIndex={CANCEL_INDEX}
-					destructiveButtonIndex={DESTRUCTIVE_INDEX}
-					onPress={this.handlePress}
-				/>
-				{ task.is_flagged && <Flag /> }
-				<SectionList 
-					style={styles.table} 
-					renderItem={this.renderRow} 
-					renderSectionHeader={this.renderSectionHeader} 
-					sections={sections} 
-					keyExtractor={this.keyExtractor} 
-				/>
-				<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
-					<ActionButton.Item
-						buttonColor={'green'}
-						title="Add Inputs"
-						onPress={() => this.showCamera('inputs')}
-					>
-						<Text/>
-					</ActionButton.Item>
-					<ActionButton.Item
-						buttonColor={'blue'}
-						title="Add Outputs"
-						onPress={() => this.showCamera('items')}
-					>
-						<Text/>
-					</ActionButton.Item>
-					<ActionButton.Item
-						buttonColor={'purple'}
-						title="Print Task Label"
-						onPress={() => this.printTask()}
-					>
-						<Text/>
-					</ActionButton.Item>
-				</ActionButton>
-			</View>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+				<View style={styles.container}>
+					<ActionSheet
+						ref={o => this.ActionSheet = o}
+						title={ACTION_TITLE}
+						options={ACTION_OPTIONS}
+						cancelButtonIndex={CANCEL_INDEX}
+						onPress={this.handlePress}
+					/>
+					{ task.is_flagged && <Flag /> }
+					<SectionList 
+						style={styles.table} 
+						renderItem={this.renderRow} 
+						renderSectionHeader={this.renderSectionHeader} 
+						sections={sections} 
+						keyExtractor={this.keyExtractor} 
+					/>
+					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Add Inputs"
+							onPress={() => this.showCamera('inputs')}
+						>
+							<Text/>
+						</ActionButton.Item>
+						<ActionButton.Item
+							buttonColor={'blue'}
+							title="Add Outputs"
+							onPress={() => this.showCamera('items')}
+						>
+							<Text/>
+						</ActionButton.Item>
+					  <ActionButton.Item
+						  buttonColor={'purple'}
+						  title="Print Task Label"
+						  onPress={() => this.printTask()}
+					  >
+						  <Text/>
+					  </ActionButton.Item>
+					</ActionButton>
+				</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 
@@ -233,7 +237,7 @@ class Task extends Component {
 
 
 	renderSectionHeader = ({section}) => (
-		<TaskRowHeader title={section.title} />
+		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} />
 	)
 
 	keyExtractor = (item, index) =>  { item.id }
