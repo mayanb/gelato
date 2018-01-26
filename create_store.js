@@ -15,8 +15,6 @@ let defaultState = {
 	ui: {}
 }
 
-let defaultTaskState = { data: null, ui: {} } 
-
 function createFilteredReducer(reducerFunction, reducerPredicate, defaultState) {
     return (state, action) => {
         const isInitializationCall = state === undefined;
@@ -35,7 +33,6 @@ var reducer = combineReducers({
     searchedTasks: createFilteredReducer(_taskAttribute, action => action.name === SEARCHED_TASKS, defaultState),
     processes: createFilteredReducer(BasicReducer, action => action.name === PROCESSES, defaultState),
     products: createFilteredReducer(BasicReducer, action => action.name === PRODUCTS, defaultState),
-    task: createFilteredReducer(BasicReducer, action => action.name === TASK, defaultTaskState)
   })
 
 export default createStore(reducer, applyMiddleware(thunkMiddleware))
