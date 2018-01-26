@@ -11,6 +11,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import {QRItemListRow, QRDisplay} from '../components/QRComponents'
 import * as actions from '../actions/TaskListActions'
+import {systemIcon}	from '../resources/ImageUtility'
 
 class QRScanner extends Component {
 	constructor(props) {
@@ -38,13 +39,15 @@ class QRScanner extends Component {
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
 				<View style={styles.button}>
-					<Button 
-						style={styles.button}
+				<TouchableOpacity>
+					<Image 
+						style={styles.close}
 						onPress={this.handleClose.bind(this)}
-						title="Close"
+						source={systemIcon('close_camera')}
+						title=""
 						color="white"
 					/>
-					<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'hgjkdhfjgklds'}), 1000)}} title="hello" />
+				</TouchableOpacity>
 				</View>
 				{ (expanded || barcode) ? this.renderScrim() : null }
 				{ expanded ? this.renderItemListModal() : null }
@@ -58,6 +61,15 @@ class QRScanner extends Component {
 				/>
 			</View>
 		)
+	}
+
+	/* CALL THIS FUNCTION IF YOU WANT TO TEST onBarCodeRead() on the simulator!
+	 * ----
+	 * Eg. you can put a button that calls this function, so you can test the 
+	 * flow fo what happens when you read a barcode.
+	 */
+	testBarCodeRead() {
+		setTimeout(() => this.onBarCodeRead({data: 'hgjkdhfjgklds'}), 1000)
 	}
 
 	renderScrim() {
@@ -255,10 +267,10 @@ const styles = StyleSheet.create({
 		height: height,
 		width: width,
 		backgroundColor: 'rgba(255,0,0,0.5)',
-	}, button: {
+	}, close: {
 		position: 'absolute', 
-		top: 24,
-		left: 24,
+		top: 20 + 16,
+		left: 16,
 	}
 })
 

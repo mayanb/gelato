@@ -15,7 +15,10 @@ export function requireIcon(process_icon) {
 			break;
 		case "conche.png":
 			img = require('../resources/assets/processicons/conche.png')
-			break;	
+			break;
+		case "downarrow.png":
+			img = require('../resources/assets/downarrow.png')
+			break;
 		case "foil.png":
 			img = require('../resources/assets/processicons/foil.png')
 			break;
@@ -49,6 +52,9 @@ export function requireIcon(process_icon) {
 		case "rcpull.png":
 			img = require('../resources/assets/processicons/rcpull.png')
 			break;
+		case "rightarrow.png":
+			img = require('../resources/assets/rightarrow.png')
+			break;
 		case "rotaryconche.png":
 			img = require('../resources/assets/processicons/rotaryconche.png')
 			break;
@@ -68,5 +74,28 @@ export function requireIcon(process_icon) {
 			img = require('../resources/assets/processicons/default.png')
 	}
 	return img
+}
 
+export function systemIcon(icon) {
+	switch(icon) {
+		case "more_vert":
+			return require('../resources/assets/system_icons/more_vert.png')
+		case "close_camera":
+			return require('../resources/assets/system_icons/close_camera.png')
+		default:
+			return require('../resources/assets/system_icons/more_vert.png')
+	}
+	return ''
+}
+
+export function uxIcon(icon) {
+	switch(icon) {
+		case "edit":
+			return require('../resources/assets/editicon.png')
+		case "downarrow":
+			return require('../resources/assets/downarrow.png')
+		default:
+			return require('../resources/assets/system_icons/more_vert.png')
+	}
+	return ''
 }

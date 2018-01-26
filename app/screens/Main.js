@@ -13,7 +13,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View
-} from 'react-native';
+} from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import Networking from '../resources/Networking'
 import Storage from '../resources/Storage'
@@ -28,7 +28,7 @@ const CANCEL_INDEX = 0
 
 class Main extends Component {
 	static navigatorButtons = {
-		rightButtons: [
+		leftButtons: [
 			{
 				title: 'Settings',
 				id: 'settings',
@@ -107,7 +107,7 @@ class Main extends Component {
 	handleCreateTask() {
 		this.props.navigator.push({
 			screen: 'gelato.CreateTask',
-			title: "Create a new task",
+			title: "Create Task",
 			animated: true,
 			passProps: {}
 		});
@@ -166,7 +166,7 @@ class Main extends Component {
 	keyExtractor = (item, index) => item.id;
 
 	// Event for navigating to task detail page
-	openTask(id, name, open) {
+	openTask(id, name, open, imgpath, title, date) {
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: name,
@@ -175,6 +175,9 @@ class Main extends Component {
 				id: id, 
 				name: name,
 				open: open,
+				imgpath: imgpath,
+				title: title,
+				date: date
 			}
 		})
 	}
@@ -187,7 +190,7 @@ class Main extends Component {
 	}
 }
 
-const width =Dimensions.get('window').width;
+const width =Dimensions.get('window').width
 
 const styles = StyleSheet.create({
 	container: {

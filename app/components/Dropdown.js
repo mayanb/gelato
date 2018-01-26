@@ -30,16 +30,15 @@ export class Dropdown extends Component {
 		return (
 			<View style={styles.container}>
 				{ this.renderHeader(selectedItem) }
-				<ScrollView style={styles.list}>
-					<Collapsible collapsed={collapsed}>
-						<FlatList
-							data={data}
-							renderItem={this.renderItem.bind(this)}
-							extraData={this.state}
-							keyExtractor={this.keyExtractor}
-						/>
-					</Collapsible>
-				</ScrollView>
+				<Collapsible collapsed={collapsed}>
+					<FlatList
+						data={data}
+						renderItem={this.renderItem.bind(this)}
+						extraData={this.state}
+						keyExtractor={this.keyExtractor}
+						style={styles.choices}
+					/>
+				</Collapsible>
 			</View>
 		)
 	}
@@ -50,17 +49,23 @@ export class Dropdown extends Component {
 				name={item.name}
 				imgpath={item.icon}
 				key={item.id}
+				id={item.id}
 				onPress={(e) => this.handleSelect(item)}
 			/>
 		)
 	}
 
+
+	// Unsure why this is in a function
+  // it was just a lot of lines of code
 	renderHeader(selectedItem) {
 		return (
 			<CreateTaskSelect 
 				name={selectedItem.name} 
 				imgpath={selectedItem.icon}
 				key={selectedItem.id}
+				id={selectedItem.id}
+				header={true}
 				onPress={this.handleToggle.bind(this)} 
 			/>
 		)
@@ -83,6 +88,9 @@ const styles = StyleSheet.create({
 	container: {
 	},
 	list: {
-		marginTop: 13,
+		// marginTop: 13,
+	},
+	choices: {
+		// maxHeight: 300
 	}
 })
