@@ -30,14 +30,15 @@ class Search extends Component {
 		let { mode, task } = this.props
 		return (
 			<View style={styles.container}>
-				<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
-				<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/e1290d6d-93ac-4523-9268-46225f5d8e48'}), 1000)}} title="hello" />
 				<Camera
 					ref={(cam) => { this.camera = cam }}
 					onBarCodeRead={this.onBarCodeRead.bind(this)}
 					style={styles.preview}
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
+				<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
+				<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
+
 			</View>
 		)
 	}

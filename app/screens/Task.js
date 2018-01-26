@@ -119,7 +119,7 @@ class Task extends Component {
 			screen: "gelato.QRScanner",
 			passProps: {
 				task_id: this.props.task.id,
-				open: this.props.task.is_open,
+				open: this.props.open,
 				taskSearch: this.props.taskSearch,
 				mode: mode
 			},
