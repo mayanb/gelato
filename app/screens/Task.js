@@ -15,7 +15,8 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { AttributeRow, TaskRowHeader } from '../components/Cells'
+import { TaskRowHeader } from '../components/Cells'
+import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
 import {systemIcon} from '../resources/ImageUtility'
@@ -156,7 +157,7 @@ class Task extends Component {
 					destructiveButtonIndex={DESTRUCTIVE_INDEX}
 					onPress={this.handlePress}
 				/>
-				{ task.is_flagged ? <Flag /> : null }
+				{ task.is_flagged && <Flag /> }
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -185,7 +186,7 @@ class Task extends Component {
 	}
 
 	renderRow = ({item}) => (
-		<AttributeRow
+		<AttributeCell
 			title={item.display}
 			key={item.id}
 			id={item.id}
@@ -196,7 +197,13 @@ class Task extends Component {
 	)
 
 	handleSubmitEditing(id, newValue) {
-		task = this.props.task
+		let task = this.props.task
+		let attributeIndex = task.organized_attributes.findIndex(e => Compute.equate(e.id, id))
+		let currValue = task.organized_attributes[attributeIndex].value
+		if (newValue === currValue) {
+			return
+		}
+
 		this.props.dispatch(actions.updateAttribute(task, id, newValue))
 	}
 
@@ -225,7 +232,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		backgroundColor: Colors.white
+		backgroundColor: Colors.bluishGray,
 	}
 });
 

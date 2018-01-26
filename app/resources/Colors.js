@@ -8,5 +8,7 @@ export default class Colors {
 	static lightGray = '#AAAAAA';
 	static ultraLightGray = '#EFEFEF';
 	static white = '#FFFFFF';
+	static textBlack = '#000000'
 	static red = '#FF5C5C';
+	static black = 'rgba(0, 0, 0, 0.75)';
 }
