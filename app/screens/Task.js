@@ -11,7 +11,8 @@ import {
 	TouchableWithoutFeedback,
 	View,
 	Alert,
-	AlertIOS
+	AlertIOS,
+	Image
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
@@ -22,6 +23,7 @@ import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
 import {systemIcon} from '../resources/ImageUtility'
+import * as ImageUtility from "../resources/ImageUtility"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const ACTION_TITLE = 'More'
@@ -177,26 +179,27 @@ class Task extends Component {
 					/>
 					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
 						<ActionButton.Item
+							buttonColor={'purple'}
+							title="Print Task Label"
+							onPress={() => this.printTask()}
+						>
+							<Image source={ImageUtility.requireIcon('print.png')} />
+						</ActionButton.Item>
+						<ActionButton.Item
 							buttonColor={'green'}
 							title="Add Inputs"
 							onPress={() => this.showCamera('inputs')}
 						>
-							<Text />
+							<Image source={ImageUtility.requireIcon('inputs.png')} />
 						</ActionButton.Item>
 						<ActionButton.Item
 							buttonColor={'blue'}
 							title="Add Outputs"
 							onPress={() => this.showCamera('items')}
 						>
-							<Text />
+							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
-					  <ActionButton.Item
-						  buttonColor={'purple'}
-						  title="Print Task Label"
-						  onPress={() => this.printTask()}
-					  >
-						  <Text/>
-					  </ActionButton.Item>
+					  
 					</ActionButton>
 				</KeyboardAwareScrollView>
 			</TouchableWithoutFeedback>

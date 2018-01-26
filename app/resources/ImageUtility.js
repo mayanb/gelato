@@ -1,6 +1,15 @@
 export function requireIcon(process_icon) {
 	img = ''
 	switch(process_icon) {
+		case "add_inputs_text.png":
+			img = require('../resources/assets/system_icons/add_inputs_text.png')
+			break;
+		case "add_outputs_text.png":
+			img = require('../resources/assets/system_icons/add_outputs_text.png')
+			break;
+		case "inputs.png":
+			img = require('../resources/assets/system_icons/inputs.png')
+			break;
 		case "roast.png":
 			img = require('../resources/assets/processicons/roast.png')
 			break;
@@ -37,6 +46,9 @@ export function requireIcon(process_icon) {
 		case "move.png":
 			img = require('../resources/assets/processicons/move.png')
 			break;
+		case "outputs.png":
+			img = require('../resources/assets/system_icons/outputs.png')
+			break;
 		case "pack.png":
 			img = require('../resources/assets/processicons/pack.png')
 			break;
@@ -48,6 +60,9 @@ export function requireIcon(process_icon) {
 			break;
 		case "prerefine.png":
 			img = require('../resources/assets/processicons/prerefine.png')
+			break;
+		case "print.png":
+			img = require('../resources/assets/system_icons/print.png')
 			break;
 		case "rcpull.png":
 			img = require('../resources/assets/processicons/rcpull.png')
