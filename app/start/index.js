@@ -16,7 +16,7 @@ import Search from '../screens/Search'
 // 	Navigation.registerComponent('gelato.Task', () => Task);
 // }
 
-export  function registerScreens(store, Provider) {
+export function registerScreens(store, Provider) {
 	Navigation.registerComponent('gelato.Login', () => Login, store, Provider)
 	Navigation.registerComponent('gelato.Main', () => Main, store, Provider)
 	Navigation.registerComponent('gelato.CreateTask', () => CreateTask, store, Provider)
