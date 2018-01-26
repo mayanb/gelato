@@ -1,11 +1,7 @@
-
 import Colors from '../resources/Colors';
-// import Fonts from '../../resources/Fonts';
 import React, { Component } from 'react';
 import {
 	Dimensions,
-	Image,
-	Platform,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -17,9 +13,10 @@ export class LoginInput extends Component {
 	constructor(props) {
 		super(props);
 	}
+
 	render() {
 		const width = Dimensions.get('window').width;
-		return(
+		return (
 			<TextInput style={[this.props.style, {
 				width: width * 0.8,
 				height: 40,
@@ -30,18 +27,18 @@ export class LoginInput extends Component {
 				marginBottom: 20,
 				padding: 10,
 				textAlign: 'center'
-			}]} 
-			returnKeyType={this.props.returnKeyType}
-			keyboardType={this.props.keyboardType}
-			placeholder={this.props.placeholder}
-			onChangeText={this.props.onChangeText}
-			secureTextEntry={this.props.isPassword}
-			autoCapitalize={this.props.autoCapitalize}
-			autoCorrect={this.props.autoCorrect}
-			underlineColorAndroid="transparent" />
+			}]}
+			           {...this.props}
+			           secureTextEntry={this.props.isPassword}
+			           ref={input => this.props.registerInput(input)}
+			           autoCapitalize="none"
+			           autoCorrect={false}
+			           underlineColorAndroid="transparent" />
 		);
 	}
+
 }
+
 
 export class LoginButton extends Component {
 	constructor(props) {
