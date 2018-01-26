@@ -18,8 +18,6 @@ export const REQUEST_REORDER_FAILURE = 'REQUEST_REORDER_FAILURE'
 export const SELECT = 'SELECT'
 export const PAGE = 'PAGE'
 export const TOGGLE_EDITING = 'TOGGLE_EDITING'
-export const UPDATE_ATTRIBUTE_SEARCH_SUCCESS = 'UPDATE_ATTRIBUTE_SEARCH_SUCCESS'
-export const UPDATE_ATTRIBUTE_SEARCH_FAILURE = 'UPDATE_ATTRIBUTE_SEARCH_FAILURE'
 
 export const FAILURE = 'FAILURE'
 
@@ -31,11 +29,6 @@ export function BasicReducer(state, action) {
       return requestSuccess(state, action)
     case REQUEST_FAILURE:
       return requestFailure(state, action)
-
-    case UPDATE_ATTRIBUTE_SEARCH_SUCCESS:
-          return updateAttributeSuccess(state, action)
-    case UPDATE_ATTRIBUTE_SEARCH_FAILURE:
-      return updateAttributeFailure(state, action)
 
     case REQUEST_CREATE:
 		  return requestCreate(state, action)
@@ -240,30 +233,6 @@ function requestEditItemFailure(state, action) {
     },
   })
 }
-
-
-function updateAttributeSuccess(state, action) {
-  let attributeIndex = state.data.organized_attributes.findIndex(e => Compute.equate(e.id, action.data.attribute))
-  return update(state, {
-    data: {
-      organized_attributes: {
-        [attributeIndex]: {
-          $merge: {value: action.data}
-        }
-      }
-    }
-  })
-}
-
-
-function updateAttributeFailure(state, action) {
-  console.log('failed')
-  return state
-}
-
-
-
-
 
 
 function requestReorder(state, action) {
