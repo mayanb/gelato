@@ -54,11 +54,11 @@ class QRScanner extends Component {
 				{ expanded ? this.renderItemListModal() : null }
 				{ barcode ? this.renderQRModal() : null }
 				<ActionButton 
-					buttonColor={Colors.base} 
+					buttonColor={item_array.length ? Colors.base : Colors.gray}
 					activeOpacity={0.5}
 					buttonText={item_array.length}
 					position="left"
-					onPress={this.handleToggleItemList.bind(this)}
+					onPress={item_array.length ? this.handleToggleItemList.bind(this): () => {}}
 				/>
 			</View>
 		)
