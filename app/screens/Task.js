@@ -15,7 +15,7 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { TaskRowHeader } from '../components/Cells'
+import { TaskRowHeader, AttributeHeaderCell } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
@@ -144,7 +144,8 @@ class Task extends Component {
 		}
 
 		let sections = [
-			{key: 'attributes', title: 'Task data', data: task.organized_attributes}
+			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top"},
+			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
 
 		return (
@@ -209,7 +210,7 @@ class Task extends Component {
 
 
 	renderSectionHeader = ({section}) => (
-		<TaskRowHeader title={section.title} />
+		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} />
 	)
 
 	keyExtractor = (item, index) =>  { item.id }
