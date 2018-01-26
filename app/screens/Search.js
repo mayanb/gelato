@@ -11,6 +11,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import {QRItemListRow, QRDisplay} from '../components/QRComponents'
 import * as actions from '../actions/TaskListActions'
+import SearchDropdown from '../components/SearchDropdown'
 
 class Search extends Component {
 	constructor(props) {
@@ -21,7 +22,6 @@ class Search extends Component {
 			foundQR: null,
 			semantic: "", // semantic is a string that indicates what to display out of the various options
 		}
-		// this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 	}
 
 
@@ -30,6 +30,7 @@ class Search extends Component {
 		let { mode, task } = this.props
 		return (
 			<View style={styles.container}>
+				<SearchDropdown />
 				<Camera
 					ref={(cam) => { this.camera = cam }}
 					onBarCodeRead={this.onBarCodeRead.bind(this)}
@@ -40,92 +41,6 @@ class Search extends Component {
 			</View>
 		)
 	}
-
-
-
-
-	// renderQRModal() {
-	// 	return (
-	// 		<Modal onToggle={this.handleCloseBarcode.bind(this)}>
-	// 			{ this.renderQR() }
-	// 		</Modal>
-	// 	)
-	// }
-
-	// renderQR() {
-	// 	let { foundQR, barcode, semantic, isFetching } = this.state
-	// 	let { mode, task } = this.props
-
-	// 	if (isFetching) {
-	// 		return this.renderQRLoading()
-	// 	}
-
-	// 	let creating_task = (foundQR && foundQR.creating_task) ? foundQR.creating_task.display : ''
-	// 	let shouldShowAmount = (mode === 'items' && Compute.isOkay(semantic))
-
-	// 	return (
-	// 		<QRDisplay 
-	// 			barcode={barcode} 
-	// 			creating_task={creating_task} 
-	// 			semantic={semantic}
-	// 			shouldShowAmount={shouldShowAmount}
-	// 			default_amount={task.process_type.default_amount}
-	// 			onChange={this.setAmount.bind(this)}
-	// 			buttonTitle='Add'
-	// 			onPress={this.handleAdd.bind(this)}
-	// 		/>
-	// 	)
-	// }
-
-	// setAmount(text) {
-	// 	this.setState({amount: text})
-	// }
-
-	// renderQRLoading() {
-	// 	return (
-	// 		<Text>Loading...</Text>
-	// 	)
-	// }
-
-	// handleAdd() {
-	// 	let {mode, task} = this.props
-	// 	let {barcode, foundQR ,amount} = this.state
-	// 	let success = () => this.handleCloseBarcode()
-	// 	let failure = () => {}
-	// 	if (mode === 'inputs') {
-	// 		this.props.dispatch(actions.addInput(task, foundQR, success, failure))
-	// 	} else {
-	// 		this.props.dispatch(actions.addOutput(task, barcode, amount, success, failure))
-	// 	}
-	// }
-
-	// handleRemove(i) {
-	// 	let {mode, task} = this.props
-	// 	let item = task[mode][i]
-	// 	let success = () => {}
-	// 	let failure = () => {}
-	// 	if (mode === 'inputs') {
-	// 		this.props.dispatch(actions.removeInput(task, item, i, success, failure))
-	// 	} else {
-	// 		this.props.dispatch(actions.removeOutput(task, item, i, success, failure))
-	// 	}
-	// }
-
-	// handleCancel() {
-	// 	this.handleCloseBarcode()
-	// }
-
-	// handleToggleItemList() {
-	// 	this.setState({expanded: !this.state.expanded})
-	// }
-
-	// handleCloseBarcode() {
-	// 	this.setState({barcode: false, foundQR: null, isFetching: false})
-	// }
-
-	// handleClose() {
-	// 	this.props.navigator.dismissModal({animationType: 'slide-down'})
-	// }
 
 	onBarCodeRead(e) {
 		let {type, data} = e
@@ -139,8 +54,7 @@ class Search extends Component {
 			this.setState({barcode: data, isFetching: false, foundQR: null, semantic: INVALID_QR})
 		} else {
 			this.setState({barcode: data, isFetching: true})
-			// alert(data)
-			this.fetchBarcodeData(data)
+			this.fetchBarcodeData(data) // get detailed info about this bar code from the server
 		}
 	}
 
@@ -183,7 +97,6 @@ class Search extends Component {
 				}
 			})
 	}
-
 	keyExtractor = (item, index) => item.id;
 }
 

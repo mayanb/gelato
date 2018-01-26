@@ -33,6 +33,7 @@ export class Dropdown extends Component {
 				<ScrollView style={styles.list}>
 					<Collapsible collapsed={collapsed}>
 						<FlatList
+							style={styles.flatList}
 							data={data}
 							renderItem={this.renderItem.bind(this)}
 							extraData={this.state}
@@ -61,6 +62,7 @@ export class Dropdown extends Component {
 				name={selectedItem.name} 
 				imgpath={selectedItem.icon}
 				key={selectedItem.id}
+				header={true}
 				onPress={this.handleToggle.bind(this)} 
 			/>
 		)
@@ -81,8 +83,9 @@ export class Dropdown extends Component {
 const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
+		marginBottom: 50,
 	},
 	list: {
-		marginTop: 13,
+		marginTop: 43,
 	}
 })
