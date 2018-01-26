@@ -57,6 +57,7 @@ export class Dropdown extends Component {
 
 
 	// Unsure why this is in a function
+  // it was just a lot of lines of code
 	renderHeader(selectedItem) {
 		return (
 			<CreateTaskSelect 
@@ -84,7 +85,6 @@ export class Dropdown extends Component {
 const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
-
 	},
 	list: {
 		// marginTop: 13,

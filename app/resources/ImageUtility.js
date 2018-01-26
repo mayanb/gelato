@@ -15,7 +15,10 @@ export function requireIcon(process_icon) {
 			break;
 		case "conche.png":
 			img = require('../resources/assets/processicons/conche.png')
-			break;	
+			break;
+		case "downarrow.png":
+			img = require('../resources/assets/downarrow.png')
+			break;
 		case "foil.png":
 			img = require('../resources/assets/processicons/foil.png')
 			break;
@@ -48,6 +51,9 @@ export function requireIcon(process_icon) {
 			break;
 		case "rcpull.png":
 			img = require('../resources/assets/processicons/rcpull.png')
+			break;
+		case "rightarrow.png":
+			img = require('../resources/assets/rightarrow.png')
 			break;
 		case "rotaryconche.png":
 			img = require('../resources/assets/processicons/rotaryconche.png')

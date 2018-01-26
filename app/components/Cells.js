@@ -222,15 +222,15 @@ export class CreateTaskSelect extends Component {
 				flex: 1,
 				flexDirection: 'row',
 				width: width,
-				// minHeight: 75,
+				minHeight: 60,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,
-				alignItems: 'flex-start',
-				paddingTop: 25,
-				paddingBottom: 25,
+				paddingTop: 8,
+				paddingBottom: 8,
 				paddingLeft: 20,
 				paddingRight: 20,
 				alignItems: 'center',
+				justifyContent: 'space-between',
 				backgroundColor: 'white',
 				justifyContent: 'space-between'
 			},
@@ -246,18 +246,25 @@ export class CreateTaskSelect extends Component {
 				width: imgSize,
 				height: imgSize,
 				marginRight: 8,
+				flexGrow: 0
+			},
+			arrow: {
+				flexGrow: 0
 			}
 		})
 		return (
 			<TouchableOpacity activeOpacity={0.5} onPress={onPress}>
 				<View style={styles.container}>
-					<View style={styles.content}>
-						{ imgpath &&
-							<Image source={ImageUtility.requireIcon(imgpath)} style={styles.process_icon} />
-						}
-						<Text style={styles.display}>{name}</Text>
-					</View>
-					<Image source={ImageUtility.uxIcon('downarrow')} />
+					{ 
+						imgpath &&
+						<Image source={ImageUtility.requireIcon(imgpath)} style={styles.process_icon} />
+					}
+					<Text style={styles.display}>{name}</Text>
+					{
+						this.props.header ?
+							<Image style={styles.arrow} source={ImageUtility.requireIcon('downarrow.png')} /> :
+							null
+					}
 				</View>
 			</TouchableOpacity>
 		);
