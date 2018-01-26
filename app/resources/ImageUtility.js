@@ -86,8 +86,8 @@ export function uxIcon(icon) {
 	switch(icon) {
 		case "edit":
 			return require('../resources/assets/editicon.png')
-		case "close_camera":
-			return require('../resources/assets/system_icons/close_camera.png')
+		case "downarrow":
+			return require('../resources/assets/downarrow.png')
 		default:
 			return require('../resources/assets/system_icons/more_vert.png')
 	}

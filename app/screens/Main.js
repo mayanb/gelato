@@ -110,7 +110,7 @@ class Main extends Component {
 	handleCreateTask() {
 		this.props.navigator.push({
 			screen: 'gelato.CreateTask',
-			title: "Create a new task",
+			title: "Create Task",
 			animated: true,
 			passProps: {}
 		});
