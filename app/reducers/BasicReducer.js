@@ -234,6 +234,7 @@ function requestEditItemFailure(state, action) {
   })
 }
 
+
 function requestReorder(state, action) {
   return update(state, {
     ui: {

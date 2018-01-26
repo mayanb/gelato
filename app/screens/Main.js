@@ -23,7 +23,7 @@ import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout']
+const ACTION_OPTIONS = ['Close', 'Logout', 'Search']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
@@ -77,6 +77,14 @@ class Main extends Component {
 				animated: true,
 			});
 
+		}
+		if(ACTION_OPTIONS[i] === 'Search') {
+			this.props.navigator.showModal({
+				screen: 'gelato.Search',
+				title: "Search for a task",
+				animated: true,
+				passProps: {}
+			});
 		}
 	}
 

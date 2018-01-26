@@ -31,15 +31,6 @@ const DESTRUCTIVE_INDEX = 3
 class Task extends Component { 
 	static navigatorButtons = {
 		rightButtons: [
-			// {
-			// 	title: 'Camera',
-			// 	id: 'camera',
-			// 	disabled: false,
-			// 	showAsAction: 'ifRoom',
-			// 	buttonColor: 'white',
-			// 	buttonFontSize: 15,
-			// 	buttonFontWeight: '600',
-			// }, 
 			{
 				title: 'More',
 				icon: systemIcon('more_vert'),
@@ -59,6 +50,8 @@ class Task extends Component {
 		this.showActionSheet = this.showActionSheet.bind(this)
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
+		this.printTask = this.printTask.bind(this)
+		console.log(this.props)
 	}
 
 	onNavigatorEvent(event) {
@@ -80,7 +73,7 @@ class Task extends Component {
 		AlertIOS.prompt(
 			'Enter a value',
 			null,
-			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text)),
+			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text, this.props.taskSearch)),
 			'plain-text', 
 			this.props.task.display,
 		)
@@ -105,7 +98,7 @@ class Task extends Component {
 			this.showCustomNameAlert()
 		}
 		if(ACTION_OPTIONS[i] === 'Flag') {
-			this.props.dispatch(actions.requestFlagTask(this.props.task))
+			this.props.dispatch(actions.requestFlagTask(this.props.task, this.props.taskSearch))
 		}
 		if(ACTION_OPTIONS[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
@@ -118,7 +111,7 @@ class Task extends Component {
 					animated: true,
 				})
 			}
-			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
+			this.props.dispatch(actions.requestDeleteTask(this.props.task, this.props.taskSearch, success))
 	}
 
 	showCamera(mode) {
@@ -126,7 +119,8 @@ class Task extends Component {
 			screen: "gelato.QRScanner",
 			passProps: {
 				task_id: this.props.task.id,
-				open: this.props.task.is_open,
+				open: this.props.open,
+				taskSearch: this.props.taskSearch,
 				mode: mode
 			},
 			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
@@ -134,13 +128,25 @@ class Task extends Component {
 		})
 	}
 
+	printTask(mode) {
+		this.props.navigator.push({
+			screen: 'gelato.Print',
+			title: "Print labels",
+			animated: true,
+			passProps: {selectedTask: this.props.task}
+		});
+	}
+
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
+		if(this.props.taskSearch) {
+			this.props.dispatch(actions.fetchTask(this.props.id))
+		}
+
 	}
 
 	render() {
 		let {task} = this.props
-
 		if(!task) {
 			return null
 		}
@@ -183,6 +189,13 @@ class Task extends Component {
 						>
 							<Text/>
 						</ActionButton.Item>
+					  <ActionButton.Item
+						  buttonColor={'purple'}
+						  title="Print Task Label"
+						  onPress={() => this.printTask()}
+					  >
+						  <Text/>
+					  </ActionButton.Item>
 					</ActionButton>
 				</View>
 			</TouchableWithoutFeedback>
@@ -207,8 +220,7 @@ class Task extends Component {
 		if (newValue === currValue) {
 			return
 		}
-
-		this.props.dispatch(actions.updateAttribute(task, id, newValue))
+		this.props.dispatch(actions.updateAttribute(task, id, newValue, this.props.taskSearch))
 	}
 
 
@@ -241,7 +253,14 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, props) => {
-	let arr = props.open ? state.openTasks.data : state.completedTasks.data
+	let {taskSearch, open} = props
+	let arr = state.searchedTasks.data
+	if (!taskSearch && open) {
+		arr = state.openTasks.data		
+	} else if (!taskSearch) {
+		arr = state.completedTasks.data
+	}
+
 	return {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}

@@ -159,9 +159,9 @@ class QRScanner extends Component {
 		let success = () => this.handleCloseBarcode()
 		let failure = () => {}
 		if (mode === 'inputs') {
-			this.props.dispatch(actions.addInput(task, foundQR, success, failure))
+			this.props.dispatch(actions.addInput(task, foundQR, this.props.taskSearch, success, failure,))
 		} else {
-			this.props.dispatch(actions.addOutput(task, barcode, amount, success, failure))
+			this.props.dispatch(actions.addOutput(task, barcode, amount, this.props.taskSearch, success, failure))
 		}
 	}
 
@@ -170,10 +170,11 @@ class QRScanner extends Component {
 		let item = task[mode][i]
 		let success = () => {}
 		let failure = () => {}
+		console.log(this.props.taskSearch)
 		if (mode === 'inputs') {
-			this.props.dispatch(actions.removeInput(task, item, i, success, failure))
+			this.props.dispatch(actions.removeInput(task, item, i, this.props.taskSearch, success, failure))
 		} else {
-			this.props.dispatch(actions.removeOutput(task, item, i, success, failure))
+			this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
 		}
 	}
 
@@ -275,7 +276,14 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
-	let arr = props.open ? state.openTasks.data : state.completedTasks.data
+	let {taskSearch, open} = props
+	let arr = state.searchedTasks.data
+	if (!taskSearch && open) {
+		arr = state.openTasks.data		
+	} else if (!taskSearch) {
+		arr = state.completedTasks.data
+	}
+	
 	return {
 		task: arr.find(e => Compute.equate(e.id, props.task_id))
 	}
