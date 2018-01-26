@@ -36,7 +36,7 @@ class Search extends Component {
 		)
 	}
 
-	/*
+	/* commented out to see dropdown indepdently before we style them together
 		<Camera
 					ref={(cam) => { this.camera = cam }}
 					onBarCodeRead={this.onBarCodeRead.bind(this)}
@@ -85,6 +85,8 @@ class Search extends Component {
 					let found = res.body.length ? res.body[0] : null
 					let semantic = Compute.getQRSemantic(mode, found)
 					success(found, semantic)
+
+					// it should only do this if found != null
 					this.navigateToFoundTask(found.creating_task)
 				}
 			})

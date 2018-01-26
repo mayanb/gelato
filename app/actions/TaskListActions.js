@@ -163,6 +163,7 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 	let name = TASK
 	let successtype = UPDATE_ATTRIBUTE_SUCCESS
 	let errtype = UPDATE_ATTRIBUTE_FAILURE
+	console.log(isSearched)
 	if(isSearched) {
 		name = TASK
 		successtype = UPDATE_ATTRIBUTE_SEARCH_SUCCESS

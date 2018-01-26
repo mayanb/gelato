@@ -107,7 +107,7 @@ class Task extends Component {
 			this.showCustomNameAlert()
 		}
 		if(ACTION_OPTIONS[i] === 'Flag') {
-			this.props.dispatch(actions.requestFlagTask(this.props.task))
+			this.props.dispatch(actions.requestFlagTask(this.props.task, this.props.taskSearch))
 		}
 		if(ACTION_OPTIONS[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
@@ -232,7 +232,7 @@ class Task extends Component {
 		if (newValue === currValue) {
 			return
 		}
-		this.props.dispatch(actions.updateAttribute(task, id, newValue))
+		this.props.dispatch(actions.updateAttribute(task, id, newValue, this.props.taskSearch))
 	}
 
 
@@ -266,17 +266,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	let arr = props.open ? state.openTasks.data : state.completedTasks.data
-	let d = {}
 	if (props.taskSearch) {
-		d = {
+		return {
 			task: state.task.data
 		}
-	}
-	else d = {
+	} else return {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}
-	console.log(d)
-	return d
 }
 
 export default connect(mapStateToProps)(Task)

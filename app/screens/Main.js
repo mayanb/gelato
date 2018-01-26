@@ -79,7 +79,7 @@ class Main extends Component {
 
 		}
 		if(ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigator.push({
+			this.props.navigator.showModal({
 				screen: 'gelato.Search',
 				title: "Search for a task",
 				animated: true,
