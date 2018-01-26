@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		alignItems: 'center',
-		marginTop: 20,
+		marginTop: 20 + 16,
 	}
 })
 

@@ -6,6 +6,7 @@ import {
 	TextInput,
 	Dimensions,
 	StyleSheet,
+	ActivityIndicator,
 	TouchableOpacity
 } from 'react-native'
 import Colors from '../resources/Colors'
@@ -16,43 +17,64 @@ export default class AttributeCell extends React.Component {
 		super(props)
 		this.state = {
 			typedValue: this.props.value,
-			editing: this.props.value !== ""
+			editing: false,
+			loading: false
 		}
 		this.edit = this.edit.bind(this)
 	}
 
 	render() {
-		let {name, id, onSubmitEditing} = this.props
+		let {name} = this.props
 		name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 		return (
 			<View style={styles.container}>
 				<Text style={styles.name}>{name}</Text>
-				{ this.state.editing &&
-					<TextInput 
-						style={styles.value} 
-						onChangeText={this.handleChangeText.bind(this)}
-						onSubmitEditing={() => onSubmitEditing(id, this.state.typedValue)} 
-						onBlur={() => onSubmitEditing(id, this.state.typedValue)}
-						returnKeyType='done'
-						value={this.state.typedValue}
-						placeholder="Value"
-					/>
-				}
-				{ !this.state.editing &&
-					<TouchableOpacity activeOpacity={0.5} onPress={this.edit}>
-						<Image source={ImageUtility.uxIcon("edit")} />
-					</TouchableOpacity>
-				}
+				{this.renderValue()}
 			</View>
 		)
+	}
+
+	renderValue() {
+		if (this.state.loading) {
+			return <ActivityIndicator size="small" color={Colors.base} />
+		} else if (this.state.editing || Boolean(this.props.value)) {
+			return (
+				<TextInput
+					style={styles.value}
+					onChangeText={this.handleChangeText.bind(this)}
+					onSubmitEditing={this.handleSubmitEditing.bind(this)}
+					onBlur={this.handleSubmitEditing.bind(this)}
+					returnKeyType='done'
+					value={this.state.typedValue}
+					ref={(input) => this.input = input}
+				/>
+			)
+		} else {
+			return (
+				<TouchableOpacity activeOpacity={0.5} onPress={this.edit} style={styles.editButton}>
+					<Image source={ImageUtility.uxIcon("edit")} />
+				</TouchableOpacity>
+			)
+		}
 	}
 
 	handleChangeText(text) {
 		this.setState({ typedValue: text })
 	}
 
+	handleSubmitEditing() {
+		this.setState({editing: false})
+		if(this.state.typedValue !== this.props.value) {
+			this.setState({ loading: true })
+			this.props.onSubmitEditing(this.props.id, this.state.typedValue)
+				.finally(() => this.setState({ loading: false }))
+		}
+	}
+
 	edit() {
-		this.setState({editing: true})
+		this.setState({ editing: true }, () => {
+			this.input.focus()
+		})
 	}
 }
 
@@ -82,5 +104,13 @@ const styles = StyleSheet.create({
 		color: Colors.textBlack,
 		flex: 1,
 		textAlign: 'right',
+	},
+	editButton: {
+		width: width / 2,
+		height: 59,
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
+		alignItems: 'center'
 	}
 })

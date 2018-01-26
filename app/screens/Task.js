@@ -24,6 +24,7 @@ import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
 import {systemIcon} from '../resources/ImageUtility'
 import * as ImageUtility from "../resources/ImageUtility"
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
@@ -159,8 +160,8 @@ class Task extends Component {
 		]
 
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-				<View style={styles.container}>
+			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
+				<KeyboardAwareScrollView contentContainerStyle={styles.container}>
 					<ActionSheet
 						ref={o => this.ActionSheet = o}
 						title={ACTION_TITLE}
@@ -168,13 +169,13 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					{ task.is_flagged && <Flag /> }
-					<SectionList 
-						style={styles.table} 
-						renderItem={this.renderRow} 
-						renderSectionHeader={this.renderSectionHeader} 
-						sections={sections} 
-						keyExtractor={this.keyExtractor} 
+					{task.is_flagged && <Flag />}
+					<SectionList
+						style={styles.table}
+						renderItem={this.renderRow}
+						renderSectionHeader={this.renderSectionHeader}
+						sections={sections}
+						keyExtractor={this.keyExtractor}
 					/>
 					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
 						<ActionButton.Item
@@ -200,7 +201,7 @@ class Task extends Component {
 						</ActionButton.Item>
 					  
 					</ActionButton>
-				</View>
+				</KeyboardAwareScrollView>
 			</TouchableWithoutFeedback>
 		)
 	}
@@ -223,7 +224,7 @@ class Task extends Component {
 		if (newValue === currValue) {
 			return
 		}
-		this.props.dispatch(actions.updateAttribute(task, id, newValue, this.props.taskSearch))
+		return this.props.dispatch(actions.updateAttribute(task, id, newValue, this.props.taskSearch))
 	}
 
 
@@ -243,8 +244,6 @@ class Task extends Component {
 
 
 }
-
-const width = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
 	container: {
