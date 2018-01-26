@@ -39,10 +39,11 @@ class QRScanner extends Component {
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
 				<View style={styles.button}>
-				<TouchableOpacity>
+				<TouchableOpacity
+					onPress={this.handleClose.bind(this)}
+				>
 					<Image 
 						style={styles.close}
-						onPress={this.handleClose.bind(this)}
 						source={systemIcon('close_camera')}
 						title=""
 						color="white"
@@ -53,11 +54,11 @@ class QRScanner extends Component {
 				{ expanded ? this.renderItemListModal() : null }
 				{ barcode ? this.renderQRModal() : null }
 				<ActionButton 
-					buttonColor={Colors.base} 
-					activeOpacity={0.5}
+					buttonColor={item_array.length ? Colors.base : Colors.gray}
+					activeOpacity={item_array.length ? 0.5 : 1}
 					buttonText={item_array.length}
 					position="left"
-					onPress={this.handleToggleItemList.bind(this)}
+					onPress={item_array.length ? this.handleToggleItemList.bind(this): () => {}}
 				/>
 			</View>
 		)
@@ -81,7 +82,6 @@ class QRScanner extends Component {
 	}
 
 	closeModal() {
-		console.log('hello')
 		let amount = this.props.task.process_type.default_amount
 		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false})
 	}

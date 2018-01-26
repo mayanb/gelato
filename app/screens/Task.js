@@ -228,7 +228,7 @@ class Task extends Component {
 		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} />
 	)
 
-	keyExtractor = (item, index) =>  { item.id }
+	keyExtractor = (item, index) => item.id
 
 	static navigatorStyle = {
 		navBarHidden: false,

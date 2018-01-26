@@ -49,7 +49,6 @@ function startAdding(state, action) {
 }
 
 function updateAttributeSuccess(state, action) {
-	console.log("updateAttribute")
 	console.log(state.data)
 	console.log(action.data.task)
 	let taskIndex = state.data.findIndex(e => Compute.equate(e.id, action.data.task))
@@ -69,7 +68,6 @@ function updateAttributeSuccess(state, action) {
 
 
 function updateAttributeFailure(state, action) {
-	console.log('failed')
 	return state
 }
 
@@ -83,7 +81,7 @@ function resetJustCreated(state, action) {
 
 function addSuccess(state, action, key) {
 	let task_index = state.data.findIndex(e => Compute.equate(e.id, action.task_id))
-	if (!task_index) 
+	if (task_index === -1)
 		return state
 	return update(state, {
 		data: {
@@ -108,7 +106,7 @@ function addFailure(state, action) {
 
 function removeSuccess(state, action, key) {
 	let task_index = state.data.findIndex(e => Compute.equate(e.id, action.task_id))
-	if (task_index === undefined) 
+	if (task_index === -1)
 		return state
 	return update(state, {
 		data: {

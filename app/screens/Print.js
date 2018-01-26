@@ -32,7 +32,7 @@ export default class Print extends Component {
 		console.log(props.selectedTask)
         this.state = {
 			selectedPrinter: null,
-			updatedUrl: "hi",
+			updatedUrl: "",
 			numberLabels: 1,
 			// selectedTask: {name: "", qrcode: ""},
 		}
@@ -42,9 +42,9 @@ export default class Print extends Component {
 		// this.showTaskSearch = this.showTaskSearch.bind(this)
     }
 
-	makeid(num_labels) {
+	makeid(numLabels) {
 		let text = "dande.li/ics/"
-		const data = Array(num_labels).fill(0).map(() => uuid())
+		const data = Array(numLabels).fill(0).map(() => uuid())
 		const data_urls = data.map(x => (text + x))
 		console.log(data_urls)
 		return data_urls
@@ -61,11 +61,10 @@ export default class Print extends Component {
 					console.log(err)
 					reject(err)
 				} else {
-					let updatedUrl = string.slice(0, 4) + ` height="130px" width="130px"` + string.slice(4)
-					updatedUrl += text
-					console.log(updatedUrl)
-					qrdocument.push(updatedUrl)
-					resolve(updatedUrl)
+					let updatedHTML = string.slice(0, 4) + ` height="130px" width="130px"` + string.slice(4)
+					updatedHTML += text
+					qrdocument.push(updatedHTML)
+					resolve(updatedHTML)
 				}
 			})
 		})
@@ -100,8 +99,6 @@ export default class Print extends Component {
 	}
 
 	render() {
-		console.log(this.state)
-		console.log(this.props)
 		return (
 			<View style={styles.container}>
 				<Text style={styles.taskTitle}>{this.props.selectedTask.display}</Text>
