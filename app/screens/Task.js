@@ -15,8 +15,11 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { AttributeRow, TaskRowHeader } from '../components/Cells'
+import { TaskRowHeader, AttributeHeaderCell } from '../components/Cells'
+import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
+import Flag from '../components/Flag'
+import {systemIcon} from '../resources/ImageUtility'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
@@ -37,6 +40,7 @@ class Task extends Component {
 			// }, 
 			{
 				title: 'More',
+				icon: systemIcon('more_vert'),
 				id: 'more',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -123,7 +127,7 @@ class Task extends Component {
 				open: this.props.task.is_open,
 				mode: mode
 			},
-			navigatorStyle: { navBarHidden: true },
+			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 			animationType: 'slide-up' 
 		})
 	}
@@ -133,13 +137,17 @@ class Task extends Component {
 	}
 
 	render() {
-		if(!this.props.task) {
+		let {task} = this.props
+
+		if(!task) {
 			return null
 		}
+
 		let sections = [
-			{key: 'attributes', title: 'Task data', data: this.props.task.organized_attributes}
+			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top"},
+			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
-		console.log(this.props.task.organized_attributes)
+
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -150,7 +158,7 @@ class Task extends Component {
 					destructiveButtonIndex={DESTRUCTIVE_INDEX}
 					onPress={this.handlePress}
 				/>
-				<Text>{`Flagged is ${this.props.task.is_flagged}`}</Text>
+				{ task.is_flagged && <Flag /> }
 				<SectionList 
 					style={styles.table} 
 					renderItem={this.renderRow} 
@@ -179,7 +187,7 @@ class Task extends Component {
 	}
 
 	renderRow = ({item}) => (
-		<AttributeRow
+		<AttributeCell
 			title={item.display}
 			key={item.id}
 			id={item.id}
@@ -190,13 +198,19 @@ class Task extends Component {
 	)
 
 	handleSubmitEditing(id, newValue) {
-		task = this.props.task
+		let task = this.props.task
+		let attributeIndex = task.organized_attributes.findIndex(e => Compute.equate(e.id, id))
+		let currValue = task.organized_attributes[attributeIndex].value
+		if (newValue === currValue) {
+			return
+		}
+
 		this.props.dispatch(actions.updateAttribute(task, id, newValue))
 	}
 
 
 	renderSectionHeader = ({section}) => (
-		<TaskRowHeader title={section.title} />
+		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} />
 	)
 
 	keyExtractor = (item, index) =>  { item.id }
@@ -219,7 +233,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		backgroundColor: Colors.white
+		backgroundColor: Colors.bluishGray,
 	}
 });
 

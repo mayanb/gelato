@@ -28,7 +28,7 @@ export class TaskRow extends Component {
 				paddingTop: 8,
 				paddingBottom: 8,
 				paddingLeft: 16,
-				paddingRight: 16
+				paddingRight: 16,
 			},
 
 			text_container: {
@@ -72,7 +72,7 @@ export class TaskRow extends Component {
 	}
 
 	openTask() {
-		this.props.onPress(this.props.id, this.props.title, this.props.open);
+		this.props.onPress(this.props.id, this.props.title, this.props.open, this.props.imgpath, this.props.name, this.props.date);
 	}
 
 	
@@ -112,64 +112,101 @@ export class TaskRowHeader extends Component {
 	}
 }
 
-export class AttributeRow extends Component {
+export class AttributeHeaderCell extends Component {
 	constructor(props) {
-		super(props)
-		this.state = {
-			typedValue: this.props.value,
-		}
+		super(props);
 	}
-
 	render() {
-		let {name, id, onSubmitEditing} = this.props
-		const width= Dimensions.get('window').width;
+		const width = Dimensions.get('window').width;
 		const styles = StyleSheet.create({
 			container: {
+				flex: 1,
+				flexDirection: 'row',
 				width: width,
-				minHeight: 30,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,
+				paddingTop: 20,
+				paddingBottom: 20,
+				paddingLeft: 16,
+				paddingRight: 16,
+				backgroundColor: Colors.bluishGray
+			},
+
+			text_container: {
+				flex: 1,
+				minHeight: 30,
 				alignItems: 'flex-start',
 				justifyContent: 'center',
-				paddingTop: 10,
-				paddingBottom: 10,
-				paddingLeft: 20,
-				paddingRight: 20,
-				display: 'flex',
-				flexDirection: 'row'
 			},
 			title: {
-				fontSize: 15,
-				color: Colors.lightGray,
-				flex: 1,
+				marginBottom: 5
 			},
-			value: {
-				fontSize: 15,
-				color: Colors.lightGray,
+			display: {
+				fontWeight: 'bold',
+				fontSize: 17,
+				marginBottom: 5
+			},
+			date: {
+				fontSize: 13,
+				color: Colors.lightGray
+			},
+			process_icon: {
+				width: 38,
+				height: 38,
+				marginRight: 8,
+			}
+		})
+		if (this.props.type !== "Bottom") {
+			return (
+				<View style={styles.container}>
+					<View>
+						<Image source={ImageUtility.requireIcon(this.props.imgpath)} style={styles.process_icon} />
+					</View>
+					<View style={styles.text_container}>
+						<Text style={styles.display}>{this.props.name}</Text>
+						<Text style={styles.date}>{this.props.date}</Text>
+					</View>
+				</View>
+			);
+		} else {
+			return (
+				<BottomTablePadding title={this.props.title} />
+			)
+		}
+	}
+}
+
+export class BottomTablePadding extends Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		const width = Dimensions.get('window').width;
+		const styles = StyleSheet.create({
+			container: {
 				flex: 1,
-				textAlign: 'right',
+				flexDirection: 'row',
+				width: width,
+				paddingTop: 20,
+				paddingBottom: 100,
+				paddingLeft: 16,
+				paddingRight: 16,
+				alignItems: 'center',
+				justifyContent: 'center'
+			},
+			title: {
+				marginBottom: 5,
+				fontSize: 18,
+				color: Colors.lightGray
 			}
 		})
 		return (
 			<View style={styles.container}>
-				<Text style={styles.name}>{name}</Text>
-				<TextInput 
-					style={styles.value} 
-					onChangeText={this.handleChangeText.bind(this)}
-					onSubmitEditing={() => onSubmitEditing(id, this.state.typedValue)} 
-					onBlur={() => onSubmitEditing(id, this.state.typedValue)}
-					returnKeyType='done'
-					value={this.state.typedValue}
-				/>
+				<Text style={styles.title}>That's all for this task!</Text>
 			</View>
-		)
-	}
-
-	handleChangeText(text) {
-		this.setState({ typedValue: text })
+		);
 	}
 }
-
 
 export class CreateTaskSelect extends Component {
 	constructor(props) {
@@ -185,35 +222,47 @@ export class CreateTaskSelect extends Component {
 				flex: 1,
 				flexDirection: 'row',
 				width: width,
-				minHeight: 30,
+				minHeight: 60,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,
-				alignItems: 'flex-start',
 				paddingTop: 8,
 				paddingBottom: 8,
 				paddingLeft: 20,
 				paddingRight: 20,
 				alignItems: 'center',
+				//justifyContent: 'space-between',
 				backgroundColor: 'white',
+				//justifyContent: 'space-between'
 			},
 			display: {
 				fontSize: 17,
+				color: Colors.textblack,
+				opacity: this.props.id === -1 ? 0.65 : 1,
+				flex: 1,
 			},
 			process_icon: {
 				width: imgSize,
 				height: imgSize,
 				marginRight: 8,
+				flexGrow: 0
+			},
+			arrow: {
+				flexGrow: 0,
 			}
 		})
 		return (
 			<TouchableOpacity activeOpacity={0.5} onPress={onPress}>
 				<View style={styles.container}>
 					{ 
-						imgpath ?
-						<Image source={ImageUtility.requireIcon(imgpath)} style={styles.process_icon} /> :
-						null
+						imgpath &&
+						<Image source={ImageUtility.requireIcon(imgpath)} style={styles.process_icon} />
 					}
 					<Text style={styles.display}>{name}</Text>
+					{
+						this.props.header ?
+							<Image style={styles.arrow} source={ImageUtility.requireIcon('downarrow.png')} /> :
+							null
+					}
 				</View>
 			</TouchableOpacity>
 		);
