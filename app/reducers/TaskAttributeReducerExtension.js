@@ -49,7 +49,6 @@ function startAdding(state, action) {
 }
 
 function updateAttributeSuccess(state, action) {
-	console.log("updateAttribute")
 	console.log(state.data)
 	console.log(action.data.task)
 	let taskIndex = state.data.findIndex(e => Compute.equate(e.id, action.data.task))
@@ -69,7 +68,6 @@ function updateAttributeSuccess(state, action) {
 
 
 function updateAttributeFailure(state, action) {
-	console.log('failed')
 	return state
 }
 
