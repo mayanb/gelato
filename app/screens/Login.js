@@ -107,7 +107,7 @@ class Login extends Component {
 					dispatch(requestSuccess('LOGIN', res.body))
 					data = res.body
 					Storage.save("token", data.token);
-					Storage.save("token", data.token);
+					// Storage.save("token", data.token);
 					Storage.save("username", data.user.username_display);
 					Storage.save("teamID", data.user.team);
 					Storage.save("userID", data.user.profile_id);
@@ -116,9 +116,10 @@ class Login extends Component {
 					nav.resetTo({
 						screen: 'gelato.Main',
 						animated: true,
+						title: data.user.team_name,
 						passProps: {
 							username: data.user.username_display,
-							team: data.user.team,
+							team: data.user.team_name,
 							teamID: data.user.team,
 						}
 					});
