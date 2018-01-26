@@ -108,7 +108,6 @@ function addFailure(state, action) {
 
 function removeSuccess(state, action, key) {
 	let task_index = state.data.findIndex(e => Compute.equate(e.id, action.task_id))
-	console.log(task_index)
 	if (task_index === undefined) 
 		return state
 	return update(state, {

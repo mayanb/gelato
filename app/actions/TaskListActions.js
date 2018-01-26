@@ -31,7 +31,7 @@ import {
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
-const TASK = 'TASK'
+const SEARCHED_TASKS = 'SEARCHED_TASKS'
 
 export function fetchOpenTasks() {
 	return (dispatch) => {
@@ -112,7 +112,7 @@ export function fetchCompletedTasks() {
 
 export function fetchTask(task_id) {
 	return (dispatch) => {
-		dispatch(requestTasks(TASK))		
+		dispatch(requestTasks(SEARCHED_TASKS))		
 		return Storage.multiGet(['teamID', 'userID']).then((values) => {
 			let localStorage = {}
 			values.forEach((element, i) => {
@@ -123,11 +123,11 @@ export function fetchTask(task_id) {
 			Networking.get(`/ics/tasks/${task_id}`)
 			.end(function(err, res) {
 				if (err || !res.ok) {
-					dispatch(requestTasksFailure(TASK, err))
+					dispatch(requestTasksFailure(SEARCHED_TASKS, err))
 				} else {
 					let organized = Compute.organizeAttributes(res.body)
 					res.body.organized_attributes = organized
-					dispatch(requestTasksSuccess(TASK, res.body))
+					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body]))
 				}
 			})
 		});
@@ -160,19 +160,20 @@ function requestTasksFailure(name, err) {
 }
 
 export function updateAttribute(task, attribute_id, new_value, isSearched) {
-	let name = TASK
-	let successtype = UPDATE_ATTRIBUTE_SUCCESS
-	let errtype = UPDATE_ATTRIBUTE_FAILURE
-	console.log(isSearched)
-	if(isSearched) {
-		name = TASK
-		successtype = UPDATE_ATTRIBUTE_SEARCH_SUCCESS
-		errtype = UPDATE_ATTRIBUTE_SEARCH_FAILURE
-	} else {
-		name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
-		successtype = UPDATE_ATTRIBUTE_SUCCESS
-		errtype = UPDATE_ATTRIBUTE_FAILURE
-	}
+	// let name = TASK
+	// let successtype = UPDATE_ATTRIBUTE_SUCCESS
+	// let errtype = UPDATE_ATTRIBUTE_FAILURE
+
+	// if(isSearched) {
+	// 	name = TASK
+	// 	successtype = UPDATE_ATTRIBUTE_SEARCH_SUCCESS
+	// 	errtype = UPDATE_ATTRIBUTE_SEARCH_FAILURE
+	// } else {
+	// 	name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+	// 	successtype = UPDATE_ATTRIBUTE_SUCCESS
+	// 	errtype = UPDATE_ATTRIBUTE_FAILURE
+	// }
+	let name = findReducer(task, isSearched)
 	return (dispatch) => {
 		let payload = {
 			task: task.id,
@@ -184,9 +185,9 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 			.send(payload)
 			.end(function(err, res) {
 				if (err || !res.ok) {
-					dispatch(updateAttributeFailure(name, err, errtype))
+					dispatch(updateAttributeFailure(name, err))
 				} else {
-					dispatch(updateAttributeSuccess(name, res.body, successtype))
+					dispatch(updateAttributeSuccess(name, res.body))
 				}
 			})
 
@@ -196,7 +197,7 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 function updateAttributeSuccess(name, data, type) {
 	return {
 		name: name,
-		type: type,
+		type: UPDATE_ATTRIBUTE_SUCCESS,
 		data: data,
 	}
 }
@@ -204,7 +205,7 @@ function updateAttributeSuccess(name, data, type) {
 function updateAttributeFailure(name, err, type) {
 	return {
 		name: name,
-		type: type,
+		type: UPDATE_ATTRIBUTE_FAILURE,
 		error: err
 	}
 }
@@ -289,16 +290,16 @@ export function addOutput(task, qr, amount, success, failure) {
 	}
 }
 
-export function startAdding(task) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+export function startAdding(task, isSearched) {
+	let name = findReducer(task, isSearched)
 	return {
 		name: name,
 		type: START_ADDING, 
 	}
 }
 
-function addSuccess(type, task, item) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+function addSuccess(type, task, item, isSearched) {
+	let name = findReducer(task, isSearched)
 	return {
 		type: type,
 		name: name, 
@@ -315,7 +316,9 @@ function addFailure(err) {
 	}
 }
 
-export function removeOutput(task, item, index, success, failure) {
+export function removeOutput(task, item, index, isSearched, success, failure) {
+	console.log(isSearched)
+	return removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
 	return (dispatch) => {
 		return Networking.del('/ics/items/', item.id)
 			.end((err, res) => {
@@ -323,14 +326,14 @@ export function removeOutput(task, item, index, success, failure) {
 					dispatch(removeFailure(err))
 					failure(err)
 				} else {
-					dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index))
+					dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
 					success(res.body)
 				}
 			})
 	}
 }
 
-export function removeInput(task, input, index, success, failure) {
+export function removeInput(task, input, index, isSearched, success) {
 	return (dispatch) => {
 		return Networking.del('/ics/inputs/', input.id)
 			.end((err, res) => {
@@ -338,15 +341,16 @@ export function removeInput(task, input, index, success, failure) {
 					//dispatch(removeFailure(err))
 					failure(err)
 				} else {
-					dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index))
+					dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
 					success(res.body)
 				}
 			})
 	}
 }
 
-function removeSuccess(type, task, index) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+function removeSuccess(type, task, index, isSearched) {
+	console.log(isSearched)
+	let name = findReducer(task, isSearched)
 	return {
 		type: type, 
 		name: name,
@@ -355,8 +359,8 @@ function removeSuccess(type, task, index) {
 	}
 }
 
-export function requestDeleteTask(task, success) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+export function requestDeleteTask(task, isSearched, success) {
+	let name = findReducer(task, isSearched)
 	let payload = {is_trashed: true}
 	return (dispatch) => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
@@ -389,8 +393,8 @@ function deleteTaskFailure(name, err) {
 	}
 }
 
-export function requestFlagTask(task) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+export function requestFlagTask(task, isSearched) {
+	let name = findReducer(task, isSearched)
 	let payload = {is_flagged: true}
 	return (dispatch) => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
@@ -423,8 +427,8 @@ function requestEditItemSuccess(name, item, key, value) {
 	}
 }
 
-export function requestRenameTask(task, custom_display) {
-	let name = task.is_open ? OPEN_TASKS : COMPLETED_TASKS
+export function requestRenameTask(task, custom_display, isSearched) {
+	let name = findReducer(task, isSearched)
 	let payload = {custom_display: custom_display}
 	return (dispatch) => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
@@ -440,5 +444,15 @@ export function requestRenameTask(task, custom_display) {
 				}
 			})
 	}
+}
+
+function findReducer(task, isSearched) {
+	let name = SEARCHED_TASKS
+	if (!isSearched && task.is_open) {
+		name = OPEN_TASKS		
+	} else if (!isSearched) {
+		name = COMPLETED_TASKS
+	}
+	return name
 }
 

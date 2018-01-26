@@ -82,7 +82,7 @@ class Task extends Component {
 		AlertIOS.prompt(
 			'Enter a value',
 			null,
-			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text)),
+			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text, this.props.taskSearch)),
 			'plain-text', 
 			this.props.task.display,
 		)
@@ -120,7 +120,7 @@ class Task extends Component {
 					animated: true,
 				})
 			}
-			this.props.dispatch(actions.requestDeleteTask(this.props.task, success))
+			this.props.dispatch(actions.requestDeleteTask(this.props.task, this.props.taskSearch, success))
 	}
 
 	showCamera(mode) {
@@ -129,6 +129,7 @@ class Task extends Component {
 			passProps: {
 				task_id: this.props.task.id,
 				open: this.props.task.is_open,
+				taskSearch: this.props.taskSearch,
 				mode: mode
 			},
 			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
@@ -150,10 +151,6 @@ class Task extends Component {
 		if(this.props.taskSearch) {
 			this.props.dispatch(actions.fetchTask(this.props.id))
 		}
-
-	}
-
-	componentWillMount() {
 
 	}
 
@@ -265,12 +262,16 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, props) => {
-	let arr = props.open ? state.openTasks.data : state.completedTasks.data
-	if (props.taskSearch) {
-		return {
-			task: state.task.data
-		}
-	} else return {
+	let {taskSearch, task} = props
+	let arr = state.searchedTasks.data
+	if (!taskSearch && task.is_open) {
+		arr = state.openTasks.data		
+	} else if (!taskSearch) {
+		name = state.completedTasks.data
+	}
+	
+	console.log(arr)
+	return {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}
 }
