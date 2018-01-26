@@ -157,7 +157,7 @@ class Task extends Component {
 
 	render() {
 		let {task} = this.props
-		if(!task || !task.length) {
+		if(!task) {
 			return null
 		}
 
@@ -262,15 +262,17 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	let arr = props.open ? state.openTasks.data : state.completedTasks.data
+	let d = {}
 	if (props.taskSearch) {
-		console.log(state.task)
-		return {
+		d = {
 			task: state.task.data
 		}
 	}
-	else return {
+	else d = {
 		task: arr.find(e => Compute.equate(e.id, props.id))
 	}
+	console.log(d)
+	return d
 }
 
 export default connect(mapStateToProps)(Task)

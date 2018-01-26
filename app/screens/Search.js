@@ -30,16 +30,23 @@ class Search extends Component {
 		let { mode, task } = this.props
 		return (
 			<View style={styles.container}>
-				<SearchDropdown />
-				<Camera
+				<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
+				<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/e1290d6d-93ac-4523-9268-46225f5d8e48'}), 1000)}} title="hello" />
+			</View>
+		)
+	}
+
+	/*
+		<Camera
 					ref={(cam) => { this.camera = cam }}
 					onBarCodeRead={this.onBarCodeRead.bind(this)}
 					style={styles.preview}
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
-				<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/e1290d6d-93ac-4523-9268-46225f5d8e48'}), 1000)}} title="hello" />
-			</View>
-		)
+				*/
+
+	onSelectTaskFromDropdown(task) {
+		this.navigateToFoundTask(task)
 	}
 
 	onBarCodeRead(e) {
@@ -71,32 +78,37 @@ class Search extends Component {
 		let failure = (data) => this.setState({foundQR: null, semantic: "", isFetching: false})
 		Networking.get('/ics/items/')
 			.query({item_qr: code})
-			.end(function(err, res) {
+			.end((err, res) => {
 				if (err || !res.ok) {
 					failure(err)
 				} else {
 					let found = res.body.length ? res.body[0] : null
 					let semantic = Compute.getQRSemantic(mode, found)
 					success(found, semantic)
-					// disp(actions.fetchTask(found.creating_task.id))
-					nav.pop({
-		  				animated: false,
-					})
-					nav.push({
-						screen: 'gelato.Task',
-						title: found.creating_task.display,
-						animated: true,
-						passProps: {
-							id: found.creating_task.id, 
-							name: found.creating_task.display,
-							open: found.creating_task.open,
-							task: found.creating_task,
-							taskSearch: true,
-						}
-					})
+					this.navigateToFoundTask(found.creating_task)
 				}
 			})
 	}
+
+	navigateToFoundTask(foundTask) {
+		let nav = this.props.navigator
+		nav.pop({
+			animated: false,
+		})
+		nav.push({
+			screen: 'gelato.Task',
+			title: foundTask.display,
+			animated: true,
+			passProps: {
+				id: foundTask.id, 
+				name: foundTask.display,
+				open: foundTask.open,
+				task: foundTask,
+				taskSearch: true,
+			}
+		})
+	}
+
 	keyExtractor = (item, index) => item.id;
 }
 
