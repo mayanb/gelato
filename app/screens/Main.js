@@ -79,10 +79,11 @@ class Main extends Component {
 
 		}
 		if(ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigator.showModal({
+			this.props.navigator.push({
 				screen: 'gelato.Search',
 				title: "Search for a task",
 				animated: true,
+				navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 				passProps: {}
 			});
 		}

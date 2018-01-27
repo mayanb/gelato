@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity } from 'react-native'
+import { Dimensions, StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity, ScrollView } from 'react-native'
 import Camera from 'react-native-camera'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
@@ -11,7 +11,8 @@ import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import {QRItemListRow, QRDisplay} from '../components/QRComponents'
 import * as actions from '../actions/TaskListActions'
-import SearchDropdown from '../components/SearchDropdown'
+import {SearchDropdown, SearchBox} from '../components/SearchDropdown'
+import QRCamera from '../components/QRCamera'
 
 class Search extends Component {
 	constructor(props) {
@@ -21,36 +22,79 @@ class Search extends Component {
 			barcode: false,
 			foundQR: null,
 			semantic: "", // semantic is a string that indicates what to display out of the various options
+
+			searchText: "", 
+			typeSearch: false,
+			data: [],
 		}
 	}
 
-
 	render() {
-		let {expanded, barcode } = this.state
+		let {expanded, barcode, typeSearch, searchText, data } = this.state
 		let { mode, task } = this.props
 		return (
 			<View style={styles.container}>
-				<Camera
-					ref={(cam) => { this.camera = cam }}
-					onBarCodeRead={this.onBarCodeRead.bind(this)}
-					style={styles.preview}
-					aspect={Camera.constants.Aspect.fill}>
-				</Camera>
-				<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
-				<Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
-
-			</View>
+				<QRCamera onBarCodeRead={this.onBarCodeRead.bind(this)} onClose={this.handleClose.bind(this)}/>
+				<View style={styles.searchContainer}>
+					<SearchBox 
+						onChangeText={this.handleChangeText.bind(this)} 
+						searchText={searchText} 
+						typeSearch={typeSearch}
+						onFocus={this.handleFocus.bind(this)}
+						clearText={this.handleBlur.bind(this)}
+					/>
+				</View>
+				{ typeSearch &&
+					<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)} data={data} />
+				}
+				</View>
 		)
 	}
 
-	/* commented out to see dropdown indepdently before we style them together
-		<Camera
-					ref={(cam) => { this.camera = cam }}
-					onBarCodeRead={this.onBarCodeRead.bind(this)}
-					style={styles.preview}
-					aspect={Camera.constants.Aspect.fill}>
-				</Camera>
-				*/
+	// <Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
+	//<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
+
+	// 
+
+	handleFocus() {
+		this.setState({data: [], searchText: "", typeSearch: true})
+	}
+
+	handleBlur() {
+		this.setState({data: [], searchText: "", typeSearch: false})
+	}
+
+	handleClose() {
+		console.log('close')
+		let nav = this.props.navigator
+		nav.pop({
+			animated: false,
+		})
+	}
+
+	handleChangeText(text) {
+		let {request} = this.state
+		this.setState({searchText: text, data: []})
+		if (request) {
+			request.abort()
+		}
+
+		if (text.length < 2) 
+			return 
+
+		let r = Networking.get('/ics/tasks/search/')
+			.query({label: text})
+
+		r.then(res => this.setState({data: res.body.results}) )
+			.catch(e => console.log(e))
+
+		this.setState({request: r})
+	}
+
+
+	toggleTypeSearch() {
+		this.setState({typeSearch: !this.state.typeSearch})
+	}
 
 	onSelectTaskFromDropdown(task) {
 		this.navigateToFoundTask(task)
@@ -128,6 +172,7 @@ const height = Dimensions.get('window').height
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: 'gray',
 	},
 	preview: {
 		position: 'absolute', 
@@ -151,6 +196,14 @@ const styles = StyleSheet.create({
 		position: 'absolute', 
 		top: 24,
 		left: 24,
+	}, searchContainer: {
+		position: 'absolute',
+		top: 20,
+		left: 0,
+		width: width,
+		alignItems: 'center',
+		marginLeft: 32,
+		paddingRight: 32,
 	}
 })
 
