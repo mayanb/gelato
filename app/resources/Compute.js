@@ -2,7 +2,7 @@ import * as Networking from './Networking-superagent'
 import update from 'immutability-helper'
 import moment from 'moment'
 
-import { NOT_OUTPUT, ALREADY_OUTPUT, ALREADY_ADDED, INVALID_QR} from './QRSemantics'
+import { NOT_OUTPUT, ALREADY_OUTPUT, ALREADY_ADDED_INPUT, ALREADY_ADDED_OUTPUT, INVALID_QR} from './QRSemantics'
 
 export default class Compute {
 	constructor() {}
@@ -81,145 +81,30 @@ export default class Compute {
 		}
 	}
 
-	// static async getOpenTasks(teamID) {
-	// 	// Get yesterday's date
-	// 	let open = []
-	// 	var yesterday = new Date();
-	// 	yesterday.setDate(yesterday.getDate() - 1);
-		
-	// 	// Get all open tasks
-	// 	const openPayload = {
-	// 		team: teamID,
-	// 		ordering: "-updated_at",
-	// 		is_open: true,
-	// 		start: DateFormatter.format(yesterday),
-	// 		end: DateFormatter.format((new Date()))
-	// 	}
+	static getTextFromSemantic(semantic) {
+		switch(semantic) {
+			case ALREADY_OUTPUT:
+				return "This QR code was used as an output for a different task. Please find a new QR code."
+			case ALREADY_ADDED_OUTPUT:
+				return "Hooray! You've already added this item as an output."
+			case ALREADY_ADDED_INPUT:
+				return "Hooray! You've already scanned this item in as an input."
+			case NOT_OUTPUT:
+				return "This QR code hasn't been associated with a task yet. Scan this QR as an output for a task before using it as an input."
+			default:
+				return "Add me"
+		}
+	}
 
-	// 	return Networking.get('ics/tasks/')
-	// 		.end(function(err, res) {
-	// 			if (err || !res.ok) {
-	// 				dispatch(getOpenTasksFailure(err))
-	// 			} else {
-	// 				dispatch(getOpenTasksSuccess(res.body))
-	// 			}
-	// 		})
+	static isAlreadyInput(code, task) {
+		let {inputs} = task
+		let found_input = inputs.find(e => e.input_qr === code)
+		return found_input || false
+	}
 
-
-
-	// 	const openData = await Networking.request('ics/v7/tasks/', 'GET', openPayload);
-	// 	// Check response code
-	// 	if (openData && openData.status >= 200 && openData.status < 300) {
-	// 		const data = await openData.json(); // Convert response to JSON
-	// 		for (i = 0; i < data.length; i++) {
-	// 			data[i].organized_attributes = Compute.organizeAttributes(data[i])
-	// 			open.push(data[i]);
-	// 		}
-	// 	}
-
-	// 	return open
-	// }
-
-	// static async getCompletedTasks(teamID) {
-	// 	// Get recently completed tasks
-	// 	let completed = []
-	// 	const completedPayload = {
-	// 		team: teamID,
-	// 		ordering: "-updated_at",
-	// 		is_open: false
-	// 	};
-	// 	const completedData = await Networking.request('ics/v7/tasks/search', 'GET', completedPayload);
-	// 	// Check response code
-	// 	if (completedData && completedData.status >= 200 && completedData.status < 300) {
-	// 		const data = await completedData.json(); // Convert response to JSON
-	// 		for (i = 0; i < data.results.length; i++) {
-	// 			// This needs to be fixed
-	// 			// TODO: request update to API where this information is included in search
-	// 			const task = await Networking.request('ics/v7/tasks/'+data.results[i].id, 'GET', {});
-	// 			if (task) {
-	// 				const taskJSON = await task.json(); // Convert response to JSON
-	// 				taskJSON.organized_attributes = Compute.organizeAttributes(taskJSON)
-	// 				completed.push(taskJSON);
-	// 			}
-	// 		}
-	// 	}
-	// 	return completed
-	// }
-
-	// // Separate tasks into open and completed
-	// static async classifyTasks(teamID) {
-	// 	var open = [];
-	// 	var completed = [];
-
-	// 	// Get yesterday's date
-	// 	var yesterday = new Date();
-	// 	yesterday.setDate(yesterday.getDate() - 1);
-		
-	// 	// Get all open tasks
-	// 	const openPayload = {
-	// 		team: teamID,
-	// 		ordering: "-updated_at",
-	// 		is_open: true,
-	// 		start: DateFormatter.format(yesterday),
-	// 		end: DateFormatter.format((new Date()))
-	// 	};
-	// 	const openData = await Networking.request('ics/v7/tasks/', 'GET', openPayload);
-	// 	// Check response code
-	// 	if (openData && openData.status >= 200 && openData.status < 300) {
-	// 		const data = await openData.json(); // Convert response to JSON
-	// 		for (i = 0; i < data.length; i++) {
-	// 			data[i].organized_attributes = Compute.organizeAttributes(data[i])
-	// 			open.push(data[i]);
-	// 		}
-	// 	}
-
-	// 	// Get recently completed tasks
-	// 	const completedPayload = {
-	// 		team: teamID,
-	// 		ordering: "-updated_at",
-	// 		is_open: false
-	// 	};
-	// 	const completedData = await Networking.request('ics/v7/tasks/search', 'GET', completedPayload);
-	// 	// Check response code
-	// 	if (completedData && completedData.status >= 200 && completedData.status < 300) {
-	// 		const data = await completedData.json(); // Convert response to JSON
-	// 		for (i = 0; i < data.results.length; i++) {
-	// 			// This needs to be fixed
-	// 			// TODO: request update to API where this information is included in search
-	// 			const task = await Networking.request('ics/v7/tasks/'+data.results[i].id, 'GET', {});
-	// 			if (task) {
-	// 				const taskJSON = await task.json(); // Convert response to JSON
-	// 				taskJSON.organized_attributes = Compute.organizeAttributes(taskJSON)
-	// 				completed.push(taskJSON);
-	// 			}
-	// 		}
-	// 	}
-
-	// 	// Return the data in header format
-	// 	return [
-	// 		{
-	// 			data: open,
-	// 			key: "open",
-	// 			title: "OPEN TASKS"
-	// 		},
-	// 		{
-	// 			data: completed,
-	// 			key: "completed",
-	// 			title: "RECENTLY COMPLETED"
-	// 		},
-	// 		{
-	// 			data: [],
-	// 			key: "space"
-	// 		}
-	// 	];
-	// }
-
-	// static async getTask(taskID) {
-	// 	const data = await Networking.request('ics/v7/taskAttributes/', 'GET', {task: taskID});
-	// 	if (data && data.status >= 200 && data.status < 300) {
-	// 		const dataJSON = await data.json();
-	// 		return dataJSON;
-	// 	}
-	// 	return [];
-	// }
+	static isAlreadyOutput(code, task) {
+		let {items} = task
+		let found_output = items.find(e => e.item_qr === code)
+		return found_output || false
+	}
 }

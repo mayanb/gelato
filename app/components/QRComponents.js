@@ -9,6 +9,7 @@ import {
 	TextInput
 } from 'react-native'
 import Colors from '../resources/Colors'
+import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
 
 export class QRItemListRow extends Component {
@@ -49,7 +50,7 @@ export class QRItemListRow extends Component {
 
 export class QRDisplay extends Component {
 	render() {
-		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, buttonTitle, onPress} = this.props
+		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, buttonTitle, onPress, onCancel} = this.props
 		let styles = StyleSheet.create({
 			container: {
 				flexDirection: 'column',
@@ -65,17 +66,14 @@ export class QRDisplay extends Component {
 				padding: 16,
 			}, qr_text: {
 				flex: 1,
-			}, button: {
-				flex: 0,
-				backgroundColor: Colors.base,
-				borderBottomLeftRadius: 4,
-				borderBottomRightRadius: 4,
-				color: 'white',
-				padding: 16,
 			}, icon: {
 				height: 24,
 				width: 24,
 				marginRight: 8,
+			}, semantic: {
+				fontSize: 17,
+				lineHeight: 24,
+				textAlign: 'center'
 			}
 		})
 		return (
@@ -86,7 +84,7 @@ export class QRDisplay extends Component {
 					<Text>{creating_task}</Text>
 				</View>
 				<View style={styles.main}> 
-					<Text>{semantic}</Text>
+					<Text style={styles.semantic}>{Compute.getTextFromSemantic(semantic)}</Text>
 					{ 
 						shouldShowAmount ? 
 						<QRInput 
@@ -98,9 +96,40 @@ export class QRDisplay extends Component {
 						null 
 					}
 				</View>
-				<View style={styles.button}>
-					<Button title={buttonTitle} onPress={onPress} color="white" />
-				</View>
+				{ renderButtons(semantic, onPress, onCancel) }
+			</View>
+		)
+	}
+}
+
+function renderButtons(semantic, onPress, onCancel) {
+	let btnstyle = StyleSheet.create({
+		button: {
+			flex: 0,
+			backgroundColor: Colors.base,
+			borderBottomLeftRadius: 4,
+			borderBottomRightRadius: 4,
+			padding: 16,
+		}, secondary: {
+			flex: 0,
+			borderBottomLeftRadius: 4,
+			borderBottomRightRadius: 4,
+			padding: 16,
+			borderTopWidth: 1,
+			borderTopColor: Colors.ultraLightGray,
+		}
+	})
+
+	if (Compute.isOkay(semantic)) {
+		return (
+			<View style={btnstyle.button}>
+				<Button title="Add" onPress={onPress} color="white" />
+			</View>
+		)
+	} else {
+		return (
+			<View style={btnstyle.secondary}>
+				<Button title="Close" onPress={onCancel} color={Colors.base} />
 			</View>
 		)
 	}

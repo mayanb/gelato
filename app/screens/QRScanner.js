@@ -6,7 +6,7 @@ import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
 import Colors from '../resources/Colors'
 import Networking from '../resources/Networking-superagent'
-import {ALREADY_ADDED, INVALID_QR} from '../resources/QRSemantics'
+import {ALREADY_ADDED_INPUT, ALREADY_ADDED_OUTPUT, INVALID_QR} from '../resources/QRSemantics'
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import {QRItemListRow, QRDisplay} from '../components/QRComponents'
@@ -56,6 +56,7 @@ class QRScanner extends Component {
 				{ (expanded || barcode) ? this.renderScrim() : null }
 				{ expanded ? this.renderItemListModal() : null }
 				{ barcode ? this.renderQRModal() : null }
+				<Button title="Hello" onPress={this.testBarCodeRead.bind(this)} />
 				<ActionButton 
 					buttonColor={item_array.length ? Colors.base : Colors.gray}
 					activeOpacity={item_array.length ? 0.5 : 1}
@@ -73,7 +74,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'hgjkdhfjgklds'}), 1000)
+		setTimeout(() => this.onBarCodeRead({data: 'dsasadsdagfdfdasc'}), 10)
 	}
 
 	showInputsOutputsLabel() {
@@ -151,6 +152,7 @@ class QRScanner extends Component {
 				onChange={this.setAmount.bind(this)}
 				buttonTitle='Add'
 				onPress={this.handleAdd.bind(this)}
+				onCancel={this.handleCloseBarcode.bind(this)}
 			/>
 		)
 	}
@@ -215,23 +217,19 @@ class QRScanner extends Component {
 
 		let valid = Compute.validateQR(data)
 		if (!valid) {
+			// not a valid qr code
 			this.setState({barcode: data, isFetching: false, foundQR: null, semantic: INVALID_QR})
+		} else if (Compute.isAlreadyInput(data, this.props.task)) {
+			// its already an input to this task
+			this.setState({barcode: data, isFetching: false, foundQR: null, semantic: ALREADY_ADDED_INPUT})
+		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
+			// its already an output to this task
+			this.setState({barcode: data, isFetching: false, foundQR: null, semantic: ALREADY_ADDED_OUTPUT})
 		} else {
-			if (this.isAlreadyAdded(data)) {
-				this.setState({barcode: data, isFetching: false, foundQR: null, semantic: ALREADY_ADDED})
-			} else {
-				this.setState({barcode: data, isFetching: true})
-				this.fetchBarcodeData(data)
-			}
+			// fetch all the data about this qr code
+			this.setState({barcode: data, isFetching: true})
+			this.fetchBarcodeData(data)
 		}
-	}
-
-
-	isAlreadyAdded(code) {
-		let {inputs, items} = this.props.task
-		let found_input = inputs.find(e => e.input_qr === code)
-		let found_output = items.find(e => e.item_qr === code)
-		return (found_output || found_input)
 	}
 
 	fetchBarcodeData(code) {

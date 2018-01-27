@@ -248,7 +248,7 @@ export function resetJustCreated() {
 }
 
 
-export function addInput(task, item, success, failure) {
+export function addInput(task, item, isSearched, success, failure) {
 	let payload = {task: task.id, input_item: item.id }
 	return (dispatch) => {
 		return Networking.post('/ics/inputs/create/')
@@ -266,7 +266,7 @@ export function addInput(task, item, success, failure) {
 	}
 }
 
-export function addOutput(task, qr, amount, success, failure) {
+export function addOutput(task, qr, amount, isSearched, success, failure) {
 	let payload = {creating_task: task.id, item_qr: qr, amount: amount }
 	return (dispatch) => {
 		dispatch(startAdding(task))
