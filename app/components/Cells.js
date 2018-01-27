@@ -272,7 +272,7 @@ export class CreateTaskSelect extends Component {
 			<TouchableOpacity activeOpacity={0.5} onPress={onPress}>
 				<View style={styles.container}>
 					{ 
-						imgpath &&
+						Boolean(imgpath) &&
 						<Image source={ImageUtility.requireIcon(imgpath)} style={styles.process_icon} />
 					}
 					<Text style={styles.display}>{name}</Text>
