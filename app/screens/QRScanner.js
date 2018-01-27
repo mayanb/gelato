@@ -39,8 +39,11 @@ class QRScanner extends Component {
 					aspect={Camera.constants.Aspect.fill}>
 				</Camera>
 				<View style={styles.button}>
+					<View style={styles.title}>
+						{ this.showInputsOutputsLabel() }
+					</View>
 					<TouchableOpacity
-						onPress={this.handleClose.bind(this)}
+						onPress={this.handleClose.bind(this)} style={styles.closeTouchableOpacity}
 					>
 						<Image 
 							style={styles.close}
@@ -49,10 +52,9 @@ class QRScanner extends Component {
 							color="white"
 						/>
 					</TouchableOpacity>
+					
 				</View>
-				<View style={styles.title}>
-					{ this.showInputsOutputsLabel() }
-				</View>
+				
 				{ (expanded || barcode) ? this.renderScrim() : null }
 				{ expanded ? this.renderItemListModal() : null }
 				{ barcode ? this.renderQRModal() : null }
@@ -205,6 +207,7 @@ class QRScanner extends Component {
 	}
 
 	handleClose() {
+		console.log("hi")
 		this.props.navigator.dismissModal({animationType: 'slide-down'})
 	}
 
@@ -282,6 +285,12 @@ const styles = StyleSheet.create({
 		position: 'absolute', 
 		top: 20 + 16,
 		left: 16,
+	}, closeTouchableOpacity: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		width: 50,
+		height: 80,
 	},
 	title: {
 		alignItems: 'center',
