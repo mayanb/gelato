@@ -48,7 +48,6 @@ class CreateTask extends Component {
 	render() {
 		let {processes, products } = this.props
 		let { selectedProduct, selectedProcess } = this.state
-		console.log("hi")
 		return (
 			<View style={styles.container}>
 				<ScrollView style={styles.scroll}>
