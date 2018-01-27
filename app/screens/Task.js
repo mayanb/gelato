@@ -150,12 +150,16 @@ class Task extends Component {
 
 	render() {
 		let {task} = this.props
+		console.log(task)
 		if(!task) {
 			return null
 		}
+		let outputAmount = task.items.reduce(function(total, current) {
+			return total + parseInt(current.amount)
+		}, 0)
 
 		let sections = [
-			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top"},
+			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
 			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
 
@@ -229,7 +233,7 @@ class Task extends Component {
 
 
 	renderSectionHeader = ({section}) => (
-		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} />
+		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} outputAmount={section.outputAmount} outputUnit={section.outputUnit}/>
 	)
 
 	keyExtractor = (item, index) => item.id

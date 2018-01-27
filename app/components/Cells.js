@@ -73,7 +73,7 @@ export class TaskRow extends Component {
 	}
 
 	openTask() {
-		this.props.onPress(this.props.id, this.props.title, this.props.open, this.props.imgpath, this.props.name, this.props.date);
+		this.props.onPress(this.props.id, this.props.title, this.props.open, this.props.imgpath, this.props.name, this.props.date, this.props.outputAmount, this.props.outputUnit);
 	}
 
 	
@@ -159,13 +159,19 @@ export class AttributeHeaderCell extends Component {
 				fontSize: 13,
 				color: Colors.lightGray
 			},
+			output: {
+				fontSize: 13,
+				color: Colors.lightGray,
+				fontWeight: 'bold',
+			},
 			process_icon: {
 				width: 38,
 				height: 38,
-				marginRight: 8,
+				marginRight: 6,
 			}
 		})
 		if (this.props.type !== "Bottom") {
+			console.log(this.props.outputUnit)
 			return (
 				<View style={styles.container}>
 					<View>
@@ -173,7 +179,10 @@ export class AttributeHeaderCell extends Component {
 					</View>
 					<View style={styles.text_container}>
 						<Text style={styles.display}>{this.props.name}</Text>
-						<Text style={styles.date}>{this.props.date}</Text>
+						<View style={{flex: 1, flexDirection: 'row'}}>
+							<Text style={styles.output}>{`${this.props.outputAmount} ${this.props.outputUnit} `}</Text>
+							<Text style={styles.date}>started at {this.props.date}</Text>
+						</View>
 					</View>
 				</View>
 			);
