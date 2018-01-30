@@ -108,7 +108,9 @@ class QRScanner extends Component {
 			<Modal onToggle={this.handleToggleItemList.bind(this)}>
 				<FlatList 
 					style={styles.table} 
-					renderItem={this.renderItemListRow.bind(this)}  
+					renderItem={this.props.mode === 'inputs' ?
+						this.renderInputItemListRow.bind(this) :
+						this.renderOutputItemListRow.bind(this)}
 					data={item_array}
 					keyExtractor={this.keyExtractor} 
 				/>
@@ -116,51 +118,75 @@ class QRScanner extends Component {
 		)
 	}
 
-	renderItemListRow({item, index}) {
-		let qr = this.props.mode === 'inputs' ? 'input_qr' : 'item_qr'
-		let itemAmount = null
-		if (this.props.mode === 'items') {
-			itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
-		}
-		return <QRItemListRow 
-			qr={item[qr]} 
+
+	renderInputItemListRow({item, index}) {
+		return <QRItemListRow
+			qr={item['input_qr']}
 			task_display={item.input_task_display}
-			onRemove={() => this.handleRemove(index)} 
-			itemAmount={itemAmount}
+			onRemove={() => this.handleRemoveInput(index)}
 			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
 		/>
 	}
 
-	renderQRModal() {
-		return (
-			<Modal onToggle={this.handleCloseBarcode.bind(this)}>
-				{ this.renderQR() }
-			</Modal>
-		)
+	renderOutputItemListRow({item, index}) {
+		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		return <QRItemListRow
+			qr={item['item_qr']}
+			task_display={item.input_task_display}
+			onRemove={() => this.handleRemoveOutput(index)}
+			itemAmount={itemAmount}
+		/>
 	}
 
-	renderQR() {
-		let { foundQR, barcode, semantic, isFetching } = this.state
-		let { mode, task } = this.props
+	renderQRModal() {
+		let { foundQR, isFetching } = this.state
 
 		if (isFetching) {
 			return this.renderQRLoading()
 		}
 
 		let creatingTask = (foundQR && foundQR.creating_task) ? foundQR.creating_task : {}
-		let shouldShowAmount = (mode === 'items' && Compute.isOkay(semantic))
 
 		return (
-			<QRDisplay 
-				barcode={barcode} 
+			<Modal onToggle={this.handleCloseBarcode.bind(this)}>
+				{ this.props.mode === 'inputs' ?
+					this.renderInputQR(creatingTask) :
+					this.renderOutputQR(creatingTask)
+				}
+			</Modal>
+		)
+	}
+
+	renderInputQR(creatingTask) {
+		let { barcode, semantic } = this.state
+
+		return (
+			<QRDisplay
+				barcode={barcode}
 				creating_task={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={shouldShowAmount}
-				default_amount={task.process_type.default_amount}
+				shouldShowAmount={false}
+				default_amount={this.props.task.process_type.default_amount}
 				onChange={this.setAmount.bind(this)}
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
-				buttonTitle='Add'
-				onPress={this.handleAdd.bind(this)}
+				onPress={this.handleAddInput.bind(this)}
+				onCancel={this.handleCloseBarcode.bind(this)}
+			/>
+		)
+	}
+
+	renderOutputQR(creatingTask) {
+		let { barcode, semantic } = this.state
+
+		return (
+			<QRDisplay
+				barcode={barcode}
+				creating_task={creatingTask.display}
+				semantic={semantic}
+				shouldShowAmount={Compute.isOkay(semantic)}
+				default_amount={this.props.task.process_type.default_amount}
+				onChange={this.setAmount.bind(this)}
+				onPress={this.handleAddOutput.bind(this)}
 				onCancel={this.handleCloseBarcode.bind(this)}
 			/>
 		)
@@ -176,29 +202,33 @@ class QRScanner extends Component {
 		)
 	}
 
-	handleAdd() {
-		let {mode, task} = this.props
-		let {barcode, foundQR ,amount} = this.state
+	handleAddInput() {
 		let success = () => this.handleCloseBarcode()
 		let failure = () => {}
-		if (mode === 'inputs') {
-			this.props.dispatch(actions.addInput(task, foundQR, this.props.taskSearch, success, failure,))
-		} else {
-			this.props.dispatch(actions.addOutput(task, barcode, amount, this.props.taskSearch, success, failure))
-		}
+		this.props.dispatch(actions.addInput(this.props.task, this.state.foundQR, this.props.taskSearch, success, failure,))
 	}
 
-	handleRemove(i) {
-		let {mode, task} = this.props
-		let item = task[mode][i]
+	handleAddOutput() {
+		let {barcode, amount} = this.state
+		let success = () => this.handleCloseBarcode()
+		let failure = () => {}
+		this.props.dispatch(actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch, success, failure))
+	}
+
+	handleRemoveInput(i) {
+		let {task} = this.props
+		let item = task['inputs'][i]
 		let success = () => {}
 		let failure = () => {}
-		console.log(this.props.taskSearch)
-		if (mode === 'inputs') {
-			this.props.dispatch(actions.removeInput(task, item, i, this.props.taskSearch, success, failure))
-		} else {
-			this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
-		}
+		this.props.dispatch(actions.removeInput(task, item, i, this.props.taskSearch, success, failure))
+	}
+
+	handleRemoveOutput(i) {
+		let {task} = this.props
+		let item = task['items'][i]
+		let success = () => {}
+		let failure = () => {}
+		this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
 	}
 
 	handleCancel() {
