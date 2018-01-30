@@ -119,7 +119,6 @@ class QRScanner extends Component {
 
 	renderItemListRow({item, index}) {
 		let qr = this.props.mode === 'inputs' ? 'input_qr' : 'item_qr'
-		// let itemAmount = this.props.mode === 'inputs' ? null : item.amount + " " + this.props.processUnit
 		let itemAmount = null
 		if (this.props.mode === 'items') {
 			itemAmount = item.amount + " " + pluralize(this.props.processUnit, item.amount)
