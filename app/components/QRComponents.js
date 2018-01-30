@@ -24,6 +24,7 @@ export class QRItemListRow extends Component {
 				padding: 8,
 				flexDirection: 'row',
 				display: 'flex',
+				justifyContent: 'space-between'
 			}, textContainer: {
 				display: 'flex',
 				flexDirection: 'column',
@@ -38,12 +39,14 @@ export class QRItemListRow extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
-				<View style={styles.textContainer}>
-					<Text>{qr.substring(qr.length - 6)}</Text>
-					<Text style={styles.subTitleText}>{task_display}</Text>
-					<Text style={styles.subTitleText}>{itemAmount}</Text>
-				</View>
+				<TouchableOpacity onPress={() => this.props.onOpenTask()}>
+					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
+					<View style={styles.textContainer}>
+						<Text>{qr.substring(qr.length - 6)}</Text>
+						<Text style={styles.subTitleText}>{task_display}</Text>
+						<Text style={styles.subTitleText}>{itemAmount}</Text>
+					</View>
+				</TouchableOpacity>
 				<Button title="Remove" onPress={this.props.onRemove} />
 			</View>
 		)

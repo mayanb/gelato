@@ -124,9 +124,10 @@ class QRScanner extends Component {
 		}
 		return <QRItemListRow 
 			qr={item[qr]} 
-			task_display={item.input_task_display} 
+			task_display={item.input_task_display}
 			onRemove={() => this.handleRemove(index)} 
 			itemAmount={itemAmount}
+			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
 		/>
 	}
 
