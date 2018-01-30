@@ -19,6 +19,7 @@ import Networking from '../resources/Networking'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
+import * as loginActions from '../actions/LoginActions'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 
@@ -72,6 +73,7 @@ class Main extends Component {
 
 		if(ACTION_OPTIONS[i] === 'Logout') {
 			Storage.clear()
+			this.props.dispatch(loginActions.logout())
 			this.props.navigator.resetTo({
 				screen: 'gelato.Login',
 				animated: true,
