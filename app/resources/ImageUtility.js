@@ -97,6 +97,10 @@ export function systemIcon(icon) {
 			return require('../resources/assets/system_icons/more_vert.png')
 		case "close_camera":
 			return require('../resources/assets/system_icons/close_camera.png')
+		case "settings":
+			return require('../resources/assets/system_icons/settings.png')
+		case "search":
+			return require('../resources/assets/system_icons/search.png')
 		default:
 			return require('../resources/assets/system_icons/more_vert.png')
 	}

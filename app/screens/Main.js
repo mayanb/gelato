@@ -21,9 +21,10 @@ import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
+import {systemIcon} from '../resources/ImageUtility'
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout', 'Search']
+const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
@@ -31,6 +32,7 @@ class Main extends Component {
 		leftButtons: [
 			{
 				title: 'Settings',
+				icon: systemIcon('settings'),
 				id: 'settings',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -38,6 +40,18 @@ class Main extends Component {
 				buttonFontSize: 15,
 				buttonFontWeight: '600',
 			}, 
+		], 
+		rightButtons: [
+			{
+				title: 'Search',
+				icon: systemIcon('search'),
+				id: 'search',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			}
 		]
 	}
 
@@ -60,8 +74,20 @@ class Main extends Component {
 		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
 			if (event.id === 'settings') { // this is the same id field from the static navigatorButtons definition
 				this.showActionSheet()
-			} 
+			} else if (event.id === 'search') {
+				this.showSearch()
+			}
 		}
+	}
+
+	showSearch() {
+		this.props.navigator.push({
+			screen: 'gelato.Search',
+			title: "Search for a task",
+			animated: true,
+			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
+			passProps: {}
+		});
 	}
 
 	showActionSheet() {
@@ -69,7 +95,6 @@ class Main extends Component {
 	}
 
 	handlePress(i) {
-
 		if(ACTION_OPTIONS[i] === 'Logout') {
 			Storage.clear()
 			this.props.navigator.resetTo({
@@ -78,17 +103,7 @@ class Main extends Component {
 			});
 
 		}
-		if(ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigator.push({
-				screen: 'gelato.Search',
-				title: "Search for a task",
-				animated: true,
-				navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
-				passProps: {}
-			});
-		}
 	}
-
 
 	render() {
 		let sections = this.loadData()
