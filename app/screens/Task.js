@@ -259,7 +259,8 @@ class Task extends Component {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: Colors.bluishGray,
-		display: 'flex'
+		display: 'flex',
+		height: '100%'
 	}
 });
 
