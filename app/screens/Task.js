@@ -155,13 +155,14 @@ class Task extends Component {
 			return null
 		}
 
+		const actionOptions = task.is_flagged ? ACTION_OPTIONS.filter(o => o !== 'Flag') : ACTION_OPTIONS
 		return (
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
 				<View style={styles.container}>
 					<ActionSheet
 						ref={o => this.ActionSheet = o}
 						title={ACTION_TITLE}
-						options={ACTION_OPTIONS}
+						options={actionOptions}
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
