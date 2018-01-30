@@ -124,7 +124,8 @@ class Task extends Component {
 				task_id: this.props.task.id,
 				open: this.props.open,
 				taskSearch: this.props.taskSearch,
-				mode: mode
+				mode: mode,
+				processUnit: this.props.task.process_type.unit
 			},
 			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 			animationType: 'slide-up' 

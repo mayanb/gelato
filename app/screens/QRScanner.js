@@ -12,6 +12,7 @@ import Modal from '../components/Modal'
 import {QRItemListRow, QRDisplay} from '../components/QRComponents'
 import * as actions from '../actions/TaskListActions'
 import {systemIcon}	from '../resources/ImageUtility'
+import pluralize from 'pluralize'
 
 class QRScanner extends Component {
 	constructor(props) {
@@ -118,10 +119,16 @@ class QRScanner extends Component {
 
 	renderItemListRow({item, index}) {
 		let qr = this.props.mode === 'inputs' ? 'input_qr' : 'item_qr'
+		// let itemAmount = this.props.mode === 'inputs' ? null : item.amount + " " + this.props.processUnit
+		let itemAmount = null
+		if (this.props.mode === 'items') {
+			itemAmount = item.amount + " " + pluralize(this.props.processUnit, item.amount)
+		}
 		return <QRItemListRow 
 			qr={item[qr]} 
 			task_display={item.input_task_display} 
 			onRemove={() => this.handleRemove(index)} 
+			itemAmount={itemAmount}
 		/>
 	}
 
