@@ -12,6 +12,7 @@ import {
 	TouchableOpacity,
 	View
 } from 'react-native';
+import pluralize from 'pluralize'
 
 export class TaskRow extends Component {
 	constructor(props) {
@@ -180,7 +181,7 @@ export class AttributeHeaderCell extends Component {
 					<View style={styles.text_container}>
 						<Text style={styles.display}>{this.props.name}</Text>
 						<View style={{flex: 1, flexDirection: 'row'}}>
-							<Text style={styles.output}>{`${this.props.outputAmount} ${this.props.outputUnit} `}</Text>
+							<Text style={styles.output}>{`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
 							<Text style={styles.date}>started at {this.props.date}</Text>
 						</View>
 					</View>

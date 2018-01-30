@@ -14,7 +14,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 
 export class QRItemListRow extends Component {
 	render() {
-		let {task_display, qr, onRemove} = this.props
+		let {task_display, qr, onRemove, itemAmount} = this.props
 		let {index} = this.props
 		let styles = StyleSheet.create({
 			container: {
@@ -41,6 +41,7 @@ export class QRItemListRow extends Component {
 				<View style={styles.textContainer}>
 					<Text>{qr.substring(qr.length - 6)}</Text>
 					<Text style={styles.subTitleText}>{task_display}</Text>
+					<Text style={styles.subTitleText}>{itemAmount}</Text>
 				</View>
 				<Button title="Remove" onPress={this.props.onRemove} />
 			</View>
