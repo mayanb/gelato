@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import {
 	Dimensions,
 	Keyboard,
-	SectionList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -18,13 +17,13 @@ import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { TaskRowHeader, AttributeHeaderCell } from '../components/Cells'
+import { TaskRowHeader, AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
 import ActionButton from 'react-native-action-button'
 import Flag from '../components/Flag'
 import {systemIcon} from '../resources/ImageUtility'
 import * as ImageUtility from "../resources/ImageUtility"
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 import { DateFormatter } from '../resources/Utility'
 
 const ACTION_TITLE = 'More'
@@ -32,7 +31,7 @@ const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
 const CANCEL_INDEX = 0
 const DESTRUCTIVE_INDEX = 3
 
-class Task extends Component { 
+class Task extends Component {
 	static navigatorButtons = {
 		rightButtons: [
 			{
@@ -44,7 +43,7 @@ class Task extends Component {
 				buttonColor: 'white',
 				buttonFontSize: 15,
 				buttonFontWeight: '600',
-			}, 
+			},
 		]
 	}
 
@@ -62,7 +61,7 @@ class Task extends Component {
 		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
 			if (event.id === 'more') { // this is the same id field from the static navigatorButtons definition
 				this.showActionSheet()
-			} 
+			}
 		// else if (event.id === 'camera') {
 			// this.showCamera()
 		// }
@@ -78,7 +77,7 @@ class Task extends Component {
 			'Enter a value',
 			null,
 			text => this.props.dispatch(actions.requestRenameTask(this.props.task, text, this.props.taskSearch)),
-			'plain-text', 
+			'plain-text',
 			this.props.task.display,
 		)
 	}
@@ -129,7 +128,7 @@ class Task extends Component {
 				processUnit: this.props.task.process_type.unit
 			},
 			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
-			animationType: 'slide-up' 
+			animationType: 'slide-up'
 		})
 	}
 
@@ -155,24 +154,10 @@ class Task extends Component {
 		if(!task) {
 			return null
 		}
-		let outputAmount = task.items.reduce(function(total, current) {
-			return total + parseInt(current.amount)
-		}, 0)
-
-		let imgpath = this.props.imgpath ? this.props.imgpath : task.process_type.icon
-
-		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
-
-		let sections = [
-			{key: 'attributes', title: this.props.title, imgpath: imgpath, date: date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
-			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
-		]
-		console.log(this.props.date)
-
 
 		return (
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
-				<KeyboardAwareScrollView contentContainerStyle={styles.container}>
+				<View style={styles.container}>
 					<ActionSheet
 						ref={o => this.ActionSheet = o}
 						title={ACTION_TITLE}
@@ -181,12 +166,13 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					{task.is_flagged && <Flag />}
-					<SectionList
+					<KeyboardAwareFlatList
 						style={styles.table}
+						data={task.organized_attributes}
 						renderItem={this.renderRow}
-						renderSectionHeader={this.renderSectionHeader}
-						sections={sections}
 						keyExtractor={this.keyExtractor}
+						ListHeaderComponent={() => this.renderHeader(task)}
+						ListFooterComponent={<BottomTablePadding/>}
 					/>
 					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
 						<ActionButton.Item
@@ -210,9 +196,9 @@ class Task extends Component {
 						>
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
-					  
+
 					</ActionButton>
-				</KeyboardAwareScrollView>
+				</View>
 			</TouchableWithoutFeedback>
 		)
 	}
@@ -239,9 +225,23 @@ class Task extends Component {
 	}
 
 
-	renderSectionHeader = ({section}) => (
-		<AttributeHeaderCell name={section.title} imgpath={section.imgpath} date={section.date} type={section.type} outputAmount={section.outputAmount} outputUnit={section.outputUnit}/>
-	)
+	renderHeader = (task) => {
+		let imgpath = this.props.imgpath ? this.props.imgpath : task.process_type.icon
+		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
+		let outputAmount = task.items.reduce(function(total, current) {
+			return total + parseInt(current.amount)
+		}, 0)
+		return (
+			<AttributeHeaderCell
+				name={this.props.title}
+				imgpath={imgpath}
+				date={date}
+				type={"Top"}
+				outputAmount={outputAmount}
+				outputUnit={task.process_type.unit}
+			/>
+		)
+	}
 
 	keyExtractor = (item, index) => item.id
 
@@ -258,10 +258,8 @@ class Task extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		alignItems: 'center',
 		backgroundColor: Colors.bluishGray,
+		display: 'flex'
 	}
 });
 

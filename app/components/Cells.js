@@ -130,8 +130,9 @@ export class AttributeHeaderCell extends Component {
 		const width = Dimensions.get('window').width;
 		const styles = StyleSheet.create({
 			container: {
-				flex: 1,
+				flex: 0,
 				flexDirection: 'row',
+				height: 80,
 				width: width,
 				borderBottomWidth: 1,
 				borderBottomColor: Colors.ultraLightGray,

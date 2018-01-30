@@ -52,7 +52,9 @@ export default class AttributeCell extends React.Component {
 		} else {
 			return (
 				<TouchableOpacity activeOpacity={0.5} onPress={this.edit} style={styles.editButton}>
-					<Image source={ImageUtility.uxIcon("edit")} />
+					<View>
+						<Image source={ImageUtility.uxIcon("edit")} />
+					</View>
 				</TouchableOpacity>
 			)
 		}
