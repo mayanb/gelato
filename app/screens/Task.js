@@ -170,7 +170,6 @@ class Task extends Component {
 						style={styles.table}
 						data={task.organized_attributes}
 						renderItem={this.renderRow}
-						keyExtractor={this.keyExtractor}
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding/>}
 					/>
@@ -196,7 +195,6 @@ class Task extends Component {
 						>
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
-
 					</ActionButton>
 				</View>
 			</TouchableWithoutFeedback>
@@ -205,11 +203,11 @@ class Task extends Component {
 
 	renderRow = ({item}) => (
 		<AttributeCell
-			title={item.display}
 			key={item.id}
 			id={item.id}
 			name={item.name}
 			value={item.value.value || ""}
+			type={item.datatype}
 			onSubmitEditing={this.handleSubmitEditing.bind(this)}
 		/>
 	)
@@ -242,8 +240,6 @@ class Task extends Component {
 			/>
 		)
 	}
-
-	keyExtractor = (item, index) => item.id
 
 	static navigatorStyle = {
 		navBarHidden: false,
