@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-native run-ios --simulator=\"iPhone SE\"",
-    "test": "jest"
+    "test": "jest",
+    "react-devtools": "react-devtools"
   },
   "dependencies": {
     "immutability-helper": "^2.6.4",
@@ -39,6 +40,7 @@
     "babel-jest": "22.1.0",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.1.1",
+    "react-devtools": "^3.0.0",
     "react-test-renderer": "16.2.0"
   },
   "jest": {
