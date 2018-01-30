@@ -58,7 +58,7 @@ export class QRItemListRow extends Component {
 
 export class QRDisplay extends Component {
 	render() {
-		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, buttonTitle, onPress, onCancel} = this.props
+		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, onPress, onCancel} = this.props
 		let styles = StyleSheet.create({
 			container: {
 				flexDirection: 'column',
@@ -86,7 +86,11 @@ export class QRDisplay extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity onPress={() => this.props.onOpenTask()} style={styles.qr_top}>
+				<TouchableOpacity
+					disabled={!this.props.onOpenTask}
+					onPress={() => this.props.onOpenTask()}
+					style={styles.qr_top}
+				>
 					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.icon} />
 					<Text style={styles.qr_text}>{barcode.substring(barcode.length - 6)}</Text>
 					<Text>{creating_task}</Text>
