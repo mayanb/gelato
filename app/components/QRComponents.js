@@ -39,7 +39,10 @@ export class QRItemListRow extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity onPress={() => this.props.onOpenTask()}>
+				<TouchableOpacity
+					onPress={() => this.props.onOpenTask()}
+					disabled={!this.props.onOpenTask}
+				>
 					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
 					<View style={styles.textContainer}>
 						<Text>{qr.substring(qr.length - 6)}</Text>

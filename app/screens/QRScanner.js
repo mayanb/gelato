@@ -108,7 +108,9 @@ class QRScanner extends Component {
 			<Modal onToggle={this.handleToggleItemList.bind(this)}>
 				<FlatList 
 					style={styles.table} 
-					renderItem={this.renderItemListRow.bind(this)}  
+					renderItem={this.props.mode === 'inputs' ?
+						this.renderInputItemListRow.bind(this) :
+						this.renderOutputItemListRow.bind(this)}
 					data={item_array}
 					keyExtractor={this.keyExtractor} 
 				/>
@@ -116,18 +118,23 @@ class QRScanner extends Component {
 		)
 	}
 
-	renderItemListRow({item, index}) {
-		let qr = this.props.mode === 'inputs' ? 'input_qr' : 'item_qr'
-		let itemAmount = null
-		if (this.props.mode === 'items') {
-			itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
-		}
-		return <QRItemListRow 
-			qr={item[qr]} 
+
+	renderInputItemListRow({item, index}) {
+		return <QRItemListRow
+			qr={item['input_qr']}
+			task_display={item.input_task_display}
+			onRemove={() => this.handleRemove(index)}
+			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
+		/>
+	}
+
+	renderOutputItemListRow({item, index}) {
+		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		return <QRItemListRow
+			qr={item['item_qr']}
 			task_display={item.input_task_display}
 			onRemove={() => this.handleRemove(index)} 
 			itemAmount={itemAmount}
-			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
 		/>
 	}
 
