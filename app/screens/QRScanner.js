@@ -229,7 +229,8 @@ class QRScanner extends Component {
 				id: creatingTask.id,
 				open: creatingTask.is_open,
 				title: creatingTask.display,
-				date: creatingTask.created_at
+				date: creatingTask.created_at,
+				imgpath: null
 			}
 		})
 	}

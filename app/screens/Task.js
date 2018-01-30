@@ -147,7 +147,6 @@ class Task extends Component {
 		if(this.props.taskSearch) {
 			this.props.dispatch(actions.fetchTask(this.props.id))
 		}
-
 	}
 
 	render() {
@@ -160,10 +159,12 @@ class Task extends Component {
 			return total + parseInt(current.amount)
 		}, 0)
 
+		let imgpath = this.props.imgpath ? this.props.imgpath : task.process_type.icon
+
 		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
 
 		let sections = [
-			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
+			{key: 'attributes', title: this.props.title, imgpath: imgpath, date: date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
 			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
 		console.log(this.props.date)
