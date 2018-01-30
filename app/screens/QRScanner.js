@@ -63,7 +63,7 @@ class QRScanner extends Component {
 				<ActionButton 
 					buttonColor={item_array.length ? Colors.base : Colors.gray}
 					activeOpacity={item_array.length ? 0.5 : 1}
-					buttonText={item_array.length}
+					buttonText={String(item_array.length)}
 					position="left"
 					onPress={item_array.length ? this.handleToggleItemList.bind(this): () => {}}
 				/>
@@ -77,11 +77,10 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'dsasadsdagfdfdasc'}), 10)
+		setTimeout(() => this.onBarCodeRead({data: 'dsasadsdagfdfdasc'}), 1000)
 	}
 
 	showInputsOutputsLabel() {
-		console.log(this.props.mode)
 		if (this.props.mode === 'inputs') {
 			return <Image source={ImageUtility.requireIcon("add_inputs_text.png")} />
 		} else {
@@ -125,9 +124,10 @@ class QRScanner extends Component {
 		}
 		return <QRItemListRow 
 			qr={item[qr]} 
-			task_display={item.input_task_display} 
+			task_display={item.input_task_display}
 			onRemove={() => this.handleRemove(index)} 
 			itemAmount={itemAmount}
+			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
 		/>
 	}
 
@@ -147,17 +147,18 @@ class QRScanner extends Component {
 			return this.renderQRLoading()
 		}
 
-		let creating_task = (foundQR && foundQR.creating_task) ? foundQR.creating_task.display : ''
+		let creatingTask = (foundQR && foundQR.creating_task) ? foundQR.creating_task : {}
 		let shouldShowAmount = (mode === 'items' && Compute.isOkay(semantic))
 
 		return (
 			<QRDisplay 
 				barcode={barcode} 
-				creating_task={creating_task} 
+				creating_task={creatingTask.display}
 				semantic={semantic}
 				shouldShowAmount={shouldShowAmount}
 				default_amount={task.process_type.default_amount}
 				onChange={this.setAmount.bind(this)}
+				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				buttonTitle='Add'
 				onPress={this.handleAdd.bind(this)}
 				onCancel={this.handleCloseBarcode.bind(this)}
@@ -215,6 +216,22 @@ class QRScanner extends Component {
 	handleClose() {
 		console.log("hi")
 		this.props.navigator.dismissModal({animationType: 'slide-down'})
+	}
+
+	handleOpenTask(creatingTask) {
+		this.props.navigator.push({
+			screen: 'gelato.Task',
+			title: creatingTask.display,
+			animated: true,
+			passProps: {
+				task: creatingTask,
+				taskSearch: true,
+				id: creatingTask.id,
+				open: creatingTask.is_open,
+				title: creatingTask.display,
+				date: creatingTask.created_at
+			}
+		})
 	}
 
 	onBarCodeRead(e) {

@@ -5,6 +5,7 @@ import {
 	Text,
 	View,
 	Button,
+	TouchableOpacity,
 	Image,
 	TextInput
 } from 'react-native'
@@ -23,6 +24,7 @@ export class QRItemListRow extends Component {
 				padding: 8,
 				flexDirection: 'row',
 				display: 'flex',
+				justifyContent: 'space-between'
 			}, textContainer: {
 				display: 'flex',
 				flexDirection: 'column',
@@ -37,12 +39,14 @@ export class QRItemListRow extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
-				<View style={styles.textContainer}>
-					<Text>{qr.substring(qr.length - 6)}</Text>
-					<Text style={styles.subTitleText}>{task_display}</Text>
-					<Text style={styles.subTitleText}>{itemAmount}</Text>
-				</View>
+				<TouchableOpacity onPress={() => this.props.onOpenTask()}>
+					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
+					<View style={styles.textContainer}>
+						<Text>{qr.substring(qr.length - 6)}</Text>
+						<Text style={styles.subTitleText}>{task_display}</Text>
+						<Text style={styles.subTitleText}>{itemAmount}</Text>
+					</View>
+				</TouchableOpacity>
 				<Button title="Remove" onPress={this.props.onRemove} />
 			</View>
 		)
@@ -79,22 +83,22 @@ export class QRDisplay extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<View style={styles.qr_top}>
-					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.icon}/>
+				<TouchableOpacity onPress={() => this.props.onOpenTask()} style={styles.qr_top}>
+					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.icon} />
 					<Text style={styles.qr_text}>{barcode.substring(barcode.length - 6)}</Text>
 					<Text>{creating_task}</Text>
-				</View>
-				<View style={styles.main}> 
+				</TouchableOpacity>
+				<View style={styles.main}>
 					<Text style={styles.semantic}>{Compute.getTextFromSemantic(semantic)}</Text>
-					{ 
-						shouldShowAmount ? 
-						<QRInput 
-							placeholder={default_amount} 
-							autoCapitalize="none" 
-							autoCorrect={false} 
-							onChangeText={onChange} 
-						/> : 
-						null 
+					{
+						shouldShowAmount ?
+						<QRInput
+							placeholder={default_amount}
+							autoCapitalize="none"
+							autoCorrect={false}
+							onChangeText={onChange}
+						/> :
+						null
 					}
 				</View>
 				{ renderButtons(semantic, onPress, onCancel) }
