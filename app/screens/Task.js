@@ -25,6 +25,7 @@ import Flag from '../components/Flag'
 import {systemIcon} from '../resources/ImageUtility'
 import * as ImageUtility from "../resources/ImageUtility"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { DateFormatter } from '../resources/Utility'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete',]
@@ -159,10 +160,14 @@ class Task extends Component {
 			return total + parseInt(current.amount)
 		}, 0)
 
+		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
+
 		let sections = [
-			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: this.props.date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
+			{key: 'attributes', title: this.props.title, imgpath: this.props.imgpath, date: date, data: task.organized_attributes, type: "Top", outputAmount: outputAmount, outputUnit: task.process_type.unit},
 			{key: 'bottom', type: 'Bottom', title: "That's all for this task!", data: []}
 		]
+		console.log(this.props.date)
+
 
 		return (
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
