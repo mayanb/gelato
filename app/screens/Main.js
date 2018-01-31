@@ -19,18 +19,20 @@ import Networking from '../resources/Networking'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
+import * as loginActions from '../actions/LoginActions'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
+import * as ImageUtility from "../resources/ImageUtility"
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout', 'Search']
+const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
 	static navigatorButtons = {
 		leftButtons: [
 			{
-				title: 'Settings',
+				icon: ImageUtility.requireIcon("settings.png"),
 				id: 'settings',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -38,6 +40,17 @@ class Main extends Component {
 				buttonFontSize: 15,
 				buttonFontWeight: '600',
 			}, 
+		],
+		rightButtons: [
+			{
+				icon: ImageUtility.requireIcon("search.png"),
+				id: 'search',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			},
 		]
 	}
 
@@ -60,7 +73,16 @@ class Main extends Component {
 		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
 			if (event.id === 'settings') { // this is the same id field from the static navigatorButtons definition
 				this.showActionSheet()
-			} 
+			}
+			else if (event.id === 'search') { // this is the same id field from the static navigatorButtons definition
+				this.props.navigator.push({
+					screen: 'gelato.Search',
+					title: "Search for a task",
+					animated: true,
+					navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
+					passProps: {}
+				});
+			}
 		}
 	}
 
@@ -72,20 +94,12 @@ class Main extends Component {
 
 		if(ACTION_OPTIONS[i] === 'Logout') {
 			Storage.clear()
+			this.props.dispatch(loginActions.logout())
 			this.props.navigator.resetTo({
 				screen: 'gelato.Login',
 				animated: true,
 			});
 
-		}
-		if(ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigator.push({
-				screen: 'gelato.Search',
-				title: "Search for a task",
-				animated: true,
-				navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
-				passProps: {}
-			});
 		}
 	}
 
@@ -104,9 +118,11 @@ class Main extends Component {
 				<SectionList
 					style={styles.table}
 					renderItem={this.renderRow}
+					renderSectionFooter={this.renderSectionFooter}
 					renderSectionHeader={this.renderSectionHeader}
 					sections={sections}
 					keyExtractor={this.keyExtractor}
+					ListFooterComponent={<TaskRowHeader/>}
 				/>
 				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
@@ -142,10 +158,6 @@ class Main extends Component {
 				key: "completed",
 				title: "RECENTLY COMPLETED",
 				isLoading: this.props.completedTasks.ui.isFetchingData
-			},
-			{
-				data: [],
-				key: "space"
 			}
 		];
 	}
@@ -170,6 +182,19 @@ class Main extends Component {
 	renderSectionHeader = ({section}) => (
 		<TaskRowHeader title={section.title} isLoading={section.isLoading} />
 	)
+
+	renderSectionFooter = ({section}) => {
+		if (!section.isLoading && section.data.length === 0) {
+			const text = section.key === 'open' ?
+				`No open tasks.\n\ \nClick the + button to create a new task.` :
+				'No tasks recently completed'
+			return (
+				<View style={styles.emptyFooterContainer}>
+					<Text style={styles.emptyFooterText}>{text}</Text>
+				</View>
+			)
+		}
+	}
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => item.id;
@@ -206,8 +231,21 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		backgroundColor: Colors.white
+		backgroundColor: Colors.bluishGray,
 	},
+	emptyFooterContainer: {
+		flexDirection: 'row',
+		width: width,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
+	emptyFooterText: {
+		fontSize: 18,
+		color: Colors.lightGray
+	}
 })
 
 const mapStateToProps = (state, props) => {

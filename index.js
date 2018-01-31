@@ -5,6 +5,7 @@ import {Provider} from 'react-redux'
 import { AppRegistry } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './app/start'; // This is where we register all screens
+import { userTitle } from './app/resources/Utility'
 import Storage from './app/resources/Storage';
 
 registerScreens(store, Provider); // Register the screens
@@ -35,7 +36,7 @@ async function startup() {
 	}
 	Navigation.startSingleScreenApp({
 		screen: {
-			title: passProps !== {} ? (passProps.team) : null,
+			title: passProps !== {} ? userTitle(passProps.username, passProps.team) : null,
 			screen: startScreen,
 			navigatorStyle: {}
 		},

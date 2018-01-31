@@ -3,6 +3,7 @@
 import Colors from '../resources/Colors';
 // import Fonts from '../resources/Fonts';
 // import Images from '../resources/Images';
+import { userTitle } from '../resources/Utility'
 import React, { Component } from 'react';
 import {
 	Dimensions,
@@ -153,7 +154,7 @@ class Login extends Component {
 		nav.resetTo({
 			screen: 'gelato.Main',
 			animated: true,
-      title: data.user.team_name,
+      title: userTitle(data.user.username_display, data.user.team_name),
 			passProps: {
 				username: data.user.username_display,
 				team: data.user.team_name,

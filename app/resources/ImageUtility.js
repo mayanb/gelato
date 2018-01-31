@@ -76,6 +76,13 @@ export function requireIcon(process_icon) {
 		case "rotaryconchepull.png":
 			img = require('../resources/assets/processicons/rotaryconchepull.png')
 			break;
+		case "search.png":
+			img = require('../resources/assets/system_icons/search.png')
+			break;
+		case "settings.png":
+			console.log('settings.png')
+			img = require('../resources/assets/system_icons/settings.png')
+			break;
 		case "ship.png":
 			img = require('../resources/assets/processicons/ship.png')
 			break;		

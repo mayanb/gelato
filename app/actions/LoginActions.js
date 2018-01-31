@@ -1,7 +1,8 @@
 import {
 	REQUEST,
 	REQUEST_SUCCESS,
-	REQUEST_FAILURE
+	REQUEST_FAILURE,
+	USER_LOGOUT
 } from '../reducers/BasicReducer'
 
 export function request(name) {
@@ -24,6 +25,12 @@ export function requestFailure(name, err) {
 		type: REQUEST_FAILURE,
 		name: name,
 		error: err
+	}
+}
+
+export function logout() {
+	return {
+		type: USER_LOGOUT
 	}
 }
 

@@ -18,6 +18,7 @@ export const REQUEST_REORDER_FAILURE = 'REQUEST_REORDER_FAILURE'
 export const SELECT = 'SELECT'
 export const PAGE = 'PAGE'
 export const TOGGLE_EDITING = 'TOGGLE_EDITING'
+export const USER_LOGOUT = 'USER_LOGOUT'
 
 export const FAILURE = 'FAILURE'
 
