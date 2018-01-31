@@ -60,6 +60,10 @@ class Main extends Component {
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		this.showActionSheet = this.showActionSheet.bind(this)
 		this.handlePress = this.handlePress.bind(this)
+		this.refreshTasks = this.refreshTasks.bind(this)
+		this.state = {
+			refreshing: false,
+		}
 		// Storage.clear()
 	}
 
@@ -123,10 +127,22 @@ class Main extends Component {
 					sections={sections}
 					keyExtractor={this.keyExtractor}
 					ListFooterComponent={<TaskRowHeader/>}
+					onRefresh={this.refreshTasks}
+					refreshing={this.state.refreshing}
 				/>
 				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
 		);
+	}
+
+	refreshTasks() {
+		this.setState({refreshing: true})
+		this.props.dispatch(actions.fetchOpenTasks())
+			.then(() => {
+				this.props.dispatch(actions.fetchCompletedTasks())
+					.then(() => this.setState({refreshing: false}))
+			})
+		
 	}
 
 	handleCreateTask() {
