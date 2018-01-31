@@ -91,8 +91,10 @@ export default class Compute {
 				return "Hooray! You've already scanned this item in as an input."
 			case NOT_OUTPUT:
 				return "This QR code hasn't been associated with a task yet. Scan this QR as an output for a task before using it as an input."
+			case INVALID_QR:
+				return "This QR code is invalid"
 			default:
-				return "Add me"
+				return "Unable to use this QR code"
 		}
 	}
 

@@ -141,7 +141,7 @@ function renderButtons(semantic, onPress, onCancel) {
 	} else {
 		return (
 			<View style={btnstyle.secondary}>
-				<Button title="Close" onPress={onCancel} color={Colors.base} />
+				<Button title="Cancel" onPress={onCancel} color={Colors.base} />
 			</View>
 		)
 	}
