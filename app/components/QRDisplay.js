@@ -12,7 +12,7 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
 
-export class QRDisplay extends Component {
+export default class QRDisplay extends Component {
 	render() {
 		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, onPress, onCancel} = this.props
 		let styles = StyleSheet.create({
