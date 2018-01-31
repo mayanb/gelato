@@ -106,9 +106,11 @@ class Main extends Component {
 				<SectionList
 					style={styles.table}
 					renderItem={this.renderRow}
+					renderSectionFooter={this.renderSectionFooter}
 					renderSectionHeader={this.renderSectionHeader}
 					sections={sections}
 					keyExtractor={this.keyExtractor}
+					ListFooterComponent={<TaskRowHeader/>}
 				/>
 				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
@@ -144,10 +146,6 @@ class Main extends Component {
 				key: "completed",
 				title: "RECENTLY COMPLETED",
 				isLoading: this.props.completedTasks.ui.isFetchingData
-			},
-			{
-				data: [],
-				key: "space"
 			}
 		];
 	}
@@ -172,6 +170,19 @@ class Main extends Component {
 	renderSectionHeader = ({section}) => (
 		<TaskRowHeader title={section.title} isLoading={section.isLoading} />
 	)
+
+	renderSectionFooter = ({section}) => {
+		if (!section.isLoading && section.data.length === 0) {
+			const text = section.key === 'open' ?
+				`No open tasks.\n\ \nClick the + button to create a new task.` :
+				'No tasks recently completed'
+			return (
+				<View style={styles.emptyFooterContainer}>
+					<Text style={styles.emptyFooterText}>{text}</Text>
+				</View>
+			)
+		}
+	}
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => item.id;
@@ -208,8 +219,21 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		backgroundColor: Colors.white
+		backgroundColor: Colors.bluishGray,
 	},
+	emptyFooterContainer: {
+		flexDirection: 'row',
+		width: width,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
+	emptyFooterText: {
+		fontSize: 18,
+		color: Colors.lightGray
+	}
 })
 
 const mapStateToProps = (state, props) => {
