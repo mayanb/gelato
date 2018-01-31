@@ -202,8 +202,8 @@ class Main extends Component {
 	renderSectionFooter = ({section}) => {
 		if (!section.isLoading && section.data.length === 0) {
 			const text = section.key === 'open' ?
-				`No open tasks.\n\ \nClick the + button to create a new task.` :
-				'No tasks recently completed'
+				`No open tasks. Tap the + button to create a new task.` :
+				'No recently completed tasks.'
 			return (
 				<View style={styles.emptyFooterContainer}>
 					<Text style={styles.emptyFooterText}>{text}</Text>
@@ -260,7 +260,8 @@ const styles = StyleSheet.create({
 	},
 	emptyFooterText: {
 		fontSize: 18,
-		color: Colors.lightGray
+		color: Colors.lightGray,
+		textAlign: 'center',
 	}
 })
 
