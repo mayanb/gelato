@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-	AppRegistry,
+	AlertIOS,
 	StyleSheet,
 	Text,
 	View,
@@ -15,7 +15,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 
 export class QRItemListRow extends Component {
 	render() {
-		let {task_display, qr, onRemove, itemAmount} = this.props
+		let {task_display, qr, itemAmount} = this.props
 		let {index} = this.props
 		let styles = StyleSheet.create({
 			container: {
@@ -50,8 +50,25 @@ export class QRItemListRow extends Component {
 						<Text style={styles.subTitleText}>{itemAmount}</Text>
 					</View>
 				</TouchableOpacity>
-				<Button title="Remove" onPress={this.props.onRemove} />
+				<Button title="Remove" onPress={this.confirmRemove.bind(this)} />
 			</View>
+		)
+	}
+
+	confirmRemove() {
+		AlertIOS.alert(
+			'Are you sure you want to remove this item?',
+			'',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel'
+				},
+				{
+					text: 'Remove',
+					onPress: this.props.onRemove
+				}
+			]
 		)
 	}
 }
@@ -141,7 +158,7 @@ function renderButtons(semantic, onPress, onCancel) {
 	} else {
 		return (
 			<View style={btnstyle.secondary}>
-				<Button title="Close" onPress={onCancel} color={Colors.base} />
+				<Button title="Cancel" onPress={onCancel} color={Colors.base} />
 			</View>
 		)
 	}

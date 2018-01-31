@@ -2,6 +2,8 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { BasicReducer } from './app/reducers/BasicReducer' 
 import { _taskAttribute } from './app/reducers/TaskAttributeReducerExtension'
+import { USER_LOGOUT } from './app/reducers/BasicReducer'
+
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
@@ -27,7 +29,7 @@ function createFilteredReducer(reducerFunction, reducerPredicate, defaultState) 
 }
 
 
-var reducer = combineReducers({
+const appReducer = combineReducers({
   	openTasks: createFilteredReducer(_taskAttribute, action => action.name === OPEN_TASKS, defaultState),
     completedTasks: createFilteredReducer(_taskAttribute, action => action.name === COMPLETED_TASKS, defaultState),
     searchedTasks: createFilteredReducer(_taskAttribute, action => action.name === SEARCHED_TASKS, defaultState),
@@ -35,5 +37,12 @@ var reducer = combineReducers({
     products: createFilteredReducer(BasicReducer, action => action.name === PRODUCTS, defaultState),
   })
 
-export default createStore(reducer, applyMiddleware(thunkMiddleware))
+const rootReducer = (state, action) => {
+	if (action.type === USER_LOGOUT) {
+		state = undefined
+	}
+	return appReducer(state, action)
+}
+
+export default createStore(rootReducer, applyMiddleware(thunkMiddleware))
 

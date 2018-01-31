@@ -22,6 +22,7 @@ export class TaskRow extends Component {
 		const width = Dimensions.get('window').width;
 		const styles = StyleSheet.create({
 			container: {
+				backgroundColor: Colors.white,
 				flex: 1,
 				flexDirection: 'row',
 				width: width,
