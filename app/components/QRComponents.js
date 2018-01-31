@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-	AlertIOS,
 	StyleSheet,
 	Text,
 	View,
@@ -12,66 +11,6 @@ import {
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
-
-export class QRItemListRow extends Component {
-	render() {
-		let {task_display, qr, itemAmount} = this.props
-		let {index} = this.props
-		let styles = StyleSheet.create({
-			container: {
-				borderBottomWidth: 1,
-				borderBottomColor: Colors.ultraLightGray,
-				padding: 8,
-				flexDirection: 'row',
-				display: 'flex',
-				justifyContent: 'space-between'
-			}, textContainer: {
-				display: 'flex',
-				flexDirection: 'column',
-				flex: 1,
-			}, img : {
-				height: 16,
-				width: 16,
-				marginRight: 8,
-			}, subTitleText: {
-				color: Colors.lightGray,
-			}
-		})
-		return (
-			<View style={styles.container}>
-				<TouchableOpacity
-					onPress={() => this.props.onOpenTask()}
-					disabled={!this.props.onOpenTask}
-				>
-					<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.img} />
-					<View style={styles.textContainer}>
-						<Text>{qr.substring(qr.length - 6)}</Text>
-						<Text style={styles.subTitleText}>{task_display}</Text>
-						<Text style={styles.subTitleText}>{itemAmount}</Text>
-					</View>
-				</TouchableOpacity>
-				<Button title="Remove" onPress={this.confirmRemove.bind(this)} />
-			</View>
-		)
-	}
-
-	confirmRemove() {
-		AlertIOS.alert(
-			'Are you sure you want to remove this item?',
-			'',
-			[
-				{
-					text: 'Cancel',
-					style: 'cancel'
-				},
-				{
-					text: 'Remove',
-					onPress: this.props.onRemove
-				}
-			]
-		)
-	}
-}
 
 export class QRDisplay extends Component {
 	render() {

@@ -9,10 +9,10 @@ import Networking from '../resources/Networking-superagent'
 import {ALREADY_ADDED_INPUT, ALREADY_ADDED_OUTPUT, INVALID_QR} from '../resources/QRSemantics'
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
-import {QRItemListRow, QRDisplay} from '../components/QRComponents'
+import { QRDisplay} from '../components/QRComponents'
+import ItemListModal from '../components/ItemListModal'
 import * as actions from '../actions/TaskListActions'
 import {systemIcon}	from '../resources/ImageUtility'
-import pluralize from 'pluralize'
 
 class QRScanner extends Component {
 	constructor(props) {
@@ -55,19 +55,38 @@ class QRScanner extends Component {
 					</TouchableOpacity>
 					
 				</View>
-				
-				{ (expanded || barcode) ? this.renderScrim() : null }
-				{ expanded ? this.renderItemListModal() : null }
-				{ barcode ? this.renderQRModal() : null }
 				<Button title="Hello" onPress={this.testBarCodeRead.bind(this)} />
-				<ActionButton 
-					buttonColor={item_array.length ? Colors.base : Colors.gray}
-					activeOpacity={item_array.length ? 0.5 : 1}
-					buttonText={String(item_array.length)}
-					position="left"
-					onPress={item_array.length ? this.handleToggleItemList.bind(this): () => {}}
-				/>
+
+				{ (expanded || barcode) ? this.renderModal() : null }
+				{
+					(item_array.length && !(expanded || barcode) ?
+						this.renderActiveItemListButton(item_array) :
+						this.renderDisabledItemListButton(item_array))
+				}
 			</View>
+		)
+	}
+
+	renderActiveItemListButton(items) {
+		return (
+			<ActionButton
+				buttonColor={Colors.base}
+				activeOpacity={0.5}
+				buttonText={String(items.length)}
+				position="left"
+				onPress={this.handleToggleItemList.bind(this)}
+			/>
+		)
+	}
+
+	renderDisabledItemListButton(items) {
+		return (
+			<ActionButton
+				buttonColor={Colors.gray}
+				activeOpacity={1}
+				buttonText={String(items.length)}
+				position="left"
+			/>
 		)
 	}
 
@@ -88,6 +107,29 @@ class QRScanner extends Component {
 		}
 	}
 
+	renderModal() {
+		let Modal
+		if (this.state.expanded) {
+			Modal = <ItemListModal
+				mode={this.props.mode}
+				task={this.props.task}
+				processUnit={this.props.processUnit}
+				onToggleItemList={this.handleToggleItemList.bind(this)}
+				onRemoveInput={this.handleRemoveInput.bind(this)}
+				onRemoveOutput={this.handleRemoveOutput.bind(this)}
+				onOpenTask={this.handleOpenTask.bind(this)}
+			/>
+		} else if (this.state.barcode) {
+			Modal = this.renderQRModal()
+		}
+		return (
+			<View>
+				{this.renderScrim()}
+				{Modal}
+			</View>
+		)
+	}
+
 	renderScrim() {
 		return (
 			<TouchableOpacity onPress={this.closeModal.bind(this)}>
@@ -97,45 +139,9 @@ class QRScanner extends Component {
 	}
 
 	closeModal() {
+		console.log('closeModal')
 		let amount = this.props.task.process_type.default_amount
-		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false})
-	}
-
-	renderItemListModal() {
-		let { mode, task } = this.props
-		let item_array = task[mode] || []
-		return (
-			<Modal onToggle={this.handleToggleItemList.bind(this)}>
-				<FlatList 
-					style={styles.table} 
-					renderItem={this.props.mode === 'inputs' ?
-						this.renderInputItemListRow.bind(this) :
-						this.renderOutputItemListRow.bind(this)}
-					data={item_array}
-					keyExtractor={this.keyExtractor} 
-				/>
-			</Modal>
-		)
-	}
-
-
-	renderInputItemListRow({item, index}) {
-		return <QRItemListRow
-			qr={item['input_qr']}
-			task_display={item.input_task_display}
-			onRemove={() => this.handleRemoveInput(index)}
-			onOpenTask={() => this.handleOpenTask(item.input_task_n)}
-		/>
-	}
-
-	renderOutputItemListRow({item, index}) {
-		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
-		return <QRItemListRow
-			qr={item['item_qr']}
-			task_display={item.input_task_display}
-			onRemove={() => this.handleRemoveOutput(index)}
-			itemAmount={itemAmount}
-		/>
+		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false}, () => console.log('state', this.state))
 	}
 
 	renderQRModal() {
@@ -231,10 +237,6 @@ class QRScanner extends Component {
 		this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
 	}
 
-	handleCancel() {
-		this.handleCloseBarcode()
-	}
-
 	handleToggleItemList() {
 		this.setState({expanded: !this.state.expanded})
 	}
@@ -305,8 +307,6 @@ class QRScanner extends Component {
 				}
 			})
 	}
-
-	keyExtractor = (item, index) => item.id;
 }
 
 const width = Dimensions.get('window').width
