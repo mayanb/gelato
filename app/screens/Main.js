@@ -22,16 +22,17 @@ import * as actions from '../actions/TaskListActions'
 import * as loginActions from '../actions/LoginActions'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
+import * as ImageUtility from "../resources/ImageUtility"
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout', 'Search']
+const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
 	static navigatorButtons = {
 		leftButtons: [
 			{
-				title: 'Settings',
+				icon: ImageUtility.requireIcon("settings.png"),
 				id: 'settings',
 				disabled: false,
 				showAsAction: 'ifRoom',
@@ -39,6 +40,17 @@ class Main extends Component {
 				buttonFontSize: 15,
 				buttonFontWeight: '600',
 			}, 
+		],
+		rightButtons: [
+			{
+				icon: ImageUtility.requireIcon("search.png"),
+				id: 'search',
+				disabled: false,
+				showAsAction: 'ifRoom',
+				buttonColor: 'white',
+				buttonFontSize: 15,
+				buttonFontWeight: '600',
+			},
 		]
 	}
 
@@ -61,7 +73,16 @@ class Main extends Component {
 		if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
 			if (event.id === 'settings') { // this is the same id field from the static navigatorButtons definition
 				this.showActionSheet()
-			} 
+			}
+			else if (event.id === 'search') { // this is the same id field from the static navigatorButtons definition
+				this.props.navigator.push({
+					screen: 'gelato.Search',
+					title: "Search for a task",
+					animated: true,
+					navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
+					passProps: {}
+				});
+			}
 		}
 	}
 
@@ -79,15 +100,6 @@ class Main extends Component {
 				animated: true,
 			});
 
-		}
-		if(ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigator.push({
-				screen: 'gelato.Search',
-				title: "Search for a task",
-				animated: true,
-				navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
-				passProps: {}
-			});
 		}
 	}
 
