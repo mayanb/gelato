@@ -311,31 +311,35 @@ function addFailure(err) {
 }
 
 export function removeOutput(task, item, index, isSearched, success, failure) {
-	Networking.del('/ics/items/', item.id)
-		.end((err, res) => {
-			if (err || !res.ok) {
-				//dispatch(removeFailure(err))
-				failure(err)
-			} else {
-				//dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
-				success(res.body)
-			}
-		})
-	return removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
+	return (dispatch) => {
+		dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
+		return Networking.del('/ics/items/', item.id)
+			.end((err, res) => {
+				if (err || !res.ok) {
+					//dispatch(removeFailure(err))
+					failure(err)
+				} else {
+					//dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
+					success(res.body)
+				}
+			})
+	}
 }
 
 export function removeInput(task, input, index, isSearched, success) {
-	Networking.del('/ics/inputs/', input.id)
-		.end((err, res) => {
-			if (err || !res.ok) {
-				//dispatch(removeFailure(err))
-				failure(err)
-			} else {
-				//dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
-				success(res.body)
-			}
-		})
-	return removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched)
+	return (dispatch) => {
+		dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
+		return Networking.del('/ics/inputs/', input.id)
+			.end((err, res) => {
+				if (err || !res.ok) {
+					//dispatch(removeFailure(err))
+					failure(err)
+				} else {
+					//dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
+					success(res.body)
+				}
+			})
+	}
 }
 
 function removeSuccess(type, task, index, isSearched) {
