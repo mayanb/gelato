@@ -49,7 +49,7 @@ function TouchableView(props) {
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const modalHeight = (52 * 5)
-const paddingHeight = (height - modalHeight )/2 - 150
+const paddingHeight = (height - modalHeight )/2 - 85
 const styles = StyleSheet.create({
 	modalContent: {
 		backgroundColor: 'white',
@@ -62,7 +62,10 @@ const styles = StyleSheet.create({
 	},
 
 	modal: {
-		flexDirection: 'column'
+		flexDirection: 'column',
+		flex: 1,
+		height: height,
+		width: width,
 	},
 
 	topRow: {
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
 
 	bottomRow: {
 		minHeight: paddingHeight,
-		maxHeight: paddingHeight,
+		flex: 1,
 	}
 
 })
