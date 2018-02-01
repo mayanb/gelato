@@ -74,7 +74,7 @@ export class OutputItemListModal extends Component {
 	}
 
 	renderRow({item, index}) {
-		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		let itemAmount = parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
 		return <QRItemListRow
 			qr={item['item_qr']}
 			onRemove={() => this.props.onRemove(index)}
@@ -105,7 +105,7 @@ function header(items, typeName, unit) {
 	})
 	const count = items.length
 	const totalAmount = items.reduce(function(total, current) {
-		return total + parseInt(current.amount)
+		return total + parseFloat(current.amount)
 	})
 
 	return (
