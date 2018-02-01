@@ -115,7 +115,7 @@ class Main extends Component {
 				<ActionSheet
 					ref={o => this.ActionSheet = o}
 					title={ACTION_TITLE}
-					options={ACTION_OPTIONS}
+					options={['Close', `Logout ${this.props.username}@${this.props.team}`]}
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>

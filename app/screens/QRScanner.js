@@ -244,7 +244,6 @@ class QRScanner extends Component {
 	}
 
 	handleClose() {
-		console.log("hi")
 		this.props.navigator.dismissModal({animationType: 'slide-down'})
 	}
 

@@ -311,7 +311,6 @@ function addFailure(err) {
 }
 
 export function removeOutput(task, item, index, isSearched, success, failure) {
-	console.log(isSearched)
 	return removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
 	return (dispatch) => {
 		return Networking.del('/ics/items/', item.id)
@@ -343,7 +342,6 @@ export function removeInput(task, input, index, isSearched, success) {
 }
 
 function removeSuccess(type, task, index, isSearched) {
-	console.log(isSearched)
 	let name = findReducer(task, isSearched)
 	return {
 		type: type, 

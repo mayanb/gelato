@@ -20,8 +20,6 @@ import Networking from '../resources/Networking-superagent'
 
 export class SearchDropdown extends Component {
 	render() {
-		console.log(this.props.data)
-
 		let containerStyle = StyleSheet.create({
 			container: {
 				position: 'absolute',
@@ -34,9 +32,7 @@ export class SearchDropdown extends Component {
 				borderTopLeftRadius: 4,
 			}
 		})
-
-		console.log(this.props.isLoading)
-
+    
 		return (
 			<View style={containerStyle.container}>
 				<View style={styles.results}>
