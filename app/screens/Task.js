@@ -16,6 +16,7 @@ import {
 import ActionSheet from 'react-native-actionsheet'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
+import DateTimePicker from 'react-native-modal-datetime-picker'
 import * as actions from '../actions/TaskListActions'
 import { TaskRowHeader, AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
@@ -54,7 +55,14 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
+		this.chooseDateTime = this.chooseDateTime.bind(this)
+		this.handleDateTimePicked = this.handleDateTimePicked.bind(this)
+		this.hideDateTimePicker = this.hideDateTimePicker.bind(this)
 		console.log(this.props)
+		this.state = {
+			isDateTimePickerVisible: false,
+			editingAttribute: null
+		}
 	}
 
 	onNavigatorEvent(event) {
@@ -197,9 +205,30 @@ class Task extends Component {
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
 					</ActionButton>
+					<DateTimePicker
+						isVisible={this.state.isDateTimePickerVisible}
+						onConfirm={this.handleDateTimePicked}
+						onCancel={this.hideDateTimePicker}
+						mode="datetime"
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
+	}
+
+	chooseDateTime(id) {
+		this.setState({isDateTimePickerVisible: true})
+		this.setState({editingAttribute: id})
+	}
+
+	handleDateTimePicked(date) {
+		this.handleSubmitEditing(this.state.editingAttribute, date)
+		this.hideDateTimePicker()
+	}
+
+	hideDateTimePicker() {
+		this.setState({isDateTimePickerVisible: false})
+		this.setState({editingAttribute: null})
 	}
 
 	renderRow = ({item}) => (
@@ -209,6 +238,7 @@ class Task extends Component {
 			name={item.name}
 			value={item.value.value || ""}
 			type={item.datatype}
+			chooseDateTime={this.chooseDateTime}
 			onSubmitEditing={this.handleSubmitEditing.bind(this)}
 		/>
 	)
