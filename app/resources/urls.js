@@ -1,5 +1,5 @@
 export function getBackend() {
-	let k = 'local'
+	let k = 'staging'
 	switch(k) {
 		case 'staging':
 			return 'https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging'

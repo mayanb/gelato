@@ -114,7 +114,7 @@ class QRScanner extends Component {
 				mode={this.props.mode}
 				task={this.props.task}
 				processUnit={this.props.processUnit}
-				onToggleItemList={this.handleToggleItemList.bind(this)}
+				onCloseModal={this.closeModal.bind(this)}
 				onRemoveInput={this.handleRemoveInput.bind(this)}
 				onRemoveOutput={this.handleRemoveOutput.bind(this)}
 				onOpenTask={this.handleOpenTask.bind(this)}
@@ -122,26 +122,12 @@ class QRScanner extends Component {
 		} else if (this.state.barcode) {
 			Modal = this.renderQRModal()
 		}
-		return (
-			<View>
-				{this.renderScrim()}
-				{Modal}
-			</View>
-		)
-	}
-
-	renderScrim() {
-		return (
-			<TouchableOpacity onPress={this.closeModal.bind(this)}>
-				<View style={styles.scrim} />
-			</TouchableOpacity>
-		)
+		return Modal
 	}
 
 	closeModal() {
-		console.log('closeModal')
 		let amount = this.props.task.process_type.default_amount
-		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false}, () => console.log('state', this.state))
+		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false})
 	}
 
 	renderQRModal() {
@@ -154,7 +140,7 @@ class QRScanner extends Component {
 		let creatingTask = (foundQR && foundQR.creating_task) ? foundQR.creating_task : {}
 
 		return (
-			<Modal onToggle={this.handleCloseBarcode.bind(this)}>
+			<Modal onPress={this.closeModal.bind(this)}>
 				{ this.props.mode === 'inputs' ?
 					this.renderInputQR(creatingTask) :
 					this.renderOutputQR(creatingTask)
@@ -247,7 +233,6 @@ class QRScanner extends Component {
 	}
 
 	handleClose() {
-		console.log("hi")
 		this.props.navigator.dismissModal({animationType: 'slide-down'})
 	}
 

@@ -64,7 +64,6 @@ class Search extends Component {
 	}
 
 	handleClose() {
-		console.log('close')
 		let nav = this.props.navigator
 		nav.pop({
 			animated: false,
