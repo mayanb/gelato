@@ -84,7 +84,7 @@ class Main extends Component {
 					title: "Search for a task",
 					animated: true,
 					navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
-					passProps: {}
+					passProps: {teamID: this.props.teamID}
 				});
 			}
 		}

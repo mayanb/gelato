@@ -82,7 +82,7 @@ class Search extends Component {
 			return 
 
 		let r = Networking.get('/ics/tasks/search/')
-			.query({label: text})
+			.query({label: text, team: this.props.teamID})
 
 		r.then(res => this.setState({data: res.body.results, isLoading: false}) )
 			.catch(e => this.setState({data: [], isLoading: false}))
