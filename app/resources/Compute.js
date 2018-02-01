@@ -94,7 +94,8 @@ export default class Compute {
 			case INVALID_QR:
 				return "This QR code is invalid"
 			default:
-				return "Unable to use this QR code"
+				// this means everything is A-OK!!!!
+				return "Add this item"
 		}
 	}
 
