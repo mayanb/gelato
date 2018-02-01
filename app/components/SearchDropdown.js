@@ -2,6 +2,7 @@ import Colors from '../resources/Colors';
 import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react';
 import {
+	ActivityIndicator,
 	Dimensions,
 	Image,
 	Platform,
@@ -18,16 +19,7 @@ import Collapsible from 'react-native-collapsible'
 import Networking from '../resources/Networking-superagent'
 
 export class SearchDropdown extends Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			request: null,
-		}
-	}
-
 	render() {
-		let { collapsed, searchText } = this.state
-
 		let containerStyle = StyleSheet.create({
 			container: {
 				position: 'absolute',
@@ -40,27 +32,25 @@ export class SearchDropdown extends Component {
 				borderTopLeftRadius: 4,
 			}
 		})
-
+    
 		return (
 			<View style={containerStyle.container}>
 				<View style={styles.results}>
-					<Collapsible collapsed={false}>
-						<FlatList
-							data={this.props.data}
-							renderItem={this.renderItem.bind(this)}
-							extraData={this.state}
-							keyExtractor={this.keyExtractor}
-							style={styles.choices}
-						/>
-					</Collapsible>
+					<FlatList
+						data={this.props.data}
+						renderItem={this.renderItem.bind(this)}
+						extraData={this.state}
+						keyExtractor={this.keyExtractor}
+						style={styles.choices}
+						ListHeaderComponent={this.renderLoader()}
+					/>
 				</View>
 			</View>
 		)
 	}
 
-	toggle() {
-		this.handleClearText()
-		this.props.toggleTypeSearch()
+	renderLoader() {
+		return this.props.isLoading && <ActivityIndicator size="large" color={Colors.base} style={styles.indicator} />
 	}
 
 	renderItem({item}) {
@@ -79,9 +69,6 @@ export class SearchDropdown extends Component {
 		this.handleClearText()
 	}
 
-	handleClearText() {
-		this.setState({searchText: "", data: []})
-	}
 
 	keyExtractor = (item, index) =>  { item.id }
 }
@@ -145,7 +132,6 @@ const styles = StyleSheet.create({
 	}, 
 
 	result: {
-		color: 'white',
 		borderBottomWidth: 1,
 		borderBottomColor: 'white',
 		padding: 8,
