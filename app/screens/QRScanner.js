@@ -10,7 +10,7 @@ import {ALREADY_ADDED_INPUT, ALREADY_ADDED_OUTPUT, INVALID_QR} from '../resource
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import ItemListModal from '../components/ItemListModal'
+import {InputItemListModal, OutputItemListModal} from '../components/ItemListModals'
 import * as actions from '../actions/TaskListActions'
 import {systemIcon}	from '../resources/ImageUtility'
 
@@ -108,21 +108,37 @@ class QRScanner extends Component {
 	}
 
 	renderModal() {
-		let Modal
 		if (this.state.expanded) {
-			Modal = <ItemListModal
-				mode={this.props.mode}
-				task={this.props.task}
-				processUnit={this.props.processUnit}
-				onCloseModal={this.closeModal.bind(this)}
-				onRemoveInput={this.handleRemoveInput.bind(this)}
-				onRemoveOutput={this.handleRemoveOutput.bind(this)}
-				onOpenTask={this.handleOpenTask.bind(this)}
-			/>
+			return this.renderItemListModal()
 		} else if (this.state.barcode) {
-			Modal = this.renderQRModal()
+			return this.renderQRModal()
 		}
-		return Modal
+	}
+
+	renderItemListModal() {
+		if (this.props.mode === 'inputs') {
+			return (
+				<InputItemListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.closeModal.bind(this)}
+					onRemove={this.handleRemoveInput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={this.props.task.inputs}
+				/>
+			)
+		} else {
+			return (
+				<OutputItemListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.closeModal.bind(this)}
+					onRemove={this.handleRemoveOutput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={this.props.task.items}
+				/>
+			)
+		}
 	}
 
 	closeModal() {
