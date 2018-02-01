@@ -66,7 +66,6 @@ export class SearchDropdown extends Component {
 
 	handleSelect(item) {
 		this.props.onSelect(item)
-		this.handleClearText()
 	}
 
 
