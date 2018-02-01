@@ -96,7 +96,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'dsasadsdagfdfdasc'}), 1000)
+		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdasc'}), 1000)
 	}
 
 	showInputsOutputsLabel() {
@@ -173,6 +173,7 @@ class QRScanner extends Component {
 				semantic={semantic}
 				shouldShowAmount={false}
 				default_amount={this.props.task.process_type.default_amount}
+				amount={this.state.amount}
 				onChange={this.setAmount.bind(this)}
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}

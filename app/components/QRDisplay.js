@@ -14,7 +14,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 
 export default class QRDisplay extends Component {
 	render() {
-		let {barcode, creating_task, semantic, shouldShowAmount, default_amount, onChange, onPress, onCancel} = this.props
+		let {barcode, creating_task, semantic, shouldShowAmount, amount, default_amount, onChange, onPress, onCancel} = this.props
 		let styles = StyleSheet.create({
 			container: {
 				flexDirection: 'column',
@@ -60,6 +60,7 @@ export default class QRDisplay extends Component {
 							autoCapitalize="none"
 							autoCorrect={false}
 							onChangeText={onChange}
+							value={amount}
 						/> :
 						null
 					}
