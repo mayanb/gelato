@@ -15,46 +15,71 @@ import Modal from '../components/Modal'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
-class ItemListModal extends Component {
+class InputItemListModalUnconnected extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.fetchProcesses())
 	}
 
 	render() {
 		let { mode, task } = this.props
-		let items = task[mode] || []
-		const typeName = this.props.mode === 'inputs' ? 'inputs' : 'outputs'
 		return (
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
-					renderItem={this.props.mode === 'inputs' ?
-						this.renderInputItemListRow.bind(this) :
-						this.renderOutputItemListRow.bind(this)}
-					data={items}
-					ListHeaderComponent={() => header(items.length, typeName, 24, 'kgs')}
+					renderItem={this.renderRow.bind(this)}
+					data={this.props.items}
+					ListHeaderComponent={() => header(this.props.items.length, 'inputs', 24, 'kgs')}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
 		)
 	}
 
-	renderInputItemListRow({item, index}) {
+	renderRow({item, index}) {
 		const process = this.props.processHash[item.input_task_n.process_type]
 		const processIconPath = process ? process.icon : ''
 		return <QRItemListRow
 			qr={item['input_qr']}
 			task_display={item.input_task_display}
 			imgpath={processIconPath}
-			onRemove={() => this.props.onRemoveInput(index)}
+			onRemove={() => this.props.onRemove(index)}
 			onOpenTask={() => this.props.onOpenTask(item.input_task_n)}
 		/>
 	}
 
-	renderOutputItemListRow({item, index}) {
+	keyExtractor = (item, index) => item.id;
+}
+
+const mapStateToProps = (state, props) => {
+	return {
+		processHash: state.processes.data.reduce((map, obj) => {
+			map[obj.id] = obj
+			return map
+		}, {})
+	}
+}
+
+export const InputItemListModal = connect(mapStateToProps)(InputItemListModalUnconnected)
+
+export class OutputItemListModal extends Component {
+	render() {
+		let { mode, task } = this.props
+		return (
+			<Modal onPress={this.props.onCloseModal}>
+				<FlatList
+					renderItem={this.renderRow.bind(this)}
+					data={this.props.items}
+					ListHeaderComponent={() => header(this.props.items.length, 'outputs', 24, 'kgs')}
+					keyExtractor={this.keyExtractor}
+				/>
+			</Modal>
+		)
+	}
+
+	renderRow({item, index}) {
 		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
 		return <QRItemListRow
 			qr={item['item_qr']}
-			onRemove={() => this.props.onRemoveOutput(index)}
+			onRemove={() => this.props.onRemove(index)}
 			itemAmount={itemAmount}
 		/>
 	}
@@ -89,17 +114,6 @@ function header(count, typeName, totalAmount, unit) {
 		</View>
 	)
 }
-
-const mapStateToProps = (state, props) => {
-	return {
-		processHash: state.processes.data.reduce((map, obj) => {
-			map[obj.id] = obj
-			return map
-		}, {})
-	}
-}
-
-export default connect(mapStateToProps)(ItemListModal)
 
 class QRItemListRow extends Component {
 	render() {
