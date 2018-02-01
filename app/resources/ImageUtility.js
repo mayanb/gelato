@@ -64,6 +64,9 @@ export function requireIcon(process_icon) {
 		case "print.png":
 			img = require('../resources/assets/system_icons/print.png')
 			break;
+		case "qricon.png":
+			img = require('../resources/assets/qricon.png')
+			break;
 		case "rcpull.png":
 			img = require('../resources/assets/processicons/rcpull.png')
 			break;
