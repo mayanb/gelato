@@ -250,20 +250,7 @@ class QRScanner extends Component {
 	}
 
 	handleOpenTask(creatingTask) {
-		this.props.navigator.push({
-			screen: 'gelato.Task',
-			title: creatingTask.display,
-			animated: true,
-			passProps: {
-				task: creatingTask,
-				taskSearch: true,
-				id: creatingTask.id,
-				open: creatingTask.is_open,
-				title: creatingTask.display,
-				date: creatingTask.created_at,
-				imgpath: null
-			}
-		})
+		this.props.onOpenTask(creatingTask)
 	}
 
 	onBarCodeRead(e) {

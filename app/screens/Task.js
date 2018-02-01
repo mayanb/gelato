@@ -124,7 +124,8 @@ class Task extends Component {
 				open: this.props.open,
 				taskSearch: this.props.taskSearch,
 				mode: mode,
-				processUnit: this.props.task.process_type.unit
+				processUnit: this.props.task.process_type.unit,
+				onOpenTask: this.handleOpenTask.bind(this)
 			},
 			navigatorStyle: { navBarHidden: true, statusBarTextColorScheme: 'light' },
 			animationType: 'slide-up'
@@ -138,6 +139,26 @@ class Task extends Component {
 			animated: true,
 			passProps: {selectedTask: this.props.task}
 		});
+	}
+
+	handleOpenTask(task) {
+		console.log('hello')
+		this.props.navigator.dismissModal()
+		window.setTimeout(() => {
+		this.props.navigator.push({
+			screen: 'gelato.Task',
+			title: task.display,
+			animated: true,
+			passProps: {
+				task: task,
+				taskSearch: true,
+				id: task.id,
+				open: task.is_open,
+				title: task.display,
+				date: task.created_at,
+				imgpath: null
+			}
+		})}, 500)
 	}
 
 	componentDidMount() {
