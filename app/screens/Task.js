@@ -49,6 +49,7 @@ class Task extends Component {
 
 	constructor(props) {
 		super(props)
+		this.props.navigator.dismissAllModals({animated: false})
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		this.showActionSheet = this.showActionSheet.bind(this)
 		this.handlePress = this.handlePress.bind(this)
@@ -142,9 +143,7 @@ class Task extends Component {
 	}
 
 	handleOpenTask(task) {
-		let x = 'hi'
-		this.props.navigator.dismissModal()
-		window.setTimeout(() => {
+		//let x = 'hi'
 		this.props.navigator.push({
 			screen: 'gelato.Task',
 			title: task.display,
@@ -158,7 +157,7 @@ class Task extends Component {
 				date: task.created_at,
 				imgpath: null
 			}
-		})}, 500)
+		})
 	}
 
 	componentDidMount() {
