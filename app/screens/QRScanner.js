@@ -17,12 +17,14 @@ import {systemIcon}	from '../resources/ImageUtility'
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
+		let default_amount = parseInt(props.task.process_type.default_amount, 10)+""
 		this.state = {
 			expanded: false,
 			barcode: false,
 			foundQR: null,
 			semantic: "", // semantic is a string that indicates what to display out of the various options
-			amount: props.task.process_type.default_amount,
+			default_amount: default_amount,
+			amount: default_amount,
 		}
 	}
 
@@ -96,7 +98,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdasc'}), 1000)
+		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdasc'}), 100)
 	}
 
 	showInputsOutputsLabel() {
@@ -126,8 +128,7 @@ class QRScanner extends Component {
 	}
 
 	closeModal() {
-		let amount = this.props.task.process_type.default_amount
-		this.setState({barcode: false, foundQR: false, semantic: "", amount: amount, expanded: false})
+		this.setState({barcode: false, foundQR: false, semantic: "", amount: this.state.default_amount, expanded: false})
 	}
 
 	renderQRModal() {
@@ -151,15 +152,12 @@ class QRScanner extends Component {
 
 	renderInputQR(creatingTask) {
 		let { barcode, semantic } = this.state
-
 		return (
 			<QRDisplay
 				barcode={barcode}
 				creating_task={creatingTask.display}
 				semantic={semantic}
 				shouldShowAmount={false}
-				default_amount={this.props.task.process_type.default_amount}
-				amount={this.state.amount}
 				onChange={this.setAmount.bind(this)}
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
@@ -177,7 +175,8 @@ class QRScanner extends Component {
 				creating_task={creatingTask.display}
 				semantic={semantic}
 				shouldShowAmount={Compute.isOkay(semantic)}
-				default_amount={this.props.task.process_type.default_amount}
+				amount={this.state.amount}
+				default_amount={this.state.default_amount}
 				onChange={this.setAmount.bind(this)}
 				onPress={this.handleAddOutput.bind(this)}
 				onCancel={this.handleCloseBarcode.bind(this)}
