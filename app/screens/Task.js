@@ -155,6 +155,12 @@ class Task extends Component {
 			return null
 		}
 
+		const isLabel = task.process_type.name.toLowerCase() === 'label'
+		let outputButtonName = "Add Outputs"
+		if (isLabel) {
+			outputButtonName = "Label Items"
+		}
+
 		const actionOptions = task.is_flagged ? ACTION_OPTIONS.filter(o => o !== 'Flag') : ACTION_OPTIONS
 		return (
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
@@ -182,16 +188,17 @@ class Task extends Component {
 						>
 							<Image source={ImageUtility.requireIcon('print.png')} />
 						</ActionButton.Item>
+						{!isLabel && 
 						<ActionButton.Item
 							buttonColor={'green'}
 							title="Add Inputs"
 							onPress={() => this.showCamera('inputs')}
 						>
 							<Image source={ImageUtility.requireIcon('inputs.png')} />
-						</ActionButton.Item>
+						</ActionButton.Item> }
 						<ActionButton.Item
 							buttonColor={'blue'}
-							title="Add Outputs"
+							title={outputButtonName}
 							onPress={() => this.showCamera('items')}
 						>
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
