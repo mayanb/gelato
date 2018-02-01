@@ -130,7 +130,7 @@ function QRInput(props) {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.help}>Enter amount</Text>
-			<TextInput style={styles.input} {...props} />
+			<TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
 		</View>
 	)
 }

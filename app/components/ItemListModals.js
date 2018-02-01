@@ -21,13 +21,12 @@ class InputItemListModalUnconnected extends Component {
 	}
 
 	render() {
-		let { mode, task } = this.props
 		return (
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
 					renderItem={this.renderRow.bind(this)}
 					data={this.props.items}
-					ListHeaderComponent={() => header(this.props.items.length, 'inputs', 24, 'kgs')}
+					ListHeaderComponent={() => header(this.props.items, 'inputs', this.props.processUnit)}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
@@ -62,13 +61,12 @@ export const InputItemListModal = connect(mapStateToProps)(InputItemListModalUnc
 
 export class OutputItemListModal extends Component {
 	render() {
-		let { mode, task } = this.props
 		return (
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
 					renderItem={this.renderRow.bind(this)}
 					data={this.props.items}
-					ListHeaderComponent={() => header(this.props.items.length, 'outputs', 24, 'kgs')}
+					ListHeaderComponent={() => header(this.props.items, 'outputs', this.props.processUnit)}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
@@ -76,7 +74,7 @@ export class OutputItemListModal extends Component {
 	}
 
 	renderRow({item, index}) {
-		let itemAmount = parseInt(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		let itemAmount = parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
 		return <QRItemListRow
 			qr={item['item_qr']}
 			onRemove={() => this.props.onRemove(index)}
@@ -87,7 +85,7 @@ export class OutputItemListModal extends Component {
 	keyExtractor = (item, index) => item.id;
 }
 
-function header(count, typeName, totalAmount, unit) {
+function header(items, typeName, unit) {
 	let styles = StyleSheet.create({
 		container: {
 			height: 50,
@@ -105,6 +103,10 @@ function header(count, typeName, totalAmount, unit) {
 			color: Colors.lightGrayText
 		}
 	})
+	const count = items.length
+	const totalAmount = items.reduce(function(total, current) {
+		return total + parseFloat(current.amount)
+	}, 0)
 
 	return (
 		<View style={styles.container}>
