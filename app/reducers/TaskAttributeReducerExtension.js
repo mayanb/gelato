@@ -49,8 +49,6 @@ function startAdding(state, action) {
 }
 
 function updateAttributeSuccess(state, action) {
-	console.log(state.data)
-	console.log(action.data.task)
 	let taskIndex = state.data.findIndex(e => Compute.equate(e.id, action.data.task))
 	let attributeIndex = state.data[taskIndex].organized_attributes.findIndex(e => Compute.equate(e.id, action.data.attribute))
 	return update(state, {

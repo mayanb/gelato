@@ -20,7 +20,6 @@ export default class Networking {
 				.join('&');
 			url += "?" + query;
 		}
-		console.log(url)
 		try {
 			let response = await fetch(url, {
 			  method: method,

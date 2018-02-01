@@ -26,7 +26,6 @@ export class SearchDropdown extends Component {
 	}
 
 	render() {
-		console.log(this.props.data)
 		let { collapsed, searchText } = this.state
 
 		let containerStyle = StyleSheet.create({

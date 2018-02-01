@@ -5,7 +5,6 @@ let host = urls.getBackend()
 
 function get(path) {
 	let url = urls.latest(host, path)
-		console.log(url)
 	return request
 		.get(url)
 		//.withCredentials()
