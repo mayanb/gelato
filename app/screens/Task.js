@@ -54,7 +54,6 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
-		console.log(this.props)
 	}
 
 	onNavigatorEvent(event) {
@@ -150,7 +149,6 @@ class Task extends Component {
 
 	render() {
 		let {task} = this.props
-		console.log(task)
 		if(!task) {
 			return null
 		}
