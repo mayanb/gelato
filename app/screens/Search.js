@@ -45,7 +45,7 @@ class Search extends Component {
 					/>
 				</View>
 				{ typeSearch &&
-					<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)} data={data} />
+					<SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)} data={data} isLoading={this.state.isLoading} />
 				}
 				</View>
 		)
@@ -74,7 +74,8 @@ class Search extends Component {
 
 	handleChangeText(text) {
 		let {request} = this.state
-		this.setState({searchText: text, data: []})
+		this.setState({searchText: text})
+
 		if (request) {
 			request.abort()
 		}
@@ -85,10 +86,10 @@ class Search extends Component {
 		let r = Networking.get('/ics/tasks/search/')
 			.query({label: text})
 
-		r.then(res => this.setState({data: res.body.results}) )
-			.catch(e => console.log(e))
+		r.then(res => this.setState({data: res.body.results, isLoading: false}) )
+			.catch(e => this.setState({data: [], isLoading: false}))
 
-		this.setState({request: r})
+		this.setState({request: r, isLoading: true})
 	}
 
 
