@@ -184,16 +184,6 @@ const styles = StyleSheet.create({
 		left: 0,
 		height: height,
 		width: width,
-	},
-	scrim: {
-		position: 'absolute',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		top: 0,
-		left: 0,
-		height: height,
-		width: width,
-		backgroundColor: 'rgba(255,0,0,0.5)',
 	}, button: {
 		position: 'absolute', 
 		top: 24,

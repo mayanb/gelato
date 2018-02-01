@@ -57,8 +57,6 @@ class QRScanner extends Component {
 					</TouchableOpacity>
 					
 				</View>
-				<Button title="Hello" onPress={this.testBarCodeRead.bind(this)} />
-
 				{ (expanded || barcode) ? this.renderModal() : null }
 				{
 					(item_array.length && !(expanded || barcode) ?

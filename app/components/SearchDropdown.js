@@ -27,7 +27,7 @@ export class SearchDropdown extends Component {
 				left: 16,
 				width: width-32,
 				height: height-100,
-				backgroundColor: 'rgba(255,0,0,0.5)',
+				backgroundColor: 'rgba(0,0,0,0.5)',
 				borderTopRightRadius:4,
 				borderTopLeftRadius: 4,
 			}
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
 
 	result: {
 		borderBottomWidth: 1,
-		borderBottomColor: 'white',
-		padding: 8,
+		borderBottomColor: "rgba(255,255,255,0.5)",
+		padding: 16, 
 	}, resultText: {
 		color: 'white',
 		fontSize: 17,
