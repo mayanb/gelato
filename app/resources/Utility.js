@@ -28,5 +28,5 @@ export class DateFormatter {
 }
 
 export function userTitle(username, team) {
-	return `${username}@${team}`
+	return `${team}`
 }

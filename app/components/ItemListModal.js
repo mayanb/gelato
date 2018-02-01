@@ -25,7 +25,7 @@ class ItemListModal extends Component {
 		let items = task[mode] || []
 		const typeName = this.props.mode === 'inputs' ? 'inputs' : 'outputs'
 		return (
-			<Modal onToggle={this.onToggleItemList}>
+			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
 					renderItem={this.props.mode === 'inputs' ?
 						this.renderInputItemListRow.bind(this) :

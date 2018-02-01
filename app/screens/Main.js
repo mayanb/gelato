@@ -60,6 +60,10 @@ class Main extends Component {
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 		this.showActionSheet = this.showActionSheet.bind(this)
 		this.handlePress = this.handlePress.bind(this)
+		this.refreshTasks = this.refreshTasks.bind(this)
+		this.state = {
+			refreshing: false,
+		}
 		// Storage.clear()
 	}
 
@@ -111,7 +115,7 @@ class Main extends Component {
 				<ActionSheet
 					ref={o => this.ActionSheet = o}
 					title={ACTION_TITLE}
-					options={ACTION_OPTIONS}
+					options={['Close', `Logout ${this.props.username}@${this.props.team}`]}
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
@@ -123,10 +127,22 @@ class Main extends Component {
 					sections={sections}
 					keyExtractor={this.keyExtractor}
 					ListFooterComponent={<TaskRowHeader/>}
+					onRefresh={this.refreshTasks}
+					refreshing={this.state.refreshing}
 				/>
 				<ActionButton buttonColor={Colors.base} activeOpacity={0.5} onPress={this.handleCreateTask.bind(this)} />
 			</View>
 		);
+	}
+
+	refreshTasks() {
+		this.setState({refreshing: true})
+		this.props.dispatch(actions.fetchOpenTasks())
+			.then(() => {
+				this.props.dispatch(actions.fetchCompletedTasks())
+					.then(() => this.setState({refreshing: false}))
+			})
+		
 	}
 
 	handleCreateTask() {
@@ -186,8 +202,8 @@ class Main extends Component {
 	renderSectionFooter = ({section}) => {
 		if (!section.isLoading && section.data.length === 0) {
 			const text = section.key === 'open' ?
-				`No open tasks.\n\ \nClick the + button to create a new task.` :
-				'No tasks recently completed'
+				`No open tasks. Tap the + button to create a new task.` :
+				'No recently completed tasks.'
 			return (
 				<View style={styles.emptyFooterContainer}>
 					<Text style={styles.emptyFooterText}>{text}</Text>
@@ -244,7 +260,8 @@ const styles = StyleSheet.create({
 	},
 	emptyFooterText: {
 		fontSize: 18,
-		color: Colors.lightGray
+		color: Colors.lightGray,
+		textAlign: 'center',
 	}
 })
 

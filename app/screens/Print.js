@@ -29,8 +29,7 @@ export default class Print extends Component {
 
 	constructor(props) {
 		super(props);
-		console.log(props.selectedTask)
-        this.state = {
+    this.state = {
 			selectedPrinter: null,
 			updatedUrl: "",
 			numberLabels: 1,
@@ -46,18 +45,15 @@ export default class Print extends Component {
 		let text = "dande.li/ics/"
 		const data = Array(numLabels).fill(0).map(() => uuid())
 		const data_urls = data.map(x => (text + x))
-		console.log(data_urls)
 		return data_urls
 	}
 
 
 	generateQRCode(data, qrdocument) {
-		console.log("hi")
 		let text = `<style>#rotate-text { margin-left: 100px; margin-bottom: 200px; width: 200px; transform: rotate(90deg); transform-origin: top left; font-size:30px;}</style><div id="rotate-text"><p>${this.props.selectedTask.display}</p></div>`
 		return new Promise((resolve, reject)=>{
 			QRCode.toString(data, function(err, string) {
 				if(err) {
-					console.log("error")
 					console.log(err)
 					reject(err)
 				} else {
@@ -83,11 +79,9 @@ export default class Print extends Component {
 	printHTML() {
 		let qrdoc = []
 		let numLabels = this.state.numberLabels
-		// const numLabels = 4
 		this.repeatFunction(numLabels, qrdoc).then(function(results) {
 			results.join("")
 			RNPrint.print({html: `${results}`})
-			// console.log(JSON.stringify(results))
 		}, function(err) {
 			console.log(err)
 		})
