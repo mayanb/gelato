@@ -142,7 +142,7 @@ class Task extends Component {
 	}
 
 	handleOpenTask(task) {
-		console.log('hello')
+		let x = 'hi'
 		this.props.navigator.dismissModal()
 		window.setTimeout(() => {
 		this.props.navigator.push({
