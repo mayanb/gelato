@@ -92,6 +92,7 @@ export function SearchBox(props) {
 					value={props.searchText} 
 					onChangeText={props.onChangeText}
 					onFocus={props.onFocus}
+					autoCorrect={false}
 					//onBlur={props.onBlur}
 					ref={(input) => this.input = input}
 				/>

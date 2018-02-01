@@ -48,6 +48,7 @@ export default class AttributeCell extends React.Component {
 					returnKeyType='done'
 					value={this.state.typedValue}
 					keyboardType={keyboardType}
+					autoCorrect={false}
 					ref={(input) => this.input = input}
 				/>
 			)
