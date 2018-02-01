@@ -89,6 +89,7 @@ class QRScanner extends Component {
 	}
 
 	renderScrim() {
+		return null
 		return (
 			<TouchableOpacity onPress={this.closeModal.bind(this)}>
 				<View style={styles.scrim} />
@@ -105,7 +106,7 @@ class QRScanner extends Component {
 		let { mode, task } = this.props
 		let item_array = task[mode] || []
 		return (
-			<Modal onToggle={this.handleToggleItemList.bind(this)}>
+			<Modal onPress={this.closeModal.bind(this)}>
 				<FlatList 
 					style={styles.table} 
 					renderItem={this.props.mode === 'inputs' ?
@@ -148,7 +149,7 @@ class QRScanner extends Component {
 		let creatingTask = (foundQR && foundQR.creating_task) ? foundQR.creating_task : {}
 
 		return (
-			<Modal onToggle={this.handleCloseBarcode.bind(this)}>
+			<Modal onPress={this.closeModal.bind(this)}>
 				{ this.props.mode === 'inputs' ?
 					this.renderInputQR(creatingTask) :
 					this.renderOutputQR(creatingTask)
