@@ -226,7 +226,11 @@ class QRScanner extends Component {
 	handleRemoveInput(i) {
 		let {task} = this.props
 		let item = task['inputs'][i]
-		let success = () => {}
+		const success = () => {
+			if(this.props.task.inputs.length === 0) {
+				this.closeModal()
+			}
+		}
 		let failure = () => {}
 		this.props.dispatch(actions.removeInput(task, item, i, this.props.taskSearch, success, failure))
 	}
@@ -234,7 +238,11 @@ class QRScanner extends Component {
 	handleRemoveOutput(i) {
 		let {task} = this.props
 		let item = task['items'][i]
-		let success = () => {}
+		const success = () => {
+			if(this.props.task.items.length === 0) {
+				this.closeModal()
+			}
+		}
 		let failure = () => {}
 		this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
 	}

@@ -311,7 +311,6 @@ function addFailure(err) {
 }
 
 export function removeOutput(task, item, index, isSearched, success, failure) {
-	return removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
 	return (dispatch) => {
 		return Networking.del('/ics/items/', item.id)
 			.end((err, res) => {
