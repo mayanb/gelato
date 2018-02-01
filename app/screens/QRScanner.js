@@ -98,7 +98,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdsadsadasc'}), 100)
+		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasdsadsasaddfdsadsadasc'}), 100)
 	}
 
 	showInputsOutputsLabel() {
