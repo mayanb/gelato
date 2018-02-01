@@ -106,7 +106,7 @@ function header(items, typeName, unit) {
 	const count = items.length
 	const totalAmount = items.reduce(function(total, current) {
 		return total + parseFloat(current.amount)
-	})
+	}, 0)
 
 	return (
 		<View style={styles.container}>
