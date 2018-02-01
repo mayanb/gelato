@@ -233,18 +233,21 @@ class QRScanner extends Component {
 		}
 		let failure = () => {}
 		this.props.dispatch(actions.removeInput(task, item, i, this.props.taskSearch, success, failure))
+		success()
 	}
 
 	handleRemoveOutput(i) {
 		let {task} = this.props
 		let item = task['items'][i]
 		const success = () => {
+			console.log('calling success')
 			if(this.props.task.items.length === 0) {
 				this.closeModal()
 			}
 		}
 		let failure = () => {}
 		this.props.dispatch(actions.removeOutput(task, item, i, this.props.taskSearch, success, failure))
+		success()
 	}
 
 	handleToggleItemList() {
