@@ -1,10 +1,6 @@
 # Gelato
 
-This is the codebase for Gelato, the mobile side of Polymer. This version is written in React Native and compiles to both Android and iOS.
-
-## TODO
-
-* Store TODOs here
+This is the codebase for Gelato, the mobile side of Polymer. This version is written in React Native and compiles to both Android and iOS. 
 
 ## Getting Started
 
@@ -70,8 +66,12 @@ The `app` folder contains the main app logic. It is divided into the following f
 	* Contains only `index.js`
 		* This file registers the views in `screens` for use in the app
 
+## Branches
+* Master is what our users are seeing, staging will be pushed to master periodically. Do everything you need to do and then do a PR to staging. 
+
 ## Code Style
 
 An important part of maintaining a project is consistent style.
-* We follow the Async/Await Promise paradigm, which makes the code much more readable, and much more logical. When dealing with asynchronous code, especially local storage and networking, always use Async/Await.
-* All lines (except for closures) must end with a semicolon.
+* We don't like semicolons, sorry :( 
+* Try to use async/await
+* Try to put each component in its own file
