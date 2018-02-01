@@ -17,7 +17,7 @@ import {systemIcon}	from '../resources/ImageUtility'
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
-		let default_amount = parseInt(props.task.process_type.default_amount, 10)+""
+		let default_amount = parseFloat(props.task.process_type.default_amount).toString()
 		this.state = {
 			expanded: false,
 			barcode: false,
@@ -98,7 +98,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdasc'}), 100)
+		setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/dsasadsdagfdfdsadsadasc'}), 100)
 	}
 
 	showInputsOutputsLabel() {

@@ -233,7 +233,7 @@ class Task extends Component {
 		let imgpath = this.props.imgpath ? this.props.imgpath : task.process_type.icon
 		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
 		let outputAmount = task.items.reduce(function(total, current) {
-			return total + parseInt(current.amount)
+			return total + parseFloat(current.amount)
 		}, 0)
 		return (
 			<AttributeHeaderCell
