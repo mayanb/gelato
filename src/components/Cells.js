@@ -22,6 +22,7 @@ export class TaskRow extends Component {
     const width = Dimensions.get('window').width
     const styles = StyleSheet.create({
       container: {
+        backgroundColor: Colors.white,
         flex: 1,
         flexDirection: 'row',
         width: width,
@@ -143,16 +144,16 @@ export class AttributeHeaderCell extends Component {
     const width = Dimensions.get('window').width
     const styles = StyleSheet.create({
       container: {
-        flex: 1,
+        flex: 0,
         flexDirection: 'row',
         width: width,
         borderBottomWidth: 1,
         borderBottomColor: Colors.ultraLightGray,
-        paddingTop: 20,
-        paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
         backgroundColor: Colors.bluishGray,
+        alignItems: 'center',
+        height: 80,
       },
 
       text_container: {
