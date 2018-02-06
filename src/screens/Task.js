@@ -55,20 +55,14 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
+		this.handleRenameTask = this.handleRenameTask.bind(this)
 	}
 
 	showCustomNameAlert() {
 		AlertIOS.prompt(
 			'Enter a value',
 			null,
-			text =>
-				this.props.dispatch(
-					actions.requestRenameTask(
-						this.props.task,
-						text,
-						this.props.taskSearch
-					)
-				),
+			this.handleRenameTask,
 			'plain-text',
 			this.props.task.display
 		)
@@ -107,6 +101,17 @@ class Task extends Component {
 		if (ACTION_OPTIONS[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
 		}
+	}
+
+	handleRenameTask(text) {
+		this.props.dispatch(
+			actions.requestRenameTask(
+				this.props.task,
+				text,
+				this.props.taskSearch
+			)
+		)
+		this.props.navigation.setParams({name: text})
 	}
 
 	handleDeleteTask() {
