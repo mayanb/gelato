@@ -13,54 +13,6 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
 
-export class QRItemListRow extends Component {
-  render() {
-    let { task_display, qr, onRemove, itemAmount } = this.props
-    let { index } = this.props
-    let styles = StyleSheet.create({
-      container: {
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.ultraLightGray,
-        padding: 8,
-        flexDirection: 'row',
-        display: 'flex',
-        justifyContent: 'space-between',
-      },
-      textContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-      },
-      img: {
-        height: 16,
-        width: 16,
-        marginRight: 8,
-      },
-      subTitleText: {
-        color: Colors.lightGray,
-      },
-    })
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => this.props.onOpenTask()}
-          disabled={!this.props.onOpenTask}>
-          <Image
-            source={ImageUtility.requireIcon('qr_icon')}
-            style={styles.img}
-          />
-          <View style={styles.textContainer}>
-            <Text>{qr.substring(qr.length - 6)}</Text>
-            <Text style={styles.subTitleText}>{task_display}</Text>
-            <Text style={styles.subTitleText}>{itemAmount}</Text>
-          </View>
-        </TouchableOpacity>
-        <Button title="Remove" onPress={this.props.onRemove} />
-      </View>
-    )
-  }
-}
-
 export class QRDisplay extends Component {
   render() {
     let {
@@ -128,6 +80,7 @@ export class QRDisplay extends Component {
               autoCapitalize="none"
               autoCorrect={false}
               onChangeText={onChange}
+              value={amount}
             />
           ) : null}
         </View>
@@ -165,7 +118,7 @@ function renderButtons(semantic, onPress, onCancel) {
   } else {
     return (
       <View style={btnstyle.secondary}>
-        <Button title="Close" onPress={onCancel} color={Colors.base} />
+        <Button title="Cancel" onPress={onCancel} color={Colors.base} />
       </View>
     )
   }
@@ -195,9 +148,9 @@ function QRInput(props) {
     },
   })
   return (
-    <View style={styles.container}>
-      <Text style={styles.help}>Enter amount</Text>
-      <TextInput style={styles.input} {...props} />
-    </View>
+	  <View style={styles.container}>
+		  <Text style={styles.help}>Enter amount</Text>
+      <TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
+	  </View>
   )
 }
