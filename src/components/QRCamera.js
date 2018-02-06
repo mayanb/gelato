@@ -29,7 +29,9 @@ export default class QRCamera extends Component {
             <View style={styles.button}>
               <TouchableOpacity
                 onPress={this.props.onClose}
-                hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
+                hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+                style={styles.closeTouchableOpacity}
+              >
                 <Image
                   source={ImageUtility.systemIcon('close_camera')}
                   title=""
@@ -73,5 +75,12 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     marginTop: 20,
+  },
+  closeTouchableOpacity: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 50,
+    height: 50,
   },
 })
