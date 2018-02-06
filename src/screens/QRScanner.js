@@ -23,7 +23,9 @@ import {
 } from '../resources/QRSemantics'
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
-import { QRItemListRow, QRDisplay } from '../components/QRComponents'
+import QRDisplay from '../components/QRDisplay'
+
+import {InputItemListModal, OutputItemListModal} from '../components/ItemListModals'
 import * as actions from '../actions/TaskListActions'
 import pluralize from 'pluralize'
 import paramsToProps from '../resources/paramsToProps'
