@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
   Keyboard,
-  SectionList,
+	View,
   StyleSheet,
   TouchableWithoutFeedback,
   Alert,
@@ -19,7 +19,7 @@ import NavHeader from 'react-navigation-header-buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { TaskRowHeader, AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
+import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import AttributeCell from '../components/AttributeCell'
 import Flag from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
@@ -52,7 +52,6 @@ class Task extends Component {
 
 	constructor(props) {
 		super(props)
-		this.props.navigator.dismissAllModals({ animated: false })
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
@@ -138,7 +137,7 @@ class Task extends Component {
 
 	handleOpenTask(task) {
 		//let x = 'hi'
-		this.props.navigator.push({
+		this.props.navigation.navigate({
 			screen: 'gelato.Task',
 			title: task.display,
 			animated: true,
