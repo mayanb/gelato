@@ -311,7 +311,17 @@ class QRScanner extends Component {
 
   handleOpenTask(creatingTask) {
 	  this.props.navigation.goBack()
-	  this.props.onOpenTask(creatingTask)
+	  // this.props.onOpenTask(creatingTask)
+    this.props.navigation.navigate('Task', {
+      id: creatingTask.id,
+      name: creatingTask.display,
+      open: creatingTask.open,
+      task: creatingTask,
+      date: creatingTask.created_at,
+      taskSearch: true,
+      title: creatingTask.display,
+      imgpath: creatingTask.process_type.icon,
+    })
   }
 
   onBarCodeRead(e) {
