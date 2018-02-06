@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, View } from 'react-native'
+import { Dimensions, StyleSheet, View, Text, Button } from 'react-native'
 import { SafeAreaView } from 'react-navigation'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
@@ -8,6 +8,7 @@ import { INVALID_QR } from '../resources/QRSemantics'
 import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 import QRCamera from '../components/QRCamera'
 import paramsToProps from '../resources/paramsToProps'
+import Modal from '../components/Modal'
 
 class Search extends Component {
   static navigationOptions = {
@@ -25,12 +26,13 @@ class Search extends Component {
 
       searchText: '',
       typeSearch: false,
+      showNotFoundModal: false,
       data: [],
     }
   }
 
   render() {
-    let { typeSearch, searchText, data } = this.state
+    let { typeSearch, searchText, data, showNotFoundModal } = this.state
 
     return (
       <View style={styles.container}>
@@ -56,6 +58,7 @@ class Search extends Component {
             isLoading={this.state.isLoading}
           />
         )}
+        { showNotFoundModal ? this.renderNotFoundModal() : null}
       </View>
     )
   }
@@ -153,10 +156,24 @@ class Search extends Component {
             this.navigateToFoundTask(found.creating_task)
           } else {
             //TODO: should bring up a dialog saying this QR code isn't in our system
-            alert("nope")
+            // alert("nope")
+            this.setState({ showNotFoundModal: true })
           }
         }
       })
+  }
+
+  renderNotFoundModal() {
+    return(
+      <Modal onPress={() => console.log("asdfasdf")}>
+        <Text>This QR Code isn't in our system!</Text>
+        <Button onPress={this.closeModal.bind(this)} title="Close"></Button>
+      </Modal>
+    )
+  }
+
+  closeModal() {
+    this.setState({ showNotFoundModal: false, expanded: false, barcode: false, foundQR: null, semantic: '', searchText: '', isFetching: false })
   }
 
   navigateToFoundTask(foundTask) {
