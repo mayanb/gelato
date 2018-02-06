@@ -201,12 +201,6 @@ class Task extends Component {
 						ListFooterComponent={<BottomTablePadding />}
 					/>
 					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
-						<ActionButton.Item
-							buttonColor={'purple'}
-							title="Print Task Label"
-							onPress={() => this.printTask()}>
-							<Image source={ImageUtility.requireIcon('print.png')} />
-						</ActionButton.Item>
 						{!isLabel &&
 						<ActionButton.Item
 							buttonColor={'green'}
