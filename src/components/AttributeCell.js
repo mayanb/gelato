@@ -38,6 +38,7 @@ export default class AttributeCell extends React.Component {
     if (this.state.loading) {
       return <ActivityIndicator size="small" color={Colors.base} />
     } else if (this.state.editing || Boolean(this.props.value)) {
+      const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
           style={styles.value}
@@ -46,6 +47,8 @@ export default class AttributeCell extends React.Component {
           onBlur={this.handleSubmitEditing.bind(this)}
           returnKeyType="done"
           value={this.state.typedValue}
+          keyboardType={keyboardType}
+          autoCorrent={false}
           ref={input => (this.input = input)}
         />
       )
@@ -55,7 +58,9 @@ export default class AttributeCell extends React.Component {
           activeOpacity={0.5}
           onPress={this.edit}
           style={styles.editButton}>
-          <Image source={ImageUtility.uxIcon('edit')} />
+          <View>
+            <Image source={ImageUtility.uxIcon('edit')} />
+          </View>
         </TouchableOpacity>
       )
     }

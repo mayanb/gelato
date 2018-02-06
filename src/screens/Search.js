@@ -50,7 +50,11 @@ class Search extends Component {
           />
         </SafeAreaView>
         {typeSearch && (
-          <SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)} data={data} isLoading={this.state.isLoading} />
+          <SearchDropdown
+            onSelect={this.onSelectTaskFromDropdown.bind(this)}
+            data={data}
+            isLoading={this.state.isLoading}
+          />
         )}
       </View>
     )
@@ -75,20 +79,24 @@ class Search extends Component {
 
   handleChangeText(text) {
     let { request } = this.state
-    this.setState({searchText: text})
+    this.setState({ searchText: text })
     if (request) {
       request.abort()
     }
 
     if (text.length < 2) return
 
-    let r = Networking.get('/ics/tasks/search/').query({label: text, team: this.props.teamID})
+    let r = Networking.get('/ics/tasks/search/').query({
+      label: text,
+      team: this.props.teamID,
+    })
 
     r
-      .then(res => this.setState({data: res.body.results, isLoading: false}) )
-      .catch(e => this.setState({data: [], isLoading: false}))
+      .then(res => this.setState({ data: res.body.results, isLoading: false }))
+      .catch(() => this.setState({ data: [], isLoading: false }))
 
-    this.setState({request: r, isLoading: true})
+    this.setState({ request: r, isLoading: true })
+
   }
 
   toggleTypeSearch() {
@@ -100,7 +108,7 @@ class Search extends Component {
   }
 
   onBarCodeRead(e) {
-    let { type, data } = e
+    let { data } = e
     let { expanded, barcode } = this.state
     if (expanded || barcode) {
       return
@@ -123,12 +131,13 @@ class Search extends Component {
   fetchBarcodeData(code) {
     let { mode } = this.props
 
-    let success = (data, semantic) => {
+    let success = () => {
       // this.setState({foundQR: data, semantic: semantic, isFetching: false})
-      // navigate to task page
     }
-    let failure = data =>
+
+    let failure = () =>
       this.setState({ foundQR: null, semantic: '', isFetching: false })
+
     Networking.get('/ics/items/')
       .query({ item_qr: code })
       .end((err, res) => {
@@ -159,7 +168,7 @@ class Search extends Component {
     })
   }
 
-  keyExtractor = (item, index) => item.id
+  keyExtractor = item => item.id
 }
 
 const width = Dimensions.get('window').width
@@ -179,16 +188,6 @@ const styles = StyleSheet.create({
     height: height,
     width: width,
   },
-  scrim: {
-    position: 'absolute',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    top: 0,
-    left: 0,
-    height: height,
-    width: width,
-    backgroundColor: 'rgba(255,0,0,0.5)',
-  },
   button: {
     position: 'absolute',
     top: 24,
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state /*, props */) => {
   return {
     openTasks: state.openTasks,
     completedTasks: state.completedTasks,

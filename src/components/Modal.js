@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   FlatList,
   ScrollView,
   View,
@@ -22,32 +22,70 @@ export default class Modal extends Component {
   }
 
   render() {
-    return <View style={styles.modal}>{this.props.children}</View>
+    return (
+      <View style={styles.modal}>
+        <TouchableView style={styles.topRow} onPress={this.props.onPress}/>
+          <View style={styles.middleRow}>
+            <TouchableView style={styles.side} onPress={this.props.onPress}/>
+            <View style={styles.modalContent}>
+              {this.props.children}
+            </View>
+            <TouchableView style={styles.side} onPress={this.props.onPress}/>
+          </View>
+          <TouchableView style={styles.bottomRow} onPress={this.props.onPress} />
+      </View>
+    )
   }
+}
+
+function TouchableView(props) {
+  return (
+    <TouchableWithoutFeedback onPress={props.onPress}>
+      <View style={props.style}/>
+    </TouchableWithoutFeedback>
+  )
 }
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
+const modalHeight = (52 * 5)
+const paddingHeight = (height - modalHeight )/2 - 85
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: height,
-    width: width,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    flexDirection: 'row',
-  },
-  modal: {
+  modalContent: {
     backgroundColor: 'white',
     borderRadius: 4,
-    maxHeight: 52 * 5,
-    minHeight: 52 * 5,
+    maxHeight: modalHeight,
+    minHeight: modalHeight,
     flex: 1,
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 100,
+    minWidth: width - 32,
+    maxWidth: width - 32,
   },
+
+  modal: {
+    flexDirection: 'column',
+    flex: 1,
+    height: height,
+    width: width,
+  },
+
+  topRow: {
+    minHeight: paddingHeight,
+  },
+
+  middleRow: {
+    flexDirection: 'row',
+    minHeight: modalHeight,
+    maxHeight: modalHeight,
+  },
+
+  side: {
+    flex: 1,
+  },
+
+  bottomRow: {
+    minHeight: paddingHeight,
+    flex: 1,
+  }
+
 })
+
