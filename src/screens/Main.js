@@ -1,35 +1,47 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, SectionList, StyleSheet, View } from 'react-native'
+import { Dimensions, SectionList, StyleSheet, View, Text } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
 import { clearUser } from 'react-native-authentication-helpers'
-
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TaskRow, TaskRowHeader } from '../components/Cells'
 import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
+import * as loginActions from '../actions/LoginActions'
+import * as ImageUtility from "../resources/ImageUtility"
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout', 'Search']
+const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
   static navigationOptions = ({ navigation, screenProps }) => {
     const params = navigation.state.params || {}
-    const { showActionSheet } = params
+    const { showActionSheet, showSearch } = params
 
     return {
       title: screenProps.team,
       headerLeft: (
-        <NavHeader color={Colors.white}>
+        <NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
           <NavHeader.Item
-            label="Settings"
+            label=""
+            iconName="md-settings"
             onPress={showActionSheet}
-            buttonStyle={{ fontSize: 15 }}
+          />
+
+        </NavHeader>
+      ),
+      headerRight: (
+        <NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
+          <NavHeader.Item
+            iconName="md-search"
+            label=""
+            onPress={showSearch}
           />
         </NavHeader>
       ),
@@ -40,12 +52,18 @@ class Main extends Component {
     super(props)
     console.disableYellowBox = true
     this.handlePress = this.handlePress.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.refreshTasks = this.refreshTasks.bind(this)
+    this.state = {
+      refreshing: false,
+    }
     // Storage.clear()
   }
 
   componentWillMount() {
     this.props.navigation.setParams({
       showActionSheet: () => this.ActionSheet.show(),
+      showSearch: () => this.handleSearch(),
     })
   }
 
@@ -64,6 +82,33 @@ class Main extends Component {
     }
   }
 
+  handleSearch() {
+    this.props.navigation.navigate('Search')
+  }
+
+  refreshTasks() {
+    this.setState({refreshing: true})
+    this.props.dispatch(actions.fetchOpenTasks())
+      .then(() => {
+        this.props.dispatch(actions.fetchCompletedTasks())
+          .then(() => this.setState({refreshing: false}))
+      })
+   
+  }
+
+  renderSectionFooter = ({section}) => {
+    if (!section.isLoading && section.data.length === 0) {
+      const text = section.key === 'open' ?
+        `No open tasks. Tap the + button to create a new task.` :
+        'No recently completed tasks.'
+      return (
+        <View style={styles.emptyFooterContainer}>
+          <Text style={styles.emptyFooterText}>{text}</Text>
+        </View>
+      )
+    }
+  }
+
   render() {
     let sections = this.loadData()
     return (
@@ -79,8 +124,12 @@ class Main extends Component {
           style={styles.table}
           renderItem={this.renderRow}
           renderSectionHeader={this.renderSectionHeader}
+          renderSectionFooter={this.renderSectionFooter}
           sections={sections}
           keyExtractor={this.keyExtractor}
+          ListFooterComponent={<TaskRowHeader/>}
+          onRefresh={this.refreshTasks}
+          refreshing={this.state.refreshing}
         />
         <ActionButton
           buttonColor={Colors.base}
@@ -165,8 +214,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.bluishGray,
   },
+  emptyFooterContainer: {
+    flexDirection: 'row',
+    paddingTop: 16,
+    paddingLeft: 20,
+    paddingRight: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  emptyFooterText: {
+    fontSize: 18,
+    color: Colors.lightGray,
+    textAlign: 'center',
+  }
 })
 
 const mapStateToProps = (state, props) => {
