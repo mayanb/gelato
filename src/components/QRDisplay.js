@@ -13,7 +13,7 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
 
-export class QRDisplay extends Component {
+export default class QRDisplay extends Component {
   render() {
     let {
       barcode,
