@@ -96,6 +96,7 @@ class Search extends Component {
       .catch(() => this.setState({ data: [], isLoading: false }))
 
     this.setState({ request: r, isLoading: true })
+
   }
 
   toggleTypeSearch() {
