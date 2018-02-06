@@ -185,33 +185,21 @@ export class AttributeHeaderCell extends Component {
         marginRight: 6,
       },
     })
-    if (this.props.type !== 'Bottom') {
-      console.log(this.props.outputUnit)
-      return (
-        <View style={styles.container}>
-          <View>
-            <Image
-              source={ImageUtility.requireIcon(this.props.imgpath)}
-              style={styles.process_icon}
-            />
-          </View>
-          <View style={styles.text_container}>
-            <Text style={styles.display}>{this.props.name}</Text>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={styles.output}>{`${
-                this.props.outputAmount
-              } ${pluralize(
-                this.props.outputUnit,
-                this.props.outputAmount
-              )} `}</Text>
-              <Text style={styles.date}>started at {this.props.date}</Text>
-            </View>
-          </View>
-        </View>
-      )
-    } else {
-      return <BottomTablePadding title={this.props.title} />
-    }
+	  return (
+		  <View style={styles.container}>
+			  <View>
+				  <Image source={ImageUtility.requireIcon(this.props.imgpath)} style={styles.process_icon} />
+			  </View>
+			  <View style={styles.text_container}>
+				  <Text style={styles.display}>{this.props.name}</Text>
+				  <View style={{ flexDirection: 'row' }}>
+					  <Text
+						  style={styles.output}>{`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
+					  <Text style={styles.date}>started at {this.props.date}</Text>
+				  </View>
+			  </View>
+		  </View>
+	  )
   }
 }
 
