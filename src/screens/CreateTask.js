@@ -9,6 +9,7 @@ import * as actions from '../actions/ProcessesAndProductsActions'
 import * as taskActions from '../actions/TaskListActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
+import { DateFormatter } from '../resources/Utility'
 
 class CreateTask extends Component {
   constructor(props) {
@@ -81,6 +82,10 @@ class CreateTask extends Component {
       id: task.id,
       name: task.display,
       open: true,
+      task: task,
+      date: DateFormatter.shorten(task.created_at),
+      taskSearch: false,
+      title: task.display,
     })
   }
 

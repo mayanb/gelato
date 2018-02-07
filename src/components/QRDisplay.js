@@ -24,6 +24,7 @@ export default class QRDisplay extends Component {
       onChange,
       onPress,
       onCancel,
+      amount
     } = this.props
     let styles = StyleSheet.create({
       container: {
