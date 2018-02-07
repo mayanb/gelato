@@ -49,7 +49,7 @@ function TouchableView(props) {
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const modalHeight = (52 * 5)
-const paddingHeight = (height - modalHeight )/2 - 85
+const paddingHeight = (height - modalHeight )/2 - 120
 
 const styles = StyleSheet.create({
   modalContent: {
