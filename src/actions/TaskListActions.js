@@ -110,7 +110,7 @@ export function fetchTask(task_id) {
 		dispatch(requestTasks(SEARCHED_TASKS))
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
 			let localStorage = {}
-			values.forEach((element, i) => {
+			values.forEach(element => {
 				let key = element[0]
 				let val = element[1]
 				localStorage[key] = val
