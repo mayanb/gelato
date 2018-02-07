@@ -91,6 +91,17 @@ function request(state, action) {
 }
 
 function requestSuccess(state, action) {
+  if (action.append) {
+    return update(state, {
+      ui: {
+        $merge: { isFetchingData: false }
+      },
+      data: {
+        $push: action.data,
+      }
+    })
+  }
+
   return update(state, {
     ui: {
       $merge: {
