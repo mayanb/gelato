@@ -14,113 +14,115 @@ export const REMOVE_INPUT_SUCCESS = 'REMOVE_INPUT_SUCCESS'
 export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
 
 export function _taskAttribute(state, action) {
-  let ns = BasicReducer(state, action)
-  switch (action.type) {
-    case UPDATE_ATTRIBUTE_SUCCESS:
-      return updateAttributeSuccess(ns, action)
-    case UPDATE_ATTRIBUTE_FAILURE:
-      return updateAttributeFailure(ns, action)
-    case RESET_JUST_CREATED:
-      return resetJustCreated(ns, action)
-    case ADD_OUTPUT_SUCCESS:
-      return addSuccess(ns, action, 'items')
-    case ADD_INPUT_SUCCESS:
-      return addSuccess(ns, action, 'inputs')
-    case START_ADDING:
-      return startAdding(ns, action)
-    case ADD_FAILURE:
-      return addFailure(ns, action)
-    case REMOVE_OUTPUT_SUCCESS:
-      return removeSuccess(ns, action, 'items')
-    case REMOVE_INPUT_SUCCESS:
-      return removeSuccess(ns, action, 'inputs')
-    default:
-      return ns
-  }
-  return ns
+	let ns = BasicReducer(state, action)
+	switch (action.type) {
+		case UPDATE_ATTRIBUTE_SUCCESS:
+			return updateAttributeSuccess(ns, action)
+		case UPDATE_ATTRIBUTE_FAILURE:
+			return updateAttributeFailure(ns, action)
+		case RESET_JUST_CREATED:
+			return resetJustCreated(ns, action)
+		case ADD_OUTPUT_SUCCESS:
+			return addSuccess(ns, action, 'items')
+		case ADD_INPUT_SUCCESS:
+			return addSuccess(ns, action, 'inputs')
+		case START_ADDING:
+			return startAdding(ns, action)
+		case ADD_FAILURE:
+			return addFailure(ns, action)
+		case REMOVE_OUTPUT_SUCCESS:
+			return removeSuccess(ns, action, 'items')
+		case REMOVE_INPUT_SUCCESS:
+			return removeSuccess(ns, action, 'inputs')
+		default:
+			return ns
+	}
+	return ns
 }
 
 function startAdding(state, action) {
-  return update(state, {
-    ui: {
-      isAdding: { $set: true },
-    },
-  })
+	return update(state, {
+		ui: {
+			isAdding: { $set: true },
+		},
+	})
 }
 
 function updateAttributeSuccess(state, action) {
-  console.log(state.data)
-  console.log(action.data.task)
-  let taskIndex = state.data.findIndex(e =>
-    Compute.equate(e.id, action.data.task)
-  )
-  let attributeIndex = state.data[taskIndex].organized_attributes.findIndex(e =>
-    Compute.equate(e.id, action.data.attribute)
-  )
-  return update(state, {
-    data: {
-      [taskIndex]: {
-        organized_attributes: {
-          [attributeIndex]: {
-            $merge: { value: action.data },
-          },
-        },
-      },
-    },
-  })
+	let taskIndex = state.data.findIndex(e =>
+		Compute.equate(e.id, action.data.task)
+	)
+	let attributeIndex = state.data[taskIndex].organized_attributes.findIndex(e =>
+		Compute.equate(e.id, action.data.attribute)
+	)
+
+	console.log(action.data)
+	console.log(state.data[taskIndex].organized_attributes[attributeIndex])
+
+	return update(state, {
+		data: {
+			[taskIndex]: {
+				organized_attributes: {
+					[attributeIndex]: {
+						$merge: { value: action.data },
+					},
+				},
+			},
+		},
+	})
 }
 
 function updateAttributeFailure(state, action) {
-  return state
+	return state
 }
 
 function resetJustCreated(state, action) {
-  return update(state, {
-    ui: {
-      $merge: { hasJustCreatedItem: false },
-    },
-  })
+	return update(state, {
+		ui: {
+			$merge: { hasJustCreatedItem: false },
+		},
+	})
 }
 
 function addSuccess(state, action, key) {
-  let task_index = state.data.findIndex(e =>
-    Compute.equate(e.id, action.task_id)
-  )
-  if (task_index === -1) return state
-  return update(state, {
-    data: {
-      [task_index]: {
-        [key]: {
-          $push: [action.item],
-        },
-      },
-    },
-    ui: {
-      isAdding: { $set: false },
-    },
-  })
+	let task_index = state.data.findIndex(e =>
+		Compute.equate(e.id, action.task_id)
+	)
+	if (task_index === -1) return state
+	return update(state, {
+		data: {
+			[task_index]: {
+				[key]: {
+					$push: [action.item],
+				},
+			},
+		},
+		ui: {
+			isAdding: { $set: false },
+		},
+	})
 }
 
 function addFailure(state, action) {
-  return update(state, {
-    ui: {
-      isAdding: { $set: false },
-    },
-  })
+	return update(state, {
+		ui: {
+			isAdding: { $set: false },
+		},
+	})
 }
 
 function removeSuccess(state, action, key) {
-  let task_index = state.data.findIndex(e =>
-    Compute.equate(e.id, action.task_id)
-  )
-  if (task_index === -1) return state
-  return update(state, {
-    data: {
-      [task_index]: {
-        [key]: {
-          $splice: [[action.index, 1]],
-        },
-      },
-    },
-  })
+	let task_index = state.data.findIndex(e =>
+		Compute.equate(e.id, action.task_id)
+	)
+	if (task_index === -1) return state
+	return update(state, {
+		data: {
+			[task_index]: {
+				[key]: {
+					$splice: [[action.index, 1]],
+				},
+			},
+		},
+	})
 }
