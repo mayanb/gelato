@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Gelato",
+    "name": "The Polymer App",
     "description": "Polymer mobile app",
-    "slug": "gelato",
+    "slug": "polymer",
     "privacy": "unlisted",
     "sdkVersion": "25.0.0",
     "platforms": ["ios", "android"],
-    "version": "1.0.0",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -15,7 +15,8 @@
       "backgroundColor": "#49A8F3"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.usepolymer.polymer"
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
