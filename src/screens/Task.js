@@ -27,7 +27,7 @@ import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 
 const ACTION_TITLE = 'More'
-const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete']
+const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
 const CANCEL_INDEX = 0
 const DESTRUCTIVE_INDEX = 3
 
