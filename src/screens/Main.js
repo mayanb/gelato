@@ -100,7 +100,7 @@ class Main extends Component {
     if (!section.isLoading && section.data.length === 0) {
       const text = section.key === 'open' ?
         `No open tasks. Tap the + button to create a new task.` :
-        'No recently completed tasks.'
+        `That's all your recently completed tasks.`
       return (
         <View style={styles.emptyFooterContainer}>
           <Text style={styles.emptyFooterText}>{text}</Text>
