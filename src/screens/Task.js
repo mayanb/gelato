@@ -169,6 +169,7 @@ class Task extends Component {
 
 	render() {
 		let { task } = this.props
+		console.log(task)
 		if (!task) {
 			return null
 		}
@@ -259,7 +260,7 @@ class Task extends Component {
 		}, 0)
 		return (
 			<AttributeHeaderCell
-				name={this.props.title}
+				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
 				date={date}
 				type="Top"
