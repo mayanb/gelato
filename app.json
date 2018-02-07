@@ -15,7 +15,8 @@
       "backgroundColor": "#1653D7"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.usepolymer.polymer"
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
