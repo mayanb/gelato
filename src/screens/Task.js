@@ -2,13 +2,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
-  Keyboard,
+	Keyboard,
 	View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Alert,
-  AlertIOS,
-  Image,
+	StyleSheet,
+	TouchableWithoutFeedback,
+	Alert,
+	AlertIOS,
+	Image,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -29,7 +29,6 @@ import paramsToProps from '../resources/paramsToProps'
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete']
 const CANCEL_INDEX = 0
-const DESTRUCTIVE_INDEX = 3
 
 class Task extends Component {
 	static navigationOptions = ({ navigation }) => {
@@ -76,8 +75,9 @@ class Task extends Component {
 			`Are you sure you want to delete ${task.display}?`,
 			[
 				{
-					text: 'Cancel', onPress: () => {
-					}, style: 'cancel'
+					text: 'Cancel',
+					onPress: () => {},
+					style: 'cancel',
 				},
 				{
 					text: 'Yes, delete',
@@ -105,13 +105,9 @@ class Task extends Component {
 
 	handleRenameTask(text) {
 		this.props.dispatch(
-			actions.requestRenameTask(
-				this.props.task,
-				text,
-				this.props.taskSearch
-			)
+			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
 		)
-		this.props.navigation.setParams({name: text})
+		this.props.navigation.setParams({ name: text })
 	}
 
 	handleDeleteTask() {
@@ -130,11 +126,11 @@ class Task extends Component {
 			taskSearch: this.props.taskSearch,
 			mode: mode,
 			processUnit: this.props.task.process_type.unit,
-			onOpenTask: this.handleOpenTask.bind(this)
+			onOpenTask: this.handleOpenTask.bind(this),
 		})
 	}
 
-	printTask(mode) {
+	printTask() {
 		this.props.navigation.navigate('Print', {
 			selectedTask: this.props.task,
 		})
@@ -153,11 +149,10 @@ class Task extends Component {
 				open: task.is_open,
 				title: task.display,
 				date: task.created_at,
-				imgpath: null
-			}
+				imgpath: null,
+			},
 		})
 	}
-
 
 	componentWillMount() {
 		this.props.navigation.setParams({
@@ -182,8 +177,9 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-		const actionOptions = task.is_flagged ? ACTION_OPTIONS.filter(o => o !== 'Flag') : ACTION_OPTIONS
-
+		const actionOptions = task.is_flagged
+			? ACTION_OPTIONS.filter(o => o !== 'Flag')
+			: ACTION_OPTIONS
 
 		return (
 			<TouchableWithoutFeedback
@@ -206,13 +202,14 @@ class Task extends Component {
 						ListFooterComponent={<BottomTablePadding />}
 					/>
 					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
-						{!isLabel &&
-						<ActionButton.Item
-							buttonColor={'green'}
-							title="Add Inputs"
-							onPress={() => this.showCamera('inputs')}>
-							<Image source={ImageUtility.requireIcon('inputs.png')} />
-						</ActionButton.Item>}
+						{!isLabel && (
+							<ActionButton.Item
+								buttonColor={'green'}
+								title="Add Inputs"
+								onPress={() => this.showCamera('inputs')}>
+								<Image source={ImageUtility.requireIcon('inputs.png')} />
+							</ActionButton.Item>
+						)}
 						<ActionButton.Item
 							buttonColor={'blue'}
 							title={outputButtonName}
@@ -250,10 +247,14 @@ class Task extends Component {
 		)
 	}
 
-	renderHeader = (task) => {
-		let imgpath = this.props.imgpath ? this.props.imgpath : task.process_type.icon
-		let date = this.props.taskSearch ? DateFormatter.shorten(this.props.date) : this.props.date
-		let outputAmount = task.items.reduce(function (total, current) {
+	renderHeader = task => {
+		let imgpath = this.props.imgpath
+			? this.props.imgpath
+			: task.process_type.icon
+		let date = this.props.taskSearch
+			? DateFormatter.shorten(this.props.date)
+			: this.props.date
+		let outputAmount = task.items.reduce((total, current) => {
 			return total + parseFloat(current.amount)
 		}, 0)
 		return (
@@ -261,7 +262,7 @@ class Task extends Component {
 				name={this.props.title}
 				imgpath={imgpath}
 				date={date}
-				type={"Top"}
+				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
 			/>
@@ -270,25 +271,25 @@ class Task extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.bluishGray,
-	  display: 'flex',
-	  height: '100%'
-  },
+	container: {
+		backgroundColor: Colors.bluishGray,
+		display: 'flex',
+		height: '100%',
+	},
 })
 
 const mapStateToProps = (state, props) => {
-  let { taskSearch, open } = props
-  let arr = state.searchedTasks.data
-  if (!taskSearch && open) {
-    arr = state.openTasks.data
-  } else if (!taskSearch) {
-    arr = state.completedTasks.data
-  }
+	let { taskSearch, open } = props
+	let arr = state.searchedTasks.data
+	if (!taskSearch && open) {
+		arr = state.openTasks.data
+	} else if (!taskSearch) {
+		arr = state.completedTasks.data
+	}
 
-  return {
-    task: arr.find(e => Compute.equate(e.id, props.id)),
-  }
+	return {
+		task: arr.find(e => Compute.equate(e.id, props.id)),
+	}
 }
 
 export default paramsToProps(connect(mapStateToProps)(Task))
