@@ -110,7 +110,7 @@ export function fetchTask(task_id) {
 		dispatch(requestTasks(SEARCHED_TASKS))
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
 			let localStorage = {}
-			values.forEach((element, i) => {
+			values.forEach(element => {
 				let key = element[0]
 				let val = element[1]
 				localStorage[key] = val
@@ -121,7 +121,7 @@ export function fetchTask(task_id) {
 				} else {
 					let organized = Compute.organizeAttributes(res.body)
 					res.body.organized_attributes = organized
-					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body]))
+					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body], true))
 				}
 			})
 		})
@@ -135,11 +135,12 @@ function requestTasks(name) {
 	}
 }
 
-function requestTasksSuccess(name, data) {
+function requestTasksSuccess(name, data, append = false) {
 	return {
 		type: REQUEST_SUCCESS,
 		name: name,
 		data: data,
+		append: append,
 	}
 }
 
