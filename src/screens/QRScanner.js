@@ -46,7 +46,13 @@ class QRScanner extends Component {
   render() {
     let { expanded, barcode } = this.state
     let { mode, task } = this.props
-    let item_array = task[mode] || []
+    let item_array = []
+    if (task != null && mode != null) {
+      item_array = task[mode]
+    } else {
+      return <View></View>
+    }
+    // let item_array = task[mode] || []
     return (
       <View style={styles.container}>
         <Camera
