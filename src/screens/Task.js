@@ -169,7 +169,6 @@ class Task extends Component {
 
 	render() {
 		let { task } = this.props
-		console.log(task)
 		if (!task) {
 			return null
 		}
