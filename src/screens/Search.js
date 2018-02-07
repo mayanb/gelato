@@ -121,12 +121,7 @@ class Search extends Component {
 
     let valid = Compute.validateQR(data)
     if (!valid) {
-      this.setState({
-        barcode: data,
-        isFetching: false,
-        foundQR: null,
-        semantic: INVALID_QR,
-      })
+      this.setState({ showNotFoundModal: true, semantic: INVALID_QR })
     } else {
       this.setState({ barcode: data, isFetching: true })
       this.fetchBarcodeData(data) // get detailed info about this bar code from the server
@@ -146,6 +141,7 @@ class Search extends Component {
     Networking.get('/ics/items/')
       .query({ item_qr: code })
       .end((err, res) => {
+        console.log(res.body)
         if (err || !res.ok) {
           failure(err)
         } else {
@@ -170,7 +166,6 @@ class Search extends Component {
     return(
       
       <ModalAlert onPress={this.closeModal} message="This QR Code isn't in our system!" buttonText="Close">
-        
       </ModalAlert>
     )
   }
