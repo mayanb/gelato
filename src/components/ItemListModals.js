@@ -26,7 +26,7 @@ class InputItemListModalUnconnected extends Component {
 				<FlatList
 					renderItem={this.renderRow.bind(this)}
 					data={this.props.items}
-					ListHeaderComponent={() => header(this.props.items, 'inputs', this.props.processUnit)}
+					ListHeaderComponent={() => inputHeader(this.props.items, 'inputs', this.props.processUnit)}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
@@ -112,6 +112,34 @@ function header(items, typeName, unit) {
 		<View style={styles.container}>
 			<Text style={styles.text}>
 				{`${count} ${pluralize(typeName, count)} (${totalAmount} ${pluralize(unit, totalAmount)})`}
+			</Text>
+		</View>
+	)
+}
+
+function inputHeader(items, typeName, unit) {
+	let styles = StyleSheet.create({
+		container: {
+			height: 50,
+			borderBottomWidth: 1,
+			borderBottomColor: Colors.ultraLightGray,
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'flex-start',
+			alignItems: 'center',
+			paddingLeft: 20,
+			paddingRight: 16,
+		},
+		text: {
+			fontSize: 14,
+			color: Colors.lightGrayText
+		}
+	})
+	const count = items.length
+	return (
+		<View style={styles.container}>
+			<Text style={styles.text}>
+				{`${count} ${pluralize(typeName, count)}`}
 			</Text>
 		</View>
 	)

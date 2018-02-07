@@ -27,7 +27,7 @@ import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 
 const ACTION_TITLE = 'More'
-const ACTION_OPTIONS = ['Cancel', 'Rename', 'Flag', 'Delete']
+const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
@@ -169,6 +169,7 @@ class Task extends Component {
 
 	render() {
 		let { task } = this.props
+		console.log(task)
 		if (!task) {
 			return null
 		}
@@ -259,7 +260,7 @@ class Task extends Component {
 		}, 0)
 		return (
 			<AttributeHeaderCell
-				name={this.props.title}
+				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
 				date={date}
 				type="Top"

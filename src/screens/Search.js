@@ -8,7 +8,8 @@ import { INVALID_QR } from '../resources/QRSemantics'
 import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 import QRCamera from '../components/QRCamera'
 import paramsToProps from '../resources/paramsToProps'
-import Modal from '../components/Modal'
+import ModalAlert from '../components/ModalAlert'
+import Colors from '../resources/Colors'
 
 class Search extends Component {
   static navigationOptions = {
@@ -29,6 +30,7 @@ class Search extends Component {
       showNotFoundModal: false,
       data: [],
     }
+    this.closeModal = this.closeModal.bind(this)
   }
 
   render() {
@@ -164,13 +166,16 @@ class Search extends Component {
   }
 
   renderNotFoundModal() {
+    
     return(
-      <Modal onPress={() => console.log("asdfasdf")}>
-        <Text>This QR Code isn't in our system!</Text>
-        <Button onPress={this.closeModal.bind(this)} title="Close"></Button>
-      </Modal>
+      
+      <ModalAlert onPress={this.closeModal} message="This QR Code isn't in our system!" buttonText="Close">
+        
+      </ModalAlert>
     )
   }
+
+
 
   closeModal() {
     this.setState({ showNotFoundModal: false, expanded: false, barcode: false, foundQR: null, semantic: '', searchText: '', isFetching: false })
