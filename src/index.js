@@ -19,36 +19,36 @@ import paramsToProps from './resources/paramsToProps'
 import { connect } from 'react-redux'
 
 class App extends React.Component {
-  state = {
-    ready: false,
-    loggedIn: false,
-  }
+	state = {
+		ready: false,
+		loggedIn: false,
+	}
 
-  _loadDataAsync = async () => {
-    const token = await Storage.get('token')
-    const loggedIn = !!token
+	_loadDataAsync = async () => {
+		const token = await Storage.get('token')
+		const loggedIn = !!token
 
-    if (loggedIn) {
-      const [username, team, teamID] = await Promise.all([
-        Storage.get('username'),
-        Storage.get('teamName'),
-        Storage.get('teamID'),
-      ])
+		if (loggedIn) {
+			const [username, team, teamID] = await Promise.all([
+				Storage.get('username'),
+				Storage.get('teamName'),
+				Storage.get('teamID'),
+			])
 
-      // NOTE(brent): one could move all data that is currently stored in
-      // Storage into the user via react-native-authentication-helpers and
-      // delete a lot of code
-      setUser({ username, team, teamID, token })
-    }
-  }
+			// NOTE(brent): one could move all data that is currently stored in
+			// Storage into the user via react-native-authentication-helpers and
+			// delete a lot of code
+			setUser({ username, team, teamID, token })
+		}
+	}
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.user && !this.props.user) {
-      this.setState({ loggedIn: true })
-    } else if (!nextProps.user && this.props.user) {
-      this.setState({ loggedIn: false })
-    }
-  }
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.user && !this.props.user) {
+			this.setState({ loggedIn: true })
+		} else if (!nextProps.user && this.props.user) {
+			this.setState({ loggedIn: false })
+		}
+	}
 
   render() {
     let {errors, user} = this.props
@@ -83,36 +83,36 @@ class App extends React.Component {
 }
 
 const MainStack = StackNavigator(
-  {
-    Main: { screen: Main },
-    CreateTask: { screen: CreateTask },
-    Task: { screen: Task },
-    Print: { screen: Print },
-  },
-  {
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: Colors.base,
-        borderBottomWidth: 0,
-      },
-      headerTintColor: Colors.white,
-    },
-  }
+	{
+		Main: { screen: Main },
+		CreateTask: { screen: CreateTask },
+		Task: { screen: Task },
+		Print: { screen: Print },
+	},
+	{
+		navigationOptions: {
+			headerStyle: {
+				backgroundColor: Colors.base,
+				borderBottomWidth: 0,
+			},
+			headerTintColor: Colors.white,
+		},
+	}
 )
 
 const Navigation = StackNavigator(
-  {
-    MainStack: { screen: MainStack },
-    QRScanner: { screen: QRScanner },
-    Search: { screen: Search },
-  },
-  {
-    mode: 'modal',
-    navigationOptions: {
-      header: null,
-      gesturesEnabled: false,
-    },
-  }
+	{
+		MainStack: { screen: MainStack },
+		QRScanner: { screen: QRScanner },
+		Search: { screen: Search },
+	},
+	{
+		mode: 'modal',
+		navigationOptions: {
+			header: null,
+			gesturesEnabled: false,
+		},
+	}
 )
 
 const mapStateToProps = (state /*, props */) => {

@@ -13,24 +13,24 @@ const TASK = 'TASK'
 const ERROR = 'ERROR'
 
 let defaultState = {
-  data: [],
-  ui: {},
+	data: [],
+	ui: {},
 }
 
 function createFilteredReducer(
-  reducerFunction,
-  reducerPredicate,
-  defaultState
+	reducerFunction,
+	reducerPredicate,
+	defaultState
 ) {
-  return (state, action) => {
-    const isInitializationCall = state === undefined
-    const shouldRunWrappedReducer =
-      reducerPredicate(action) || isInitializationCall
-    if (isInitializationCall) {
-      return reducerFunction(defaultState, action)
-    }
-    return shouldRunWrappedReducer ? reducerFunction(state, action) : state
-  }
+	return (state, action) => {
+		const isInitializationCall = state === undefined
+		const shouldRunWrappedReducer =
+			reducerPredicate(action) || isInitializationCall
+		if (isInitializationCall) {
+			return reducerFunction(defaultState, action)
+		}
+		return shouldRunWrappedReducer ? reducerFunction(state, action) : state
+	}
 }
 
 var reducer = combineReducers({
