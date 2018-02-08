@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { BasicReducer } from './src/reducers/BasicReducer'
 import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
+import { ErrorReducer } from './src/reducers/ErrorReducer'
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
@@ -9,6 +10,7 @@ const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
 const TASK = 'TASK'
+const ERROR = 'ERROR'
 
 let defaultState = {
   data: [],
@@ -55,6 +57,11 @@ var reducer = combineReducers({
   products: createFilteredReducer(
     BasicReducer,
     action => action.name === PRODUCTS,
+    defaultState
+  ),
+  errors: createFilteredReducer(
+    ErrorReducer,
+    action => action.name === ERROR,
     defaultState
   ),
 })
