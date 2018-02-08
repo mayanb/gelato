@@ -1,6 +1,6 @@
 import update from 'immutability-helper'
-const SET_ERROR = 'SET_ERROR'
-const CLEAR_ERROR = 'CLEAR_ERROR'
+export const SET_ERROR = 'SET_ERROR'
+export const CLEAR_ERROR = 'CLEAR_ERROR'
 
 export function ErrorReducer(state, action) {
 	switch (action.type) {
@@ -16,7 +16,7 @@ export function ErrorReducer(state, action) {
 function setError(state, action) {
 	return update(state, {
 		data: {
-			$push: action.error,
+			$push: [action.error],
 		},
 	})
 }
@@ -28,7 +28,7 @@ function clearError(state, action) {
 		return state
 	}
 
-	let errorIndex = state.data.findIndex(e => e.id === action.error.id)
+	let errorIndex = state.data.findIndex(e => e.errorID === action.errorID)
 
 	return update(state, {
 		data: {

@@ -52,6 +52,7 @@ class App extends React.Component {
 
   render() {
     let {errors, user} = this.props
+    console.log(errors)
     if (!this.state.ready) {
       return (
         <AppLoading
@@ -70,7 +71,7 @@ class App extends React.Component {
           <Login />
         )}
         {errors.data.length ? (
-          <Snackbar>{errors.data[errors.data.length-1]}</Snackbar>
+          <Snackbar>{errors.data[errors.data.length-1].errorType}</Snackbar>
         ) : (
           false
         )}

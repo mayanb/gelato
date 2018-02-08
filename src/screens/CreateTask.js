@@ -6,6 +6,7 @@ import ActionButton from 'react-native-action-button'
 import Colors from '../resources/Colors'
 import { Dropdown } from '../components/Dropdown'
 import * as actions from '../actions/ProcessesAndProductsActions'
+import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskListActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
@@ -21,8 +22,13 @@ class CreateTask extends Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchProcesses())
-		this.props.dispatch(actions.fetchProducts())
+		let { dispatch } = this.props
+		dispatch(actions.fetchProcesses()).catch((e) => {
+			//dispatch(errorActions.handleError(getErrorType(e)))
+		})
+		dispatch(actions.fetchProducts()).catch((e) => {
+			//dispatch(errorActions.handleError(getErrorType(e)))
+		})
 	}
 
 	componentWillReceiveProps(np) {

@@ -32,9 +32,9 @@ function fetch(name) {
         localStorage[key] = val
       })
       team = localStorage['teamID']
-      Networking.get(`/ics/${endpoint}/`)
+       return Networking.get(`/ics/${endpoint}/`)
         .query({ team_created_by: team })
-        .end(function(err, res) {
+        .then(function(err, res) {
           if (err || !res.ok) {
             dispatch(requestFailure(name, err))
           } else {
