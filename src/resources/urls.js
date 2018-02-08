@@ -1,19 +1,26 @@
+const PRODUCTION_URL =
+	'https://41aty886e1.execute-api.us-west-1.amazonaws.com/production'
+const STAGING_URL =
+	'https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging'
+const LOCAL_URL = 'http://localhost:8000'
+
 export function getBackend() {
-  let k = 'staging'
-  switch (k) {
-    case 'production':
-      return 'https://41aty886e1.execute-api.us-west-1.amazonaws.com/production'
-    case 'staging':
-      return 'https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging'
-    default:
-      return 'http://localhost:8000'
-  }
+	let { releaseChannel } = Expo.Constants.manifest
+	switch (releaseChannel) {
+		case 'default':
+			return PRODUCTION_URL
+		case 'staging':
+			return STAGING_URL
+		default:
+			// change this if you want to change what your dev app is using
+			return LOCAL_URL
+	}
 }
 
 export function latest(host, path) {
-  let url = host + path
-  if (path.startsWith('/ics')) {
-    url = host + '/ics/v7' + path.substring(4)
-  }
-  return url
+	let url = host + path
+	if (path.startsWith('/ics')) {
+		url = host + '/ics/v7' + path.substring(4)
+	}
+	return url
 }
