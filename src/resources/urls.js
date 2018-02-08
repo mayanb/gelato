@@ -1,5 +1,5 @@
 export function getBackend() {
-  let k = 'staging'
+  let k = 'local'
   switch (k) {
     case 'production':
       return 'https://41aty886e1.execute-api.us-west-1.amazonaws.com/production'

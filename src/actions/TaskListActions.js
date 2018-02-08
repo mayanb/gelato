@@ -117,7 +117,7 @@ export function fetchTask(task_id) {
 					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body], true))
 				})
 				.catch(e => {
-					dispatch(requestTasksFailure(SEARCHED_TASKS, err))
+					dispatch(requestTasksFailure(SEARCHED_TASKS, e))
 					throw e
 				})
 		})
@@ -160,8 +160,8 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 		return Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
 			.then(res => dispatch(updateAttributeSuccess(name, res.body)))
-			.catch(err => {
-				dispatch(updateAttributeFailure(name, err))
+			.catch(e => {
+				dispatch(updateAttributeFailure(name, e))
 				throw e
 			})
 	}
@@ -197,7 +197,7 @@ export function requestCreateTask(data) {
 				dispatch(createTaskSuccess(res.body))
 			})
 			.catch(e => {
-				dispatch(createTaskFailure(OPEN_TASKS, err))
+				dispatch(createTaskFailure(OPEN_TASKS, e))
 				throw e
 			})
 	}
@@ -237,7 +237,7 @@ export function addInput(task, item, isSearched) {
 				dispatch(addSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
 			})
 			.catch(e => {
-				dispatch(addFailure(err))
+				dispatch(addFailure(e))
 				failure(err)
 				throw e
 			})
@@ -254,7 +254,7 @@ export function addOutput(task, qr, amount, isSearched) {
 				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
 			})
 			.catch(e => {
-				dispatch(addFailure(err))
+				dispatch(addFailure(e))
 				throw e
 			})
 	}
@@ -286,18 +286,17 @@ function addFailure(err) {
 	}
 }
 
-export function removeOutput(task, item, index, isSearched, success, failure) {
+export function removeOutput(task, item, index, isSearched) {
 	return removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
 	return dispatch => {
-		return Networking.del('/ics/items/', item.id).end((err, res) => {
-			if (err || !res.ok) {
-				dispatch(removeFailure(err))
-				failure(err)
-			} else {
+		return Networking.del('/ics/items/', item.id)
+			.then(() => {
 				dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
-				success(res.body)
-			}
-		})
+			})
+			.catch(e => {
+				dispatch(removeFailure(e))
+				throw e
+			})
 	}
 }
 
@@ -306,7 +305,7 @@ export function removeInput(task, input, index, isSearched, success) {
 		return Networking.del('/ics/inputs/', input.id).end((err, res) => {
 			if (err || !res.ok) {
 				//dispatch(removeFailure(err))
-				failure(err)
+				failure(e)
 			} else {
 				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
 				success(res.body)
@@ -331,13 +330,13 @@ export function requestDeleteTask(task, isSearched, success) {
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(deleteTaskFailure(name, err))
-				} else {
-					dispatch(deleteTaskSuccess(name, task))
-					success()
-				}
+			.then(() => {
+				dispatch(deleteTaskSuccess(name, task))
+				success()
+			})
+			.catch(e => {
+				dispatch(deleteTaskFailure(name, e))
+				throw e
 			})
 	}
 }
@@ -364,12 +363,12 @@ export function requestFlagTask(task, isSearched) {
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(requestEditItemFailure(name, err))
-				} else {
-					dispatch(requestEditItemSuccess(name, task, 'is_flagged', true))
-				}
+			.then(() => {
+				dispatch(requestEditItemSuccess(name, task, 'is_flagged', true))
+			})
+			.catch(e => {
+				dispatch(requestEditItemFailure(name, e))
+				throw e
 			})
 	}
 }
@@ -398,19 +397,13 @@ export function requestRenameTask(task, custom_display, isSearched) {
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(requestEditItemFailure(name, err))
-				} else {
-					dispatch(
-						requestEditItemSuccess(name, task, 'custom_display', custom_display)
-					)
-					if (custom_display.length) {
-						dispatch(
-							requestEditItemSuccess(name, task, 'display', custom_display)
-						)
-					}
-				}
+			.then(() => {
+				let key = custom_display.length ? 'display' : 'custom_display'
+				dispatch(requestEditItemSuccess(name, task, key, custom_display))
+			})
+			.catch(e => {
+				dispatch(requestEditItemFailure(name, e))
+				throw e
 			})
 	}
 }

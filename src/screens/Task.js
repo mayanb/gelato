@@ -25,6 +25,7 @@ import Flag from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
+import * as errorActions from '../actions/ErrorActions'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
@@ -55,6 +56,13 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+	}
+
+	dispatchWithError(f) {
+		let { dispatch } = this.props
+		return dispatch(f).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
 	}
 
 	showCustomNameAlert() {
@@ -94,7 +102,7 @@ class Task extends Component {
 			this.showCustomNameAlert()
 		}
 		if (ACTION_OPTIONS[i] === 'Flag') {
-			this.props.dispatch(
+			thisdispatchWithError(
 				actions.requestFlagTask(this.props.task, this.props.taskSearch)
 			)
 		}
@@ -104,7 +112,7 @@ class Task extends Component {
 	}
 
 	handleRenameTask(text) {
-		this.props.dispatch(
+		this.dispatchWithError(
 			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
 		)
 		this.props.navigation.setParams({ name: text })
@@ -114,7 +122,7 @@ class Task extends Component {
 		let success = () => {
 			this.props.navigation.goBack()
 		}
-		this.props.dispatch(
+		this.dispatchWithError(
 			actions.requestDeleteTask(this.props.task, this.props.taskSearch, success)
 		)
 	}
@@ -163,7 +171,7 @@ class Task extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
 		if (this.props.taskSearch) {
-			this.props.dispatch(actions.fetchTask(this.props.id))
+			this.dispatchWithError(actions.fetchTask(this.props.id))
 		}
 	}
 
@@ -242,7 +250,7 @@ class Task extends Component {
 		if (newValue === currValue) {
 			return
 		}
-		return this.props.dispatch(
+		return this.dispatchWithError(
 			actions.updateAttribute(task, id, newValue, this.props.taskSearch)
 		)
 	}
