@@ -1,5 +1,5 @@
 import React from 'react'
-import { StatusBar, View } from 'react-native'
+import { StatusBar, View, Text } from 'react-native'
 import { AppLoading } from 'expo'
 import { StackNavigator } from 'react-navigation'
 import { setUser, withUser } from 'react-native-authentication-helpers'
@@ -13,6 +13,10 @@ import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
 import Print from './screens/Print'
 import Search from './screens/Search'
+import Snackbar from './components/Snackbar'
+
+import paramsToProps from './resources/paramsToProps'
+import { connect } from 'react-redux'
 
 class App extends React.Component {
 	state = {
@@ -47,6 +51,8 @@ class App extends React.Component {
 	}
 
 	render() {
+		let {errors, user} = this.props
+		console.log(errors)
 		if (!this.state.ready) {
 			return (
 				<AppLoading
@@ -60,9 +66,14 @@ class App extends React.Component {
 		return (
 			<View style={{ flex: 1 }}>
 				{this.state.loggedIn ? (
-					<Navigation screenProps={this.props.user} />
+					<Navigation screenProps={user} />
 				) : (
 					<Login />
+				)}
+				{errors.data.length ? (
+					<Snackbar>{errors.data[errors.data.length-1].errorType}</Snackbar>
+				) : (
+					false
 				)}
 				<StatusBar barStyle="light-content" />
 			</View>
@@ -103,4 +114,11 @@ const Navigation = StackNavigator(
 	}
 )
 
-export default withUser(App)
+const mapStateToProps = (state /*, props */) => {
+	return {
+		errors: state.errors
+	}
+}
+
+let connected = connect(mapStateToProps)(App)
+export default withUser(connected)

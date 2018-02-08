@@ -1,7 +1,7 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, SectionList, StyleSheet, View, Text } from 'react-native'
+import { SectionList, StyleSheet, View, Text } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -12,8 +12,8 @@ import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
-import * as loginActions from '../actions/LoginActions'
-import * as ImageUtility from "../resources/ImageUtility"
+import * as errorActions from '../actions/ErrorActions'
+import Compute from '../resources/Compute'
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout']
@@ -33,16 +33,11 @@ class Main extends Component {
 						iconName="md-settings"
 						onPress={showActionSheet}
 					/>
-
 				</NavHeader>
 			),
 			headerRight: (
 				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
-					<NavHeader.Item
-						iconName="md-search"
-						label=""
-						onPress={showSearch}
-					/>
+					<NavHeader.Item iconName="md-search" label="" onPress={showSearch} />
 				</NavHeader>
 			),
 		}
@@ -68,8 +63,28 @@ class Main extends Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchOpenTasks())
-		this.props.dispatch(actions.fetchCompletedTasks())
+		this.fetchOpenTasks()
+		this.fetchCompletedTasks()
+	}
+
+	fetchOpenTasks() {
+		let { dispatch } = this.props
+		dispatch(actions.fetchOpenTasks()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+	}
+
+	fetchCompletedTasks() {
+		let { dispatch } = this.props
+		dispatch(actions.fetchCompletedTasks()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+	}
+
+	refreshTasks() {
+		this.setState({ refreshing: true })
+		this.fetchOpenTasks()
+		this.fetchCompletedTasks()
 	}
 
 	handlePress(i) {
@@ -86,21 +101,12 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	refreshTasks() {
-		this.setState({refreshing: true})
-		this.props.dispatch(actions.fetchOpenTasks())
-			.then(() => {
-				this.props.dispatch(actions.fetchCompletedTasks())
-					.then(() => this.setState({refreshing: false}))
-			})
-	 
-	}
-
-	renderSectionFooter = ({section}) => {
+	renderSectionFooter = ({ section }) => {
 		if (!section.isLoading && section.data.length === 0) {
-			const text = section.key === 'open' ?
-				`No open tasks. Tap the + button to create a new task.` :
-				`That's all your recently completed tasks.`
+			const text =
+				section.key === 'open'
+					? `No open tasks. Tap the + button to create a new task.`
+					: `That's all your recently completed tasks.`
 			return (
 				<View style={styles.emptyFooterContainer}>
 					<Text style={styles.emptyFooterText}>{text}</Text>
@@ -111,6 +117,9 @@ class Main extends Component {
 
 	render() {
 		let sections = this.loadData()
+		let openRefreshing = this.props.openTasks.ui.isFetchingData
+		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
+		let isRefreshing = openRefreshing || completedRefreshing || false
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -129,7 +138,7 @@ class Main extends Component {
 					keyExtractor={this.keyExtractor}
 					ListFooterComponent={<TaskRowHeader/>}
 					onRefresh={this.refreshTasks}
-					refreshing={this.state.refreshing}
+					refreshing={isRefreshing}
 				/>
 				<ActionButton
 					buttonColor={Colors.base}

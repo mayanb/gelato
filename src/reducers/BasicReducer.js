@@ -136,8 +136,6 @@ function requestCreate(state, action) {
 }
 
 function requestCreateSuccess(state, action) {
-	console.log(state)
-	console.log(action)
 	let position = state.data.find(e => e.id === action.item.id) || 0
 	return update(state, {
 		ui: {
