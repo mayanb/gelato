@@ -4,7 +4,7 @@ export function handleError(err_type) {
 	return dispatch => {
 		let err_id = parseInt(Math.random() * 1000)
 		dispatch(setError(err_type, err_id))
-		return window.setTimeout(() => dispatch(clearError(err_id)), 10000)
+		return window.setTimeout(() => dispatch(clearError(err_id)), 5000)
 	}
 }
 

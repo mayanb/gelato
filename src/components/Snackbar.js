@@ -1,10 +1,24 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Dimensions, Text, StyleSheet, View } from 'react-native'
+import Colors from '../resources/Colors'
 
 export default function Snackbar(props) {
 	return (
-		<View>
-			<Text>{props.children}</Text>
+		<View style={styles.container}>
+			<Text style={styles.text}>{props.children}</Text>
 		</View>
 	)
 }
+
+const width = Dimensions.get('window').width
+const styles = StyleSheet.create({
+	container: {
+		backgroundColor: Colors.darkGray,
+		padding: 16,
+	}, 
+	text: {
+		color: Colors.white,
+		fontSize: 17,
+		lineHeight: 20,
+	}
+})

@@ -1,7 +1,6 @@
 import * as Networking from './Networking-superagent'
 import update from 'immutability-helper'
 import moment from 'moment'
-
 import {
 	NOT_OUTPUT,
 	ALREADY_OUTPUT,
@@ -9,6 +8,7 @@ import {
 	ALREADY_ADDED_OUTPUT,
 	INVALID_QR,
 } from './QRSemantics'
+import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 
 export default class Compute {
 	constructor() {}
@@ -90,6 +90,10 @@ export default class Compute {
 		}
 	}
 
+	static errorText() {
+		return PROGRAM_ERROR
+	}
+
 	static getTextFromSemantic(semantic) {
 		switch (semantic) {
 			case ALREADY_OUTPUT:
@@ -120,6 +124,6 @@ export default class Compute {
 	}
 
 	static getReadableTaskDescriptor(task) {
-		return task.process_type.name + " " + task.product_type.name
+		return task.process_type.name + ' ' + task.product_type.name
 	}
 }

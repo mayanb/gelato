@@ -58,15 +58,15 @@ export function fetchOpenTasks() {
 				localStorage[key] = val
 			})
 			openPayload['team'] = localStorage['teamID']
-			Networking.get('/ics/tasks/')
+			return Networking.get('/ics/tasks/')
 				.query(openPayload)
-				.end(function(err, res) {
-					if (err || !res.ok) {
-						dispatch(requestTasksFailure(OPEN_TASKS, err))
-					} else {
-						let organized = Compute.organizeAttributesForTasks(res.body)
-						dispatch(requestTasksSuccess(OPEN_TASKS, organized))
-					}
+				.then(res => {
+					let organized = Compute.organizeAttributesForTasks(res.body)
+					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
+				})
+				.catch(e => {
+					dispatch(requestTasksFailure(OPEN_TASKS, e))
+					throw e
 				})
 		})
 	}
@@ -76,7 +76,6 @@ export function fetchCompletedTasks() {
 	return dispatch => {
 		dispatch(requestTasks(COMPLETED_TASKS))
 
-		let completed = []
 		const completedPayload = {
 			team: 1,
 			ordering: '-updated_at',
@@ -85,21 +84,21 @@ export function fetchCompletedTasks() {
 
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
 			let localStorage = {}
-			values.forEach((element, i) => {
+			values.forEach(element => {
 				let key = element[0]
 				let val = element[1]
 				localStorage[key] = val
 			})
 			completedPayload['team'] = localStorage['teamID']
-			Networking.get('/ics/tasks/search')
+			return Networking.get('/ics/tasks/search')
 				.query(completedPayload)
-				.end(function(err, res) {
-					if (err || !res.ok) {
-						dispatch(requestTasksFailure(COMPLETED_TASKS, err))
-					} else {
-						let organized = Compute.organizeAttributesForTasks(res.body.results)
-						dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
-					}
+				.then(res => {
+					let organized = Compute.organizeAttributesForTasks(res.body.results)
+					dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
+				})
+				.catch(e => {
+					dispatch(requestTasksFailure(COMPLETED_TASKS, e))
+					throw e
 				})
 		})
 	}
@@ -115,15 +114,17 @@ export function fetchTask(task_id) {
 				let val = element[1]
 				localStorage[key] = val
 			})
-			Networking.get(`/ics/tasks/${task_id}`).end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(requestTasksFailure(SEARCHED_TASKS, err))
-				} else {
+
+			return Networking.get(`/ics/tasks/${task_id}`)
+				.then(res => {
 					let organized = Compute.organizeAttributes(res.body)
 					res.body.organized_attributes = organized
 					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body], true))
-				}
-			})
+				})
+				.catch(e => {
+					dispatch(requestTasksFailure(SEARCHED_TASKS, err))
+					throw e
+				})
 		})
 	}
 }
@@ -164,11 +165,14 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 		return Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
 			.then(res => dispatch(updateAttributeSuccess(name, res.body)))
-			.catch(err => dispatch(updateAttributeFailure(name, err)))
+			.catch(err => {
+				dispatch(updateAttributeFailure(name, err))
+				throw e
+			})
 	}
 }
 
-function updateAttributeSuccess(name, data, type) {
+function updateAttributeSuccess(name, data) {
 	return {
 		name: name,
 		type: UPDATE_ATTRIBUTE_SUCCESS,
@@ -176,7 +180,7 @@ function updateAttributeSuccess(name, data, type) {
 	}
 }
 
-function updateAttributeFailure(name, err, type) {
+function updateAttributeFailure(name, err) {
 	return {
 		name: name,
 		type: UPDATE_ATTRIBUTE_FAILURE,
@@ -190,16 +194,16 @@ export function requestCreateTask(data) {
 
 		return Networking.post('/ics/tasks/create/')
 			.send(payload)
-			.end(function(err, res) {
-				if (err || !res.ok) {
-					dispatch(createTaskFailure(OPEN_TASKS, err))
-				} else {
-					res.body.process_type = data.processType
-					res.body.product_type = data.productType
-					res.body.attribute_values = []
-					res.body.organized_attributes = Compute.organizeAttributes(res.body)
-					dispatch(createTaskSuccess(res.body))
-				}
+			.then(res => {
+				res.body.process_type = data.processType
+				res.body.product_type = data.productType
+				res.body.attribute_values = []
+				res.body.organized_attributes = Compute.organizeAttributes(res.body)
+				dispatch(createTaskSuccess(res.body))
+			})
+			.catch(e => {
+				dispatch(createTaskFailure(OPEN_TASKS, err))
+				throw e
 			})
 	}
 }
@@ -227,38 +231,36 @@ export function resetJustCreated() {
 	}
 }
 
-export function addInput(task, item, isSearched, success, failure) {
+export function addInput(task, item, isSearched) {
 	let payload = { task: task.id, input_item: item.id }
 	return dispatch => {
+		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/inputs/create/')
 			.send(payload)
-			.end((err, res) => {
-				if (err || !res.ok) {
-					dispatch(addFailure(err))
-					failure(err)
-				} else {
-					res.body.input_item = item
-					dispatch(addSuccess(ADD_INPUT_SUCCESS, task, res.body))
-					success(res.body)
-				}
+			.then(res => {
+				res.body.input_item = item
+				dispatch(addSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
+			})
+			.catch(e => {
+				dispatch(addFailure(err))
+				failure(err)
+				throw e
 			})
 	}
 }
 
-export function addOutput(task, qr, amount, isSearched, success, failure) {
+export function addOutput(task, qr, amount, isSearched) {
 	let payload = { creating_task: task.id, item_qr: qr, amount: amount }
 	return dispatch => {
-		dispatch(startAdding(task))
+		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/items/create/')
 			.send(payload)
-			.end((err, res) => {
-				if (err || !res.ok) {
-					dispatch(addFailure(err))
-					failure(err)
-				} else {
-					dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body))
-					success(res.body)
-				}
+			.then(res => {
+				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
+			})
+			.catch(e => {
+				dispatch(addFailure(err))
+				throw e
 			})
 	}
 }
