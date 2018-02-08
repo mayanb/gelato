@@ -50,35 +50,35 @@ class App extends React.Component {
 		}
 	}
 
-  render() {
-    let {errors, user} = this.props
-    console.log(errors)
-    if (!this.state.ready) {
-      return (
-        <AppLoading
-          startAsync={this._loadDataAsync}
-          onError={console.warn}
-          onFinish={() => this.setState({ ready: true })}
-        />
-      )
-    }
+	render() {
+		let {errors, user} = this.props
+		console.log(errors)
+		if (!this.state.ready) {
+			return (
+				<AppLoading
+					startAsync={this._loadDataAsync}
+					onError={console.warn}
+					onFinish={() => this.setState({ ready: true })}
+				/>
+			)
+		}
 
-    return (
-      <View style={{ flex: 1 }}>
-        {this.state.loggedIn ? (
-          <Navigation screenProps={user} />
-        ) : (
-          <Login />
-        )}
-        {errors.data.length ? (
-          <Snackbar>{errors.data[errors.data.length-1].errorType}</Snackbar>
-        ) : (
-          false
-        )}
-        <StatusBar barStyle="light-content" />
-      </View>
-    )
-  }
+		return (
+			<View style={{ flex: 1 }}>
+				{this.state.loggedIn ? (
+					<Navigation screenProps={user} />
+				) : (
+					<Login />
+				)}
+				{errors.data.length ? (
+					<Snackbar>{errors.data[errors.data.length-1].errorType}</Snackbar>
+				) : (
+					false
+				)}
+				<StatusBar barStyle="light-content" />
+			</View>
+		)
+	}
 }
 
 const MainStack = StackNavigator(
@@ -115,9 +115,9 @@ const Navigation = StackNavigator(
 )
 
 const mapStateToProps = (state /*, props */) => {
-  return {
-    errors: state.errors
-  }
+	return {
+		errors: state.errors
+	}
 }
 
 let connected = connect(mapStateToProps)(App)
