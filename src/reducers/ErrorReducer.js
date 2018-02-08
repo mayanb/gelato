@@ -18,9 +18,6 @@ function setError(state, action) {
 		data: {
 			$push: action.error,
 		},
-		ui: {
-			$merge: { cleared: false },
-		},
 	})
 }
 
@@ -31,20 +28,11 @@ function clearError(state, action) {
 		return state
 	}
 
-	// if the currently displaying error isn't even this one
-	// and we're not forcing it to clear
-	if (
-		!action.force &&
-		action.error.errorID !== errors[errors.length - 1].errorID
-	) {
-		return state
-	}
+	let errorIndex = state.data.findIndex(e => e.id === action.error.id)
 
-	// there's an error to clear, and we're either forcing it to clear
-	// OR we know which error to clear
 	return update(state, {
-		ui: {
-			$merge: { cleared: true },
+		data: {
+			$splice: [[errorIndex, 1]],
 		},
 	})
 }

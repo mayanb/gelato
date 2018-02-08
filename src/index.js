@@ -52,8 +52,6 @@ class App extends React.Component {
 
   render() {
     let {errors, user} = this.props
-    let hasError = !errors.ui.cleared && errors.data.length
-
     if (!this.state.ready) {
       return (
         <AppLoading
@@ -71,7 +69,7 @@ class App extends React.Component {
         ) : (
           <Login />
         )}
-        {hasError ? (
+        {errors.data.length ? (
           <Snackbar>{errors.data[errors.data.length-1]}</Snackbar>
         ) : (
           false
