@@ -9,13 +9,10 @@ import {
 	REQUEST_FAILURE,
 	REQUEST_CREATE_SUCCESS,
 	REQUEST_CREATE_FAILURE,
-	FAILURE,
 	REQUEST_DELETE_SUCCESS,
 	REQUEST_DELETE_FAILURE,
 	REQUEST_EDIT_ITEM_SUCCESS,
 	REQUEST_EDIT_ITEM_FAILURE,
-	UPDATE_ATTRIBUTE_SEARCH_SUCCESS,
-	UPDATE_ATTRIBUTE_SEARCH_FAILURE,
 } from '../reducers/BasicReducer'
 import {
 	UPDATE_ATTRIBUTE_SUCCESS,
@@ -36,8 +33,6 @@ const SEARCHED_TASKS = 'SEARCHED_TASKS'
 export function fetchOpenTasks() {
 	return dispatch => {
 		dispatch(requestTasks(OPEN_TASKS))
-
-		let open = []
 		var yesterday = new Date()
 		yesterday.setDate(yesterday.getDate() - 1)
 
