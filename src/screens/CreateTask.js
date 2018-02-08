@@ -6,10 +6,12 @@ import ActionButton from 'react-native-action-button'
 import Colors from '../resources/Colors'
 import { Dropdown } from '../components/Dropdown'
 import * as actions from '../actions/ProcessesAndProductsActions'
+import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskListActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import { DateFormatter } from '../resources/Utility'
+import Compute from '../resources/Compute'
 
 class CreateTask extends Component {
 	constructor(props) {
@@ -21,8 +23,13 @@ class CreateTask extends Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchProcesses())
-		this.props.dispatch(actions.fetchProducts())
+		let { dispatch } = this.props
+		dispatch(actions.fetchProcesses()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+		dispatch(actions.fetchProducts()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
 	}
 
 	componentWillReceiveProps(np) {
@@ -70,9 +77,12 @@ class CreateTask extends Component {
 	}
 
 	handleCreate() {
+		let { dispatch } = this.props
 		let { selectedProduct, selectedProcess } = this.state
 		let data = { processType: selectedProcess, productType: selectedProduct }
-		this.props.dispatch(taskActions.requestCreateTask(data))
+		dispatch(taskActions.requestCreateTask(data)).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
 	}
 
 	openCreatedTask(task) {
