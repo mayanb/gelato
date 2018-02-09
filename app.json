@@ -1,4 +1,27 @@
 {
-  "name": "gelato",
-  "displayName": "gelato"
+  "expo": {
+    "name": "Polymer",
+    "description": "Polymer mobile app",
+    "slug": "polymer",
+    "privacy": "unlisted",
+    "sdkVersion": "25.0.0",
+    "platforms": ["ios"],
+    "version": "3.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1653D7"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.usepolymer.polymer"
+    },
+    "assetBundlePatterns": [
+      "src/resources/assets/**",
+      "node_modules/react-navigation/src/**/*.png",
+      "node_modules/@expo/vector-icons/fonts/Ionicons.ttf"
+    ]
+  }
 }
