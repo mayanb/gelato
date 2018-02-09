@@ -9,6 +9,7 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
+	Button
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -26,6 +27,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
+import FAIcon from 'react-native-vector-icons/FontAwesome'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
@@ -72,6 +74,15 @@ class Task extends Component {
 			this.handleRenameTask,
 			'plain-text',
 			this.props.task.display
+		)
+	}
+
+	showHelpAlert() {
+		AlertIOS.alert(
+			'Where do I see scanned QR codes?',
+			`** Tap the QR code button on the bottom right 
+			\n ** Select inputs or outputs 
+			\n ** Tap the button with the # of scanned codes on the bottom left of the camera screen`
 		)
 	}
 
@@ -181,7 +192,7 @@ class Task extends Component {
 			return null
 		}
 		const isLabel = task.process_type.name.toLowerCase() === 'label'
-		let outputButtonName = 'Add Outputs'
+		let outputButtonName = 'Outputs'
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
@@ -209,11 +220,19 @@ class Task extends Component {
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding />}
 					/>
-					<ActionButton buttonColor={Colors.base} activeOpacity={0.5}>
+					<View style={styles.help}>
+						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
+					</View>
+					<ActionButton
+						buttonColor={Colors.base}
+						activeOpacity={0.5}
+						icon={
+							<FAIcon name="qrcode" size={24} color="white" />
+						}>
 						{!isLabel && (
 							<ActionButton.Item
 								buttonColor={'green'}
-								title="Add Inputs"
+								title="Inputs"
 								onPress={() => this.showCamera('inputs')}>
 								<Image source={ImageUtility.requireIcon('inputs.png')} />
 							</ActionButton.Item>
@@ -278,12 +297,24 @@ class Task extends Component {
 	}
 }
 
+const helpSize = 150
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: Colors.bluishGray,
 		display: 'flex',
 		height: '100%',
 	},
+	help: {
+		position: 'absolute',
+		bottom: -1 * helpSize / 2,
+		left: -1 * helpSize / 2,
+		borderRadius: helpSize / 2,
+		height: helpSize,
+		width: helpSize,
+		paddingLeft: helpSize / 4 + 20,
+		paddingTop: helpSize / 4 - 20,
+		backgroundColor: Colors.darkGray,
+	}
 })
 
 const mapStateToProps = (state, props) => {
