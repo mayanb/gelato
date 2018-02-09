@@ -1,4 +1,3 @@
-// Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
@@ -6,16 +5,10 @@ import {
 	View,
 	StyleSheet,
 	TouchableWithoutFeedback,
-	Alert,
-	AlertIOS,
 	Image,
-	Button
 } from 'react-native'
-import ActionSheet from 'react-native-actionsheet'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
-import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
@@ -27,37 +20,16 @@ import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
+import TaskMenu from '../components/TaskMenu'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 
-const ACTION_TITLE = 'More'
-const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
-const CANCEL_INDEX = 0
 
 class Task extends Component {
-	static navigationOptions = ({ navigation }) => {
-		const params = navigation.state.params || {}
-		const { showActionSheet } = params
-
-		return {
-			title: params.name,
-			headerRight: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
-					<NavHeader.Item
-						iconName="md-more"
-						label=""
-						onPress={showActionSheet}
-					/>
-				</NavHeader>
-			),
-		}
-	}
 
 	constructor(props) {
 		super(props)
-		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
-		this.handleRenameTask = this.handleRenameTask.bind(this)
 	}
 
 	dispatchWithError(f) {
@@ -67,76 +39,6 @@ class Task extends Component {
 		})
 	}
 
-	showCustomNameAlert() {
-		AlertIOS.prompt(
-			'Enter a value',
-			null,
-			this.handleRenameTask,
-			'plain-text',
-			this.props.task.display
-		)
-	}
-
-	showHelpAlert() {
-		AlertIOS.alert(
-			'Where do I see scanned QR codes?',
-			`** Tap the QR code button on the bottom right 
-			\n ** Select inputs or outputs 
-			\n ** Tap the button with the # of scanned codes on the bottom left of the camera screen`
-		)
-	}
-
-	showConfirmDeleteAlert() {
-		let { task } = this.props
-		// Works on both iOS and Android
-		Alert.alert(
-			`Delete ${task.display}`,
-			`Are you sure you want to delete ${task.display}?`,
-			[
-				{
-					text: 'Cancel',
-					onPress: () => {},
-					style: 'cancel',
-				},
-				{
-					text: 'Yes, delete',
-					onPress: this.handleDeleteTask.bind(this),
-					style: 'destructive',
-				},
-			],
-			{ cancelable: false }
-		)
-	}
-
-	handlePress(i) {
-		if (ACTION_OPTIONS[i] === 'Rename') {
-			this.showCustomNameAlert()
-		}
-		if (ACTION_OPTIONS[i] === 'Flag') {
-			thisdispatchWithError(
-				actions.requestFlagTask(this.props.task, this.props.taskSearch)
-			)
-		}
-		if (ACTION_OPTIONS[i] === 'Delete') {
-			this.showConfirmDeleteAlert()
-		}
-	}
-
-	handleRenameTask(text) {
-		this.dispatchWithError(
-			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
-		)
-		this.props.navigation.setParams({ name: text })
-	}
-
-	handleDeleteTask() {
-		let success = () => {
-			this.props.navigation.goBack()
-		}
-		this.dispatchWithError(
-			actions.requestDeleteTask(this.props.task, this.props.taskSearch, success)
-		)
-	}
 
 	showCamera(mode) {
 		this.props.navigation.navigate('QRScanner', {
@@ -148,6 +50,7 @@ class Task extends Component {
 			onOpenTask: this.handleOpenTask.bind(this),
 		})
 	}
+
 
 	printTask() {
 		this.props.navigation.navigate('Print', {
@@ -173,12 +76,6 @@ class Task extends Component {
 		})
 	}
 
-	componentWillMount() {
-		this.props.navigation.setParams({
-			showActionSheet: () => this.ActionSheet.show(),
-		})
-	}
-
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
 		if (this.props.taskSearch) {
@@ -196,22 +93,12 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-		const actionOptions = task.is_flagged
-			? ACTION_OPTIONS.filter(o => o !== 'Flag')
-			: ACTION_OPTIONS
-
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
 				accessible={false}>
 				<View style={styles.container}>
-					<ActionSheet
-						ref={o => (this.ActionSheet = o)}
-						title={ACTION_TITLE}
-						options={actionOptions}
-						cancelButtonIndex={CANCEL_INDEX}
-						onPress={this.handlePress}
-					/>
+					<TaskMenu task={task} />
 					{task.is_flagged && <Flag />}
 					<KeyboardAwareFlatList
 						style={styles.table}
@@ -220,9 +107,6 @@ class Task extends Component {
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding />}
 					/>
-					<View style={styles.help}>
-						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
-					</View>
 					<ActionButton
 						buttonColor={Colors.base}
 						activeOpacity={0.5}
@@ -297,24 +181,12 @@ class Task extends Component {
 	}
 }
 
-const helpSize = 150
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: Colors.bluishGray,
 		display: 'flex',
 		height: '100%',
 	},
-	help: {
-		position: 'absolute',
-		bottom: -1 * helpSize / 2,
-		left: -1 * helpSize / 2,
-		borderRadius: helpSize / 2,
-		height: helpSize,
-		width: helpSize,
-		paddingLeft: helpSize / 4 + 20,
-		paddingTop: helpSize / 4 - 20,
-		backgroundColor: Colors.darkGray,
-	}
 })
 
 const mapStateToProps = (state, props) => {
