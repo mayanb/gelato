@@ -40,7 +40,7 @@ export default class AttributeCell extends React.Component {
 			return <ActivityIndicator size="small" color={Colors.base} />
 		} else if (this.state.editing || Boolean(this.props.value)) {
 			const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
-			if (this.props.type === 'NUMB' || this.props.type === 'TEXT') {
+			if (this.props.type === 'NUMB' && this.props.type === 'TEXT') {
 				return (
 					<TextInput
 						style={styles.value}
@@ -53,7 +53,7 @@ export default class AttributeCell extends React.Component {
 						ref={(input) => this.input = input}
 					/>
 				)
-			} else {
+			} else if (this.props.type !== "DATE") {
 				return (
 					<TouchableOpacity activeOpacity={0.5} onPress={this.chooseDateTime}>
 						<Text style={styles.date}>{this.parseDate(this.state.typedValue) || "Tues. Jan 8"}</Text>
@@ -83,7 +83,8 @@ export default class AttributeCell extends React.Component {
 			var day = date.getDate()
 			var monthIndex = date.getMonth()
 			var year = date.getFullYear()
-			return monthNames[monthIndex] + ' ' + day + ' ' + year
+			var time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+			return String(monthIndex + 1) + '/' + day + ' ' + time
 		}
 	}
 

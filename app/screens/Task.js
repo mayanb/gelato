@@ -61,7 +61,8 @@ class Task extends Component {
 		console.log(this.props)
 		this.state = {
 			isDateTimePickerVisible: false,
-			editingAttribute: null
+			editingAttribute: null,
+			organized_attributes: this.props.task.organized_attributes
 		}
 	}
 
@@ -177,7 +178,7 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					<KeyboardAwareFlatList
 						style={styles.table}
-						data={task.organized_attributes}
+						data={this.state.organized_attributes}
 						renderItem={this.renderRow}
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding/>}
@@ -221,8 +222,18 @@ class Task extends Component {
 		this.setState({editingAttribute: id})
 	}
 
-	handleDateTimePicked(date) {
+	async handleDateTimePicked(date) {
+		// Submit data to server
 		this.handleSubmitEditing(this.state.editingAttribute, date)
+
+		// Attempt to force re-render state
+		let id = this.state.editingAttribute
+		let attributes = this.state.organized_attributes
+		let index = attributes.findIndex(e => Compute.equate(e.id, id))
+		attributes[index].value.value = date
+		await this.setState({organized_attributes: attributes})
+
+		// Hide the date-time picker
 		this.hideDateTimePicker()
 	}
 
@@ -245,8 +256,8 @@ class Task extends Component {
 
 	handleSubmitEditing(id, newValue) {
 		let task = this.props.task
-		let attributeIndex = task.organized_attributes.findIndex(e => Compute.equate(e.id, id))
-		let currValue = task.organized_attributes[attributeIndex].value
+		let attributeIndex = this.state.organized_attributes.findIndex(e => Compute.equate(e.id, id))
+		let currValue = this.state.organized_attributes[attributeIndex].value
 		if (newValue === currValue) {
 			return
 		}
