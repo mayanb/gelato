@@ -28,6 +28,7 @@ import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
+import DateTimePicker from 'react-native-modal-datetime-picker'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
@@ -58,6 +59,15 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.chooseDateTime = this.chooseDateTime.bind(this)
+ 		this.handleDateTimePicked = this.handleDateTimePicked.bind(this)
+ 		this.hideDateTimePicker = this.hideDateTimePicker.bind(this)
+
+ 		this.state = {
+ 			isDateTimePickerVisible: false,
+ 			editingAttribute: null,
+ 			organized_attributes: this.props.task.organized_attributes
+ 		}
 	}
 
 	dispatchWithError(f) {
@@ -215,7 +225,7 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					<KeyboardAwareFlatList
 						style={styles.table}
-						data={task.organized_attributes}
+						data={this.state.organized_attributes}
 						renderItem={this.renderRow}
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding />}
@@ -244,10 +254,41 @@ class Task extends Component {
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
 					</ActionButton>
+					<DateTimePicker
+ 						isVisible={this.state.isDateTimePickerVisible}
+ 						onConfirm={this.handleDateTimePicked}
+ 						onCancel={this.hideDateTimePicker}
+ 						mode="datetime"
+ 					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
 	}
+
+		chooseDateTime(id) {
+  		this.setState({isDateTimePickerVisible: true})
+  		this.setState({editingAttribute: id})
+  	}
+  
+  	async handleDateTimePicked(date) {
+  		// Submit data to server
+  		this.handleSubmitEditing(this.state.editingAttribute, date)
+  
+  		// Attempt to force re-render state
+  		let id = this.state.editingAttribute
+  		let attributes = this.state.organized_attributes
+  		let index = attributes.findIndex(e => Compute.equate(e.id, id))
+  		attributes[index].value.value = date
+  		await this.setState({organized_attributes: attributes})
+  
+  		// Hide the date-time picker
+  		this.hideDateTimePicker()
+  	}
+  
+  	hideDateTimePicker() {
+  		this.setState({isDateTimePickerVisible: false})
+  		this.setState({editingAttribute: null})
+  	}
 
 	renderRow = ({ item }) => (
 		<AttributeCell
@@ -257,21 +298,22 @@ class Task extends Component {
 			value={item.value.value || ''}
 			type={item.datatype}
 			onSubmitEditing={this.handleSubmitEditing.bind(this)}
+			chooseDateTime={this.chooseDateTime}
 		/>
 	)
 
 	handleSubmitEditing(id, newValue) {
 		let task = this.props.task
-		let attributeIndex = task.organized_attributes.findIndex(e =>
-			Compute.equate(e.id, id)
-		)
-		let currValue = task.organized_attributes[attributeIndex].value
+		let attributeIndex = this.state.organized_attributes.findIndex(e => Compute.equate(e.id, id))
+ 		let currValue = this.state.organized_attributes[attributeIndex].value
 		if (newValue === currValue) {
 			return
 		}
 		return this.dispatchWithError(
 			actions.updateAttribute(task, id, newValue, this.props.taskSearch)
 		)
+
+
 	}
 
 	renderHeader = task => {
