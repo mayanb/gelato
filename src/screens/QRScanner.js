@@ -45,10 +45,6 @@ class QRScanner extends Component {
 		}
 	}
 
-	componentDidMount() {
-		this.testBarCodeRead()
-	}
-
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode } = this.state
