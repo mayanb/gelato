@@ -147,10 +147,10 @@ class Login extends Component {
 
   loginFailure(err) {
     dispatch(actions.requestFailure('LOGIN', err))
-    let message =
-      err.status === 400
-        ? 'Unable to log in with provided credentials'
-        : 'Problem logging in'
+    let message = JSON.stringify(err)
+      // err.status === 400
+      //   ? 'Unable to log in with provided credentials'
+      //   : 'Problem logging in'
     alert(message)
   }
 }

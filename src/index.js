@@ -14,6 +14,7 @@ import Task from './screens/Task'
 import Print from './screens/Print'
 import Search from './screens/Search'
 import Snackbar from './components/Snackbar'
+import {getBackend} from './resources/urls'
 
 import paramsToProps from './resources/paramsToProps'
 import { connect } from 'react-redux'
@@ -116,7 +117,7 @@ const Navigation = StackNavigator(
 
 const mapStateToProps = (state /*, props */) => {
 	return {
-		errors: state.errors
+		errors: {data: [{ errorType: getBackend()} ]} //state.errors
 	}
 }
 

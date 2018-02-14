@@ -9,7 +9,9 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
-	Button
+	Button,
+	Text,
+	FlatList
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -28,6 +30,8 @@ import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
+import update from 'immutability-helper'
+import Networking from '../resources/Networking-superagent'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
@@ -58,6 +62,22 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+
+		/* 
+		it didn't work if i intiially set organized_attributes to be 
+		props.task.organized_attributes. It just wouldn't update after 
+		componentDidMount() if I set it to that initially. 
+		If you change it to process_type.attributes it works, but that
+		data is formatted a little differently
+		*/
+		let attrs = this.props.task.organized_attributes
+		attrs.map(e => e.loading = true)
+
+		this.state = {
+			organized_attributes: attrs,
+			hash: -1,
+			test: "Initial"
+		}
 	}
 
 	dispatchWithError(f) {
@@ -181,9 +201,15 @@ class Task extends Component {
 
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
-		if (this.props.taskSearch) {
-			this.dispatchWithError(actions.fetchTask(this.props.id))
-		}
+		Networking.get(`/ics/tasks/${this.props.task.id}`)
+			.then(res => {
+				let organized = Compute.organizeAttributes(res.body)
+				this.setState({ organized_attributes: organized, hash: Math.random() * 100, test: "Mounted" })
+			})
+			.catch(e => {
+				console.log(e)
+				throw e
+			})
 	}
 
 	render() {
@@ -213,12 +239,14 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					{task.is_flagged && <Flag />}
-					<KeyboardAwareFlatList
+					<Text>{this.state.test}</Text>
+					<FlatList
 						style={styles.table}
-						data={task.organized_attributes}
+						data={this.state.organized_attributes}
 						renderItem={this.renderRow}
 						ListHeaderComponent={() => this.renderHeader(task)}
 						ListFooterComponent={<BottomTablePadding />}
+						extraData={{ hash: this.state.hash }}
 					/>
 					<View style={styles.help}>
 						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
@@ -249,29 +277,73 @@ class Task extends Component {
 		)
 	}
 
-	renderRow = ({ item }) => (
+	renderRow = ({ item, index }) => (
 		<AttributeCell
 			key={item.id}
 			id={item.id}
+			task_id={this.props.task.id}
 			name={item.name}
-			value={item.value.value || ''}
+			value={item.value.value}
 			type={item.datatype}
+			loading={item.loading}
 			onSubmitEditing={this.handleSubmitEditing.bind(this)}
+			onChange={this.handleChange.bind(this)}
+			index={index}
 		/>
 	)
 
+	handleChange(index, text) {
+		this.updateAttributeStore(index, {
+			typedValue: text,
+		})
+	}
+
 	handleSubmitEditing(id, newValue) {
 		let task = this.props.task
-		let attributeIndex = task.organized_attributes.findIndex(e =>
+		let attributeIndex = this.state.organized_attributes.findIndex(e =>
 			Compute.equate(e.id, id)
 		)
-		let currValue = task.organized_attributes[attributeIndex].value
-		if (newValue === currValue) {
+		let currValue = this.state.organized_attributes[attributeIndex].value
+		if (newValue === currValue || newValue === currValue.value) {
 			return
 		}
-		return this.dispatchWithError(
-			actions.updateAttribute(task, id, newValue, this.props.taskSearch)
-		)
+
+		let payload = {
+			task: task.id,
+			attribute: id,
+			value: newValue,
+		}
+
+		this.postUpdateAttribute(attributeIndex, payload)
+		// return this.dispatchWithError(
+		// 	actions.updateAttribute(task, id, newValue, this.props.taskSearch)
+		// ).finally(() => this.setState({hash: Math.random()}))
+	}
+
+	postUpdateAttribute(attributeIndex, payload) {
+		this.updateAttributeStore(attributeIndex, { loading: true })
+		Networking.post('/ics/taskAttributes/create/')
+			.send(payload)
+			.then(() =>
+				this.updateAttributeStore(attributeIndex, {
+					value: { value: payload.value },
+				})
+			)
+			.catch(e => console.log(e))
+			.finally(() => 
+				this.updateAttributeStore(attributeIndex, {
+					loading: false,
+				})
+			)
+	}
+
+	updateAttributeStore(attributeIndex, obj) {
+		let ns = update(this.state.organized_attributes, {
+			[attributeIndex]: {
+				$merge: obj,
+			},
+		})
+		this.setState({ organized_attributes: ns, hash: Math.random() })
 	}
 
 	renderHeader = task => {

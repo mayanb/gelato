@@ -16,18 +16,22 @@ export default class AttributeCell extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      typedValue: this.props.value,
+    	typedValue: this.props.value,
       editing: false,
       loading: false,
     }
     this.edit = this.edit.bind(this)
   }
 
+  componentWillReceiveProps(nextProps) {
+  	this.setState({typedValue: nextProps.value})
+  }
+
   render() {
     let { name } = this.props
     name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
     return (
-      <View style={styles.container}>
+      <View style={styles.container} ref={view => this.ref = view}>
         <Text style={styles.name}>{name}</Text>
         {this.renderValue()}
       </View>
@@ -35,9 +39,10 @@ export default class AttributeCell extends React.Component {
   }
 
   renderValue() {
-    if (this.state.loading) {
+    if (this.props.loading) {
       return <ActivityIndicator size="small" color={Colors.base} />
     } else if (this.state.editing || Boolean(this.props.value)) {
+    	return <Text>{this.state.typedValue}</Text>
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
@@ -73,10 +78,11 @@ export default class AttributeCell extends React.Component {
   handleSubmitEditing() {
     this.setState({ editing: false })
     if (this.state.typedValue !== this.props.value) {
-      this.setState({ loading: true })
+      //this.setState({ loading: true })
       this.props
         .onSubmitEditing(this.props.id, this.state.typedValue)
-        .finally(() => this.setState({ loading: false }))
+      //this.setState({ loading: false })
+        //.finally(() => this.setState({ loading: false }))
     }
   }
 
@@ -112,6 +118,7 @@ const styles = StyleSheet.create({
     color: Colors.textBlack,
     flex: 1,
     textAlign: 'right',
+    backgroundColor: 'red',
   },
   editButton: {
     width: width / 2,

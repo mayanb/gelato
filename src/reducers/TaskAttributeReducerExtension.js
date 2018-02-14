@@ -56,9 +56,6 @@ function updateAttributeSuccess(state, action) {
 		Compute.equate(e.id, action.data.attribute)
 	)
 
-	console.log(action.data)
-	console.log(state.data[taskIndex].organized_attributes[attributeIndex])
-
 	return update(state, {
 		data: {
 			[taskIndex]: {
