@@ -113,7 +113,7 @@ class Task extends Component {
 			this.showCustomNameAlert()
 		}
 		if (ACTION_OPTIONS[i] === 'Flag') {
-			thisdispatchWithError(
+			this.dispatchWithError(
 				actions.requestFlagTask(this.props.task, this.props.taskSearch)
 			)
 		}
