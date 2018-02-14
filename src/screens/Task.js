@@ -16,7 +16,7 @@ import {
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
@@ -240,14 +240,9 @@ class Task extends Component {
 					/>
 					{task.is_flagged && <Flag />}
 					<Text>{this.state.test}</Text>
-					<FlatList
-						style={styles.table}
-						data={this.state.organized_attributes}
-						renderItem={this.renderRow}
-						ListHeaderComponent={() => this.renderHeader(task)}
-						ListFooterComponent={<BottomTablePadding />}
-						extraData={{ hash: this.state.hash }}
-					/>
+					<KeyboardAwareScrollView>
+						{ this.state.organized_attributes.map((e, i) => this.renderRow({item: e, index: i})) }
+					</KeyboardAwareScrollView>
 					<View style={styles.help}>
 						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
 					</View>
@@ -321,20 +316,16 @@ class Task extends Component {
 	}
 
 	postUpdateAttribute(attributeIndex, payload) {
-		this.updateAttributeStore(attributeIndex, { loading: true })
+		//this.updateAttributeStore(attributeIndex, { loading: true })
+		let oldValue = this.state.organized_attributes[attributeIndex].value.value
+		this.updateAttributeStore(attributeIndex, {
+			value: { value: payload.value },
+		})
 		Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
-			.then(() =>
-				this.updateAttributeStore(attributeIndex, {
-					value: { value: payload.value },
-				})
-			)
-			.catch(e => console.log(e))
-			.finally(() => 
-				this.updateAttributeStore(attributeIndex, {
-					loading: false,
-				})
-			)
+			.catch(e => this.updateAttributeStore(attributeIndex, {
+					value: { value: oldValue },
+			}))
 	}
 
 	updateAttributeStore(attributeIndex, obj) {
@@ -386,7 +377,7 @@ const styles = StyleSheet.create({
 		paddingLeft: helpSize / 4 + 20,
 		paddingTop: helpSize / 4 - 20,
 		backgroundColor: Colors.darkGray,
-	}
+	},
 })
 
 const mapStateToProps = (state, props) => {

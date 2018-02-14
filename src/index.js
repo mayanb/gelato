@@ -117,7 +117,7 @@ const Navigation = StackNavigator(
 
 const mapStateToProps = (state /*, props */) => {
 	return {
-		errors: {data: [{ errorType: getBackend()} ]} //state.errors
+		errors: state.errors
 	}
 }
 

@@ -34,15 +34,13 @@ export default class AttributeCell extends React.Component {
       <View style={styles.container} ref={view => this.ref = view}>
         <Text style={styles.name}>{name}</Text>
         {this.renderValue()}
+        { this.state.loading && <ActivityIndicator size="small" color={Colors.base} /> }
       </View>
     )
   }
 
   renderValue() {
-    if (this.props.loading) {
-      return <ActivityIndicator size="small" color={Colors.base} />
-    } else if (this.state.editing || Boolean(this.props.value)) {
-    	return <Text>{this.state.typedValue}</Text>
+		if (this.state.editing || Boolean(this.props.value)) {
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
@@ -78,11 +76,10 @@ export default class AttributeCell extends React.Component {
   handleSubmitEditing() {
     this.setState({ editing: false })
     if (this.state.typedValue !== this.props.value) {
-      //this.setState({ loading: true })
+    	this.setState({ loading: true })
       this.props
         .onSubmitEditing(this.props.id, this.state.typedValue)
-      //this.setState({ loading: false })
-        //.finally(() => this.setState({ loading: false }))
+      this.setState({loading: false })
     }
   }
 
@@ -118,7 +115,6 @@ const styles = StyleSheet.create({
     color: Colors.textBlack,
     flex: 1,
     textAlign: 'right',
-    backgroundColor: 'red',
   },
   editButton: {
     width: width / 2,
