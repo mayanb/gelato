@@ -33,10 +33,10 @@ export default class Compute {
 				Compute.equate(e.attribute, attr.id)
 			)
 			if (!attribute_value) {
-				attribute_value = {}
+				attribute_value = "" 
 			}
 			let filled_attribute = update(attr, {
-				$merge: { value: attribute_value },
+				$merge: { value: attribute_value.value },
 			})
 			attributes.push(filled_attribute)
 		})
@@ -125,5 +125,15 @@ export default class Compute {
 
 	static getReadableTaskDescriptor(task) {
 		return task.process_type.name + ' ' + task.product_type.name
+	}
+
+	static postAttributeUpdate(taskID, attributeID, value) {
+		let payload = {
+			task: taskID,
+			attribute: attributeID,
+			value: value,
+		}
+		return Networking.post('/ics/taskAttributes/create/')
+			.send(payload)
 	}
 }

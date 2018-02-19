@@ -30,14 +30,13 @@ export default class AttributeCell extends React.Component {
       <View style={styles.container}>
         <Text style={styles.name}>{name}</Text>
         {this.renderValue()}
+        { this.state.loading && <ActivityIndicator size="small" color={Colors.base} /> }
       </View>
     )
   }
 
   renderValue() {
-    if (this.state.loading) {
-      return <ActivityIndicator size="small" color={Colors.base} />
-    } else if (this.state.editing || Boolean(this.props.value)) {
+    if (this.state.editing || Boolean(this.props.value)) {
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
