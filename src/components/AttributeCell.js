@@ -21,6 +21,7 @@ export default class AttributeCell extends React.Component {
       loading: false,
     }
     this.edit = this.edit.bind(this)
+    this.chooseDateTime = this.chooseDateTime.bind(this)
   }
 
   render() {
@@ -39,19 +40,26 @@ export default class AttributeCell extends React.Component {
       return <ActivityIndicator size="small" color={Colors.base} />
     } else if (this.state.editing || Boolean(this.props.value)) {
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
-      return (
-        <TextInput
-          style={styles.value}
-          onChangeText={this.handleChangeText.bind(this)}
-          onSubmitEditing={this.handleSubmitEditing.bind(this)}
-          onBlur={this.handleSubmitEditing.bind(this)}
-          returnKeyType="done"
-          value={this.state.typedValue}
-          keyboardType={keyboardType}
-          autoCorrent={false}
-          ref={input => (this.input = input)}
-        />
-      )
+      if (this.props.type === 'NUMB' && this.props.type === 'TEXT') {
+         return (
+           <TextInput
+             style={styles.value}
+             onChangeText={this.handleChangeText.bind(this)}
+             onSubmitEditing={this.handleSubmitEditing.bind(this)}
+             onBlur={this.handleSubmitEditing.bind(this)}
+             returnKeyType='done'
+             value={this.state.typedValue}
+             keyboardType={keyboardType}
+             ref={(input) => this.input = input}
+           />
+         )
+       } else if (this.props.type !== "DATE") {
+         return (
+           <TouchableOpacity activeOpacity={0.5} onPress={this.chooseDateTime}>
+             <Text style={styles.date}>{this.parseDate(this.state.typedValue) || this.parseDate(new Date())}</Text>
+           </TouchableOpacity>
+         )
+       }
     } else {
       return (
         <TouchableOpacity
@@ -65,6 +73,28 @@ export default class AttributeCell extends React.Component {
       )
     }
   }
+
+
+    parseDate(date) {
+     let monthNames = [
+       "Jan", "Feb", "Mar",
+      "Apr", "May", "Jun", "Jul",
+       "Aug", "Sept", "Oct",
+       "Nov", "Dec"
+     ]
+     if (date) {
+       date = new Date(date)
+      var day = date.getDate()
+       var monthIndex = date.getMonth()
+       var year = date.getFullYear()
+       var time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+       return String(monthIndex + 1) + '/' + day + ' ' + time
+     }
+   }
+ 
+   chooseDateTime() {
+     this.props.chooseDateTime(this.props.id)
+   }
 
   handleChangeText(text) {
     this.setState({ typedValue: text })
@@ -82,7 +112,11 @@ export default class AttributeCell extends React.Component {
 
   edit() {
     this.setState({ editing: true }, () => {
-      this.input.focus()
+       if (this.input) {
+         this.input.focus()
+       } else {
+         this.chooseDateTime()
+       }
     })
   }
 }
