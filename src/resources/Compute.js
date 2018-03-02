@@ -1,4 +1,4 @@
-import * as Networking from './Networking-superagent'
+import Networking from './Networking-superagent'
 import update from 'immutability-helper'
 import moment from 'moment'
 import {
