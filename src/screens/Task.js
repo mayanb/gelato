@@ -14,20 +14,21 @@ import {
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
-import AttributeCell from '../components/AttributeCell'
 import Flag from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
+import AttributeList from '../components/AttributeList'
+import Networking from '../resources/Networking-superagent'
+import update from 'immutability-helper'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
@@ -58,6 +59,10 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+
+		this.state = {
+			organized_attributes: props.task.organized_attributes
+		}
 	}
 
 	dispatchWithError(f) {
@@ -181,12 +186,17 @@ class Task extends Component {
 
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
-		if (this.props.taskSearch) {
-			this.dispatchWithError(actions.fetchTask(this.props.id))
-		}
+		Networking.get(`/ics/tasks/${this.props.task.id}`)
+			.then(res => {
+				let organized = Compute.organizeAttributes(res.body)
+				this.setState({ organized_attributes: organized })
+			})
+			.catch(e => console.log(e))
 	}
 
 	render() {
+		let { organized_attributes } = this.state
+		console.log(organized_attributes)
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -200,11 +210,20 @@ class Task extends Component {
 			? ACTION_OPTIONS.filter(o => o !== 'Flag')
 			: ACTION_OPTIONS
 
+		console.log(organized_attributes.length)
+
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
-				accessible={false}>
+				accessible={false}
+			>
 				<View style={styles.container}>
+					{task.is_flagged && <Flag />}
+					{ this.renderHeader(task) }
+					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)}/>
+					<View style={styles.help}>
+						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
+					</View>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
@@ -212,17 +231,6 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					{task.is_flagged && <Flag />}
-					<KeyboardAwareFlatList
-						style={styles.table}
-						data={task.organized_attributes}
-						renderItem={this.renderRow}
-						ListHeaderComponent={() => this.renderHeader(task)}
-						ListFooterComponent={<BottomTablePadding />}
-					/>
-					<View style={styles.help}>
-						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
-					</View>
 					<ActionButton
 						buttonColor={Colors.base}
 						activeOpacity={0.5}
@@ -249,29 +257,32 @@ class Task extends Component {
 		)
 	}
 
-	renderRow = ({ item }) => (
-		<AttributeCell
-			key={item.id}
-			id={item.id}
-			name={item.name}
-			value={item.value.value || ''}
-			type={item.datatype}
-			onSubmitEditing={this.handleSubmitEditing.bind(this)}
-		/>
-	)
-
 	handleSubmitEditing(id, newValue) {
-		let task = this.props.task
-		let attributeIndex = task.organized_attributes.findIndex(e =>
+		let { organized_attributes } = this.state
+		let attributeIndex = organized_attributes.findIndex(e =>
 			Compute.equate(e.id, id)
 		)
-		let currValue = task.organized_attributes[attributeIndex].value
+
+		// if there's no change, return 
+		let currValue = organized_attributes[attributeIndex].value
 		if (newValue === currValue) {
 			return
 		}
-		return this.dispatchWithError(
-			actions.updateAttribute(task, id, newValue, this.props.taskSearch)
-		)
+
+		// else, do optimistic update
+		this.updateAttributeValue(attributeIndex, newValue)
+		Compute.postAttributeUpdate(task.id, id, newValue)
+			.catch(e => this.updateAttributeValue(attributeIndex, currValue))
+
+	}
+
+	updateAttributeValue(index, newValue) {
+		let ns = update(this.state.organized_attributes, {
+			[index] : {
+				$merge: { value: newValue }
+			}
+		})
+		this.setState({ organized_attributes: ns })
 	}
 
 	renderHeader = task => {
