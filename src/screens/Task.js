@@ -61,8 +61,88 @@ class Task extends Component {
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 
 		this.state = {
-			organized_attributes: props.task.organized_attributes
+			organized_attributes: props.task && props.task.organized_attributes
 		}
+	}
+
+		componentWillMount() {
+		this.props.navigation.setParams({
+			showActionSheet: () => this.ActionSheet.show(),
+		})
+	}
+
+	componentDidMount() {
+		this.props.dispatch(actions.resetJustCreated())
+		if (this.props.taskSearch) {
+			this.dispatchWithError(actions.fetchTask(this.props.id))
+		}
+		Networking.get(`/ics/tasks/${this.props.id}`)
+			.then(res => {
+				let organized = Compute.organizeAttributes(res.body)
+				this.setState({ organized_attributes: organized })
+			})
+			.catch(e => console.log(e))
+	}
+
+	render() {
+		let { organized_attributes } = this.state
+		console.log(organized_attributes)
+		let { task } = this.props
+		if (!task) {
+			return null
+		}
+		const isLabel = task.process_type.name.toLowerCase() === 'label'
+		let outputButtonName = 'Outputs'
+		if (isLabel) {
+			outputButtonName = 'Label Items'
+		}
+		const actionOptions = task.is_flagged
+			? ACTION_OPTIONS.filter(o => o !== 'Flag')
+			: ACTION_OPTIONS
+
+		return (
+			<TouchableWithoutFeedback
+				onPress={() => Keyboard.dismiss()}
+				accessible={false}
+			>
+				<View style={styles.container}>
+					{task.is_flagged && <Flag />}
+					{ this.renderHeader(task) }
+					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)}/>
+					<View style={styles.help}>
+						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
+					</View>
+					<ActionSheet
+						ref={o => (this.ActionSheet = o)}
+						title={ACTION_TITLE}
+						options={actionOptions}
+						cancelButtonIndex={CANCEL_INDEX}
+						onPress={this.handlePress}
+					/>
+					<ActionButton
+						buttonColor={Colors.base}
+						activeOpacity={0.5}
+						icon={
+							<FAIcon name="qrcode" size={24} color="white" />
+						}>
+						{!isLabel && (
+							<ActionButton.Item
+								buttonColor={'green'}
+								title="Inputs"
+								onPress={() => this.showCamera('inputs')}>
+								<Image source={ImageUtility.requireIcon('inputs.png')} />
+							</ActionButton.Item>
+						)}
+						<ActionButton.Item
+							buttonColor={'blue'}
+							title={outputButtonName}
+							onPress={() => this.showCamera('items')}>
+							<Image source={ImageUtility.requireIcon('outputs.png')} />
+						</ActionButton.Item>
+					</ActionButton>
+				</View>
+			</TouchableWithoutFeedback>
+		)
 	}
 
 	dispatchWithError(f) {
@@ -178,85 +258,6 @@ class Task extends Component {
 		})
 	}
 
-	componentWillMount() {
-		this.props.navigation.setParams({
-			showActionSheet: () => this.ActionSheet.show(),
-		})
-	}
-
-	componentDidMount() {
-		this.props.dispatch(actions.resetJustCreated())
-		Networking.get(`/ics/tasks/${this.props.task.id}`)
-			.then(res => {
-				let organized = Compute.organizeAttributes(res.body)
-				this.setState({ organized_attributes: organized })
-			})
-			.catch(e => console.log(e))
-	}
-
-	render() {
-		let { organized_attributes } = this.state
-		console.log(organized_attributes)
-		let { task } = this.props
-		if (!task) {
-			return null
-		}
-		const isLabel = task.process_type.name.toLowerCase() === 'label'
-		let outputButtonName = 'Outputs'
-		if (isLabel) {
-			outputButtonName = 'Label Items'
-		}
-		const actionOptions = task.is_flagged
-			? ACTION_OPTIONS.filter(o => o !== 'Flag')
-			: ACTION_OPTIONS
-
-		console.log(organized_attributes.length)
-
-		return (
-			<TouchableWithoutFeedback
-				onPress={() => Keyboard.dismiss()}
-				accessible={false}
-			>
-				<View style={styles.container}>
-					{task.is_flagged && <Flag />}
-					{ this.renderHeader(task) }
-					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)}/>
-					<View style={styles.help}>
-						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
-					</View>
-					<ActionSheet
-						ref={o => (this.ActionSheet = o)}
-						title={ACTION_TITLE}
-						options={actionOptions}
-						cancelButtonIndex={CANCEL_INDEX}
-						onPress={this.handlePress}
-					/>
-					<ActionButton
-						buttonColor={Colors.base}
-						activeOpacity={0.5}
-						icon={
-							<FAIcon name="qrcode" size={24} color="white" />
-						}>
-						{!isLabel && (
-							<ActionButton.Item
-								buttonColor={'green'}
-								title="Inputs"
-								onPress={() => this.showCamera('inputs')}>
-								<Image source={ImageUtility.requireIcon('inputs.png')} />
-							</ActionButton.Item>
-						)}
-						<ActionButton.Item
-							buttonColor={'blue'}
-							title={outputButtonName}
-							onPress={() => this.showCamera('items')}>
-							<Image source={ImageUtility.requireIcon('outputs.png')} />
-						</ActionButton.Item>
-					</ActionButton>
-				</View>
-			</TouchableWithoutFeedback>
-		)
-	}
-
 	handleSubmitEditing(id, newValue) {
 		let { organized_attributes } = this.state
 		let attributeIndex = organized_attributes.findIndex(e =>
@@ -271,7 +272,7 @@ class Task extends Component {
 
 		// else, do optimistic update
 		this.updateAttributeValue(attributeIndex, newValue)
-		Compute.postAttributeUpdate(task.id, id, newValue)
+		return Compute.postAttributeUpdate(this.props.id, id, newValue)
 			.catch(e => this.updateAttributeValue(attributeIndex, currValue))
 
 	}
