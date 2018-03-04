@@ -53,7 +53,7 @@ export function fetchOpenTasks() {
 				localStorage[key] = val
 			})
 			openPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/')
+			return Networking.get('/ics/tasks/simple/')
 				.query(openPayload)
 				.then(res => {
 					let organized = Compute.organizeAttributesForTasks(res.body)
@@ -85,7 +85,7 @@ export function fetchCompletedTasks() {
 				localStorage[key] = val
 			})
 			completedPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/search/')
+			return Networking.get('/ics/tasks/simple/')
 				.query(completedPayload)
 				.then(res => {
 					let organized = Compute.organizeAttributesForTasks(res.body.results)

@@ -14,6 +14,7 @@ import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
+import { OpenTasks, CompletedTasks } from '../resources/Wafflecone'
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout']
@@ -51,7 +52,24 @@ class Main extends Component {
 		this.refreshTasks = this.refreshTasks.bind(this)
 		this.state = {
 			refreshing: false,
+			data: [
+				{
+					data: [],
+					key: 'open',
+					title: 'OPEN TASKS'
+				},
+				{
+					data: [],
+					key: 'completed',
+					title: 'RECENTLY COMPLETED'
+				},
+				{
+					data: [],
+					key: 'space',
+				},
+			]
 		}
+		this.load()
 		// Storage.clear()
 	}
 
@@ -151,6 +169,27 @@ class Main extends Component {
 
 	handleCreateTask() {
 		this.props.navigation.navigate('CreateTask')
+	}
+
+	async load() {
+		let openTasks = await OpenTasks()
+		let completedTasks = await CompletedTasks()
+		this.setState({data: [
+			{
+				data: openTasks,
+				key: 'open',
+				title: 'OPEN TASKS'
+			},
+			{
+				data: completedTasks,
+				key: 'completed',
+				title: 'RECENTLY COMPLETED'
+			},
+			{
+				data: [],
+				key: 'space',
+			},
+		]})
 	}
 
 	loadData() {
