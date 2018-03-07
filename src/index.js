@@ -89,9 +89,7 @@ const MainStack = StackNavigator(
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
 		Print: { screen: Print },
-		Move: { screen: Move },
 		ChooseTeam: { screen: ChooseTeam },
-
 	},
 	{
 		navigationOptions: {
@@ -109,7 +107,7 @@ const Navigation = StackNavigator(
 		MainStack: { screen: MainStack },
 		QRScanner: { screen: QRScanner },
 		Search: { screen: Search },
-		
+		Move: { screen: Move },
 	},
 	{
 		mode: 'modal',
