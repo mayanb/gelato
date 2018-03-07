@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import ActionButton from 'react-native-action-button'
-
 import Colors from '../resources/Colors'
 import { Dropdown } from '../components/Dropdown'
+import ActivityIndicatorOverlay from '../components/ActivityIndicatorOverlay'
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import * as inventoryActions from '../actions/InventoryActions'
@@ -46,10 +46,11 @@ class ChooseTeam extends Component {
 	}
 
 	render() {
-		let { teams } = this.props
+		let { teams, isCreatingItem } = this.props
 		let { selectedTeam } = this.state
 		return (
 			<View style={styles.container}>
+				{isCreatingItem && <ActivityIndicatorOverlay />}
 				<ScrollView style={styles.scroll}>
 					<Text style={styles.title}>I want to move these items to...</Text>
 					<Dropdown
@@ -169,6 +170,7 @@ const mapStateToProps = (state /*, props */) => {
 	return {
 		teams: state.teams.data,
 		hasJustCreatedItem: state.move.ui.hasJustCreatedItem,
+		isCreatingItem: state.move.ui.isCreatingItem,
 	}
 }
 
