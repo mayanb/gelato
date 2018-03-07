@@ -51,7 +51,19 @@ export function fetchTeams() {
 		dispatch(request(name))
 		return Networking.get(`/ics/teams/`)
 			.then(res => {
-				dispatch(requestSuccess(name, res.body))
+				let teams = res.body
+				console.log(teams)
+				if(teams) {
+					teams.sort(function(a, b) {
+						if(a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+						if(a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+						return 0;
+					})
+					teams.unshift({id: null, name: "other"})
+				}
+				//filter for Dandelion MVP - only showing the dandelion teams
+				teams = teams.filter(team => ['alabama', 'valencia', 'fulfillment', 'productmakers', 'unitedcold', 'other'].includes(team.name))
+				dispatch(requestSuccess(name, teams))
 			})
 			.catch(e => {
 				dispatch(requestFailure(name, e))

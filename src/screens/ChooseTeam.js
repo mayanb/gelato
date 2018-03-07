@@ -32,10 +32,12 @@ class ChooseTeam extends Component {
 	}
 
 	componentDidMount() {
-		let { dispatch } = this.props
+		let { dispatch, teams } = this.props
+		let { addedOther } = this.state
 		dispatch(actions.fetchTeams()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
+		
 	}
 
 	componentWillReceiveProps(np) {
