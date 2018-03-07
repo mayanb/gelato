@@ -7,41 +7,27 @@ import {
 	View,
 	Image,
 	TouchableOpacity,
-	Button
+	Button,
 } from 'react-native'
 import { Camera } from 'expo'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
 import Colors from '../resources/Colors'
 import Networking from '../resources/Networking-superagent'
-import {
-	ALREADY_ADDED_INPUT,
-	ALREADY_ADDED_OUTPUT,
-	INVALID_QR,
-	ALREADY_ADDED_MOVE_ITEM,
-} from '../resources/QRSemantics'
+import { INVALID_QR, ALREADY_ADDED_MOVE_ITEM } from '../resources/QRSemantics'
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import {
-	InputItemListModal,
-	OutputItemListModal,
-} from '../components/ItemListModals'
-import {
-	MoveItemListModal,
-} from '../components/MoveItemListModals'
-import * as actions from '../actions/TaskListActions'
+import { MoveItemListModal } from '../components/MoveItemListModals'
 import paramsToProps from '../resources/paramsToProps'
 
 class Move extends Component {
-	static navigationOptions = ({ navigation }) => {
-		const params = navigation.state.params || {}
-		const { showActionSheet } = params
-
-		return {
-			title: params.name,
-		}
-	}
+	// static navigationOptions = ({ navigation }) => {
+	// 	const params = navigation.state.params || {}
+	// 	return {
+	// 		title: params.name,
+	// 	}
+	// }
 
 	constructor(props) {
 		super(props)
@@ -53,12 +39,14 @@ class Move extends Component {
 			semantic: '',
 			scanned_items: [],
 		}
+
+		this.navigateToNext = this.navigateToNext.bind(this)
+		this.testBarCodeRead = this.testBarCodeRead.bind(this)
 	}
 
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode, scanned_items } = this.state
-		let { mode, task } = this.props
 		return (
 			<View style={styles.container}>
 				<Camera
@@ -69,8 +57,9 @@ class Move extends Component {
 					style={styles.preview}
 				/>
 				<View style={styles.button}>
-					<View style={styles.title}>{this.renderInputsOutputsLabel()}</View>
-					{!expanded && !barcode && scanned_items.length > 0 ? <Button style={styles.nextButton} onPress={() => this.navigateToNext()} title="Next" /> : null}
+					<View style={styles.title}>
+						<Image source={ImageUtility.requireIcon('move_items_text.png')} />
+					</View>
 					<TouchableOpacity
 						onPress={this.handleClose.bind(this)}
 						style={styles.closeTouchableOpacity}>
@@ -82,14 +71,19 @@ class Move extends Component {
 						/>
 					</TouchableOpacity>
 				</View>
-
-				{expanded || barcode ? this.renderModal() : null}
-				{scanned_items.length && !(expanded || barcode)
+				{(expanded || barcode) && this.renderModal()}
+				{this.hasItems() && this.renderNextButton()}
+				{this.hasItems()
 					? this.renderActiveItemListButton(scanned_items)
 					: this.renderDisabledItemListButton(scanned_items)}
-				<Button onPress={() => {setTimeout(() => this.handleBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
+				<Button onPress={this.testBarCodeRead} title="hello" />
 			</View>
 		)
+	}
+
+	hasItems() {
+		let { expanded, barcode, scanned_items } = this.state
+		return !expanded && !barcode && scanned_items.length > 0
 	}
 
 	renderActiveItemListButton(items) {
@@ -115,8 +109,16 @@ class Move extends Component {
 		)
 	}
 
-	renderInputsOutputsLabel() {
-		return <Image source={ImageUtility.requireIcon('add_inputs_text.png')} />
+	renderNextButton() {
+		return (
+			<ActionButton
+				buttonColor={Colors.red}
+				activeOpacity={1}
+				buttonText="Next"
+				onPress={this.navigateToNext}
+				position="right"
+			/>
+		)
 	}
 
 	renderModal() {
@@ -152,7 +154,7 @@ class Move extends Component {
 
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
-					{this.renderInputQR(creatingTask)}
+				{this.renderInputQR(creatingTask)}
 			</Modal>
 		)
 	}
@@ -166,28 +168,17 @@ class Move extends Component {
 				creating_task={creatingTask.display}
 				semantic={semantic}
 				shouldShowAmount={false}
-				onChange={this.handleSetAmount.bind(this)}
-				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
 			/>
 		)
 	}
 
-
 	renderQRLoading() {
 		return <Text>Loading...</Text>
 	}
 
 	// MARK: - EVENT HANDLERS
-
-	dispatchWithError(f) {
-		let { dispatch } = this.props
-		return dispatch(f).catch(e => {
-			dispatch(errorActions.handleError(Compute.errorText(e)))
-		})
-	}
-
 	handleCloseModal() {
 		this.setState({
 			barcode: false,
@@ -199,28 +190,14 @@ class Move extends Component {
 		})
 	}
 
-	handleSetAmount(text) {
-		this.setState({ amount: text })
-	}
-
 	handleAddInput() {
 		let scanned_items = this.state.scanned_items.concat([this.state.foundQR])
-		this.setState({scanned_items: scanned_items})
+		this.setState({ scanned_items: scanned_items })
 		this.handleCloseModal()
-
-		// this.dispatchWithError(
-		// 	actions.addInput(
-		// 		this.props.task,
-		// 		this.state.foundQR,
-		// 		this.props.taskSearch
-		// 	)
-		// ).then(() => this.handleCloseModal())
 	}
 
 	handleRemoveInput(i) {
-		let { task } = this.props
 		let { scanned_items } = this.state
-		
 		// let item = task['inputs'][i]
 		const success = () => {
 			// if (this.props.task.inputs.length === 0) {
@@ -229,7 +206,7 @@ class Move extends Component {
 			}
 		}
 		scanned_items.splice(i, 1)
-		this.setState({scanned_items: scanned_items})
+		this.setState({ scanned_items: scanned_items })
 		success()
 	}
 
@@ -239,20 +216,6 @@ class Move extends Component {
 
 	handleClose() {
 		this.props.navigation.goBack()
-	}
-
-	handleOpenTask(creatingTask) {
-		this.props.navigation.goBack()
-		this.props.navigation.navigate('Task', {
-			id: creatingTask.id,
-			name: creatingTask.display,
-			open: creatingTask.open,
-			task: creatingTask,
-			date: creatingTask.created_at,
-			taskSearch: true,
-			title: creatingTask.display,
-			imgpath: creatingTask.process_type.icon,
-		})
 	}
 
 	handleBarCodeRead(e) {
@@ -289,7 +252,7 @@ class Move extends Component {
 	fetchBarcodeData(code) {
 		let { mode } = this.props
 		let success = (data, semantic) => {
-			this.setState({ foundQR: data, semantic: semantic, isFetching: false})
+			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
 		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: '', isFetching: false })
@@ -308,7 +271,7 @@ class Move extends Component {
 
 	navigateToNext() {
 		this.props.navigation.navigate('ChooseTeam', {
-			name: "Move",
+			name: 'Move',
 			items: this.state.scanned_items,
 		})
 	}
@@ -321,7 +284,7 @@ class Move extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/79b664eb-ae27-460c-80b3-8f98fb1da0fa'
+		let barcode = 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'
 		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 1000)
 	}
 }
@@ -368,15 +331,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginTop: 20 + 16,
 	},
-	nextButton: {
-		left: width-50,
-	}
 })
 
-const mapStateToProps = (state, props) => {
-	return {
-		
-	}
+const mapStateToProps = (/* state, props */) => {
+	return {}
 }
 
 export default paramsToProps(connect(mapStateToProps)(Move))
