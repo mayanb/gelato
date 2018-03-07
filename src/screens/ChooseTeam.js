@@ -84,6 +84,9 @@ class ChooseTeam extends Component {
 	}
 
 	handleMove() {
+		if (isCreatingItem) {
+			return
+		}
 		let { dispatch, items } = this.props
 		let { selectedTeam } = this.state
 		let formatted_items = []
