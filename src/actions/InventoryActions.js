@@ -5,6 +5,7 @@ import {
 	REQUEST,
 	REQUEST_SUCCESS,
 	REQUEST_FAILURE,
+	REQUEST_CREATE,
 	REQUEST_CREATE_SUCCESS,
 	REQUEST_CREATE_FAILURE,
 	REQUEST_DELETE_SUCCESS,
@@ -18,6 +19,7 @@ const MOVE = 'MOVE'
 
 export function requestCreateMove(data) {
 	return dispatch => {
+		dispatch(startCreateMove())
 		let openPayload = data
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
 			let localStorage = {}
@@ -43,6 +45,13 @@ export function requestCreateMove(data) {
 					throw e
 				})
 		})
+	}
+}
+
+function startCreateMove() {
+	return {
+		name: MOVE,
+		type: REQUEST_CREATE,
 	}
 }
 
