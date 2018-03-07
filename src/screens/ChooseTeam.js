@@ -27,6 +27,7 @@ class ChooseTeam extends Component {
 		this.state = {
 			selectedTeam: { name: 'Choose a team', id: -1 },
 			moveCompleted: false,
+			addedOther: false,
 		}
 	}
 
