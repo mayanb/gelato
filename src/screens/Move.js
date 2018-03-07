@@ -22,7 +22,7 @@ import { MoveItemListModal } from '../components/MoveItemListModals'
 import paramsToProps from '../resources/paramsToProps'
 
 class Move extends Component {
-	static navigationOptions = ({ navigation }) => {
+	static navigationOptions = () => {
 		return {
 			header: null,
 		}
@@ -71,50 +71,44 @@ class Move extends Component {
 					</TouchableOpacity>
 				</View>
 				{(expanded || barcode) && this.renderModal()}
-				{this.hasItems() && this.renderNextButton()}
-				{this.hasItems()
-					? this.renderActiveItemListButton(scanned_items)
-					: this.renderDisabledItemListButton(scanned_items)}
+				{this.renderActionButtons()}
 				<Button onPress={this.testBarCodeRead} title="hello" />
 			</View>
 		)
 	}
 
-	hasItems() {
+	renderActionButtons() {
 		let { expanded, barcode, scanned_items } = this.state
-		return !expanded && !barcode && scanned_items.length > 0
+		if (!expanded && !barcode && scanned_items.length > 0) {
+			return [this.renderItemListButton(true), this.renderNextButton(true)]
+		} else {
+			return [this.renderItemListButton(), this.renderNextButton()]
+		}
 	}
 
-	renderActiveItemListButton(items) {
+	renderItemListButton(active) {
+		let items = this.state.scanned_items
 		return (
 			<ActionButton
-				buttonColor={Colors.base}
-				activeOpacity={0.5}
+				buttonColor={active ? Colors.base : Colors.gray}
+				activeOpacity={active ? 0.5 : 1}
 				buttonText={String(items.length)}
 				position="left"
-				onPress={this.handleToggleItemList.bind(this)}
+				onPress={active && this.handleToggleItemList.bind(this)}
 			/>
 		)
 	}
 
-	renderDisabledItemListButton(items) {
+	renderNextButton(active) {
+		if (this.state.scanned_items.length <= 0) {
+			return null
+		}
 		return (
 			<ActionButton
-				buttonColor={Colors.gray}
-				activeOpacity={1}
-				buttonText={String(items.length)}
-				position="left"
-			/>
-		)
-	}
-
-	renderNextButton() {
-		return (
-			<ActionButton
-				buttonColor={Colors.lightPurple}
+				buttonColor={active ? Colors.lightPurple : Colors.gray}
 				activeOpacity={1}
 				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
-				onPress={this.navigateToNext}
+				onPress={active && this.navigateToNext}
 				position="right"
 			/>
 		)
@@ -135,7 +129,7 @@ class Move extends Component {
 				processUnit={this.props.processUnit}
 				onCloseModal={this.handleCloseModal.bind(this)}
 				onRemove={this.handleRemoveInput.bind(this)}
-				onOpenTask={this.handleOpenTask.bind(this)}
+				onOpenTask={() => {}}
 				items={this.state.scanned_items}
 			/>
 		)
@@ -207,21 +201,6 @@ class Move extends Component {
 		scanned_items.splice(i, 1)
 		this.setState({ scanned_items: scanned_items })
 		success()
-	}
-
-	handleOpenTask(creatingTask) {
-		// this.props.navigation.goBack()
-		// this.props.onOpenTask(creatingTask)
-		// this.props.navigation.navigate('Task', {
-		// 	id: creatingTask.id,
-		// 	name: creatingTask.display,
-		// 	open: creatingTask.open,
-		// 	task: creatingTask,
-		// 	date: creatingTask.created_at,
-		// 	taskSearch: true,
-		// 	title: creatingTask.display,
-		// 	imgpath: creatingTask.process_type.icon,
-		// })
 	}
 
 	handleToggleItemList() {

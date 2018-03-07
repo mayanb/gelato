@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		height: height,
 		width: width,
+		backgroundColor: 'rgba(0,0,0,0.5)',
 	},
-
 	topRow: {
 		minHeight: paddingHeight,
 	},
@@ -75,6 +75,4 @@ const styles = StyleSheet.create({
 		minHeight: paddingHeight,
 		flex: 1,
 	},
-
 })
-
