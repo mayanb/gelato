@@ -101,7 +101,7 @@ class ChooseTeam extends Component {
 		}
 		dispatch(inventoryActions.requestCreateMove(data))
 			.then(() => {
-				dispatch(errorActions.handleError(this.generateMoveMessage()))
+				dispatch(errorActions.handleError(this.generateMoveMessage(), 7500))
 				this.navigateToHome()
 			})
 			.catch(e => {
