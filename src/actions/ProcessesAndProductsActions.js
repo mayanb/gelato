@@ -45,6 +45,21 @@ function fetch(name) {
 	}
 }
 
+export function fetchTeams() {
+	let name = 'TEAMS'
+	return dispatch => {
+		dispatch(request(name))
+		return Networking.get(`/ics/teams/`)
+			.then(res => {
+				dispatch(requestSuccess(name, res.body))
+			})
+			.catch(e => {
+				dispatch(requestFailure(name, e))
+				throw e
+			})
+	}
+}
+
 function request(name) {
 	return {
 		type: REQUEST,

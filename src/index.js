@@ -13,6 +13,8 @@ import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
 import Print from './screens/Print'
 import Search from './screens/Search'
+import Move from './screens/Move'
+import ChooseTeam from './screens/ChooseTeam'
 import Snackbar from './components/Snackbar'
 
 import paramsToProps from './resources/paramsToProps'
@@ -87,6 +89,9 @@ const MainStack = StackNavigator(
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
 		Print: { screen: Print },
+		Move: { screen: Move },
+		ChooseTeam: { screen: ChooseTeam },
+
 	},
 	{
 		navigationOptions: {
@@ -104,6 +109,7 @@ const Navigation = StackNavigator(
 		MainStack: { screen: MainStack },
 		QRScanner: { screen: QRScanner },
 		Search: { screen: Search },
+		
 	},
 	{
 		mode: 'modal',

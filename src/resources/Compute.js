@@ -7,6 +7,7 @@ import {
 	ALREADY_ADDED_INPUT,
 	ALREADY_ADDED_OUTPUT,
 	INVALID_QR,
+	ALREADY_ADDED_MOVE_ITEM,
 } from './QRSemantics'
 import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 
@@ -106,6 +107,8 @@ export default class Compute {
 				return "This QR code hasn't been associated with a task yet. Scan this QR as an output for a task before using it as an input."
 			case INVALID_QR:
 				return 'This QR code is invalid.'
+			case ALREADY_ADDED_MOVE_ITEM:
+				return "Hooray! You've already chosen this item to be moved."
 			default:
 				return 'Add me'
 		}

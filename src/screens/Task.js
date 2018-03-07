@@ -65,7 +65,7 @@ class Task extends Component {
 		}
 	}
 
-		componentWillMount() {
+	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
 		})

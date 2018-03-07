@@ -9,8 +9,10 @@ const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
+const TEAMS = 'TEAMS'
 const TASK = 'TASK'
 const ERROR = 'ERROR'
+const MOVE = 'MOVE'
 
 let defaultState = {
 	data: [],
@@ -57,6 +59,16 @@ var reducer = combineReducers({
   products: createFilteredReducer(
     BasicReducer,
     action => action.name === PRODUCTS,
+    defaultState
+  ),
+  teams: createFilteredReducer(
+    BasicReducer,
+    action => action.name === TEAMS,
+    defaultState
+  ),
+  move: createFilteredReducer(
+    BasicReducer,
+    action => action.name === MOVE,
     defaultState
   ),
   errors: createFilteredReducer(
