@@ -31,6 +31,7 @@ class ChooseTeam extends Component {
 		this.state = {
 			selectedTeam: { name: 'Choose a team', id: -1 },
 			moveCompleted: false,
+			addedOther: false,
 		}
 		this.renderMoveCompleteModal = this.renderMoveCompleteModal.bind(this)
 	}
@@ -51,6 +52,20 @@ class ChooseTeam extends Component {
 
 	render() {
 		let { teams, items } = this.props
+		let { addedOther } = this.state
+		if(teams && teams.length > 0 && !addedOther) {
+			teams.sort(function(a, b) {
+				if(a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+				if(a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+				return 0;
+			})
+			teams.unshift({id: null, name: "other"})
+			this.setState({addedOther: true})
+		}
+		//filter for Dandelion MVP - only showing the dandelion teams
+		if(teams) {
+			teams = teams.filter(team => ['alabama', 'valencia', 'fulfillment', 'productmakers', 'unitedcold', 'other'].includes(team.name))
+		}
 		let { selectedTeam, moveCompleted } = this.state
 		return (
 			<View style={styles.container}>
