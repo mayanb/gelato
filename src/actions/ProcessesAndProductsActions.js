@@ -52,7 +52,6 @@ export function fetchTeams() {
 		return Networking.get(`/ics/teams/`)
 			.then(res => {
 				let teams = res.body
-				console.log(teams)
 				if(teams) {
 					teams.sort(function(a, b) {
 						if(a.name.toLowerCase() < b.name.toLowerCase()) return -1;
