@@ -83,7 +83,7 @@ class ChooseTeam extends Component {
 	}
 
 	handleMove() {
-		if (isCreatingItem) {
+		if (this.props.isCreatingItem) {
 			return
 		}
 		let { dispatch, items } = this.props
