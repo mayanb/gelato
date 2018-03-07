@@ -7,20 +7,16 @@ import Colors from '../resources/Colors'
 import { Dropdown } from '../components/Dropdown'
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
-import * as taskActions from '../actions/TaskListActions'
 import * as inventoryActions from '../actions/InventoryActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
-import ModalAlert from '../components/ModalAlert'
 import pluralize from 'pluralize'
 
 class ChooseTeam extends Component {
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet } = params
-
 		return {
 			title: params.name,
 		}
@@ -32,7 +28,6 @@ class ChooseTeam extends Component {
 			selectedTeam: { name: 'Choose a team', id: -1 },
 			moveCompleted: false,
 		}
-		this.renderMoveCompleteModal = this.renderMoveCompleteModal.bind(this)
 	}
 
 	componentDidMount() {
@@ -44,14 +39,14 @@ class ChooseTeam extends Component {
 
 	componentWillReceiveProps(np) {
 		if (np.hasJustCreatedItem) {
-			console.log("move is done")
-			this.setState({moveCompleted: true})
+			//console.log('move is done')
+			this.setState({ moveCompleted: true })
 		}
 	}
 
 	render() {
-		let { teams, items } = this.props
-		let { selectedTeam, moveCompleted } = this.state
+		let { teams } = this.props
+		let { selectedTeam } = this.state
 		return (
 			<View style={styles.container}>
 				<ScrollView style={styles.scroll}>
@@ -63,7 +58,6 @@ class ChooseTeam extends Component {
 						style={styles.dropdown}
 					/>
 				</ScrollView>
-				<View style={styles.modal}>{moveCompleted ? this.renderMoveCompleteModal() : null}</View>
 				{this.shouldShowNext() && (
 					<ActionButton
 						buttonColor={Colors.base}
@@ -91,15 +85,29 @@ class ChooseTeam extends Component {
 		let { dispatch, items } = this.props
 		let { selectedTeam } = this.state
 		let formatted_items = []
-		items.map(item => formatted_items.push({item: item.id}))
-		let data = {team_destination: selectedTeam.id, status: "RC", notes: "DELIVERED VIA APP", items: formatted_items}
-		dispatch(inventoryActions.requestCreateMove(data)).catch(e => {
-			dispatch(errorActions.handleError(Compute.errorText(e)))
-		})
-		// let data = { processType: selectedProcess, productType: selectedProduct }
-		// dispatch(taskActions.requestCreateTask(data)).catch(e => {
-		// 	dispatch(errorActions.handleError(Compute.errorText(e)))
-		// })
+		items.map(item => formatted_items.push({ item: item.id }))
+		let data = {
+			team_destination: selectedTeam.id,
+			status: 'RC',
+			notes: 'DELIVERED VIA APP',
+			items: formatted_items,
+		}
+		dispatch(inventoryActions.requestCreateMove(data))
+			.then(() => {
+				dispatch(errorActions.handleError(this.generateMoveMessage()))
+				this.navigateToHome()
+			})
+			.catch(e => {
+				dispatch(errorActions.handleError(Compute.errorText(e)))
+			})
+	}
+
+	generateMoveMessage() {
+		let { items } = this.props
+		let tname = this.state.selectedTeam.name
+		let items_pl = pluralize('items', items.length)
+		let items_c = items.length
+		return `Hooray! You finished moving ${items_c} ${items_pl} to ${tname}`
 	}
 
 	openCreatedTask(task) {
@@ -120,21 +128,8 @@ class ChooseTeam extends Component {
 		this.setState({ selectedTeam: item })
 	}
 
-	renderMoveCompleteModal() {
-		let { selectedTeam } = this.state
-		let { items, teams } = this.props
-		return (
-			<ModalAlert 
-				style={styles.modal}
-				onPress={this.navigateToHome.bind(this)} 
-				message={`You finished moving ${items.length} ${pluralize("items", items.length)} to ${selectedTeam.name}`}
-				buttonText="OK!">
-			</ModalAlert>
-		)
-	}
-
 	navigateToHome() {
-		this.props.navigation.goBack()
+		//this.props.navigation.goBack()
 		this.props.navigation.navigate('Main')
 	}
 }
@@ -166,7 +161,7 @@ const styles = StyleSheet.create({
 	modal: {
 		position: 'absolute',
 		top: 50,
-	}
+	},
 })
 
 const mapStateToProps = (state /*, props */) => {
