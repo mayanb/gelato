@@ -83,13 +83,28 @@ class App extends React.Component {
 	}
 }
 
+const MoveStack = StackNavigator(
+	{
+		Move: { screen: Move },
+		ChooseTeam: { screen: ChooseTeam },
+	},
+	{
+		navigationOptions: {
+			headerStyle: {
+				backgroundColor: Colors.base,
+				borderBottomWidth: 0,
+			},
+			headerTintColor: Colors.white,
+		},
+	}
+)
+
 const MainStack = StackNavigator(
 	{
 		Main: { screen: Main },
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
 		Print: { screen: Print },
-		ChooseTeam: { screen: ChooseTeam },
 	},
 	{
 		navigationOptions: {
@@ -105,9 +120,9 @@ const MainStack = StackNavigator(
 const Navigation = StackNavigator(
 	{
 		MainStack: { screen: MainStack },
+		MoveStack: { screen: MoveStack },
 		QRScanner: { screen: QRScanner },
 		Search: { screen: Search },
-		Move: { screen: Move },
 	},
 	{
 		mode: 'modal',

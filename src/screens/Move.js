@@ -22,12 +22,11 @@ import { MoveItemListModal } from '../components/MoveItemListModals'
 import paramsToProps from '../resources/paramsToProps'
 
 class Move extends Component {
-	// static navigationOptions = ({ navigation }) => {
-	// 	const params = navigation.state.params || {}
-	// 	return {
-	// 		title: params.name,
-	// 	}
-	// }
+	static navigationOptions = ({ navigation }) => {
+		return {
+			header: null,
+		}
+	}
 
 	constructor(props) {
 		super(props)
