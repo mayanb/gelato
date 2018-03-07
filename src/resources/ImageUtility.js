@@ -1,6 +1,9 @@
 export function requireIcon(process_icon) {
   img = ''
   switch (process_icon) {
+    case 'send.png':
+      img = require('../resources/assets/system_icons/send.png')
+      break
     case 'add_inputs_text.png':
       img = require('../resources/assets/system_icons/add_inputs_text.png')
       break

@@ -111,9 +111,9 @@ class Move extends Component {
 	renderNextButton() {
 		return (
 			<ActionButton
-				buttonColor={Colors.red}
+				buttonColor={Colors.lightPurple}
 				activeOpacity={1}
-				buttonText="Next"
+				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 				onPress={this.navigateToNext}
 				position="right"
 			/>
@@ -214,7 +214,8 @@ class Move extends Component {
 	}
 
 	handleClose() {
-		this.props.navigation.goBack()
+		this.props.navigation.popToTop()
+		this.props.navigation.goBack(null)
 	}
 
 	handleBarCodeRead(e) {

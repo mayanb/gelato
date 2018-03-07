@@ -61,11 +61,11 @@ class ChooseTeam extends Component {
 				</ScrollView>
 				{this.shouldShowNext() && (
 					<ActionButton
-						buttonColor={Colors.base}
+						buttonColor={Colors.lightPurple}
 						activeOpacity={0.5}
 						onPress={this.handleMove.bind(this)}
 						buttonText=">"
-						icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
+						icon={<Image source={ImageUtility.requireIcon('send.png')} />}
 					/>
 				)}
 			</View>
@@ -134,6 +134,8 @@ class ChooseTeam extends Component {
 
 	navigateToHome() {
 		//this.props.navigation.goBack()
+		//this.props.navigation.popToTop()
+		//this.props.navigation.goBack(null)
 		this.props.navigation.navigate('Main')
 	}
 }
