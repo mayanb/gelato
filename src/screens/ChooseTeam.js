@@ -32,10 +32,12 @@ class ChooseTeam extends Component {
 	}
 
 	componentDidMount() {
-		let { dispatch } = this.props
+		let { dispatch, teams } = this.props
+		let { addedOther } = this.state
 		dispatch(actions.fetchTeams()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
+		
 	}
 
 	componentWillReceiveProps(np) {
@@ -48,19 +50,7 @@ class ChooseTeam extends Component {
 	render() {
 		let { teams, items } = this.props
 		let { addedOther, selectedTeam, moveCompleted } = this.state
-		if(teams && teams.length > 0 && !addedOther) {
-			teams.sort(function(a, b) {
-				if(a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-				if(a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-				return 0;
-			})
-			teams.unshift({id: null, name: "other"})
-			this.setState({addedOther: true})
-		}
-		//filter for Dandelion MVP - only showing the dandelion teams
-		if(teams) {
-			teams = teams.filter(team => ['alabama', 'valencia', 'fulfillment', 'productmakers', 'unitedcold', 'other'].includes(team.name))
-		}
+
 		return (
 			<View style={styles.container}>
 				<ScrollView style={styles.scroll}>
