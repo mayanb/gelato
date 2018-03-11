@@ -213,7 +213,7 @@ class Move extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		let { data } = e
+		let data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
 		let { expanded, barcode, scanned_items } = this.state
 		if (expanded || barcode) {
 			return

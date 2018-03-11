@@ -26,7 +26,6 @@ class ChooseTeam extends Component {
 		super(props)
 		this.state = {
 			selectedTeam: { name: 'Choose a team', id: -1 },
-			moveCompleted: false,
 		}
 	}
 
@@ -35,13 +34,6 @@ class ChooseTeam extends Component {
 		dispatch(actions.fetchTeams()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
-	}
-
-	componentWillReceiveProps(np) {
-		if (np.hasJustCreatedItem) {
-			//console.log('move is done')
-			this.setState({ moveCompleted: true })
-		}
 	}
 
 	render() {
