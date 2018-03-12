@@ -80,8 +80,7 @@ class ChooseTeam extends Component {
 		}
 		let { dispatch, items } = this.props
 		let { selectedTeam } = this.state
-		let formatted_items = []
-		items.map(item => formatted_items.push({ item: item.id }))
+		let formatted_items = items.map(item => ({ item: item.id }))
 		let data = {
 			team_destination: selectedTeam.id,
 			status: 'RC',
