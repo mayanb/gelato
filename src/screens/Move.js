@@ -74,11 +74,12 @@ class Move extends Component {
 				{this.hasItems() && this.renderNextButton()}
 				{this.hasItems()
 					? this.renderActiveItemListButton(scanned_items)
-					: this.renderDisabledItemListButton(scanned_items)}
-				<Button onPress={this.testBarCodeRead} title="hello" />
+					: this.renderDisabledItemListButton(scanned_items)}	
 			</View>
 		)
 	}
+
+	// <Button onPress={this.testBarCodeRead} title="hello" />
 
 	hasItems() {
 		let { expanded, barcode, scanned_items } = this.state
