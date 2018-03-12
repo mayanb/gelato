@@ -140,6 +140,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNPrint (0.0.1)
   - yoga (0.52.0.React)
 
 DEPENDENCIES:
@@ -161,6 +162,7 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNPrint (from `./RNPrint`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
@@ -175,6 +177,8 @@ EXTERNAL SOURCES:
     :podspec: ../node_modules/react-native/third-party-podspecs/GLog.podspec
   React:
     :path: ../node_modules/react-native
+  RNPrint:
+    :path: ./RNPrint
   yoga:
     :path: ../node_modules/react-native/ReactCommon/yoga
 
@@ -213,8 +217,9 @@ SPEC CHECKSUMS:
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: 836cdbba92f62f3c6a00e37a4ce485321fe317cf
   React: 43e97926f429d846050880666de1809e22dd5cc5
+  RNPrint: 2cef498e0f958bb0269e28a22c67cb94228d4e09
   yoga: 55da126afc384965b96bff46652464373b330add
 
-PODFILE CHECKSUM: 9a9100eba6a890779a2cfa82514339426286c653
+PODFILE CHECKSUM: f1aa3496b1f4af6b1c1abbf0a5caa81682d3a163
 
 COCOAPODS: 1.4.0
