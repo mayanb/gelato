@@ -12,6 +12,7 @@ export default class Colors {
 	static textBlack = '#000000'
 	static red = '#FF5C5C'
 	static black = 'rgba(0, 0, 0, 0.88)'
-
 	static darkGray = 'rgba(0,0,0,0.68)'
+
+	static lightPurple = '#A566E8'
 }

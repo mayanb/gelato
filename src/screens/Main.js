@@ -16,7 +16,7 @@ import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout']
+const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
 const CANCEL_INDEX = 0
 
 class Main extends Component {
@@ -94,6 +94,11 @@ class Main extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Search') {
 			this.props.navigation.navigate('Search')
+		}
+		if (ACTION_OPTIONS[i] === 'Move Items') {
+			this.props.navigation.navigate('Move', {
+				name: "Scan Items"
+			})
 		}
 	}
 
