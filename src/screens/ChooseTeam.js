@@ -86,10 +86,10 @@ class ChooseTeam extends Component {
 	}
 
 	handleMove() {
+		let { dispatch, items, isCreatingItem } = this.props
 		if (isCreatingItem) {
 			return
 		}
-		let { dispatch, items } = this.props
 		let { selectedTeam } = this.state
 		let formatted_items = []
 		items.map(item => formatted_items.push({ item: item.id }))
