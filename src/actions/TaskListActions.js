@@ -28,6 +28,7 @@ import {
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
+const TASKS = 'TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 
 export function fetchOpenTasks() {
@@ -40,7 +41,7 @@ export function fetchOpenTasks() {
 		let openPayload = {
 			team: 1,
 			ordering: '-updated_at',
-			is_open: true,
+			// is_open: true,
 			start: DateFormatter.format(yesterday),
 			end: DateFormatter.format(new Date()),
 		}
@@ -53,11 +54,12 @@ export function fetchOpenTasks() {
 				localStorage[key] = val
 			})
 			openPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/')
+			return Networking.get('/ics/tasks/simple/')
 				.query(openPayload)
 				.then(res => {
-					let organized = Compute.organizeAttributesForTasks(res.body)
-					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
+					// let organized = Compute.organizeAttributesForTasks(res.body)
+					// dispatch(requestTasksSuccess(OPEN_TASKS, organized))
+					dispatch(requestTasksSuccess(OPEN_TASKS, res.body.results))
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(OPEN_TASKS, e))
@@ -85,7 +87,7 @@ export function fetchCompletedTasks() {
 				localStorage[key] = val
 			})
 			completedPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/search/')
+			return Networking.get('/ics/tasks/simple/')
 				.query(completedPayload)
 				.then(res => {
 					let organized = Compute.organizeAttributesForTasks(res.body.results)

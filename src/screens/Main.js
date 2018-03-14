@@ -14,6 +14,7 @@ import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
+import { OpenTasks, CompletedTasks } from '../resources/Wafflecone'
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -51,7 +52,24 @@ class Main extends Component {
 		this.refreshTasks = this.refreshTasks.bind(this)
 		this.state = {
 			refreshing: false,
+			data: [
+				{
+					data: [],
+					key: 'open',
+					title: 'OPEN TASKS'
+				},
+				{
+					data: [],
+					key: 'completed',
+					title: 'RECENTLY COMPLETED'
+				},
+				{
+					data: [],
+					key: 'space',
+				},
+			]
 		}
+		// this.load()
 		// Storage.clear()
 	}
 
@@ -64,7 +82,14 @@ class Main extends Component {
 
 	componentDidMount() {
 		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		// this.fetchCompletedTasks()
+	}
+
+	fetchTasks() {
+		let { dispatch } = this.props
+		dispatch(actions.fetchTasks()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
 	}
 
 	fetchOpenTasks() {
@@ -84,7 +109,7 @@ class Main extends Component {
 	refreshTasks() {
 		this.setState({ refreshing: true })
 		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		// this.fetchCompletedTasks()
 	}
 
 	handlePress(i) {
@@ -123,8 +148,9 @@ class Main extends Component {
 	render() {
 		let sections = this.loadData()
 		let openRefreshing = this.props.openTasks.ui.isFetchingData
-		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
-		let isRefreshing = openRefreshing || completedRefreshing || false
+		// let completedRefreshing = this.props.completedTasks.ui.isFetchingData
+		// completedRefreshing || 
+		let isRefreshing = openRefreshing || false
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -158,6 +184,27 @@ class Main extends Component {
 		this.props.navigation.navigate('CreateTask')
 	}
 
+	async load() {
+		let openTasks = await OpenTasks()
+		let completedTasks = await CompletedTasks()
+		this.setState({data: [
+			{
+				data: openTasks,
+				key: 'open',
+				title: 'OPEN TASKS'
+			},
+			{
+				data: completedTasks,
+				key: 'completed',
+				title: 'RECENTLY COMPLETED'
+			},
+			{
+				data: [],
+				key: 'space',
+			},
+		]})
+	}
+
 	loadData() {
 		// // Make the request
 		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
@@ -165,6 +212,8 @@ class Main extends Component {
 		// await this.setState({tasks: teamData});
 		let open = this.props.openTasks.data
 		let completed = this.props.completedTasks.data
+		console.log(this.props.openTasks)
+		// let tasks = this.props.tasks.data
 
 		return [
 			{
@@ -193,9 +242,9 @@ class Main extends Component {
 				title={item.display}
 				key={item.id}
 				id={item.id}
-				imgpath={item.process_type.icon}
+				imgpath={item.process_icon}
 				open={item.is_open}
-				name={item.process_type.name}
+				name={item.process_name + " " + item.product_name}
 				date={DateFormatter.shorten(item.updated_at)}
 				onPress={this.openTask.bind(this)}
 			/>
@@ -247,6 +296,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	return {
+		tasks: state.tasks,
 		openTasks: state.openTasks,
 		completedTasks: state.completedTasks,
 	}
