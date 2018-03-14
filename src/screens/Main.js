@@ -237,9 +237,9 @@ class Main extends Component {
 				title={item.display}
 				key={item.id}
 				id={item.id}
-				// imgpath={item.process_type.icon}
+				imgpath={item.process_icon}
 				open={item.is_open}
-				// name={item.process_type.name}
+				name={item.process_name + " " + item.product_name}
 				date={DateFormatter.shorten(item.updated_at)}
 				onPress={this.openTask.bind(this)}
 			/>
