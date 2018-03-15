@@ -228,9 +228,9 @@ class Task extends Component {
 
 	showCamera(mode) {
 		this.props.navigation.navigate('QRScanner', {
-			task_id: this.state.task.id,
-			open: this.state.open,
-			taskSearch: this.state.taskSearch,
+			task: this.state.task,
+			open: this.props.open,
+			taskSearch: this.props.taskSearch,
 			mode: mode,
 			processUnit: this.state.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
