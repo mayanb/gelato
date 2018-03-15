@@ -105,7 +105,7 @@ class Search extends Component {
 	}
 
 	onBarCodeRead(e) {
-		let { data } = e
+		let data = e.data.trim()
 		let { expanded, barcode } = this.state
 		if (expanded || barcode) {
 			return
@@ -123,8 +123,8 @@ class Search extends Component {
 	fetchBarcodeData(code) {
 		let { mode } = this.props
 
-		let success = () => {
-			// this.setState({foundQR: data, semantic: semantic, isFetching: false})
+		let success = (data, semantic) => {
+			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
 		}
 
 		let failure = () =>
@@ -142,7 +142,7 @@ class Search extends Component {
 					success(found, semantic)
 
 					// it should only do this if found != null
-					if (!found) {
+					if (found) {
 						this.navigateToFoundTask(found.creating_task)
 					} else {
 						//TODO: should bring up a dialog saying this QR code isn't in our system
