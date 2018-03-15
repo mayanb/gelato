@@ -72,25 +72,22 @@ class Task extends Component {
 	}
 
 	componentDidMount() {
-		// this.props.dispatch(actions.resetJustCreated())
-		// if (this.props.taskSearch) {
-		// 	this.dispatchWithError(actions.fetchTask(this.props.id))
-		// }
+		this.props.dispatch(actions.resetJustCreated())
+		if (this.props.taskSearch) {
+			this.dispatchWithError(actions.fetchTask(this.props.id))
+		}
 		Networking.get(`/ics/tasks/${this.props.id}`)
 			.then(res => {
-				console.log(this.props.id)
 				let organized = Compute.organizeAttributes(res.body)
-				let task = res.body
-				this.setState({ organized_attributes: organized, task: task })
+				this.setState({ organized_attributes: organized })
 			})
 			.catch(e => console.log(e))
 	}
 
 	render() {
 		let { organized_attributes } = this.state
-		console.log("ORGANIZED")
 		console.log(organized_attributes)
-		let { task } = this.state
+		let { task } = this.props
 		if (!task) {
 			return null
 		}
@@ -175,7 +172,7 @@ class Task extends Component {
 	}
 
 	showConfirmDeleteAlert() {
-		let { task } = this.state
+		let { task } = this.props
 		// Works on both iOS and Android
 		Alert.alert(
 			`Delete ${task.display}`,
@@ -212,7 +209,7 @@ class Task extends Component {
 
 	handleRenameTask(text) {
 		this.dispatchWithError(
-			actions.requestRenameTask(this.state.task, text, this.state.taskSearch)
+			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
 		)
 		this.props.navigation.setParams({ name: text })
 	}
@@ -222,24 +219,24 @@ class Task extends Component {
 			this.props.navigation.goBack()
 		}
 		this.dispatchWithError(
-			actions.requestDeleteTask(this.state.task, this.state.taskSearch, success)
+			actions.requestDeleteTask(this.props.task, this.props.taskSearch, success)
 		)
 	}
 
 	showCamera(mode) {
 		this.props.navigation.navigate('QRScanner', {
-			task_id: this.state.task.id,
-			open: this.state.open,
-			taskSearch: this.state.taskSearch,
+			task_id: this.props.task.id,
+			open: this.props.open,
+			taskSearch: this.props.taskSearch,
 			mode: mode,
-			processUnit: this.state.task.process_type.unit,
+			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
 		})
 	}
 
 	printTask() {
 		this.props.navigation.navigate('Print', {
-			selectedTask: this.state.task,
+			selectedTask: this.props.task,
 		})
 	}
 
@@ -346,4 +343,4 @@ const mapStateToProps = (state, props) => {
 	}
 }
 
-export default paramsToProps((Task))
+export default paramsToProps(connect(mapStateToProps)(Task))
