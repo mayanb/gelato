@@ -31,7 +31,7 @@ class Main extends Component {
 				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
 					<NavHeader.Item
 						label=""
-						iconName="md-settings"
+						iconName="md-menu"
 						onPress={showActionSheet}
 					/>
 				</NavHeader>

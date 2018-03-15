@@ -72,7 +72,6 @@ class Move extends Component {
 				</View>
 				{(expanded || barcode) && this.renderModal()}
 				{this.renderActionButtons()}
-				<Button onPress={this.testBarCodeRead} title="hello" />
 			</View>
 		)
 	}
