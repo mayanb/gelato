@@ -416,17 +416,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
-	let { taskSearch, open } = props
-	let arr = state.searchedTasks.data
-	if (!taskSearch && open) {
-		arr = state.openTasks.data
-	} else if (!taskSearch) {
-		arr = state.completedTasks.data
-	}
-
-	return {
-		task: arr.find(e => Compute.equate(e.id, props.task_id)),
-	}
+	return {}
 }
 
 export default paramsToProps(connect(mapStateToProps)(QRScanner))
