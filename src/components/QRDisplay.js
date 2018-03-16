@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   Image,
   TextInput,
 } from 'react-native'
+import { AddButton, CancelButton } from './Buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
@@ -92,37 +91,11 @@ export default class QRDisplay extends Component {
 }
 
 function renderButtons(semantic, onPress, onCancel) {
-  let btnstyle = StyleSheet.create({
-    button: {
-      flex: 0,
-      backgroundColor: Colors.base,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      padding: 16,
-    },
-    secondary: {
-      flex: 0,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      padding: 16,
-      borderTopWidth: 1,
-      borderTopColor: Colors.ultraLightGray,
-    },
-  })
-
-  if (Compute.isOkay(semantic)) {
-    return (
-      <View style={btnstyle.button}>
-        <Button title="Add" onPress={onPress} color="white" />
-      </View>
-    )
-  } else {
-    return (
-      <View style={btnstyle.secondary}>
-        <Button title="Cancel" onPress={onCancel} color={Colors.base} />
-      </View>
-    )
-  }
+	if (Compute.isOkay(semantic)) {
+		return <AddButton onAdd={onPress} />
+	} else {
+		return <CancelButton onCancel={onCancel} />
+	}
 }
 
 function QRInput(props) {
