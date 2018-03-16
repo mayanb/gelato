@@ -19,6 +19,7 @@ class CreateTask extends Component {
 		this.state = {
 			selectedProcess: { name: 'Choose a process', id: -1 },
 			selectedProduct: { name: 'Choose a product', id: -1 },
+			isCreatingTask: false
 		}
 	}
 
@@ -72,16 +73,20 @@ class CreateTask extends Component {
 	}
 
 	shouldShowNext() {
-		let { selectedProcess, selectedProduct } = this.state
-		return selectedProcess.id !== -1 && selectedProduct.id !== -1
+		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
+		return (
+			selectedProcess.id !== -1 && selectedProduct.id !== -1 && !isCreatingTask
+		)
 	}
 
 	handleCreate() {
 		let { dispatch } = this.props
 		let { selectedProduct, selectedProcess } = this.state
 		let data = { processType: selectedProcess, productType: selectedProduct }
+		this.setState({ isCreatingTask: true })
 		dispatch(taskActions.requestCreateTask(data)).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
+			this.setState({ isCreatingTask: false })
 		})
 	}
 
