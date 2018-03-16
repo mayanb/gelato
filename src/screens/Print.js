@@ -76,7 +76,7 @@ class Print extends Component {
     this.repeatFunction(numLabels, qrdoc).then(
       function(results) {
         results.join('')
-        alert('TODO!')
+        //alert('TODO!')
         RNPrint.print({ html: `${results}` })
         // console.log(JSON.stringify(results))
       },

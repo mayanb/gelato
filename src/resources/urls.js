@@ -7,7 +7,7 @@ const LOCAL_URL = 'http://localhost:8000'
 export function getBackend() {
 	let { releaseChannel } = Expo.Constants.manifest
 	switch (releaseChannel) {
-		case 'default':
+		case 'production':
 			return PRODUCTION_URL
 		case 'staging':
 			return STAGING_URL
