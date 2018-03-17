@@ -139,6 +139,12 @@ class Task extends Component {
 							onPress={() => this.showCamera('items')}>
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
 						</ActionButton.Item>
+						<ActionButton.Item
+							buttonColor={'purple'}
+							title={'Print'}
+							onPress={() => this.printTask()}>
+							<Image source={ImageUtility.requireIcon('print.png')} />
+						</ActionButton.Item>
 					</ActionButton>
 				</View>
 			</TouchableWithoutFeedback>
