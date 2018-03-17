@@ -1,10 +1,10 @@
 import { SET_ERROR, CLEAR_ERROR } from '../reducers/ErrorReducer'
 
-export function handleError(err_type) {
+export function handleError(err_type, err_time = 5000) {
 	return dispatch => {
 		let err_id = parseInt(Math.random() * 1000)
 		dispatch(setError(err_type, err_id))
-		return window.setTimeout(() => dispatch(clearError(err_id)), 5000)
+		return window.setTimeout(() => dispatch(clearError(err_id)), err_time)
 	}
 }
 

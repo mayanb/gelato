@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, View, Text, Button } from 'react-native'
+import { Dimensions, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-navigation'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
@@ -9,229 +9,224 @@ import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 import QRCamera from '../components/QRCamera'
 import paramsToProps from '../resources/paramsToProps'
 import ModalAlert from '../components/ModalAlert'
-import Colors from '../resources/Colors'
 
 class Search extends Component {
-  static navigationOptions = {
-    // Not actually displayed, unsure what this is for
-    title: 'Search for a task',
-  }
+	constructor(props) {
+		super(props)
+		this.state = {
+			expanded: false,
+			barcode: false,
+			foundQR: null,
+			semantic: '', // semantic is a string that indicates what to display out of the various options
+			searchText: '',
+			typeSearch: false,
+			showNotFoundModal: false,
+			data: [],
+		}
+		this.closeModal = this.closeModal.bind(this)
+	}
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      expanded: false,
-      barcode: false,
-      foundQR: null,
-      semantic: '', // semantic is a string that indicates what to display out of the various options
+	render() {
+		let { typeSearch, searchText, data, showNotFoundModal } = this.state
 
-      searchText: '',
-      typeSearch: false,
-      showNotFoundModal: false,
-      data: [],
-    }
-    this.closeModal = this.closeModal.bind(this)
-  }
+		return (
+			<View style={styles.container}>
+				<QRCamera
+					onBarCodeRead={this.onBarCodeRead.bind(this)}
+					onClose={this.handleClose.bind(this)}
+				/>
+				<SafeAreaView
+					style={styles.searchContainer}
+					forceInset={{ top: 'always' }}>
+					<SearchBox
+						onChangeText={this.handleChangeText.bind(this)}
+						searchText={searchText}
+						typeSearch={typeSearch}
+						onFocus={this.handleFocus.bind(this)}
+						clearText={this.handleBlur.bind(this)}
+					/>
+				</SafeAreaView>
+				{typeSearch && (
+					<SearchDropdown
+						onSelect={this.onSelectTaskFromDropdown.bind(this)}
+						data={data}
+						isLoading={this.state.isLoading}
+					/>
+				)}
+				{showNotFoundModal && this.renderNotFoundModal()}
+			</View>
+		)
+	}
 
-  render() {
-    let { typeSearch, searchText, data, showNotFoundModal } = this.state
+	// <Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
+	// <SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
+	//
 
-    return (
-      <View style={styles.container}>
-        <QRCamera
-          onBarCodeRead={this.onBarCodeRead.bind(this)}
-          onClose={this.handleClose.bind(this)}
-        />
-        <SafeAreaView
-          style={styles.searchContainer}
-          forceInset={{ top: 'always' }}>
-          <SearchBox
-            onChangeText={this.handleChangeText.bind(this)}
-            searchText={searchText}
-            typeSearch={typeSearch}
-            onFocus={this.handleFocus.bind(this)}
-            clearText={this.handleBlur.bind(this)}
-          />
-        </SafeAreaView>
-        {typeSearch && (
-          <SearchDropdown
-            onSelect={this.onSelectTaskFromDropdown.bind(this)}
-            data={data}
-            isLoading={this.state.isLoading}
-          />
-        )}
-        { showNotFoundModal ? this.renderNotFoundModal() : null}
-      </View>
-    )
-  }
+	handleFocus() {
+		this.setState({ data: [], searchText: '', typeSearch: true })
+	}
 
-  // <Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
-  // <SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
-  //
+	handleBlur() {
+		this.setState({ data: [], searchText: '', typeSearch: false })
+	}
 
-  handleFocus() {
-    this.setState({ data: [], searchText: '', typeSearch: true })
-  }
+	handleClose() {
+		console.log('close')
+		this.props.navigation.goBack()
+	}
 
-  handleBlur() {
-    this.setState({ data: [], searchText: '', typeSearch: false })
-  }
+	handleChangeText(text) {
+		let { request } = this.state
+		this.setState({ searchText: text })
+		if (request) {
+			request.abort()
+		}
 
-  handleClose() {
-    console.log('close')
-    this.props.navigation.goBack()
-  }
+		if (text.length < 2) return
 
-  handleChangeText(text) {
-    let { request } = this.state
-    this.setState({ searchText: text })
-    if (request) {
-      request.abort()
-    }
+		let r = Networking.get('/ics/tasks/search/').query({
+			label: text,
+			team: this.props.teamID,
+		})
 
-    if (text.length < 2) return
+		r
+			.then(res => this.setState({ data: res.body.results, isLoading: false }))
+			.catch(() => this.setState({ data: [], isLoading: false }))
 
-    let r = Networking.get('/ics/tasks/search/').query({
-      label: text,
-      team: this.props.teamID,
-    })
+		this.setState({ request: r, isLoading: true })
+	}
 
-    r
-      .then(res => this.setState({ data: res.body.results, isLoading: false }))
-      .catch(() => this.setState({ data: [], isLoading: false }))
+	toggleTypeSearch() {
+		this.setState({ typeSearch: !this.state.typeSearch })
+	}
 
-    this.setState({ request: r, isLoading: true })
+	onSelectTaskFromDropdown(task) {
+		this.navigateToFoundTask(task)
+	}
 
-  }
+	onBarCodeRead(e) {
+		let { data } = e
+		let { expanded, barcode } = this.state
+		if (expanded || barcode) {
+			return
+		}
 
-  toggleTypeSearch() {
-    this.setState({ typeSearch: !this.state.typeSearch })
-  }
+		let valid = Compute.validateQR(data)
+		if (!valid) {
+			this.setState({ showNotFoundModal: true, semantic: INVALID_QR })
+		} else {
+			this.setState({ barcode: data, isFetching: true })
+			this.fetchBarcodeData(data) // get detailed info about this bar code from the server
+		}
+	}
 
-  onSelectTaskFromDropdown(task) {
-    this.navigateToFoundTask(task)
-  }
+	fetchBarcodeData(code) {
+		let { mode } = this.props
 
-  onBarCodeRead(e) {
-    let { data } = e
-    let { expanded, barcode } = this.state
-    if (expanded || barcode) {
-      return
-    }
+		let success = () => {
+			// this.setState({foundQR: data, semantic: semantic, isFetching: false})
+		}
 
-    let valid = Compute.validateQR(data)
-    if (!valid) {
-      this.setState({ showNotFoundModal: true, semantic: INVALID_QR })
-    } else {
-      this.setState({ barcode: data, isFetching: true })
-      this.fetchBarcodeData(data) // get detailed info about this bar code from the server
-    }
-  }
+		let failure = () =>
+			this.setState({ foundQR: null, semantic: '', isFetching: false })
 
-  fetchBarcodeData(code) {
-    let { mode } = this.props
+		Networking.get('/ics/items/')
+			.query({ item_qr: code })
+			.end((err, res) => {
+				console.log(res.body)
+				if (err || !res.ok) {
+					failure(err)
+				} else {
+					let found = res.body.length ? res.body[0] : null
+					let semantic = Compute.getQRSemantic(mode, found)
+					success(found, semantic)
+					if (found) {
+						this.navigateToFoundTask(found.creating_task)
+					} else {
+						this.setState({ showNotFoundModal: true })
+					}
+				}
+			})
+	}
 
-    let success = () => {
-      // this.setState({foundQR: data, semantic: semantic, isFetching: false})
-    }
+	renderNotFoundModal() {
+		return (
+			<ModalAlert
+				onPress={this.closeModal}
+				message="This QR Code isn't in our system!"
+				buttonText="Close"
+			/>
+		)
+	}
 
-    let failure = () =>
-      this.setState({ foundQR: null, semantic: '', isFetching: false })
+	closeModal() {
+		this.setState({
+			showNotFoundModal: false,
+			expanded: false,
+			barcode: false,
+			foundQR: null,
+			semantic: '',
+			searchText: '',
+			isFetching: false,
+		})
+	}
 
-    Networking.get('/ics/items/')
-      .query({ item_qr: code })
-      .end((err, res) => {
-        console.log(res.body)
-        if (err || !res.ok) {
-          failure(err)
-        } else {
-          let found = res.body.length ? res.body[0] : null
-          let semantic = Compute.getQRSemantic(mode, found)
-          success(found, semantic)
+	navigateToFoundTask(foundTask) {
+		this.props.navigation.goBack()
+		this.props.navigation.navigate('Task', {
+			id: foundTask.id,
+			name: foundTask.display,
+			open: foundTask.open,
+			task: foundTask,
+			date: foundTask.created_at,
+			taskSearch: true,
+			title: foundTask.display,
+			imgpath: foundTask.process_type.icon,
+		})
+	}
 
-          // it should only do this if found != null
-          if(found != null ) {
-            this.navigateToFoundTask(found.creating_task)
-          } else {
-            //TODO: should bring up a dialog saying this QR code isn't in our system
-            // alert("nope")
-            this.setState({ showNotFoundModal: true })
-          }
-        }
-      })
-  }
-
-  renderNotFoundModal() {
-    
-    return(
-      
-      <ModalAlert onPress={this.closeModal} message="This QR Code isn't in our system!" buttonText="Close">
-      </ModalAlert>
-    )
-  }
-
-
-
-  closeModal() {
-    this.setState({ showNotFoundModal: false, expanded: false, barcode: false, foundQR: null, semantic: '', searchText: '', isFetching: false })
-  }
-
-  navigateToFoundTask(foundTask) {
-    this.props.navigation.goBack()
-    this.props.navigation.navigate('Task', {
-      id: foundTask.id,
-      name: foundTask.display,
-      open: foundTask.open,
-      task: foundTask,
-      date: foundTask.created_at,
-      taskSearch: true,
-      title: foundTask.display,
-      imgpath: foundTask.process_type.icon,
-    })
-  }
-
-  keyExtractor = item => item.id
+	keyExtractor = item => item.id
 }
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'gray',
-  },
-  preview: {
-    position: 'absolute',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    top: 0,
-    left: 0,
-    height: height,
-    width: width,
-  },
-  button: {
-    position: 'absolute',
-    top: 24,
-    left: 24,
-  },
-  searchContainer: {
-    position: 'absolute',
-    top: 5,
-    left: 0,
-    width: width,
-    alignItems: 'center',
-    marginLeft: 32,
-    paddingRight: 32,
-  },
+	container: {
+		flex: 1,
+		backgroundColor: 'gray',
+	},
+	preview: {
+		position: 'absolute',
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+		top: 0,
+		left: 0,
+		height: height,
+		width: width,
+	},
+	button: {
+		position: 'absolute',
+		top: 24,
+		left: 24,
+	},
+	searchContainer: {
+		position: 'absolute',
+		top: 5,
+		left: 0,
+		width: width,
+		alignItems: 'center',
+		marginLeft: 32,
+		paddingRight: 32,
+	},
 })
 
 const mapStateToProps = (state /*, props */) => {
-  return {
-    openTasks: state.openTasks,
-    completedTasks: state.completedTasks,
-    task: state.task,
-  }
+	return {
+		openTasks: state.openTasks,
+		completedTasks: state.completedTasks,
+		task: state.task,
+	}
 }
 
 export default paramsToProps(connect(mapStateToProps)(Search))

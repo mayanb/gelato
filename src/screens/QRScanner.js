@@ -235,7 +235,7 @@ class QRScanner extends Component {
 	}
 
 	handleAddInput() {
-		this.dispatchWithError(
+		return this.dispatchWithError(
 			actions.addInput(
 				this.props.task,
 				this.state.foundQR,
@@ -246,7 +246,7 @@ class QRScanner extends Component {
 
 	handleAddOutput() {
 		let { barcode, amount } = this.state
-		this.dispatchWithError(
+		return this.dispatchWithError(
 			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
 		).then(() => this.handleCloseModal())
 	}

@@ -65,7 +65,7 @@ class Task extends Component {
 		}
 	}
 
-		componentWillMount() {
+	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
 		})
@@ -138,6 +138,12 @@ class Task extends Component {
 							title={outputButtonName}
 							onPress={() => this.showCamera('items')}>
 							<Image source={ImageUtility.requireIcon('outputs.png')} />
+						</ActionButton.Item>
+						<ActionButton.Item
+							buttonColor={'purple'}
+							title={'Print'}
+							onPress={() => this.printTask()}>
+							<Image source={ImageUtility.requireIcon('print.png')} />
 						</ActionButton.Item>
 					</ActionButton>
 				</View>
