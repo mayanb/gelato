@@ -418,10 +418,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, props) => {
 	let { taskSearch, open } = props
 	let arr = state.searchedTasks.data
-	if (!taskSearch && open) {
-		arr = state.openTasks.data
-	} else if (!taskSearch) {
-		arr = state.completedTasks.data
+	if (!taskSearch) {
+		arr = state.recentTasks.data
 	}
 
 	return {

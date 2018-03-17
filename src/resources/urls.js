@@ -13,7 +13,8 @@ export function getBackend() {
 			return STAGING_URL
 		default:
 			// change this if you want to change what your dev app is using
-			return STAGING_URL
+			//return STAGING_URL
+			return LOCAL_URL
 	}
 }
 

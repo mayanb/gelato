@@ -27,17 +27,16 @@ import {
 } from '../reducers/TaskAttributeReducerExtension'
 
 const OPEN_TASKS = 'OPEN_TASKS'
-const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 
-export function fetchOpenTasks() {
+export function fetchRecentTasks() {
 	return dispatch => {
 		dispatch(requestTasks(OPEN_TASKS))
 		var yesterday = new Date()
-		yesterday.setDate(yesterday.getDate() - 1)
+		yesterday.setDate(yesterday.getDate() - 2)
 
 		// Get all open tasks
-		let openPayload = {
+		let payload = {
 			team: 1,
 			ordering: '-updated_at',
 			is_open: true,
@@ -52,47 +51,15 @@ export function fetchOpenTasks() {
 				let val = element[1]
 				localStorage[key] = val
 			})
-			openPayload['team'] = localStorage['teamID']
+			payload['team'] = localStorage['teamID']
 			return Networking.get('/ics/tasks/')
-				.query(openPayload)
+				.query(payload)
 				.then(res => {
 					let organized = Compute.organizeAttributesForTasks(res.body)
 					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(OPEN_TASKS, e))
-					throw e
-				})
-		})
-	}
-}
-
-export function fetchCompletedTasks() {
-	return dispatch => {
-		dispatch(requestTasks(COMPLETED_TASKS))
-
-		const completedPayload = {
-			team: 1,
-			ordering: '-updated_at',
-			is_open: false,
-		}
-
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
-			let localStorage = {}
-			values.forEach(element => {
-				let key = element[0]
-				let val = element[1]
-				localStorage[key] = val
-			})
-			completedPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/search/')
-				.query(completedPayload)
-				.then(res => {
-					let organized = Compute.organizeAttributesForTasks(res.body.results)
-					dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
-				})
-				.catch(e => {
-					dispatch(requestTasksFailure(COMPLETED_TASKS, e))
 					throw e
 				})
 		})
@@ -408,11 +375,5 @@ export function requestRenameTask(task, custom_display, isSearched) {
 }
 
 function findReducer(task, isSearched) {
-	let name = SEARCHED_TASKS
-	if (!isSearched && task.is_open) {
-		name = OPEN_TASKS
-	} else if (!isSearched) {
-		name = COMPLETED_TASKS
-	}
-	return name
+	return isSearched ? SEARCHED_TASKS : OPEN_TASKS
 }

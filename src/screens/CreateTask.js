@@ -140,7 +140,7 @@ const mapStateToProps = (state /*, props */) => {
 	return {
 		processes: state.processes.data,
 		products: state.products.data,
-		hasJustCreatedItem: state.openTasks.ui.hasJustCreatedItem,
+		hasJustCreatedItem: state.recentTasks.ui.hasJustCreatedItem,
 	}
 }
 
