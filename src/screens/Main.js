@@ -97,7 +97,8 @@ class Main extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Move Items') {
 			this.props.navigation.navigate('Move', {
-				name: "Scan Items"
+				name: "Scan Items",
+				mode: "move",
 			})
 		}
 	}
