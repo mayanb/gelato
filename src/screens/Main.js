@@ -30,7 +30,7 @@ class Main extends Component {
 				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
 					<NavHeader.Item
 						label=""
-						iconName="md-settings"
+						iconName="md-menu"
 						onPress={showActionSheet}
 					/>
 				</NavHeader>
@@ -97,7 +97,8 @@ class Main extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Move Items') {
 			this.props.navigation.navigate('Move', {
-				name: "Scan Items"
+				name: "Scan Items",
+				mode: "move",
 			})
 		}
 	}

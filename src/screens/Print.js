@@ -38,9 +38,18 @@ class Print extends Component {
 
   generateQRCode(data, qrdocument) {
     console.log('hi')
-    let text = `<style>#rotate-text { margin-left: 100px; margin-bottom: 200px; width: 200px; transform: rotate(90deg); transform-origin: top left; font-size:30px;}</style><div id="rotate-text"><p>${
-      this.props.selectedTask.display
-    }</p></div>`
+    let text = `
+      <style>
+        #rotate-text { 
+          margin-left: 100px; 
+          margin-bottom: 200px; 
+          width: 200px; 
+          transform: rotate(90deg); 
+          transform-origin: top left; 
+          font-size:30px;
+        }
+      </style>
+      <div id="rotate-text"><p>${this.props.selectedTask.display}</p></div>`
     return new Promise((resolve, reject) => {
       QRCode.toString(data, function(err, string) {
         if (err) {
@@ -76,7 +85,7 @@ class Print extends Component {
     this.repeatFunction(numLabels, qrdoc).then(
       function(results) {
         results.join('')
-        // alert('TODO!')
+        //alert('TODO!')
         RNPrint.print({ html: `${results}` })
         // console.log(JSON.stringify(results))
       },

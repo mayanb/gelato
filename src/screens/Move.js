@@ -22,7 +22,7 @@ import { MoveItemListModal } from '../components/MoveItemListModals'
 import paramsToProps from '../resources/paramsToProps'
 
 class Move extends Component {
-	static navigationOptions = ({ navigation }) => {
+	static navigationOptions = () => {
 		return {
 			header: null,
 		}
@@ -71,51 +71,46 @@ class Move extends Component {
 					</TouchableOpacity>
 				</View>
 				{(expanded || barcode) && this.renderModal()}
-				{this.hasItems() && this.renderNextButton()}
-				{this.hasItems()
-					? this.renderActiveItemListButton(scanned_items)
-					: this.renderDisabledItemListButton(scanned_items)}	
+				{this.renderActionButtons()}
 			</View>
 		)
 	}
 
-	// <Button onPress={this.testBarCodeRead} title="hello" />
+							// <Button title="hello" onPress={this.testBarCodeRead} />
 
-	hasItems() {
+
+	renderActionButtons() {
 		let { expanded, barcode, scanned_items } = this.state
-		return !expanded && !barcode && scanned_items.length > 0
+		if (!expanded && !barcode && scanned_items.length > 0) {
+			return [this.renderItemListButton(true), this.renderNextButton(true)]
+		} else {
+			return [this.renderItemListButton(), this.renderNextButton()]
+		}
 	}
 
-	renderActiveItemListButton(items) {
+	renderItemListButton(active) {
+		let items = this.state.scanned_items
 		return (
 			<ActionButton
-				buttonColor={Colors.base}
-				activeOpacity={0.5}
+				buttonColor={active ? Colors.base : Colors.gray}
+				activeOpacity={active ? 0.5 : 1}
 				buttonText={String(items.length)}
 				position="left"
-				onPress={this.handleToggleItemList.bind(this)}
+				onPress={active && this.handleToggleItemList.bind(this)}
 			/>
 		)
 	}
 
-	renderDisabledItemListButton(items) {
+	renderNextButton(active) {
+		if (this.state.scanned_items.length <= 0) {
+			return null
+		}
 		return (
 			<ActionButton
-				buttonColor={Colors.gray}
-				activeOpacity={1}
-				buttonText={String(items.length)}
-				position="left"
-			/>
-		)
-	}
-
-	renderNextButton() {
-		return (
-			<ActionButton
-				buttonColor={Colors.lightPurple}
+				buttonColor={active ? Colors.lightPurple : Colors.gray}
 				activeOpacity={1}
 				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
-				onPress={this.navigateToNext}
+				onPress={active && this.navigateToNext}
 				position="right"
 			/>
 		)
@@ -136,7 +131,7 @@ class Move extends Component {
 				processUnit={this.props.processUnit}
 				onCloseModal={this.handleCloseModal.bind(this)}
 				onRemove={this.handleRemoveInput.bind(this)}
-				onOpenTask={this.handleOpenTask.bind(this)}
+				onOpenTask={() => {}}
 				items={this.state.scanned_items}
 			/>
 		)
@@ -149,8 +144,7 @@ class Move extends Component {
 			return this.renderQRLoading()
 		}
 
-		let creatingTask =
-			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
+		let creatingTask = foundQR && foundQR.creating_task 
 
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
@@ -165,7 +159,7 @@ class Move extends Component {
 		return (
 			<QRDisplay
 				barcode={barcode}
-				creating_task={creatingTask.display}
+				creating_task={creatingTask?creatingTask.display:""}
 				semantic={semantic}
 				shouldShowAmount={false}
 				onPress={this.handleAddInput.bind(this)}
@@ -210,21 +204,6 @@ class Move extends Component {
 		success()
 	}
 
-	handleOpenTask(creatingTask) {
-		// this.props.navigation.goBack()
-		// this.props.onOpenTask(creatingTask)
-		// this.props.navigation.navigate('Task', {
-		// 	id: creatingTask.id,
-		// 	name: creatingTask.display,
-		// 	open: creatingTask.open,
-		// 	task: creatingTask,
-		// 	date: creatingTask.created_at,
-		// 	taskSearch: true,
-		// 	title: creatingTask.display,
-		// 	imgpath: creatingTask.process_type.icon,
-		// })
-	}
-
 	handleToggleItemList() {
 		this.setState({ expanded: !this.state.expanded })
 	}
@@ -235,7 +214,7 @@ class Move extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		let { data } = e
+		let data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
 		let { expanded, barcode, scanned_items } = this.state
 		if (expanded || barcode) {
 			return
@@ -271,16 +250,23 @@ class Move extends Component {
 			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
 		}
 		let failure = () =>
-			this.setState({ foundQR: null, semantic: '', isFetching: false })
+			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
+
+		Networking.get('/ics/items')
+
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.end((err, res) => {
 				if (err || !res.ok) {
-					failure(err)
+					failure()
 				} else {
 					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic(mode, found)
-					success(found, semantic)
+					if (found) {
+						let semantic = Compute.getQRSemantic(mode, found)
+						success(found, semantic)
+					} else {
+						failure()
+					}
 				}
 			})
 	}

@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   Image,
   TextInput,
 } from 'react-native'
+import { AddButton, CancelButton } from './Buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as ImageUtility from '../resources/ImageUtility'
@@ -92,36 +91,10 @@ export default class QRDisplay extends Component {
 }
 
 function renderButtons(semantic, onPress, onCancel) {
-  let btnstyle = StyleSheet.create({
-    button: {
-      flex: 0,
-      backgroundColor: Colors.base,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      padding: 16,
-    },
-    secondary: {
-      flex: 0,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      padding: 16,
-      borderTopWidth: 1,
-      borderTopColor: Colors.ultraLightGray,
-    },
-  })
-
   if (Compute.isOkay(semantic)) {
-    return (
-      <View style={btnstyle.button}>
-        <Button title="Add" onPress={onPress} color="white" />
-      </View>
-    )
+    return <AddButton onAdd={onPress} />
   } else {
-    return (
-      <View style={btnstyle.secondary}>
-        <Button title="Cancel" onPress={onCancel} color={Colors.base} />
-      </View>
-    )
+    return <CancelButton onCancel={onCancel} />
   }
 }
 
@@ -149,9 +122,9 @@ function QRInput(props) {
     },
   })
   return (
-	  <View style={styles.container}>
-		  <Text style={styles.help}>Enter amount</Text>
+    <View style={styles.container}>
+      <Text style={styles.help}>Enter amount</Text>
       <TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
-	  </View>
+    </View>
   )
 }

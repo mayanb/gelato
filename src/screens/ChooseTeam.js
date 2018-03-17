@@ -26,25 +26,14 @@ class ChooseTeam extends Component {
 		super(props)
 		this.state = {
 			selectedTeam: { name: 'Choose a team', id: -1 },
-			moveCompleted: false,
-			addedOther: false,
 		}
 	}
 
 	componentDidMount() {
-		let { dispatch, teams } = this.props
-		let { addedOther } = this.state
+		let { dispatch } = this.props
 		dispatch(actions.fetchTeams()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
-		
-	}
-
-	componentWillReceiveProps(np) {
-		if (np.hasJustCreatedItem) {
-			//console.log('move is done')
-			this.setState({ moveCompleted: true })
-		}
 	}
 
 	render() {
@@ -86,13 +75,12 @@ class ChooseTeam extends Component {
 	}
 
 	handleMove() {
-		let { dispatch, items, isCreatingItem } = this.props
-		if (isCreatingItem) {
+		if (this.props.isCreatingItem) {
 			return
 		}
+		let { dispatch, items } = this.props
 		let { selectedTeam } = this.state
-		let formatted_items = []
-		items.map(item => formatted_items.push({ item: item.id }))
+		let formatted_items = items.map(item => ({ item: item.id }))
 		let data = {
 			team_destination: selectedTeam.id,
 			status: 'RC',

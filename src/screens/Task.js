@@ -141,7 +141,7 @@ class Task extends Component {
 						</ActionButton.Item>
 						<ActionButton.Item
 							buttonColor={'purple'}
-							title={"Print"}
+							title={'Print labels'}
 							onPress={() => this.printTask()}>
 							<Image source={ImageUtility.requireIcon('print.png')} />
 						</ActionButton.Item>
@@ -170,7 +170,7 @@ class Task extends Component {
 
 	showHelpAlert() {
 		AlertIOS.alert(
-			'Where do I see scanned QR codes?',
+			'Where do I see the scanned QR codes?',
 			`** Tap the QR code button on the bottom right 
 			\n ** Select inputs or outputs 
 			\n ** Tap the button with the # of scanned codes on the bottom left of the camera screen`

@@ -1,20 +1,10 @@
-import Colors from '../resources/Colors'
-import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react'
 import {
   Dimensions,
-  Image,
-  Platform,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableWithoutFeedback,
-  FlatList,
-  ScrollView,
   View,
 } from 'react-native'
-import { CreateTaskSelect } from './Cells'
-import Collapsible from 'react-native-collapsible'
 
 export default class Modal extends Component {
   constructor(props) {
@@ -24,15 +14,13 @@ export default class Modal extends Component {
   render() {
     return (
       <View style={styles.modal}>
-        <TouchableView style={styles.topRow} onPress={this.props.onPress}/>
-          <View style={styles.middleRow}>
-            <TouchableView style={styles.side} onPress={this.props.onPress}/>
-            <View style={styles.modalContent}>
-              {this.props.children}
-            </View>
-            <TouchableView style={styles.side} onPress={this.props.onPress}/>
-          </View>
-          <TouchableView style={styles.bottomRow} onPress={this.props.onPress} />
+        <TouchableView style={styles.topRow} onPress={this.props.onPress} />
+        <View style={styles.middleRow}>
+          <TouchableView style={styles.side} onPress={this.props.onPress} />
+          <View style={styles.modalContent}>{this.props.children}</View>
+          <TouchableView style={styles.side} onPress={this.props.onPress} />
+        </View>
+        <TouchableView style={styles.bottomRow} onPress={this.props.onPress} />
       </View>
     )
   }
@@ -41,15 +29,15 @@ export default class Modal extends Component {
 function TouchableView(props) {
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
-      <View style={props.style}/>
+      <View style={props.style} />
     </TouchableWithoutFeedback>
   )
 }
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
-const modalHeight = (52 * 5)
-const paddingHeight = (height - modalHeight )/2 - 120
+const modalHeight = 52 * 5
+const paddingHeight = (height - modalHeight) / 2 - 120
 
 const styles = StyleSheet.create({
   modalContent: {
@@ -67,8 +55,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: height,
     width: width,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-
   topRow: {
     minHeight: paddingHeight,
   },
@@ -87,6 +75,4 @@ const styles = StyleSheet.create({
     minHeight: paddingHeight,
     flex: 1,
   },
-
 })
-

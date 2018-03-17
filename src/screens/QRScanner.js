@@ -235,7 +235,7 @@ class QRScanner extends Component {
 	}
 
 	handleAddInput() {
-		this.dispatchWithError(
+		return this.dispatchWithError(
 			actions.addInput(
 				this.props.task,
 				this.state.foundQR,
@@ -246,7 +246,7 @@ class QRScanner extends Component {
 
 	handleAddOutput() {
 		let { barcode, amount } = this.state
-		this.dispatchWithError(
+		return this.dispatchWithError(
 			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
 		).then(() => this.handleCloseModal())
 	}
@@ -301,7 +301,7 @@ class QRScanner extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		let { data } = e
+		let data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
 		let { expanded, barcode } = this.state
 		if (expanded || barcode) {
 			return
