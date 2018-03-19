@@ -105,7 +105,7 @@ class Search extends Component {
 	}
 
 	onBarCodeRead(e) {
-		let { data } = e
+		let data = e.data.trim()
 		let { expanded, barcode } = this.state
 		if (expanded || barcode) {
 			return
