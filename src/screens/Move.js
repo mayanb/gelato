@@ -250,8 +250,6 @@ class Move extends Component {
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
 
-		Networking.get('/ics/items')
-
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.end((err, res) => {
