@@ -58,7 +58,6 @@ class Move extends Component {
 				<View style={styles.button}>
 					<View style={styles.title}>
 						<Image source={ImageUtility.requireIcon('move_items_text.png')} />
-						<Button title="hello" onPress={this.testBarCodeRead} />
 					</View>
 					<TouchableOpacity
 						onPress={this.handleClose.bind(this)}
@@ -186,6 +185,7 @@ class Move extends Component {
 		let scanned_items = this.state.scanned_items.concat([this.state.foundQR])
 		this.setState({ scanned_items: scanned_items })
 		this.handleCloseModal()
+		return Promise.resolve()
 	}
 
 	handleRemoveInput(i) {
@@ -249,8 +249,6 @@ class Move extends Component {
 		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
-
-		Networking.get('/ics/items')
 
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
