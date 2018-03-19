@@ -76,9 +76,6 @@ class Move extends Component {
 		)
 	}
 
-							// <Button title="hello" onPress={this.testBarCodeRead} />
-
-
 	renderActionButtons() {
 		let { expanded, barcode, scanned_items } = this.state
 		if (!expanded && !barcode && scanned_items.length > 0) {
@@ -188,6 +185,7 @@ class Move extends Component {
 		let scanned_items = this.state.scanned_items.concat([this.state.foundQR])
 		this.setState({ scanned_items: scanned_items })
 		this.handleCloseModal()
+		return Promise.resolve()
 	}
 
 	handleRemoveInput(i) {
@@ -251,8 +249,6 @@ class Move extends Component {
 		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
-
-		Networking.get('/ics/items')
 
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
