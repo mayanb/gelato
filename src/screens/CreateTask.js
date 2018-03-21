@@ -43,7 +43,7 @@ class CreateTask extends Component {
 		let { processes, products } = this.props
 		let { selectedProduct, selectedProcess } = this.state
 		return (
-			<View style={styles.container}>
+			<View style={styles.container} testID="create-task-screen">
 				<ScrollView style={styles.scroll}>
 					<Text style={styles.title}>I want to...</Text>
 					<Dropdown
@@ -51,6 +51,7 @@ class CreateTask extends Component {
 						data={processes}
 						onSelect={item => this.handleSelect('processes', item)}
 						style={styles.dropdown}
+						testID="CTS-process-dropdown"
 					/>
 					<Text style={styles.title}>{"I'm working with..."}</Text>
 					<Dropdown
@@ -65,7 +66,8 @@ class CreateTask extends Component {
 						activeOpacity={0.5}
 						onPress={this.handleCreate.bind(this)}
 						buttonText=">"
-						icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
+						icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} 
+						testID="CTS-confirm" />}
 					/>
 				)}
 			</View>

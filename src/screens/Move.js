@@ -47,7 +47,7 @@ class Move extends Component {
 	render() {
 		let { expanded, barcode, scanned_items } = this.state
 		return (
-			<View style={styles.container}>
+			<View style={styles.container} testID="move-items-screen">
 				<Camera
 					ref={cam => {
 						this.camera = cam
@@ -72,8 +72,21 @@ class Move extends Component {
 				</View>
 				{(expanded || barcode) && this.renderModal()}
 				{this.renderActionButtons()}
+				{this.renderTestButtons()}
 			</View>
 		)
+	}
+
+	renderTestButtons() {
+		let { releaseChannel } = Expo.Constants.manifest
+		if(releaseChannel === 'production') {
+			return false
+		}
+
+		return [
+			<Button title="Valid QR Test" onPress={() => this.handleBarCodeRead("")} />,
+			<Button title="Invalid QR Test" onPress={() => this.handleBarCodeRead("")} />
+		]
 	}
 
 	renderActionButtons() {

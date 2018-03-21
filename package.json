@@ -4,7 +4,8 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "format": "eslint . --fix"
+    "format": "eslint . --fix",
+    "e2e": "detox test --configuration ios.sim"
   },
   "jest": {
     "preset": "jest-expo"
@@ -35,8 +36,20 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
+    "detox": "^7.2.0",
+    "detox-expo-helpers": "^0.2.0",
     "eslint": "^4.16.0",
     "eslint-config-react-native-prettier": "^1.0.1",
-    "jest-expo": "^25.1.0"
+    "jest-expo": "^25.1.0",
+    "mocha": "^5.0.4"
+  },
+  "detox": {
+    "configurations": {
+      "ios.sim": {
+        "binaryPath": "/Users/ishita/.expo/ios-simulator-app-cache/Exponent-2.3.0.app",
+        "type": "ios.simulator",
+        "name": "iPhone 7"
+      }
+    }
   }
 }

@@ -1,12 +1,12 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { SectionList, StyleSheet, View, Text } from 'react-native'
+import { SectionList, StyleSheet, View, Text, TouchableHighlight } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
 import { clearUser } from 'react-native-authentication-helpers'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import { Ionicons } from '@expo/vector-icons';
 import { TaskRow, TaskRowHeader } from '../components/Cells'
 import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
@@ -27,18 +27,14 @@ class Main extends Component {
 		return {
 			title: screenProps.team,
 			headerLeft: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
-					<NavHeader.Item
-						label=""
-						iconName="md-menu"
-						onPress={showActionSheet}
-					/>
-				</NavHeader>
+				<TouchableHighlight onPress={showActionSheet} testID="MS-menu-button" style={styles.leftHeaderButton}>
+      		<Ionicons name="md-menu" size={25} color="white" />
+    		</TouchableHighlight>
 			),
 			headerRight: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
-					<NavHeader.Item iconName="md-search" label="" onPress={showSearch} />
-				</NavHeader>
+				<TouchableHighlight onPress={showSearch} testID="MS-search-button" style={styles.rightHeaderButton}>
+      		<Ionicons name="md-search" size={25} color="white" />
+    		</TouchableHighlight>
 			),
 		}
 	}
@@ -127,7 +123,7 @@ class Main extends Component {
 		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
 		let isRefreshing = openRefreshing || completedRefreshing || false
 		return (
-			<View style={styles.container}>
+			<View style={styles.container} testID="main-screen">
 				<ActionSheet
 					ref={o => (this.ActionSheet = o)}
 					title={ACTION_TITLE}
@@ -150,6 +146,7 @@ class Main extends Component {
 					buttonColor={Colors.base}
 					activeOpacity={0.5}
 					onPress={this.handleCreateTask.bind(this)}
+					testID="MS-create-task-button"
 				/>
 			</View>
 		)
@@ -199,6 +196,7 @@ class Main extends Component {
 				name={item.process_type.name}
 				date={DateFormatter.shorten(item.updated_at)}
 				onPress={this.openTask.bind(this)}
+				testID={item.team_created_by}
 			/>
 		)
 	}
@@ -243,6 +241,12 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		color: Colors.lightGray,
 		textAlign: 'center',
+	},
+	leftHeaderButton: {
+		marginLeft: 16,
+	},
+	rightHeaderButton: {
+		marginRight: 16,
 	}
 })
 

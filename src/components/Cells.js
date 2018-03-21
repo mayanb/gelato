@@ -278,7 +278,7 @@ export class CreateTaskSelect extends Component {
       },
     })
     return (
-      <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
+      <TouchableOpacity activeOpacity={0.5} onPress={onPress} testID={name}>
         <View style={styles.container}>
           {Boolean(imgpath) && (
             <Image

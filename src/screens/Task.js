@@ -104,6 +104,7 @@ class Task extends Component {
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
 				accessible={false}
+				testID='task-screen'
 			>
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}

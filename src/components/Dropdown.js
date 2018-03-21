@@ -25,10 +25,10 @@ export class Dropdown extends Component {
   }
 
   render() {
-    let { selectedItem, data } = this.props
+    let { selectedItem, data, testID } = this.props
     let { collapsed } = this.state
     return (
-      <View style={styles.container}>
+      <View style={styles.container} testID={testID}>
         {this.renderHeader(selectedItem)}
         <Collapsible collapsed={collapsed}>
           <FlatList
@@ -51,6 +51,7 @@ export class Dropdown extends Component {
         key={item.id}
         id={item.id}
         onPress={e => this.handleSelect(item)}
+        testID="dropdown-item"
       />
     )
   }

@@ -38,6 +38,7 @@ export class LoginInput extends Component {
         autoCapitalize="none"
         autoCorrect={false}
         underlineColorAndroid="transparent"
+        testID={this.props.testID}
       />
     )
   }
@@ -112,7 +113,7 @@ export class LoginButton extends Component {
     })
     return (
       <TouchableOpacity activeOpacity={0.5} onPress={this.props.onPress}>
-        <View style={styles.button}>
+        <View style={styles.button} testID={this.props.testID} >
           <Text style={styles.title}>LOGIN</Text>
         </View>
       </TouchableOpacity>

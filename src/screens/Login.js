@@ -38,7 +38,7 @@ class Login extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.bottom}>
+        <View style={styles.bottom} testID="login-screen">
           <KeyboardAwareScrollView>
             <View style={styles.inputArea}>
               <Text style={styles.inputTitle}>Team</Text>
@@ -49,6 +49,7 @@ class Login extends Component {
                 registerInput={this.registerInputFunction('Team')}
                 blurOnSubmit={false}
                 onSubmitEditing={() => this.focusNextField('Username')}
+                testID="LS-team-input"
               />
               <Text style={styles.inputTitle}>Username</Text>
               <LoginInput
@@ -58,6 +59,7 @@ class Login extends Component {
                 registerInput={this.registerInputFunction('Username')}
                 blurOnSubmit={false}
                 onSubmitEditing={() => this.focusNextField('Password')}
+                testID="LS-username-input"
               />
               <Text style={styles.inputTitle}>Password</Text>
               <LoginInput
@@ -67,8 +69,9 @@ class Login extends Component {
                 returnKeyType="done"
                 registerInput={this.registerInputFunction('Password')}
                 onSubmitEditing={this.login}
+                testID="LS-password-input"
               />
-              <LoginButton onPress={this.login} />
+              <LoginButton onPress={this.login} testID="LS-button" />
             </View>
           </KeyboardAwareScrollView>
         </View>
