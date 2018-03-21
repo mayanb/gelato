@@ -46,7 +46,7 @@
   "detox": {
     "configurations": {
       "ios.sim": {
-        "binaryPath": "/Users/ishita/.expo/ios-simulator-app-cache/Exponent-2.3.0.app",
+        "binaryPath": "bin/.expo/ios-simulator-app-cache/Exponent-2.3.0.app",
         "type": "ios.simulator",
         "name": "iPhone 7"
       }
