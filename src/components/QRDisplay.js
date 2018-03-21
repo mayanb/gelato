@@ -56,7 +56,7 @@ export default class QRDisplay extends Component {
       },
     })
     return (
-      <View style={styles.container}>
+      <View style={styles.container} testID={this.props.testID}>
         <TouchableOpacity
           disabled={!this.props.onOpenTask}
           onPress={() => this.props.onOpenTask()}
@@ -92,9 +92,9 @@ export default class QRDisplay extends Component {
 
 function renderButtons(semantic, onPress, onCancel) {
 	if (Compute.isOkay(semantic)) {
-		return <AddButton onAdd={onPress} />
+		return <AddButton onAdd={onPress} testID="QRD-add-button" />
 	} else {
-		return <CancelButton onCancel={onCancel} />
+		return <CancelButton onCancel={onCancel} testID="QRD-cancel-button" />
 	}
 }
 

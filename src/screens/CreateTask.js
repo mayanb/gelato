@@ -58,6 +58,7 @@ class CreateTask extends Component {
 						selectedItem={selectedProduct}
 						data={products}
 						onSelect={item => this.handleSelect('products', item)}
+						testID="CTS-product-dropdown"
 					/>
 				</ScrollView>
 				{this.shouldShowNext() && (

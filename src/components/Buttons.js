@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import Colors from '../resources/Colors'
 
-export function CancelButton({ onCancel }) {
+export function CancelButton({ onCancel, testID }) {
 	let styles = StyleSheet.create({
 		buttonContainer: {
 			borderTopWidth: 1,
@@ -20,6 +20,7 @@ export function CancelButton({ onCancel }) {
 				backgroundColor="transparent"
 				color={Colors.base}
 				title="Cancel"
+				testID={testID}
 			/>
 		</View>
 	)
@@ -44,6 +45,7 @@ export class AddButton extends Component {
 				color="white"
 				title="Add"
 				disabled={this.state.isAdding}
+				testID={this.props.testID}
 			/>
 		)
 	}

@@ -40,7 +40,7 @@ class ChooseTeam extends Component {
 		let { teams, isCreatingItem } = this.props
 		let { selectedTeam } = this.state
 		return (
-			<View style={styles.container}>
+			<View style={styles.container} testID="confirm-move-screen">
 				{isCreatingItem && <ActivityIndicatorOverlay />}
 				<ScrollView style={styles.scroll}>
 					<Text style={styles.title}>I want to move these items to...</Text>

@@ -14,12 +14,6 @@ import Colors from '../resources/Colors'
 import Modal from '../components/Modal'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
-// import {
-// 	InputInfo,
-// 	OutputInfo,
-// 	RemoveButton,
-
-// } from './ItemListModals'
 
 class MoveItemListModalUnconnected extends Component {
 	componentDidMount() {
@@ -30,6 +24,7 @@ class MoveItemListModalUnconnected extends Component {
 		return (
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
+					testID={this.props.testID}
 					renderItem={this.renderRow.bind(this)}
 					data={this.props.items}
 					ListHeaderComponent={() => inputHeader(this.props.items, 'items', 'to move', this.props.processUnit)}

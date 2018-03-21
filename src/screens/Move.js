@@ -70,9 +70,9 @@ class Move extends Component {
 						/>
 					</TouchableOpacity>
 				</View>
+				{this.renderTestButtons()}
 				{(expanded || barcode) && this.renderModal()}
 				{this.renderActionButtons()}
-				{this.renderTestButtons()}
 			</View>
 		)
 	}
@@ -84,8 +84,8 @@ class Move extends Component {
 		}
 
 		return [
-			<Button title="Valid QR Test" onPress={() => this.handleBarCodeRead("")} />,
-			<Button title="Invalid QR Test" onPress={() => this.handleBarCodeRead("")} />
+			<Button title="Valid QR Test" onPress={() => this.handleBarCodeRead({data: "dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed"})} testID="MIS-valid-scan-button" />,
+			<Button title="Invalid QR Test" onPress={() => this.handleBarCodeRead({data: "fgueoiutwe4tdsadsadsa"})} testID="MIS-invalid-scan-button" />
 		]
 	}
 
@@ -107,6 +107,7 @@ class Move extends Component {
 				buttonText={String(items.length)}
 				position="left"
 				onPress={active && this.handleToggleItemList.bind(this)}
+				testID={"MIS-list-button-count=" + String(items.length)}
 			/>
 		)
 	}
@@ -122,6 +123,7 @@ class Move extends Component {
 				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 				onPress={active && this.navigateToNext}
 				position="right"
+				testID="MIS-confirm"
 			/>
 		)
 	}
@@ -143,6 +145,7 @@ class Move extends Component {
 				onRemove={this.handleRemoveInput.bind(this)}
 				onOpenTask={() => {}}
 				items={this.state.scanned_items}
+				testID="MIS-list-modal"
 			/>
 		)
 	}
@@ -174,6 +177,7 @@ class Move extends Component {
 				shouldShowAmount={false}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
+				testID={creatingTask?"MIS-valid-scan-modal":"MIS-invalid-scan-modal"}
 			/>
 		)
 	}
