@@ -134,6 +134,7 @@ class Login extends Component {
     Storage.save('username', data.user.username_display)
     Storage.save('teamID', data.user.team)
     Storage.save('userID', data.user.profile_id)
+    Storage.save('userAccountID', data.user.user_id)
     Storage.save('accountType', data.user.account_type)
     Storage.save('teamName', data.user.team_name)
 

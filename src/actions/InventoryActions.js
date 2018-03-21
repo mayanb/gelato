@@ -21,7 +21,7 @@ export function requestCreateMove(data) {
 	return dispatch => {
 		dispatch(startCreateMove())
 		let openPayload = data
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
+		return Storage.multiGet(['teamID', 'userAccountID']).then(values => {
 			let localStorage = {}
 			values.forEach((element, i) => {
 				let key = element[0]
@@ -29,18 +29,15 @@ export function requestCreateMove(data) {
 				localStorage[key] = val
 			})
 			openPayload['team_origin'] = localStorage['teamID']
-			openPayload['origin'] = localStorage['teamID']
-			console.log(openPayload)
+			openPayload['origin'] = localStorage['userAccountID']
 			return Networking.post('/ics/movements/create/')
 				.send(openPayload)
 				.then(res => {
 					console.log("SUCCESS!!")
-					console.log(res.body)
 					dispatch(createMoveSuccess(res.body))
 				})
 				.catch(e => {
 					console.log("FAILURE!!")
-					console.log(e)
 					dispatch(createMoveFailure(e))
 					throw e
 				})
