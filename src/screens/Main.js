@@ -135,9 +135,10 @@ class Main extends Component {
 
 	render() {
 		let sections = this.loadData()
-		let openRefreshing = this.props.openTasks.ui.isFetchingData
-		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
-		let isRefreshing = openRefreshing || completedRefreshing || false
+		// let openRefreshing = this.props.openTasks.ui.isFetchingData
+		// let completedRefreshing = this.props.completedTasks.ui.isFetchingData
+		let refreshing = this.props.tasks.ui.isFetchingData
+		let isRefreshing = refreshing || false
 		// if (!this.props.tasks.ui.isFetchingData) {
 		// 	this.setState({
 		// 		data: sections[0].data
@@ -180,6 +181,7 @@ class Main extends Component {
 
 	async loadMore() {
 		if (!this.props.tasks.ui.isFetchingData) {
+			await this.setState({data: [...this.state.data, ...this.props.tasks.data]})
 			await this.setState({page: this.state.page + 1})
 			this.fetchAllTasks(this.state.page)
 			this.loadData()
