@@ -52,9 +52,8 @@ class Main extends Component {
 		this.loadMore = this.loadMore.bind(this)
 		this.state = {
 			refreshing: false,
-			page: 0,
-			open: [],
-			completed: []
+			page: 1,
+			data: []
 		}
 		// Storage.clear()
 	}
@@ -67,8 +66,9 @@ class Main extends Component {
 	}
 
 	componentDidMount() {
-		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		// this.fetchOpenTasks()
+		// this.fetchCompletedTasks()
+		this.fetchAllTasks(this.state.page)
 	}
 
 	fetchOpenTasks() {
@@ -85,10 +85,18 @@ class Main extends Component {
 		})
 	}
 
+	fetchAllTasks(page) {
+		let { dispatch } = this.props
+		dispatch(actions.fetchAllTasks(page)).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+	}
+
 	refreshTasks() {
 		this.setState({ refreshing: true })
-		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		// this.fetchOpenTasks()
+		// this.fetchCompletedTasks()
+		this.fetchAllTasks(this.state.page)
 	}
 
 	handlePress(i) {
@@ -130,6 +138,11 @@ class Main extends Component {
 		let openRefreshing = this.props.openTasks.ui.isFetchingData
 		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
 		let isRefreshing = openRefreshing || completedRefreshing || false
+		// if (!this.props.tasks.ui.isFetchingData) {
+		// 	this.setState({
+		// 		data: sections[0].data
+		// 	})
+		// }
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -166,8 +179,9 @@ class Main extends Component {
 	}
 
 	async loadMore() {
-		if (!this.props.completedTasks.ui.isFetchingData) {
+		if (!this.props.tasks.ui.isFetchingData) {
 			await this.setState({page: this.state.page + 1})
+			this.fetchAllTasks(this.state.page)
 			this.loadData()
 		}
 	}
@@ -179,21 +193,16 @@ class Main extends Component {
 		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
 		// // Send the data into our state
 		// await this.setState({tasks: teamData});
-		let open = this.props.openTasks.data
-		let completed = this.props.completedTasks.data
+		// let open = this.props.openTasks.data
+		// let completed = this.props.completedTasks.data
+		let data = this.props.tasks.data
 
 		return [
 			{
-				data: [...this.state.open, ...open],
-				key: 'open',
-				title: 'OPEN TASKS',
-				isLoading: this.props.openTasks.ui.isFetchingData,
-			},
-			{
-				data: [...this.state.completed, ...completed],
+				data: [...this.state.data, ...data],
 				key: 'completed',
-				title: 'RECENTLY COMPLETED',
-				isLoading: this.props.completedTasks.ui.isFetchingData,
+				title: 'RECENT TASKS',
+				isLoading: this.props.tasks.ui.isFetchingData,
 			},
 			{
 				data: [],
@@ -265,6 +274,7 @@ const mapStateToProps = (state, props) => {
 	return {
 		openTasks: state.openTasks,
 		completedTasks: state.completedTasks,
+		tasks: state.allTasks
 	}
 }
 

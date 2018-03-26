@@ -6,6 +6,7 @@ import { ErrorReducer } from './src/reducers/ErrorReducer'
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
+const ALL_TASKS = 'ALL_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
@@ -44,6 +45,11 @@ var reducer = combineReducers({
   completedTasks: createFilteredReducer(
     _taskAttribute,
     action => action.name === COMPLETED_TASKS,
+    defaultState
+  ),
+  allTasks: createFilteredReducer(
+    _taskAttribute,
+    action => action.name === ALL_TASKS,
     defaultState
   ),
   searchedTasks: createFilteredReducer(

@@ -28,6 +28,7 @@ import {
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
+const ALL_TASKS = 'ALL_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 
 export function fetchOpenTasks() {
@@ -93,6 +94,38 @@ export function fetchCompletedTasks() {
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(COMPLETED_TASKS, e))
+					throw e
+				})
+		})
+	}
+}
+
+export function fetchAllTasks(page) {
+	return dispatch => {
+		dispatch(requestTasks(ALL_TASKS))
+
+		const tasksPayload = {
+			team: 1,
+			ordering: '-updated_at',
+			page: page
+		}
+
+		return Storage.multiGet(['teamID', 'userID']).then(values => {
+			let localStorage = {}
+			values.forEach(element => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+			tasksPayload['team'] = localStorage['teamID']
+			return Networking.get('/ics/tasks/search/')
+				.query(tasksPayload)
+				.then(res => {
+					let organized = Compute.organizeAttributesForTasks(res.body.results)
+					dispatch(requestTasksSuccess(ALL_TASKS, organized))
+				})
+				.catch(e => {
+					dispatch(requestTasksFailure(ALL_TASKS, e))
 					throw e
 				})
 		})
