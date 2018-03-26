@@ -49,8 +49,12 @@ class Main extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.handleSearch = this.handleSearch.bind(this)
 		this.refreshTasks = this.refreshTasks.bind(this)
+		this.loadMore = this.loadMore.bind(this)
 		this.state = {
 			refreshing: false,
+			page: 0,
+			open: [],
+			completed: []
 		}
 		// Storage.clear()
 	}
@@ -145,6 +149,8 @@ class Main extends Component {
 					ListFooterComponent={<TaskRowHeader/>}
 					onRefresh={this.refreshTasks}
 					refreshing={isRefreshing}
+					onEndReached={this.loadMore}
+					endThreshold={0}
 				/>
 				<ActionButton
 					buttonColor={Colors.base}
@@ -159,6 +165,15 @@ class Main extends Component {
 		this.props.navigation.navigate('CreateTask')
 	}
 
+	async loadMore() {
+		if (!this.props.completedTasks.ui.isFetchingData) {
+			await this.setState({page: this.state.page + 1})
+			this.loadData()
+		}
+	}
+
+	// In order to implement infinite scroll, we need to load data into state.
+	// This might work better if we use non-Redux methods.
 	loadData() {
 		// // Make the request
 		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
@@ -169,13 +184,13 @@ class Main extends Component {
 
 		return [
 			{
-				data: open,
+				data: [...this.state.open, ...open],
 				key: 'open',
 				title: 'OPEN TASKS',
 				isLoading: this.props.openTasks.ui.isFetchingData,
 			},
 			{
-				data: completed,
+				data: [...this.state.completed, ...completed],
 				key: 'completed',
 				title: 'RECENTLY COMPLETED',
 				isLoading: this.props.completedTasks.ui.isFetchingData,
