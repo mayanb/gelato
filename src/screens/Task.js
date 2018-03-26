@@ -18,6 +18,7 @@ import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
+import DateTimePicker from 'react-native-modal-datetime-picker'
 import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import Flag from '../components/Flag'
@@ -59,9 +60,13 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.changeDate = this.changeDate.bind(this)
+		this.datePicked = this.datePicked.bind(this)
+		this.cancelDatePicker = this.cancelDatePicker.bind(this)
 
 		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes
+			organized_attributes: props.task && props.task.organized_attributes,
+			datePickerVisible: false
 		}
 	}
 
@@ -86,7 +91,7 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes } = this.state
-		console.log(organized_attributes)
+		// console.log(organized_attributes)
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -108,7 +113,7 @@ class Task extends Component {
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
 					{ this.renderHeader(task) }
-					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)}/>
+					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)} changeDate={this.changeDate} />
 					<View style={styles.help}>
 						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
 					</View>
@@ -146,11 +151,44 @@ class Task extends Component {
 							<Image source={ImageUtility.requireIcon('print.png')} />
 						</ActionButton.Item>
 					</ActionButton>
+					<DateTimePicker
+						isVisible={this.state.datePickerVisible}
+						onConfirm={this.datePicked}
+						onCancel={this.cancelDatePicker}
+						mode="datetime"
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
 	}
 
+	// Callback for an attribute row to change its date
+	changeDate(id) {
+		this.setState({datePickerVisible: true})
+		this.setState({editingAttribute: id})
+	}
+
+	async datePicked(date) {
+		// Submit data to server
+		this.handleSubmitEditing(this.state.editingAttribute, date)
+		Networking.get(`/ics/tasks/${this.props.id}`)
+			.then(res => {
+				let organized = Compute.organizeAttributes(res.body)
+				this.setState({ organized_attributes: organized })
+			})
+			.catch(e => console.log(e))
+
+		// Hide the date-time picker
+		this.cancelDatePicker()
+	}
+
+	// Close the date-time picker
+	cancelDatePicker() {
+		this.setState({datePickerVisible: false})
+		this.setState({editingAttribute: null})
+	}
+
+	// Flagging this as a function not limited to this file
 	dispatchWithError(f) {
 		let { dispatch } = this.props
 		return dispatch(f).catch(e => {
@@ -158,6 +196,7 @@ class Task extends Component {
 		})
 	}
 
+	// Flagging this as a function not limited to this file
 	showCustomNameAlert() {
 		AlertIOS.prompt(
 			'Enter a value',
@@ -168,6 +207,7 @@ class Task extends Component {
 		)
 	}
 
+	// Flagging this as a string that can be placed in another file as a const
 	showHelpAlert() {
 		AlertIOS.alert(
 			'Where do I see the scanned QR codes?',

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import Colors from '../resources/Colors'
+import { DateFormatter } from '../resources/Utility'
 import * as ImageUtility from '../resources/ImageUtility'
 
 export default class AttributeCell extends React.Component {
@@ -21,6 +22,7 @@ export default class AttributeCell extends React.Component {
       loading: false,
     }
     this.edit = this.edit.bind(this)
+    this.changeDate = this.changeDate.bind(this)
   }
 
   render() {
@@ -36,7 +38,7 @@ export default class AttributeCell extends React.Component {
   }
 
   renderValue() {
-    if (this.state.editing || Boolean(this.props.value)) {
+    if (this.state.editing || Boolean(this.props.value) && this.props.type !== 'DATE') {
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
@@ -47,9 +49,22 @@ export default class AttributeCell extends React.Component {
           returnKeyType="done"
           value={this.state.typedValue}
           keyboardType={keyboardType}
-          autoCorrent={false}
+          autoCorrect={false}
           ref={input => (this.input = input)}
         />
+      )
+    } else if (this.props.value === 'DATE') {
+      return (
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={this.edit}
+          style={styles.editButton}>
+          <View>
+            <Text>
+              {DateFormatter.shorten(Date(this.state.typedValue))}
+            </Text>
+          </View>
+        </TouchableOpacity>
       )
     } else {
       return (
@@ -80,9 +95,17 @@ export default class AttributeCell extends React.Component {
   }
 
   edit() {
-    this.setState({ editing: true }, () => {
-      this.input.focus()
-    })
+    if (this.props.type === 'TEXT' || this.props.type === 'NUMB') {
+      this.setState({ editing: true }, () => {
+        this.input.focus()
+      })
+    } else if (this.props.type === 'DATE') {
+      this.changeDate()
+    }
+  }
+
+  changeDate() {
+    this.props.changeDate(this.props.id)
   }
 }
 
