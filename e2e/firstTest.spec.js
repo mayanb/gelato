@@ -31,6 +31,7 @@ describe('Example', () => {
     await waitFor(element(by.id('move-items-screen'))).toBeVisible().withTimeout(1000)
 
     // wait for the modal to finish sliding up
+    // otherwise it hits right below the button :(
     await sleep(1000)
 
     // scan and cancel an invalid QR
@@ -46,13 +47,22 @@ describe('Example', () => {
     // check that the modal opens up
     await element(by.id('MIS-list-button-count=1')).tap()
     await expect(element(by.id('MIS-list-modal'))).toBeVisible()
-    await element(by.id('MIS-list-button-count=1')).tap()
+    await element(by.id('MODAL-scrim')).atIndex(0).tap()
 
     // submit and go to the next screen
     await element(by.id('MIS-confirm')).tap()
     await expect(element(by.id('confirm-move-screen'))).toBeVisible()
+
+    // select a team 
+    await trySelectOption('CMS-team-dropdown', 'fulfillment')
+    await element(by.id('CMS-confirm')).tap()
+
+    await expect(element(by.id('main-screen'))).atIndex(0).toBeVisible()
+    tryLogout()
   })
 })
+
+/* -- REUSABLE FlOWS -- */
 
 async function tryLogin(team, username, password) {
   await waitFor(element(by.id('login-screen'))).toBeVisible().withTimeout(10000)

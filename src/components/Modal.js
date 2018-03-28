@@ -14,13 +14,13 @@ export default class Modal extends Component {
 	render() {
 		return (
 			<View style={styles.modal}>
-				<TouchableView style={styles.topRow} onPress={this.props.onPress} />
+				<TouchableView style={styles.topRow} onPress={this.props.onPress}/>
 				<View style={styles.middleRow}>
-					<TouchableView style={styles.side} onPress={this.props.onPress} />
+					<TouchableView style={styles.side} onPress={this.props.onPress}/>
 					<View style={styles.modalContent}>{this.props.children}</View>
-					<TouchableView style={styles.side} onPress={this.props.onPress} />
+					<TouchableView style={styles.side} onPress={this.props.onPress}/>
 				</View>
-				<TouchableView style={styles.bottomRow} onPress={this.props.onPress} />
+				<TouchableView style={styles.bottomRow} onPress={this.props.onPress}/>
 			</View>
 		)
 	}
@@ -28,7 +28,7 @@ export default class Modal extends Component {
 
 function TouchableView(props) {
 	return (
-		<TouchableWithoutFeedback onPress={props.onPress}>
+		<TouchableWithoutFeedback onPress={props.onPress} testID="MODAL-scrim">
 			<View style={props.style} />
 		</TouchableWithoutFeedback>
 	)

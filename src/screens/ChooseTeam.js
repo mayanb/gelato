@@ -49,6 +49,7 @@ class ChooseTeam extends Component {
 						data={teams}
 						onSelect={item => this.handleSelect(item)}
 						style={styles.dropdown}
+						testID="CMS-team-dropdown"
 					/>
 				</ScrollView>
 				{this.shouldShowNext() && (
@@ -57,7 +58,8 @@ class ChooseTeam extends Component {
 						activeOpacity={0.5}
 						onPress={this.handleMove.bind(this)}
 						buttonText=">"
-						icon={<Image source={ImageUtility.requireIcon('send.png')} />}
+						icon={<Image source={ImageUtility.requireIcon('send.png')} /> }
+						testID="CMS-confirm" 
 					/>
 				)}
 			</View>
