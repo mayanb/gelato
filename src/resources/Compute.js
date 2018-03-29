@@ -34,7 +34,7 @@ export default class Compute {
 				Compute.equate(e.attribute, attr.id)
 			)
 			if (!attribute_value) {
-				attribute_value = "" 
+				attribute_value = ''
 			}
 			let filled_attribute = update(attr, {
 				$merge: { value: attribute_value.value },
@@ -136,15 +136,14 @@ export default class Compute {
 			attribute: attributeID,
 			value: value,
 		}
-		return Networking.post('/ics/taskAttributes/create/')
-			.send(payload)
+		return Networking.post('/ics/taskAttributes/create/').send(payload)
 	}
 
 	static getSearchResults(text, teamID) {
-    const r = Networking.get('/ics/tasks/search/').query({
-      label: text,
-      team: teamID,
-    })
+		const r = Networking.get('/ics/tasks/search/').query({
+			label: text,
+			team: teamID,
+		})
 		return r
 	}
 }

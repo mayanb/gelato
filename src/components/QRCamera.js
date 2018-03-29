@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-navigation'
 import * as ImageUtility from '../resources/ImageUtility'
 import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 
-
 export default class QRCamera extends Component {
 	constructor(props) {
 		super(props)
@@ -22,7 +21,7 @@ export default class QRCamera extends Component {
 	}
 
 	render() {
-	  let { searchText, typeSearch } = this.state
+		let { searchText, typeSearch } = this.state
 		return (
 			<View style={styles.container}>
 				<Camera
@@ -85,11 +84,11 @@ export default class QRCamera extends Component {
 	}
 
 	handleChangeText(text) {
-    this.setState({ searchText: text })
-    if (text.length < 2) return
+		this.setState({ searchText: text })
+		if (text.length < 2) return
 
-    this.props.onChangeText(text)
-  }
+		this.props.onChangeText(text)
+	}
 }
 
 const width = Dimensions.get('window').width
@@ -129,13 +128,13 @@ const styles = StyleSheet.create({
 		width: 50,
 		height: 50,
 	},
-  searchContainer: {
-    position: 'absolute',
-    top: 5,
-    left: 0,
-    width: width,
-    alignItems: 'center',
-    marginLeft: 32,
-    paddingRight: 32,
-  },
+	searchContainer: {
+		position: 'absolute',
+		top: 5,
+		left: 0,
+		width: width,
+		alignItems: 'center',
+		marginLeft: 32,
+		paddingRight: 32,
+	},
 })

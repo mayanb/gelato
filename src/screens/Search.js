@@ -43,24 +43,22 @@ class Search extends Component {
 		)
 	}
 
-	// <Button onPress={() => {setTimeout(() => this.onBarCodeRead({searchData: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
-	// <SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
-	//
-
 	handleClose() {
 		console.log('close')
 		this.props.navigation.goBack()
 	}
 
 	handleChangeText(text) {
-    const { request } = this.state
-    if (request) {
-      request.abort()
-    }
+		const { request } = this.state
+		if (request) {
+			request.abort()
+		}
 
-    const r = Compute.getSearchResults(text, this.props.teamID)
+		const r = Compute.getSearchResults(text, this.props.teamID)
 		r
-			.then(res => this.setState({ searchData: res.body.results, isLoading: false }))
+			.then(res =>
+				this.setState({ searchData: res.body.results, isLoading: false })
+			)
 			.catch(() => this.setState({ searchData: [], isLoading: false }))
 
 		this.setState({ request: r, isLoading: true })

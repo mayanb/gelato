@@ -28,7 +28,6 @@ import * as actions from '../actions/TaskListActions'
 import paramsToProps from '../resources/paramsToProps'
 import QRCamera from '../components/QRCamera'
 
-
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
@@ -45,7 +44,7 @@ class QRScanner extends Component {
 			amount: default_amount,
 			isLoading: false,
 			searchData: [],
-      request: null,
+			request: null,
 		}
 	}
 
@@ -60,18 +59,15 @@ class QRScanner extends Component {
 			return <View />
 		}
 
-		console.log("i am definitely printing")
-		// let item_array = task[mode] || []
 		return (
 			<View style={styles.container}>
-        <QRCamera
-          onBarCodeRead={this.handleBarCodeRead.bind(this)}
-          onClose={this.handleClose.bind(this)}
-
-          searchData={this.state.searchData}
-          onChangeText={this.handleChangeText.bind(this)}
-          onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
-        />
+				<QRCamera
+					onBarCodeRead={this.handleBarCodeRead.bind(this)}
+					onClose={this.handleClose.bind(this)}
+					searchData={this.state.searchData}
+					onChangeText={this.handleChangeText.bind(this)}
+					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
+				/>
 				{expanded || barcode ? this.renderModal() : null}
 				{item_array.length && !(expanded || barcode)
 					? this.renderActiveItemListButton(item_array)
@@ -80,22 +76,24 @@ class QRScanner extends Component {
 		)
 	}
 
-  handleChangeText(text) {
-    const { request } = this.state
-    if (request) {
-      request.abort()
-    }
+	handleChangeText(text) {
+		const { request } = this.state
+		if (request) {
+			request.abort()
+		}
 
-    const r = Compute.getSearchResults(text, this.props.teamID)
-    r
-      .then(res => this.setState({ searchData: res.body.results, isLoading: false }))
-      .catch(() => this.setState({ searchData: [], isLoading: false }))
+		const r = Compute.getSearchResults(text, this.props.teamID)
+		r
+			.then(res =>
+				this.setState({ searchData: res.body.results, isLoading: false })
+			)
+			.catch(() => this.setState({ searchData: [], isLoading: false }))
 
-    this.setState({ request: r, isLoading: true })
-  }
+		this.setState({ request: r, isLoading: true })
+	}
 
-  handleSelectTaskFromDropdown(task) {
-		console.log("Selected a task: ", task)
+	handleSelectTaskFromDropdown(task) {
+		console.log('Selected a task: ', task)
 	}
 
 	renderActiveItemListButton(items) {
