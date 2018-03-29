@@ -76,7 +76,7 @@ export class SearchDropdown extends Component {
 
 function SearchResultCell(props) {
   return (
-    <TouchableOpacity onPress={props.onPress} key={props.key}>
+    <TouchableOpacity onPress={props.onPress}>
       <View style={styles.result}>
         <Text style={styles.resultText}>{props.name}</Text>
       </View>

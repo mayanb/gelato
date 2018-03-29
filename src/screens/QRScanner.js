@@ -20,13 +20,14 @@ import {
 } from '../resources/QRSemantics'
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
-import QRDisplay from '../components/QRDisplay'
 import {
 	InputItemListModal,
 	OutputItemListModal,
 } from '../components/ItemListModals'
 import * as actions from '../actions/TaskListActions'
 import paramsToProps from '../resources/paramsToProps'
+import QRCamera from '../components/QRCamera'
+
 
 class QRScanner extends Component {
 	constructor(props) {
@@ -39,9 +40,12 @@ class QRScanner extends Component {
 			expanded: false,
 			barcode: false,
 			foundQR: null,
-			semantic: '',
+			semantic: '', // semantic is a string that indicates what to display out of the various options
 			default_amount: default_amount,
 			amount: default_amount,
+			isLoading: false,
+			searchData: [],
+      request: null,
 		}
 	}
 
@@ -55,36 +59,43 @@ class QRScanner extends Component {
 		} else {
 			return <View />
 		}
+
+		console.log("i am definitely printing")
 		// let item_array = task[mode] || []
 		return (
 			<View style={styles.container}>
-				<Camera
-					ref={cam => {
-						this.camera = cam
-					}}
-					onBarCodeRead={this.handleBarCodeRead.bind(this)}
-					style={styles.preview}
-				/>
-				<View style={styles.button}>
-					<View style={styles.title}>{this.renderInputsOutputsLabel()}</View>
-					<TouchableOpacity
-						onPress={this.handleClose.bind(this)}
-						style={styles.closeTouchableOpacity}>
-						<Image
-							style={styles.close}
-							source={ImageUtility.systemIcon('close_camera')}
-							title=""
-							color="white"
-						/>
-					</TouchableOpacity>
-				</View>
+        <QRCamera
+          onBarCodeRead={this.handleBarCodeRead.bind(this)}
+          onClose={this.handleClose.bind(this)}
 
+          searchData={this.state.searchData}
+          onChangeText={this.handleChangeText.bind(this)}
+          onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
+        />
 				{expanded || barcode ? this.renderModal() : null}
 				{item_array.length && !(expanded || barcode)
 					? this.renderActiveItemListButton(item_array)
 					: this.renderDisabledItemListButton(item_array)}
 			</View>
 		)
+	}
+
+  handleChangeText(text) {
+    const { request } = this.state
+    if (request) {
+      request.abort()
+    }
+
+    const r = Compute.getSearchResults(text, this.props.teamID)
+    r
+      .then(res => this.setState({ searchData: res.body.results, isLoading: false }))
+      .catch(() => this.setState({ searchData: [], isLoading: false }))
+
+    this.setState({ request: r, isLoading: true })
+  }
+
+  handleSelectTaskFromDropdown(task) {
+		console.log("Selected a task: ", task)
 	}
 
 	renderActiveItemListButton(items) {

@@ -139,4 +139,12 @@ export default class Compute {
 		return Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
 	}
+
+	static getSearchResults(text, teamID) {
+    const r = Networking.get('/ics/tasks/search/').query({
+      label: text,
+      team: teamID,
+    })
+		return r
+	}
 }

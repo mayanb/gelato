@@ -9,7 +9,8 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
-	Button
+	Button,
+	Text,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
