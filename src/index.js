@@ -10,6 +10,8 @@ import Login from './screens/Login'
 import Main from './screens/Main'
 import QRScanner from './screens/QRScanner'
 import CreateTask from './screens/CreateTask'
+import EnterBatchSize from './screens/EnterBatchSize'
+import TaskName from './screens/TaskName'
 import Task from './screens/Task'
 import Print from './screens/Print'
 import Search from './screens/Search'
@@ -102,6 +104,8 @@ const MoveStack = StackNavigator(
 const MainStack = StackNavigator(
 	{
 		Main: { screen: Main },
+		EnterBatchSize: { screen: EnterBatchSize },
+		TaskName: { screen: TaskName },
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
 		Print: { screen: Print },

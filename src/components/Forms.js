@@ -88,6 +88,53 @@ export class PrintNumberInput extends Component {
   }
 }
 
+export class BatchNumberInput extends Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    const width = Dimensions.get('window').width
+    return (
+      <View
+        style={{
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          height: 52,
+          borderColor: Colors.lightGray,
+          marginLeft: 30,
+          marginRight: 30,
+        }}>
+        <TextInput
+          style={[
+            this.props.style,
+            {
+              width: width - 62,
+              height: 50,
+              backgroundColor: Colors.white,
+              borderRadius: 3,
+              fontSize: 15,
+              color: Colors.gray,
+              marginBottom: 20,
+              padding: 10,
+              textAlign: 'center',
+            },
+          ]}
+          returnKeyType={this.props.returnKeyType}
+          keyboardType={this.props.keyboardType}
+          placeholder={this.props.placeholder}
+          onChangeText={this.props.onChangeText}
+          secureTextEntry={this.props.isPassword}
+          autoCapitalize={this.props.autoCapitalize}
+          autoCorrect={this.props.autoCorrect}
+          underlineColorAndroid="transparent"
+        />
+      </View>
+    )
+  }
+}
+
 export class LoginButton extends Component {
   constructor(props) {
     super(props)

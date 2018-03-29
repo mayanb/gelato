@@ -175,7 +175,7 @@ export class AttributeHeaderCell extends Component {
         color: Colors.lightGray,
       },
       output: {
-        fontSize: 13,
+        fontSize: 17,
         color: Colors.lightGray,
         fontWeight: 'bold',
       },
@@ -192,7 +192,7 @@ export class AttributeHeaderCell extends Component {
 			  </View>
 			  <View style={styles.text_container}>
 				  <Text style={styles.display}>{this.props.name}</Text>
-				  <View style={{ flexDirection: 'row' }}>
+				  <View >
 					  <Text
 						  style={styles.output}>{`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
 					  <Text style={styles.date}>started at {this.props.date}</Text>

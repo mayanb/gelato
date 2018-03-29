@@ -63,7 +63,7 @@ class CreateTask extends Component {
 					<ActionButton
 						buttonColor={Colors.base}
 						activeOpacity={0.5}
-						onPress={this.handleCreate.bind(this)}
+						onPress={this.handleNext.bind(this)}
 						buttonText=">"
 						icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 					/>
@@ -79,29 +79,18 @@ class CreateTask extends Component {
 		)
 	}
 
-	handleCreate() {
-		let { dispatch } = this.props
+	handleNext() {
 		let { selectedProduct, selectedProcess } = this.state
-		let data = { processType: selectedProcess, productType: selectedProduct }
-		this.setState({ isCreatingTask: true })
-		dispatch(taskActions.requestCreateTask(data)).catch(e => {
-			dispatch(errorActions.handleError(Compute.errorText(e)))
-			this.setState({ isCreatingTask: false })
-		})
-	}
-
-	openCreatedTask(task) {
 		this.props.navigation.goBack()
-
-		this.props.navigation.navigate('Task', {
-			id: task.id,
-			name: task.display,
+		this.props.navigation.navigate('EnterBatchSize', {
 			open: true,
-			task: task,
-			date: DateFormatter.shorten(task.created_at),
 			taskSearch: false,
-			title: task.display,
+			unit: selectedProcess.unit,
+			defaultBatchSize: selectedProcess.batchSize,
+			selectedProcess: selectedProcess,
+			selectedProduct: selectedProduct,
 		})
+
 	}
 
 	handleSelect(type, item) {
