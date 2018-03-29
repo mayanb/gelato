@@ -195,6 +195,7 @@ export function requestCreateTask(data) {
 				res.body.attribute_values = []
 				res.body.organized_attributes = Compute.organizeAttributes(res.body)
 				dispatch(createTaskSuccess(res.body))
+				return res.body
 			})
 			.catch(e => {
 				dispatch(createTaskFailure(OPEN_TASKS, e))
