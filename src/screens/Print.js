@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { PrintButton, PrintNumberInput } from '../components/Forms'
 //import RNPrint from 'react-native-print'
+import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
 import uuid from 'uuid/v4'
 import paramsToProps from '../resources/paramsToProps'
@@ -83,7 +84,8 @@ class Print extends Component {
       function(results) {
         results.join('')
         //alert('TODO!')
-        RNPrint.print({ html: `${results}` })
+        // RNPrint.print({ html: `${results}` })
+        Expo.DangerZone.Print.printAsync({ html: `${results}`})
         // console.log(JSON.stringify(results))
       },
       function(err) {
