@@ -41,9 +41,8 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
-		this.printTask = this.printTask.bind(this)
 		this.state = {
-			organized_attributes: null,
+			organized_attributes: props.task && props.task.organized_attributes,
 		}
 	}
 
