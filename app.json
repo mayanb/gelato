@@ -16,7 +16,10 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.usepolymer.polymer"
+      "bundleIdentifier": "com.usepolymer.polymer",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
+      },
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
