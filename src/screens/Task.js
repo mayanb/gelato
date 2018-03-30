@@ -10,6 +10,7 @@ import {
 	AlertIOS,
 	Image,
 	Button,
+	Text,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -61,7 +62,7 @@ class Task extends Component {
 			headerRight: (
 				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
 					<NavHeader.Item
-						iconName="md-print" // print
+						iconName="md-print"
 						label=""
 						onPress={() => navigation.navigate('Print', { selectedTask: params.task })}
 					/>
@@ -122,6 +123,7 @@ class Task extends Component {
 						data={organized_attributes}
 						onSubmitEditing={this.handleSubmitEditing.bind(this)}
 					/>
+					<View><Text>That’s all for this task!</Text></View>
 					<View style={styles.help}>
 						<Button
 							onPress={this.showHelpAlert.bind(this)}
@@ -138,25 +140,11 @@ class Task extends Component {
 					/>
 					<ActionButton
 						activeOpacity={0.5}
-						buttonColor={Colors.darkBlue}
+						buttonColor={Colors.base}
 						title="Inputs"
-						onPress={() => this.showCamera('inputs')}>
-						renderIcon={isActive => (
-							<Image source={ImageUtility.requireIcon('inputs.png')} />
-						)}
-						{/*<ActionButton.Item*/}
-						{/*buttonColor={'blue'}*/}
-						{/*title={outputButtonName}*/}
-						{/*onPress={() => this.showCamera('items')}>*/}
-						{/*<Image source={ImageUtility.requireIcon('outputs.png')} />*/}
-						{/*</ActionButton.Item>*/}
-						{/*<ActionButton.Item*/}
-						{/*buttonColor={'purple'}*/}
-						{/*title={'Print'}*/}
-						{/*onPress={() => this.printTask()}>*/}
-						{/*<Image source={ImageUtility.requireIcon('print.png')} />*/}
-						{/*</ActionButton.Item>*/}
-					</ActionButton>
+						onPress={() => this.showCamera('inputs')}
+						icon={<Image source={ImageUtility.requireIcon('inputs.png')} />}
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
