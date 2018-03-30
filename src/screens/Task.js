@@ -43,14 +43,8 @@ class Task extends Component {
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes,
+			organized_attributes: null,
 		}
-	}
-
-	printTask() {
-		this.props.navigation.navigate('Print', {
-			selectedTask: this.props.task,
-		})
 	}
 
 	static navigationOptions = ({ navigation }) => {
@@ -60,7 +54,10 @@ class Task extends Component {
 		return {
 			title: params.name,
 			headerRight: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
+				<NavHeader
+					IconComponent={Ionicons}
+					size={25}
+					color={Colors.white}>
 					<NavHeader.Item
 						iconName="md-print"
 						label=""

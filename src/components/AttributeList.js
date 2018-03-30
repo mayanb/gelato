@@ -31,7 +31,7 @@ export default class AttributeList extends React.Component {
 						/>
 					)
 				})}
-				{/*<Text style={styles.endOfListMessage}>That’s all for this task!</Text>*/}
+				<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
 			</KeyboardAwareScrollView>
 		)
 	}
