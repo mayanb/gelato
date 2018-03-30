@@ -242,24 +242,30 @@ export class CreateTaskSelect extends Component {
 
   render() {
     let { onPress, imgpath, name } = this.props
-    const width = Dimensions.get('window').width
     const imgSize = 24
     const styles = StyleSheet.create({
       container: {
         flex: 1,
         flexDirection: 'row',
-        width: width,
-        minHeight: 60,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.ultraLightGray,
+	      alignSelf: 'stretch',
+	      minHeight: 60,
+	      shadowColor: 'rgba(0, 0, 0, 0.07)',
+	      shadowOffset: {
+		      width: 0,
+		      height: 2
+	      },
+	      shadowRadius: 4,
+	      shadowOpacity: 1,
+	      borderStyle: 'solid',
+	      borderRadius: 4,
+	      borderWidth: 1,
+	      borderColor: 'rgba(0, 0, 0, 0.08)',
         paddingTop: 8,
         paddingBottom: 8,
         paddingLeft: 20,
         paddingRight: 20,
         alignItems: 'center',
-        //justifyContent: 'space-between',
         backgroundColor: 'white',
-        //justifyContent: 'space-between'
       },
       display: {
         fontSize: 17,

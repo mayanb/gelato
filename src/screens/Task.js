@@ -56,7 +56,7 @@ class Task extends Component {
 	constructor(props) {
 		super(props)
 		this.handlePress = this.handlePress.bind(this)
-		this.showCamera = this.showCamera.bind(this)
+		this.addInputs = this.addInputs.bind(this)
 		this.printTask = this.printTask.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 
@@ -129,17 +129,11 @@ class Task extends Component {
 							<ActionButton.Item
 								buttonColor={'green'}
 								title="Inputs"
-								onPress={() => this.showCamera('inputs')}>
+								onPress={this.addInputs}>
 								<Image source={ImageUtility.requireIcon('inputs.png')} />
 							</ActionButton.Item>
 						)}
-						<ActionButton.Item
-							buttonColor={'blue'}
-							title={outputButtonName}
-							onPress={() => this.showCamera('items')}>
-							<Image source={ImageUtility.requireIcon('outputs.png')} />
-						</ActionButton.Item>
-						<ActionButton.Item
+ 					<ActionButton.Item
 							buttonColor={'purple'}
 							title={'Print'}
 							onPress={() => this.printTask()}>
@@ -229,12 +223,11 @@ class Task extends Component {
 		)
 	}
 
-	showCamera(mode) {
+	addInputs() {
 		this.props.navigation.navigate('QRScanner', {
 			task_id: this.props.task.id,
 			open: this.props.open,
 			taskSearch: this.props.taskSearch,
-			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
 		})
