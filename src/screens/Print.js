@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { PrintButton, PrintNumberInput } from '../components/Forms'
 //import RNPrint from 'react-native-print'
+import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
 import uuid from 'uuid/v4'
 import paramsToProps from '../resources/paramsToProps'
@@ -25,15 +26,12 @@ class Print extends Component {
 		// this.showTaskSearch = this.showTaskSearch.bind(this)
 	}
 
-	makeid(numLabels) {
-		let text = 'dande.li/ics/'
-		const data = Array(numLabels)
-			.fill(0)
-			.map(() => uuid())
-		const data_urls = data.map(x => text + x)
-		console.log(data_urls)
-		return data_urls
-	}
+  makeid(numLabels) {
+	  let { selectedTask } = this.props
+	  let qrtext = selectedTask.items[0].item_qr
+		let data_urls = Array.apply(null, Array(numLabels)).map(function() { return qrtext })
+    return data_urls
+  }
 
 	generateQRCode(data, qrdocument) {
 		console.log('hi')
@@ -77,22 +75,23 @@ class Print extends Component {
 		return Promise.all(promises)
 	}
 
-	printHTML() {
-		let qrdoc = []
-		let numLabels = this.state.numberLabels
-		// const numLabels = 4
-		this.repeatFunction(numLabels, qrdoc).then(
-			function(results) {
-				results.join('')
-				//alert('TODO!')
-				RNPrint.print({ html: `${results}` })
-				// console.log(JSON.stringify(results))
-			},
-			function(err) {
-				console.log(err)
-			}
-		)
-	}
+  printHTML() {
+    let qrdoc = []
+    let numLabels = this.state.numberLabels
+    // const numLabels = 4
+    this.repeatFunction(numLabels, qrdoc).then(
+      function(results) {
+        results.join('')
+        //alert('TODO!')
+        // RNPrint.print({ html: `${results}` })
+        Expo.DangerZone.Print.printAsync({ html: `${results}`})
+        // console.log(JSON.stringify(results))
+      },
+      function(err) {
+        console.log(err)
+      }
+    )
+  }
 
 	onChangedNumber(num) {
 		let numLabels = num !== '' ? parseInt(num) : 0

@@ -39,7 +39,7 @@ class Task extends Component {
 	constructor(props) {
 		super(props)
 		this.handlePress = this.handlePress.bind(this)
-		this.showCamera = this.showCamera.bind(this)
+		this.addInputs = this.addInputs.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.state = {
 			organized_attributes: props.task && props.task.organized_attributes,
@@ -113,7 +113,8 @@ class Task extends Component {
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
-				accessible={false}>
+				accessible={false}
+			>
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
 					{this.renderHeader(task)}
@@ -139,7 +140,7 @@ class Task extends Component {
 						activeOpacity={0.5}
 						buttonColor={Colors.base}
 						title="Inputs"
-						onPress={() => this.showCamera('inputs')}
+						onPress={this.addInputs}
 						icon={<Image source={ImageUtility.requireIcon('inputs.png')} />}
 					/>
 				</View>
@@ -225,12 +226,11 @@ class Task extends Component {
 		)
 	}
 
-	showCamera(mode) {
+	addInputs() {
 		this.props.navigation.navigate('QRScanner', {
 			task_id: this.props.task.id,
 			open: this.props.open,
 			taskSearch: this.props.taskSearch,
-			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
 		})

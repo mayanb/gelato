@@ -23,19 +23,21 @@ export default class AttributeCell extends React.Component {
 		this.edit = this.edit.bind(this)
 	}
 
-	render() {
-		let { name } = this.props
-		name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
-		return (
-			<View style={styles.container}>
-				<Text style={styles.name}>{name}</Text>
-				{this.renderValue()}
-				{this.state.loading && (
-					<ActivityIndicator size="small" color={Colors.base} />
-				)}
-			</View>
-		)
-	}
+  componentWillReceiveProps(np) {
+    this.setState({typedValue: np.value})
+  }
+
+  render() {
+    let { name } = this.props
+    name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+    return (
+      <View style={styles.container}>
+        <Text style={styles.name}>{name}</Text>
+        {this.renderValue()}
+        { this.state.loading && <ActivityIndicator size="small" color={Colors.base} /> }
+      </View>
+    )
+  }
 
 	renderValue() {
 		if (this.state.editing || Boolean(this.props.value)) {

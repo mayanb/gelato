@@ -14,13 +14,14 @@ export function getBackend() {
 		default:
 			// change this if you want to change what your dev app is using
 			return STAGING_URL
+			//return LOCAL_URL
 	}
 }
 
 export function latest(host, path) {
 	let url = host + path
 	if (path.startsWith('/ics')) {
-		url = host + '/ics/v7' + path.substring(4)
+		url = host + '/ics/v8' + path.substring(4)
 	}
 	return url
 }
