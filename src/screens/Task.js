@@ -64,7 +64,9 @@ class Task extends Component {
 					<NavHeader.Item
 						iconName="md-print"
 						label=""
-						onPress={() => navigation.navigate('Print', { selectedTask: params.task })}
+						onPress={() =>
+							navigation.navigate('Print', { selectedTask: params.task })
+						}
 					/>
 					<NavHeader.Item
 						iconName="md-more"
