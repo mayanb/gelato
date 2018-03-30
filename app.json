@@ -15,7 +15,7 @@
       "backgroundColor": "#1653D7"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.usepolymer.polymer",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
