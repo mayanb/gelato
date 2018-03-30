@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="251b9f8f-014c-4aee-9bf2-b22e9676b242" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/Print.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/Print.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/screens/Task.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/Task.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -24,11 +27,56 @@
           <file leaf-file-name="Task.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/screens/Task.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="173">
-                  <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+                <state relative-caret-position="226">
+                  <caret line="65" column="78" selection-start-line="65" selection-start-column="72" selection-end-line="65" selection-end-column="78" />
                   <folding>
                     <element signature="e#53#93#0" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Compute.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/resources/Compute.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="630">
+                  <caret line="43" column="21" selection-start-line="43" selection-start-column="11" selection-end-line="43" selection-end-column="21" />
+                  <folding>
+                    <element signature="e#0#48#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Print.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/screens/Print.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="255">
+                  <caret line="20" column="36" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
+                  <folding>
+                    <element signature="e#0#40#0" expanded="true" />
+                    <element signature="n#style#0;n#View#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#Text#0;n#View#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#Text#1;n#View#0;n#!!top" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Main.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/screens/Main.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="235">
+                  <caret line="214" column="10" selection-start-line="214" selection-start-column="2" selection-end-line="214" selection-end-column="10" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Cells.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/components/Cells.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="49">
+                  <caret line="61" column="66" selection-start-line="61" selection-start-column="66" selection-end-line="61" selection-end-column="66" />
                 </state>
               </provider>
             </entry>
@@ -45,7 +93,7 @@
           <file leaf-file-name="NavHeader.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/node_modules/react-navigation-header-buttons/NavHeader.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state>
+                <state relative-caret-position="-7">
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                   </folding>
@@ -56,7 +104,7 @@
           <file leaf-file-name="Colors.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/resources/Colors.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="90">
+                <state relative-caret-position="-7">
                   <caret line="6" column="17" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="17" />
                 </state>
               </provider>
@@ -69,8 +117,8 @@
           <file leaf-file-name="Buttons.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/components/Buttons.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="315">
-                  <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+                <state relative-caret-position="288">
+                  <caret line="28" column="22" lean-forward="true" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
                   <folding>
                     <element signature="e#0#40#0" expanded="true" />
                   </folding>
@@ -84,36 +132,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>closemod</find>
-      <find>searchText</find>
-      <find>onSelectTaskFromDropdown</find>
-      <find>searchData</find>
-      <find>Compute</find>
-      <find>QRCamera</find>
-      <find>handleChangeText</find>
-      <find>request</find>
-      <find>handleSelectTask</find>
-      <find>isLoading</find>
-      <find>data</find>
-      <find>console.log</find>
-      <find>sear</find>
-      <find>navigateToFoundTask</find>
-      <find>console</find>
-      <find>inputs.png</find>
-      <find>actionsheet</find>
-      <find>handleSelectTaskFromDropdown</find>
-      <find>top</find>
-      <find>Flag</find>
       <find>Icon</find>
       <find>ImageUtility</find>
       <find>Imageutility</find>
       <find>handlePress</find>
-      <find>ActionSheet</find>
-      <find>showActionSheet</find>
       <find>md-more</find>
       <find>Ionicons</find>
       <find>navigationOptions</find>
+      <find>actionsheet</find>
+      <find>ActionSheet</find>
+      <find>.show</find>
+      <find>navigate(</find>
+      <find>item</find>
+      <find>navigation</find>
+      <find>selectedTask</find>
+      <find>NAVIGATION.STATE</find>
+      <find>PROPS.SEL</find>
+      <find>PRINT</find>
+      <find>paramsToProps</find>
+      <find>props.task</find>
+      <find>showActionSheet</find>
+      <find>task</find>
+      <find>renderRow</find>
+      <find>press</find>
+      <find>openTaskopentask</find>
       <find>printTask</find>
+      <find>openTask</find>
+      <find>mapStates</find>
+      <find>mount</find>
+      <find>res.body</find>
+      <find>props.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -128,6 +176,8 @@
         <option value="$PROJECT_DIR$/src/screens/QRScanner.js" />
         <option value="$PROJECT_DIR$/src/components/QRCamera.js" />
         <option value="$PROJECT_DIR$/src/screens/Search.js" />
+        <option value="$PROJECT_DIR$/src/screens/Print.js" />
+        <option value="$PROJECT_DIR$/src/screens/Main.js" />
         <option value="$PROJECT_DIR$/src/screens/Task.js" />
       </list>
     </option>
@@ -161,24 +211,6 @@
             <path>
               <item name="gelato" type="b2602c69:ProjectViewProjectNode" />
               <item name="gelato" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="gelato" type="b2602c69:ProjectViewProjectNode" />
-              <item name="gelato" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="gelato" type="b2602c69:ProjectViewProjectNode" />
-              <item name="gelato" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-              <item name="react-native-vector-icons" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="gelato" type="b2602c69:ProjectViewProjectNode" />
-              <item name="gelato" type="462c0819:PsiDirectoryNode" />
-              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
-              <item name="react-native-vector-icons" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="gelato" type="b2602c69:ProjectViewProjectNode" />
@@ -220,6 +252,7 @@
     <property name="node.js.selected.package.prettier" value="$PROJECT_DIR$/node_modules/prettier" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -243,12 +276,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1522284701309</updated>
-      <workItem from="1522284702876" duration="17040000" />
+      <workItem from="1522284702876" duration="21980000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="17040000" />
+    <option name="totallyTimeSpent" value="21980000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="852" extended-state="6" />
@@ -332,13 +365,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/screens/Main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1215">
-          <caret line="95" column="44" selection-start-line="95" selection-start-column="28" selection-end-line="95" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/react-native-actionsheet/lib/ActionSheetCustom.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -407,16 +433,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/resources/Compute.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2070">
-          <caret line="138" column="26" lean-forward="true" selection-start-line="138" selection-start-column="26" selection-end-line="138" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#48#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/components/QRCamera.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -436,7 +452,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/resources/Colors.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
+        <state relative-caret-position="-7">
           <caret line="6" column="17" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="17" />
         </state>
       </provider>
@@ -463,7 +479,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/react-navigation-header-buttons/NavHeader.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-7">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -486,18 +502,55 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/Buttons.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+        <state relative-caret-position="288">
+          <caret line="28" column="22" lean-forward="true" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/Cells.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="49">
+          <caret line="61" column="66" selection-start-line="61" selection-start-column="66" selection-end-line="61" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/screens/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="214" column="10" selection-start-line="214" selection-start-column="2" selection-end-line="214" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/Compute.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="43" column="21" selection-start-line="43" selection-start-column="11" selection-end-line="43" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#48#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/screens/Print.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="20" column="36" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <element signature="n#style#0;n#View#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#Text#0;n#View#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#Text#1;n#View#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/screens/Task.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+        <state relative-caret-position="226">
+          <caret line="65" column="78" selection-start-line="65" selection-start-column="72" selection-end-line="65" selection-end-column="78" />
           <folding>
             <element signature="e#53#93#0" expanded="true" />
           </folding>

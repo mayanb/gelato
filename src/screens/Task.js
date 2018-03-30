@@ -35,16 +35,27 @@ const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
+	constructor(props) {
+		super(props)
+		this.handlePress = this.handlePress.bind(this)
+		this.showCamera = this.showCamera.bind(this)
+		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.printTask = this.printTask.bind(this)
+		this.state = {
+			organized_attributes: props.task && props.task.organized_attributes,
+		}
+	}
+
+	printTask() {
+		this.props.navigation.navigate('Print', {
+			selectedTask: this.props.task,
+		})
+	}
+
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
 		const { showActionSheet } = params
 
-		// printTask() {
-		//   this.props.navigation.navigate('Print', {
-		//     selectedTask: this.props.task,
-		//   })
-		// }
-		// const printTask = this.printTask.bind(this)
 		return {
 			title: params.name,
 			headerRight: (
@@ -52,7 +63,7 @@ class Task extends Component {
 					<NavHeader.Item
 						iconName="md-print" // print
 						label=""
-						onPress={() => null} // printTask
+						onPress={() => navigation.navigate('Print', { selectedTask: params.task })}
 					/>
 					<NavHeader.Item
 						iconName="md-more"
@@ -61,17 +72,6 @@ class Task extends Component {
 					/>
 				</NavHeader>
 			),
-		}
-	}
-
-	constructor(props) {
-		super(props)
-		this.handlePress = this.handlePress.bind(this)
-		this.showCamera = this.showCamera.bind(this)
-		this.handleRenameTask = this.handleRenameTask.bind(this)
-
-		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes,
 		}
 	}
 
@@ -88,6 +88,7 @@ class Task extends Component {
 		}
 		Networking.get(`/ics/tasks/${this.props.id}`)
 			.then(res => {
+				this.props.navigation.setParams({ task: res.body })
 				let organized = Compute.organizeAttributes(res.body)
 				this.setState({ organized_attributes: organized })
 			})
