@@ -27,12 +27,9 @@ class Print extends Component {
   }
 
   makeid(numLabels) {
-    let text = 'dande.li/ics/'
-    const data = Array(numLabels)
-      .fill(0)
-      .map(() => uuid())
-    const data_urls = data.map(x => text + x)
-    console.log(data_urls)
+	  let { selectedTask } = this.props
+	  let qrtext = selectedTask.items[0].item_qr
+		let data_urls = Array.apply(null, Array(numLabels)).map(function() { return qrtext })
     return data_urls
   }
 
