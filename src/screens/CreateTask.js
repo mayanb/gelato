@@ -7,6 +7,7 @@ import * as taskActions from '../actions/TaskListActions'
 import paramsToProps from '../resources/paramsToProps'
 import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
+import Networking from '../resources/Networking-superagent'
 
 import TaskInputs from '../components/CreateTask/TaskInputs'
 import TaskName from '../components/CreateTask/TaskName'
@@ -60,19 +61,19 @@ class CreateTask extends Component {
 
 	handleCreateTask(processType, productType, batchSize) {
 		let { dispatch } = this.props
-		let data = {
+		let taskData = {
 			processType: processType,
 			productType: productType,
-			//amount: batchSize,
+			amount: batchSize,
 		}
 		this.setState({ isCreatingTask: true })
-		dispatch(taskActions.requestCreateTask(data))
-			.then(res => {
-				return this.setState({ currentStep: 1, newTask: res })
-			})
-			.catch(e => {
-				dispatch(errorActions.handleError(Compute.errorText(e)))
-			})
+		Promise.all([
+			dispatch(taskActions.requestCreateTask(taskData)),
+			Networking.get('/qr/codes/?count=1'),
+		])
+			.then(([task, qrcodeRes]) => dispatch(taskActions.addOutput(task, qrcodeRes.text, batchSize)))
+			.then(task => this.setState({ currentStep: 1, newTask: task }))
+			.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 			.finally(() => this.setState({ isCreatingTask: false }))
 	}
 

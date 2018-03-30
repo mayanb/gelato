@@ -165,24 +165,6 @@ class QRScanner extends Component {
 		)
 	}
 
-	renderOutputQR(creatingTask) {
-		let { barcode, semantic } = this.state
-
-		return (
-			<QRDisplay
-				barcode={barcode}
-				creating_task={creatingTask.display}
-				semantic={semantic}
-				shouldShowAmount={Compute.isOkay(semantic)}
-				amount={this.state.amount}
-				default_amount={this.state.default_amount}
-				onChange={this.handleSetAmount.bind(this)}
-				onPress={this.handleAddOutput.bind(this)}
-				onCancel={this.handleCloseModal.bind(this)}
-			/>
-		)
-	}
-
 	renderQRLoading() {
 		return <Text>Loading...</Text>
 	}
@@ -218,13 +200,6 @@ class QRScanner extends Component {
 				this.state.foundQR,
 				this.props.taskSearch
 			)
-		).then(() => this.handleCloseModal())
-	}
-
-	handleAddOutput() {
-		let { barcode, amount } = this.state
-		return this.dispatchWithError(
-			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
 		).then(() => this.handleCloseModal())
 	}
 

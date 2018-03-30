@@ -79,7 +79,7 @@ export class Dropdown extends Component {
     this.setState({ collapsed: !this.state.collapsed })
   }
 
-  keyExtractor = (item, index) => item.id
+  keyExtractor = (item, index) => String(item.id)
 }
 
 const width = Dimensions.get('window').width
