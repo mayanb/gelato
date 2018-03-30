@@ -4,7 +4,7 @@
     "description": "Polymer mobile app",
     "slug": "polymer",
     "privacy": "unlisted",
-    "sdkVersion": "25.0.0",
+    "sdkVersion": "26.0.0",
     "platforms": ["ios"],
     "version": "3.0.1",
     "orientation": "portrait",
