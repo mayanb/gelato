@@ -123,7 +123,6 @@ class Task extends Component {
 						data={organized_attributes}
 						onSubmitEditing={this.handleSubmitEditing.bind(this)}
 					/>
-					<View><Text>That’s all for this task!</Text></View>
 					<View style={styles.help}>
 						<Button
 							onPress={this.showHelpAlert.bind(this)}
