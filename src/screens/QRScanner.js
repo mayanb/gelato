@@ -156,7 +156,7 @@ class QRScanner extends Component {
 				barcode={barcode}
 				creating_task={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={false}
+				shouldShowAmount={!semantic}
 				onChange={this.handleSetAmount.bind(this)}
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
@@ -198,7 +198,8 @@ class QRScanner extends Component {
 			actions.addInput(
 				this.props.task,
 				this.state.foundQR,
-				this.props.taskSearch
+				this.props.taskSearch,
+				this.state.amount,
 			)
 		).then(() => this.handleCloseModal())
 	}

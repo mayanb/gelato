@@ -96,7 +96,6 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes } = this.state
-		console.log(organized_attributes)
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -141,7 +140,7 @@ class Task extends Component {
 						buttonColor={Colors.base}
 						title="Inputs"
 						onPress={this.addInputs}
-						icon={<Image source={ImageUtility.requireIcon('inputs.png')} />}
+						renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
 					/>
 				</View>
 			</TouchableWithoutFeedback>
