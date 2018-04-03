@@ -59,14 +59,14 @@ class Task extends Component {
 					color={Colors.white}>
 					<NavHeader.Item
 						iconName="md-print"
-						label=""
+						label="Print"
 						onPress={() =>
 							navigation.navigate('Print', { selectedTask: params.task })
 						}
 					/>
 					<NavHeader.Item
 						iconName="md-more"
-						label=""
+						label="More"
 						onPress={showActionSheet}
 					/>
 				</NavHeader>

@@ -15,7 +15,7 @@ import Modal from '../components/Modal'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
-class InputItemListModalUnconnected extends Component {
+class InputListModal extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.fetchProcesses())
 	}
@@ -25,8 +25,8 @@ class InputItemListModalUnconnected extends Component {
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
 					renderItem={this.renderRow.bind(this)}
-					data={this.props.items}
-					ListHeaderComponent={() => inputHeader(this.props.items, 'inputs', this.props.processUnit)}
+					data={this.props.inputs}
+					ListHeaderComponent={() => inputHeader(this.props.inputs, 'inputs', this.props.processUnit)}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
@@ -36,7 +36,7 @@ class InputItemListModalUnconnected extends Component {
 	renderRow({item, index}) {
 		const process = this.props.processHash[item.input_task_n.process_type]
 		const processIconPath = process ? process.icon : ''
-		let itemAmount = parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		let itemAmount = item.amount ? parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount) : ''
 
 		return <QRItemListRow
 			qr={item['input_qr']}
@@ -60,9 +60,9 @@ const mapStateToProps = (state, props) => {
 	}
 }
 
-export const InputItemListModal = connect(mapStateToProps)(InputItemListModalUnconnected)
+export default connect(mapStateToProps)(InputListModal)
 
-function inputHeader(items, typeName, unit) {
+function inputHeader(inputs, typeName, unit) {
 	let styles = StyleSheet.create({
 		container: {
 			height: 50,
@@ -80,7 +80,7 @@ function inputHeader(items, typeName, unit) {
 			color: Colors.lightGrayText
 		}
 	})
-	const count = items.length
+	const count = inputs.length
 	return (
 		<View style={styles.container}>
 			<Text style={styles.text}>
@@ -193,10 +193,10 @@ function TaskInfo({imgpath, taskName}) {
 	})
 	return (
 		<View style={styles.container}>
-			<Image
-				source={imgpath ? ImageUtility.requireIcon(imgpath) : ''}
+			{imgpath && <Image
+				source={ImageUtility.requireIcon(imgpath)}
 				style={styles.img}
-			/>
+			/>}
 			<Text style={styles.text}>{taskName}</Text>
 		</View>
 	)

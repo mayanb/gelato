@@ -36,14 +36,16 @@ export class AddButton extends Component {
 		this.handlePress = this.handlePress.bind(this)
 	}
 
+
 	render() {
+		const backgroundColor = this.props.disabled ? Colors.darkGray : Colors.base
 		return (
 			<ModalButton
 				onPress={this.handlePress}
-				backgroundColor={Colors.base}
+				backgroundColor={backgroundColor}
 				color="white"
 				title="Add"
-				disabled={this.state.isAdding}
+				disabled={this.state.isAdding || this.props.disabled}
 			/>
 		)
 	}

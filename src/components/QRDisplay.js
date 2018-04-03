@@ -84,15 +84,15 @@ export default class QRDisplay extends Component {
             />
           ) : null}
         </View>
-        {renderButtons(semantic, onPress, onCancel)}
+        {renderButtons(semantic, onPress, onCancel, amount)}
       </View>
     )
   }
 }
 
-function renderButtons(semantic, onPress, onCancel) {
+function renderButtons(semantic, onPress, onCancel, amount) {
 	if (Compute.isOkay(semantic)) {
-		return <AddButton onAdd={onPress} />
+		return <AddButton onAdd={onPress} disabled={!amount} />
 	} else {
 		return <CancelButton onCancel={onCancel} />
 	}
