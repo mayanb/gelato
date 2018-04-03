@@ -23,6 +23,10 @@ export default class AttributeCell extends React.Component {
     this.edit = this.edit.bind(this)
   }
 
+  componentWillReceiveProps(np) {
+    this.setState({typedValue: np.value})
+  }
+
   render() {
     let { name } = this.props
     name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
