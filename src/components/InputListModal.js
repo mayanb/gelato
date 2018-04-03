@@ -15,7 +15,7 @@ import Modal from '../components/Modal'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
-class InputItemListModalUnconnected extends Component {
+class InputListModal extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.fetchProcesses())
 	}
@@ -25,8 +25,8 @@ class InputItemListModalUnconnected extends Component {
 			<Modal onPress={this.props.onCloseModal}>
 				<FlatList
 					renderItem={this.renderRow.bind(this)}
-					data={this.props.items}
-					ListHeaderComponent={() => inputHeader(this.props.items, 'inputs', this.props.processUnit)}
+					data={this.props.inputs}
+					ListHeaderComponent={() => inputHeader(this.props.inputs, 'inputs', this.props.processUnit)}
 					keyExtractor={this.keyExtractor}
 				/>
 			</Modal>
@@ -36,16 +36,19 @@ class InputItemListModalUnconnected extends Component {
 	renderRow({item, index}) {
 		const process = this.props.processHash[item.input_task_n.process_type]
 		const processIconPath = process ? process.icon : ''
+		let itemAmount = item.amount ? parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount) : ''
+
 		return <QRItemListRow
 			qr={item['input_qr']}
 			task_display={item.input_task_display}
 			imgpath={processIconPath}
 			onRemove={() => this.props.onRemove(index)}
 			onOpenTask={() => this.props.onOpenTask(item.input_task_n)}
+			itemAmount={itemAmount}
 		/>
 	}
 
-	keyExtractor = (item, index) => item.id;
+	keyExtractor = (item, index) => String(item.id)
 }
 
 const mapStateToProps = (state, props) => {
@@ -57,9 +60,9 @@ const mapStateToProps = (state, props) => {
 	}
 }
 
-export const InputItemListModal = connect(mapStateToProps)(InputItemListModalUnconnected)
+export default connect(mapStateToProps)(InputListModal)
 
-function inputHeader(items, typeName, unit) {
+function inputHeader(inputs, typeName, unit) {
 	let styles = StyleSheet.create({
 		container: {
 			height: 50,
@@ -77,7 +80,7 @@ function inputHeader(items, typeName, unit) {
 			color: Colors.lightGrayText
 		}
 	})
-	const count = items.length
+	const count = inputs.length
 	return (
 		<View style={styles.container}>
 			<Text style={styles.text}>
@@ -89,7 +92,7 @@ function inputHeader(items, typeName, unit) {
 
 class QRItemListRow extends Component {
 	render() {
-		let {task_display, qr, itemAmount} = this.props
+		let {task_display, qr, itemAmount, imgpath} = this.props
 		let {index} = this.props
 		let styles = StyleSheet.create({
 			container: {
@@ -100,19 +103,25 @@ class QRItemListRow extends Component {
 				paddingRight: 15,
 				paddingTop: 8,
 				paddingBottom: 8,
-				flexDirection: 'row',
 				display: 'flex',
-				justifyContent: 'space-between'
+				justifyContent: 'space-between',
 			},
-			itemContainer: {
+			topRow: {
 				display: 'flex',
 				flexDirection: 'row',
-				flex: 1
+				justifyContent: 'space-between',
+				flex: 1,
 			},
 			infoContainer: {
 				display: 'flex',
-				flexDirection: 'column',
+				flexDirection: 'row',
+			},
+			bottomRow: {
+				display: 'flex',
+				flexDirection: 'row',
+				justifyContent: 'space-between',
 				flex: 1,
+				marginLeft: 20,
 			},
 			shortQr: {
 				fontSize: 14,
@@ -130,22 +139,20 @@ class QRItemListRow extends Component {
 				<TouchableOpacity
 					onPress={() => this.props.onOpenTask()}
 					disabled={!this.props.onOpenTask}
-				  style={styles.itemContainer}
+					style={styles.itemContainer}
 				>
-					<Image source={ImageUtility.requireIcon('qricon.png')} style={styles.img} />
-					<View style={styles.infoContainer}>
-						<Text style={styles.shortQr}>{qr.substring(qr.length - 6)}</Text>
-						<View>
-							{
-								!!this.props.task_display && InputInfo(this.props.imgpath, this.props.task_display)
-							}
-							{
-								!!this.props.itemAmount && OutputInfo(this.props.itemAmount)
-							}
+					<View style={styles.topRow}>
+						<View style={styles.infoContainer}>
+							<Image source={ImageUtility.requireIcon('qricon.png')} style={styles.img} />
+							<Text style={styles.shortQr}>{qr.substring(qr.length - 6)}</Text>
 						</View>
+						<RemoveButton onPress={this.confirmRemove.bind(this)} />
+					</View>
+					<View style={styles.bottomRow}>
+						<TaskInfo imgpath={imgpath} taskName={task_display} />
+						<InputAmount amount={itemAmount} />
 					</View>
 				</TouchableOpacity>
-				{RemoveButton(this.confirmRemove.bind(this))}
 			</View>
 		)
 	}
@@ -168,7 +175,7 @@ class QRItemListRow extends Component {
 	}
 }
 
-function InputInfo(imgpath, taskName) {
+function TaskInfo({imgpath, taskName}) {
 	const styles = StyleSheet.create({
 		container: {
 			display: 'flex',
@@ -186,35 +193,35 @@ function InputInfo(imgpath, taskName) {
 	})
 	return (
 		<View style={styles.container}>
-			<Image
-				source={imgpath ? ImageUtility.requireIcon(imgpath) : ''}
+			{imgpath && <Image
+				source={ImageUtility.requireIcon(imgpath)}
 				style={styles.img}
-			/>
+			/>}
 			<Text style={styles.text}>{taskName}</Text>
 		</View>
 	)
 }
 
-function OutputInfo(outputAmount) {
+function InputAmount({amount}) {
 	return (
 		<Text
 			style={{
 				fontSize: 12,
-				color: Colors.lightGrayText
+				color: Colors.lightGrayText,
 			}}
 		>
-		{`${outputAmount}`}
+		{`${amount}`}
 		</Text>
 	)
 }
 
-function RemoveButton(onPress) {
+function RemoveButton({ onPress }) {
 	return (
-		<TouchableOpacity onPress={onPress}>
+		<TouchableOpacity onPress={onPress} style={{alignSelf: 'flex-start'}}>
 			<Text
 				style={{
 					fontSize: 12,
-					color: Colors.darkRed
+					color: Colors.red,
 				}}
 			>
 				Remove

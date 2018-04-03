@@ -15,7 +15,6 @@ import AttributeCell from './AttributeCell'
 
 export default class AttributeList extends React.Component {
 	render() {
-		console.log(this.props)
 		let data = this.props.data || []
 		return (
 			<KeyboardAwareScrollView>

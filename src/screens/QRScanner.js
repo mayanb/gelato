@@ -21,10 +21,9 @@ import {
 import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import {
-	InputItemListModal,
-} from '../components/ItemListModals'
+import InputListModal from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
+import * as errorActions from '../actions/ErrorActions'
 import paramsToProps from '../resources/paramsToProps'
 
 class QRScanner extends Component {
@@ -120,13 +119,13 @@ class QRScanner extends Component {
 
 	renderItemListModal() {
 		return (
-			<InputItemListModal
+			<InputListModal
 				task={this.props.task}
 				processUnit={this.props.processUnit}
 				onCloseModal={this.handleCloseModal.bind(this)}
 				onRemove={this.handleRemoveInput.bind(this)}
 				onOpenTask={this.handleOpenTask.bind(this)}
-				items={this.props.task.inputs}
+				inputs={this.props.task.inputs}
 			/>
 		)
 	}
@@ -156,11 +155,12 @@ class QRScanner extends Component {
 				barcode={barcode}
 				creating_task={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={false}
+				shouldShowAmount={!semantic}
 				onChange={this.handleSetAmount.bind(this)}
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
+				amount={this.state.amount}
 			/>
 		)
 	}
@@ -198,9 +198,11 @@ class QRScanner extends Component {
 			actions.addInput(
 				this.props.task,
 				this.state.foundQR,
-				this.props.taskSearch
+				this.props.taskSearch,
+				this.state.amount,
 			)
 		).then(() => this.handleCloseModal())
+			.catch(e => console.log('error', e))
 	}
 
 	handleRemoveInput(i) {
@@ -304,8 +306,8 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/dsasdsadsadsddadsasaddfdsadsadasc'
-		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 1000)
+		let barcode = 'dande.li/ics/dsasd9adsadsddadsasaddfdsadsadasc'
+		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 200)
 	}
 }
 

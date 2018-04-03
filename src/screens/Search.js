@@ -133,7 +133,6 @@ class Search extends Component {
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.end((err, res) => {
-				console.log(res.body)
 				if (err || !res.ok) {
 					failure(err)
 				} else {
