@@ -195,6 +195,7 @@ export function requestCreateTask(data) {
 				res.body.attribute_values = []
 				res.body.organized_attributes = Compute.organizeAttributes(res.body)
 				dispatch(createTaskSuccess(res.body))
+				return res.body
 			})
 			.catch(e => {
 				dispatch(createTaskFailure(OPEN_TASKS, e))
@@ -226,8 +227,8 @@ export function resetJustCreated() {
 	}
 }
 
-export function addInput(task, item, isSearched) {
-	let payload = { task: task.id, input_item: item.id }
+export function addInput(task, item, isSearched, amount) {
+	let payload = { task: task.id, input_item: item.id, amount: amount }
 	return dispatch => {
 		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/inputs/create/')
@@ -244,14 +245,15 @@ export function addInput(task, item, isSearched) {
 	}
 }
 
-export function addOutput(task, qr, amount, isSearched) {
-	let payload = { creating_task: task.id, item_qr: qr, amount: amount }
+export function addOutput(task, qr, amount) {
+	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
 	return dispatch => {
-		dispatch(startAdding(task, isSearched))
+		dispatch(startAdding(task))
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
-				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
+				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body))
+				return task
 			})
 			.catch(e => {
 				dispatch(addFailure(e))
@@ -260,16 +262,16 @@ export function addOutput(task, qr, amount, isSearched) {
 	}
 }
 
-export function startAdding(task, isSearched) {
-	let name = findReducer(task, isSearched)
+export function startAdding(task) {
+	let name = findReducer(task, false)
 	return {
 		name: name,
 		type: START_ADDING,
 	}
 }
 
-function addSuccess(type, task, item, isSearched) {
-	let name = findReducer(task, isSearched)
+function addSuccess(type, task, item) {
+	let name = findReducer(task, false)
 	return {
 		type: type,
 		name: name,
@@ -283,20 +285,6 @@ function addFailure(err) {
 		type: ADD_FAILURE,
 		name: OPEN_TASKS,
 		error: err,
-	}
-}
-
-export function removeOutput(task, item, index, isSearched) {
-	removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
-	return dispatch => {
-		return Networking.del('/ics/items/', item.id)
-			.then(() => {
-				dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
-			})
-			.catch(e => {
-				dispatch(removeFailure(e))
-				throw e
-			})
 	}
 }
 

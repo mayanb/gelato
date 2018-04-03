@@ -97,8 +97,8 @@ class Main extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Move Items') {
 			this.props.navigation.navigate('Move', {
-				name: "Scan Items",
-				mode: "move",
+				name: 'Scan Items',
+				mode: 'move',
 			})
 		}
 	}
@@ -142,7 +142,7 @@ class Main extends Component {
 					renderSectionFooter={this.renderSectionFooter}
 					sections={sections}
 					keyExtractor={this.keyExtractor}
-					ListFooterComponent={<TaskRowHeader/>}
+					ListFooterComponent={<TaskRowHeader />}
 					onRefresh={this.refreshTasks}
 					refreshing={isRefreshing}
 				/>
@@ -237,13 +237,13 @@ const styles = StyleSheet.create({
 		paddingLeft: 20,
 		paddingRight: 20,
 		alignItems: 'center',
-		justifyContent: 'center'
+		justifyContent: 'center',
 	},
 	emptyFooterText: {
 		fontSize: 18,
 		color: Colors.lightGray,
 		textAlign: 'center',
-	}
+	},
 })
 
 const mapStateToProps = (state, props) => {

@@ -36,6 +36,16 @@ const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
+	constructor(props) {
+		super(props)
+		this.handlePress = this.handlePress.bind(this)
+		this.addInputs = this.addInputs.bind(this)
+		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.state = {
+			organized_attributes: props.task && props.task.organized_attributes,
+		}
+	}
+
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
 		const { showActionSheet } = params
@@ -43,10 +53,20 @@ class Task extends Component {
 		return {
 			title: params.name,
 			headerRight: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
+				<NavHeader
+					IconComponent={Ionicons}
+					size={25}
+					color={Colors.white}>
+					<NavHeader.Item
+						iconName="md-print"
+						label="Print"
+						onPress={() =>
+							navigation.navigate('Print', { selectedTask: params.task })
+						}
+					/>
 					<NavHeader.Item
 						iconName="md-more"
-						label=""
+						label="More"
 						onPress={showActionSheet}
 					/>
 				</NavHeader>
@@ -79,6 +99,7 @@ class Task extends Component {
 		}
 		Networking.get(`/ics/tasks/${this.props.id}`)
 			.then(res => {
+				this.props.navigation.setParams({ task: res.body })
 				let organized = Compute.organizeAttributes(res.body)
 				this.setState({ organized_attributes: organized })
 			})
@@ -87,7 +108,6 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes } = this.state
-		console.log(organized_attributes)
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -127,30 +147,12 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					<ActionButton
-						buttonColor={Colors.base}
 						activeOpacity={0.5}
-						icon={<FAIcon name="qrcode" size={24} color="white" />}>
-						{!isLabel && (
-							<ActionButton.Item
-								buttonColor={'green'}
-								title="Inputs"
-								onPress={() => this.showCamera('inputs')}>
-								<Image source={ImageUtility.requireIcon('inputs.png')} />
-							</ActionButton.Item>
-						)}
-						<ActionButton.Item
-							buttonColor={'blue'}
-							title={outputButtonName}
-							onPress={() => this.showCamera('items')}>
-							<Image source={ImageUtility.requireIcon('outputs.png')} />
-						</ActionButton.Item>
-						<ActionButton.Item
-							buttonColor={'purple'}
-							title={'Print'}
-							onPress={() => this.printTask()}>
-							<Image source={ImageUtility.requireIcon('print.png')} />
-						</ActionButton.Item>
-					</ActionButton>
+						buttonColor={Colors.base}
+						title="Inputs"
+						onPress={this.addInputs}
+						renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -234,20 +236,13 @@ class Task extends Component {
 		)
 	}
 
-	showCamera(mode) {
+	addInputs() {
 		this.props.navigation.navigate('QRScanner', {
 			task_id: this.props.task.id,
 			open: this.props.open,
 			taskSearch: this.props.taskSearch,
-			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
-		})
-	}
-
-	printTask() {
-		this.props.navigation.navigate('Print', {
-			selectedTask: this.props.task,
 		})
 	}
 
