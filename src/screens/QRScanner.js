@@ -93,7 +93,7 @@ class QRScanner extends Component {
 
 	handleSelectTaskFromDropdown(task) {
 		console.log('Selected a task: ', task)
-		if(task.items.length) {
+		if (task.items.length) {
 			const genericItem = task.items[0]
 			this.setState({
 				barcode: genericItem.item_qr,
@@ -101,6 +101,9 @@ class QRScanner extends Component {
 				searchData: [],
 			})
 		}
+		this.setState({
+			unit: task.process_type.unit,
+		})
 	}
 
 	renderActiveItemListButton(items) {
@@ -157,6 +160,7 @@ class QRScanner extends Component {
 		let creatingTask =
 			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
 
+		console.log('state before rendering modal:', this.state)
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.renderInputQR(creatingTask)}
@@ -169,6 +173,7 @@ class QRScanner extends Component {
 
 		return (
 			<QRDisplay
+				unit={this.state.unit}
 				barcode={barcode}
 				creating_task={creatingTask.display}
 				semantic={semantic}
@@ -216,9 +221,10 @@ class QRScanner extends Component {
 				this.props.task,
 				this.state.foundQR,
 				this.props.taskSearch,
-				this.state.amount,
+				this.state.amount
 			)
-		).then(() => this.handleCloseModal())
+		)
+			.then(() => this.handleCloseModal())
 			.catch(e => console.log('error', e))
 	}
 

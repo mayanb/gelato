@@ -14,7 +14,9 @@ import * as ImageUtility from '../resources/ImageUtility'
 
 export default class QRDisplay extends Component {
   render() {
+    console.log(this.props)
     let {
+      unit,
       barcode,
       creating_task,
       semantic,
@@ -76,6 +78,7 @@ export default class QRDisplay extends Component {
           </Text>
           {shouldShowAmount ? (
             <QRInput
+              unit={unit}
               placeholder={default_amount}
               autoCapitalize="none"
               autoCorrect={false}
@@ -123,7 +126,7 @@ function QRInput(props) {
   })
   return (
 	  <View style={styles.container}>
-		  <Text style={styles.help}>Enter amount</Text>
+		  <Text style={styles.help}>Enter amount (unit: {props.unit}s)</Text>
       <TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
 	  </View>
   )
