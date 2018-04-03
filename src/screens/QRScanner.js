@@ -66,21 +66,6 @@ class QRScanner extends Component {
 					onChangeText={this.handleChangeText.bind(this)}
 					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 				/>
-				<View style={styles.button}>
-					<View style={styles.title}>
-						<Image source={ImageUtility.requireIcon('add_inputs_text.png')} />
-					</View>
-					<TouchableOpacity
-						onPress={this.handleClose.bind(this)}
-						style={styles.closeTouchableOpacity}>
-						<Image
-							style={styles.close}
-							source={ImageUtility.systemIcon('close_camera')}
-							title=""
-							color="white"
-						/>
-					</TouchableOpacity>
-				</View>
 
 				{expanded || barcode ? this.renderModal() : null}
 				{item_array.length && !(expanded || barcode)
@@ -108,6 +93,14 @@ class QRScanner extends Component {
 
 	handleSelectTaskFromDropdown(task) {
 		console.log('Selected a task: ', task)
+		if(task.items.length) {
+			const genericItem = task.items[0]
+			this.setState({
+				barcode: genericItem.item_qr,
+				foundQR: genericItem,
+				searchData: [],
+			})
+		}
 	}
 
 	renderActiveItemListButton(items) {

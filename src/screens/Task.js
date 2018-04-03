@@ -74,18 +74,6 @@ class Task extends Component {
 		}
 	}
 
-	constructor(props) {
-		super(props)
-		this.handlePress = this.handlePress.bind(this)
-		this.showCamera = this.showCamera.bind(this)
-		this.printTask = this.printTask.bind(this)
-		this.handleRenameTask = this.handleRenameTask.bind(this)
-
-		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes,
-		}
-	}
-
 	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
