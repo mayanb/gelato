@@ -58,9 +58,6 @@ export default class QRDisplay extends Component {
         lineHeight: 24,
         textAlign: 'center',
       },
-			help: {
-				textAlign: 'center',
-			},
     })
     return (
       <View style={styles.container}>
@@ -83,7 +80,6 @@ export default class QRDisplay extends Component {
           </Text>
           {shouldShowAmount ? (
             <View>
-              <Text style={styles.help}>Enter amount</Text>
               <NumericInputWithUnits
                 unit={unit}
                 value={amount}

@@ -110,7 +110,7 @@ export default class Compute {
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
 			default:
-				return 'Add me'
+				return 'Enter amount:'
 		}
 	}
 
