@@ -1,7 +1,7 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { SectionList, StyleSheet, View, Text } from 'react-native'
+import { Dimensions, SectionList, StyleSheet, View, Text } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -119,6 +119,11 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
+	// Helper function to render headers
+	renderSectionHeader = ({ section }) => (
+		<TaskRowHeader title={section.title} isLoading={false} />
+	)
+
 	renderSectionFooter = ({ section }) => {
 		if (!section.isLoading && section.data.length === 0) {
 			const text =
@@ -164,7 +169,7 @@ class Main extends Component {
 					onRefresh={this.refreshTasks}
 					refreshing={isRefreshing}
 					onEndReached={this.loadMore}
-					endThreshold={0}
+					// endThreshold={}
 				/>
 				<ActionButton
 					buttonColor={Colors.base}
@@ -205,11 +210,7 @@ class Main extends Component {
 				key: 'completed',
 				title: 'RECENT TASKS',
 				isLoading: this.props.tasks.ui.isFetchingData,
-			},
-			{
-				data: [],
-				key: 'space',
-			},
+			}
 		]
 	}
 
@@ -228,11 +229,6 @@ class Main extends Component {
 			/>
 		)
 	}
-
-	// Helper function to render headers
-	renderSectionHeader = ({ section }) => (
-		<TaskRowHeader title={section.title} isLoading={section.isLoading} />
-	)
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => item.id
