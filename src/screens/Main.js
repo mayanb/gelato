@@ -66,8 +66,6 @@ class Main extends Component {
 	}
 
 	componentDidMount() {
-		// this.fetchOpenTasks()
-		// this.fetchCompletedTasks()
 		this.fetchAllTasks(this.state.page)
 	}
 
@@ -94,8 +92,6 @@ class Main extends Component {
 
 	refreshTasks() {
 		this.setState({ refreshing: true })
-		// this.fetchOpenTasks()
-		// this.fetchCompletedTasks()
 		this.fetchAllTasks(this.state.page)
 	}
 
@@ -140,15 +136,8 @@ class Main extends Component {
 
 	render() {
 		let sections = this.loadData()
-		// let openRefreshing = this.props.openTasks.ui.isFetchingData
-		// let completedRefreshing = this.props.completedTasks.ui.isFetchingData
 		let refreshing = this.props.tasks.ui.isFetchingData
 		let isRefreshing = refreshing || false
-		// if (!this.props.tasks.ui.isFetchingData) {
-		// 	this.setState({
-		// 		data: sections[0].data
-		// 	})
-		// }
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -168,8 +157,7 @@ class Main extends Component {
 					ListFooterComponent={<TaskRowHeader/>}
 					onRefresh={this.refreshTasks}
 					refreshing={isRefreshing}
-					onEndReached={this.loadMore}
-					// endThreshold={}
+					onEndReached={this.loadMore} // Function to call for infinite scroll
 				/>
 				<ActionButton
 					buttonColor={Colors.base}
@@ -184,29 +172,28 @@ class Main extends Component {
 		this.props.navigation.navigate('CreateTask')
 	}
 
+	// Loads more data when the end threshold is reached.
+	// The data flow is as follows:
+	//	- Fetch data, render to section list
+	//	- When more data is fetched:
+	//		- Commit current prop data (from Redux) to state by appending it to the current state
+	//		- Get new data, append that data to section list state
+	//	Note that the way this works is based on the fact that the latest data is stored in this.props.tasks.data
 	async loadMore() {
 		if (!this.props.tasks.ui.isFetchingData) {
-			await this.setState({data: [...this.state.data, ...this.props.tasks.data]})
-			await this.setState({page: this.state.page + 1})
+			await this.setState({data: [...this.state.data, ...this.props.tasks.data]}) // Append new data to state
+			await this.setState({page: this.state.page + 1}) // Set current page
 			this.fetchAllTasks(this.state.page)
 			this.loadData()
 		}
 	}
 
 	// In order to implement infinite scroll, we need to load data into state.
-	// This might work better if we use non-Redux methods.
 	loadData() {
-		// // Make the request
-		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
-		// // Send the data into our state
-		// await this.setState({tasks: teamData});
-		// let open = this.props.openTasks.data
-		// let completed = this.props.completedTasks.data
 		let data = this.props.tasks.data
-
 		return [
 			{
-				data: [...this.state.data, ...data],
+				data: [...this.state.data, ...data], // Append new data to current list data
 				key: 'completed',
 				title: 'RECENT TASKS',
 				isLoading: this.props.tasks.ui.isFetchingData,
