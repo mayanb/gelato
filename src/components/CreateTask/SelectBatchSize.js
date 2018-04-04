@@ -31,7 +31,7 @@ export default class SelectBatchSize extends Component {
 	}
 
 	render() {
-		let { unit, onBatchSizeInput } = this.props
+		let { unit, onBatchSizeInput, batchSize } = this.props
 		return (
 			<Animated.View
 				style={[
@@ -43,7 +43,7 @@ export default class SelectBatchSize extends Component {
 				<Heading>What's your batch size?</Heading>
 				<NumericInputWithUnits
 					unit={unit}
-					value={this.state.batchSize}
+					value={batchSize}
 					onChangeText={num => onBatchSizeInput(num)}
 				/>
 			</Animated.View>

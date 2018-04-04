@@ -41,7 +41,8 @@ class TaskInputs extends Component {
 					{this.shouldShowBatchSize() && (
 						<SelectBatchSize
 							onBatchSizeInput={this.handleBatchSizeInput}
-							unit={pluralize(this.state.selectedProcess.unit)}
+							unit={pluralize(selectedProcess.unit)}
+							batchSize={selectedProcess.default_amount}
 						/>
 					)}
 				</KeyboardAwareScrollView>
