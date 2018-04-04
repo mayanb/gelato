@@ -1,11 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import {
-	Dimensions,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native'
+import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
@@ -38,8 +33,7 @@ class QRScanner extends Component {
 			request: null,
 		}
 	}
-	
-	
+
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode } = this.state
@@ -85,7 +79,6 @@ class QRScanner extends Component {
 	}
 
 	handleSelectTaskFromDropdown(task) {
-		console.log('Selected a task: ', task)
 		if (task.items.length) {
 			const genericItem = task.items[0]
 			this.setState({
@@ -93,7 +86,7 @@ class QRScanner extends Component {
 				foundQR: genericItem,
 				searchData: [],
 				creating_task_for_input: task.display,
-				amount: genericItem.amount,// Compute.getBatchSizeFromItems(task.items), <-- WHAT WE WANT (BUT LACK): genericItem.items
+				amount: genericItem.amount, // Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
 			})
 		}
 		this.setState({
@@ -155,7 +148,6 @@ class QRScanner extends Component {
 		let creatingTask =
 			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
 
-		console.log('state before rendering modal:', this.state)
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.renderInputQR(creatingTask)}
@@ -266,7 +258,7 @@ class QRScanner extends Component {
 		if (expanded || barcode) {
 			return
 		}
-		
+
 		let valid = Compute.validateQR(data)
 		if (!valid) {
 			// not a valid qr code

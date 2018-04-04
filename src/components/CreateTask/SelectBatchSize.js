@@ -1,9 +1,5 @@
 import React, { Component } from 'react'
-import {
-	Dimensions,
-	Animated,
-	StyleSheet,
-} from 'react-native'
+import { Dimensions, Animated, StyleSheet } from 'react-native'
 import Heading from './Heading'
 import NumericInputWithUnits from '../NumericInputWithUnits'
 
@@ -40,7 +36,7 @@ export default class SelectBatchSize extends Component {
 						transform: [{ translateY: this.state.yTransformAnim }],
 					},
 				]}>
-				<Heading>What's your batch size?</Heading>
+				<Heading>What is your batch size?</Heading>
 				<NumericInputWithUnits
 					unit={unit}
 					value={batchSize}

@@ -1,4 +1,3 @@
-<script src="http://localhost:8097"></script>
 import React, { Component } from 'react'
 import {
   StyleSheet,
@@ -17,7 +16,6 @@ import NumericInputWithUnits from './NumericInputWithUnits'
 
 export default class QRDisplay extends Component {
   render() {
-    console.log(this.props)
     let {
       unit,
       barcode,
