@@ -2,10 +2,7 @@ import React, { Component } from 'react'
 import {
 	Dimensions,
 	Animated,
-	View,
-	TextInput,
 	StyleSheet,
-	Text,
 } from 'react-native'
 import Heading from './Heading'
 import NumericInputWithUnits from '../NumericInputWithUnits'
@@ -46,7 +43,7 @@ export default class SelectBatchSize extends Component {
 				<Heading>What's your batch size?</Heading>
 				<NumericInputWithUnits
 					unit={unit}
-					defaultValue={this.state.batchSize}
+					value={this.state.batchSize}
 					onChangeText={num => onBatchSizeInput(num)}
 				/>
 			</Animated.View>

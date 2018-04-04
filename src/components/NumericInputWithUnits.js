@@ -10,14 +10,15 @@ import Colors from '../resources/Colors'
 
 export default class NumericInputWithUnits extends Component {
 	render() {
-		let { unit, defaultValue, onChangeText } = this.props
+		let { unit, value, onChangeText } = this.props
 		return (
 			<View>
 				<TextInput
 					style={styles.textInput}
-					keyboardType="numeric"
 					onChangeText={onChangeText}
-					value={defaultValue}
+					value={value}
+					autoCorrect={false}
+					keyboardType="numeric"
 				/>
 				<Text style={styles.unit}>{unit}</Text>
 			</View>

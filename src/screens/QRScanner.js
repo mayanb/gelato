@@ -5,10 +5,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	Image,
-	TouchableOpacity,
 } from 'react-native'
-import { Camera } from 'expo'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
 import Colors from '../resources/Colors'
@@ -18,7 +15,6 @@ import {
 	ALREADY_ADDED_OUTPUT,
 	INVALID_QR,
 } from '../resources/QRSemantics'
-import * as ImageUtility from '../resources/ImageUtility'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
 import InputListModal from '../components/InputListModal'
