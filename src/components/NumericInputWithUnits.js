@@ -5,22 +5,31 @@ import {
 	StyleSheet,
 	Text,
 } from 'react-native'
-
+import pluralize from 'pluralize'
 import Colors from '../resources/Colors'
 
 export default class NumericInputWithUnits extends Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			currentInputText: this.props.value
+		}
+	}
 	render() {
 		let { unit, value, onChangeText } = this.props
+		console.log('value (aka batchSize)', value)
+		console.log('unit: ', unit)
 		return (
 			<View>
 				<TextInput
 					style={styles.textInput}
 					onChangeText={onChangeText}
-					value={value.toString(10)}
+					value={value === '' ? '' : parseFloat(value).toString(10)}
 					autoCorrect={false}
 					keyboardType="numeric"
+					returnKeyType="done"
 				/>
-				<Text style={styles.unit}>{unit}</Text>
+				<Text style={styles.unit}>{pluralize(unit, parseFloat(value))}</Text>
 			</View>
 		)
 	}

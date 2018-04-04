@@ -29,10 +29,7 @@ class TaskInputs extends Component {
 		let { selectedProduct, selectedProcess } = this.state
 		return (
 			<View style={styles.container}>
-				<KeyboardAwareScrollView
-					style={styles.scroll}
-					extraScrollHeight={20}
-				>
+				<KeyboardAwareScrollView style={styles.scroll} extraScrollHeight={20}>
 					<SelectTypes
 						selectedProcess={selectedProcess}
 						selectedProduct={selectedProduct}
@@ -42,7 +39,7 @@ class TaskInputs extends Component {
 						<SelectBatchSize
 							onBatchSizeInput={this.handleBatchSizeInput}
 							unit={pluralize(selectedProcess.unit)}
-							batchSize={selectedProcess.default_amount}
+							batchSize={this.state.batchSize}
 						/>
 					)}
 				</KeyboardAwareScrollView>
@@ -52,7 +49,9 @@ class TaskInputs extends Component {
 						activeOpacity={0.5}
 						onPress={this.handleNext}
 						buttonText=">"
-						renderIcon={() => (<Image source={ImageUtility.requireIcon('rightarrow.png')} />)}
+						renderIcon={() => (
+							<Image source={ImageUtility.requireIcon('rightarrow.png')} />
+						)}
 					/>
 				)}
 			</View>
@@ -61,21 +60,34 @@ class TaskInputs extends Component {
 
 	shouldShowBatchSize() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
-		return (
-			selectedProcess.id !== -1 && selectedProduct.id !== -1 && !isCreatingTask
-		)
+		if (
+			selectedProcess.id !== -1 &&
+			selectedProduct.id !== -1 &&
+			!isCreatingTask
+		) {
+			return true
+		} else {
+			return false
+		}
 	}
 
 	shouldShowNext() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
-		const isBatchSizeEntered = this.state.batchSize !== null && this.state.batchSize !== ''
+		const isBatchSizeEntered =
+			this.state.batchSize !== null && this.state.batchSize !== ''
 		return (
-			selectedProcess.id !== -1 && selectedProduct.id !== -1 && !isCreatingTask && isBatchSizeEntered
+			selectedProcess.id !== -1 &&
+			selectedProduct.id !== -1 &&
+			!isCreatingTask &&
+			isBatchSizeEntered
 		)
 	}
 
 	handleSelect(type, item) {
-		let key = type === 'processes' ? 'selectedProcess' : 'selectedProduct'
+		const key = type === 'processes' ? 'selectedProcess' : 'selectedProduct'
+		if (key === 'selectedProcess') {
+			this.setState({ batchSize: parseFloat(item.default_amount) })
+		}
 		this.setState({ [key]: item })
 	}
 
