@@ -1,9 +1,5 @@
 import React, { Component } from 'react'
-import {
-	Button,
-	View,
-	StyleSheet,
-} from 'react-native'
+import { Button, View, StyleSheet } from 'react-native'
 import Colors from '../resources/Colors'
 
 export function CancelButton({ onCancel }) {

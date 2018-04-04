@@ -7,19 +7,21 @@ import {
   Image,
   TextInput,
 } from 'react-native'
+import * as ImageUtility from '../resources/ImageUtility'
 import { AddButton, CancelButton } from './Buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
-import * as ImageUtility from '../resources/ImageUtility'
+import NumericInputWithUnits from './NumericInputWithUnits'
+
 
 export default class QRDisplay extends Component {
   render() {
     let {
+      unit,
       barcode,
       creating_task,
       semantic,
       shouldShowAmount,
-      default_amount,
       onChange,
       onPress,
       onCancel,
@@ -75,13 +77,13 @@ export default class QRDisplay extends Component {
             {Compute.getTextFromSemantic(semantic)}
           </Text>
           {shouldShowAmount ? (
-            <QRInput
-              placeholder={default_amount}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={onChange}
-              value={amount}
-            />
+            <View>
+              <NumericInputWithUnits
+                unit={unit}
+                value={amount}
+                onChangeText={num => onChange(num)}
+              />
+            </View>
           ) : null}
         </View>
         {renderButtons(semantic, onPress, onCancel, amount)}
@@ -96,35 +98,4 @@ function renderButtons(semantic, onPress, onCancel, amount) {
 	} else {
 		return <CancelButton onCancel={onCancel} />
 	}
-}
-
-function QRInput(props) {
-  let styles = StyleSheet.create({
-    container: {
-      flexDirection: 'column',
-      alignItems: 'stretch',
-    },
-    help: {
-      textAlign: 'center',
-    },
-    input: {
-      borderRadius: 4,
-      backgroundColor: Colors.white,
-      borderColor: Colors.lightGray,
-      borderWidth: 1,
-      borderRadius: 3,
-      fontSize: 15,
-      color: Colors.gray,
-      marginBottom: 20,
-      padding: 10,
-      textAlign: 'center',
-      marginTop: 4,
-    },
-  })
-  return (
-	  <View style={styles.container}>
-		  <Text style={styles.help}>Enter amount</Text>
-      <TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
-	  </View>
-  )
 }

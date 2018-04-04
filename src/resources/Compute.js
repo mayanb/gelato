@@ -110,7 +110,7 @@ export default class Compute {
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
 			default:
-				return 'Add me'
+				return 'Enter amount:'
 		}
 	}
 
@@ -137,5 +137,17 @@ export default class Compute {
 			value: value,
 		}
 		return Networking.post('/ics/taskAttributes/create/').send(payload)
+	}
+
+	static getSearchResults(text, teamID) {
+		const r = Networking.get('/ics/tasks/search/').query({
+			label: text,
+			team: teamID,
+		})
+		return r
+	}
+
+	static getBatchSizeFromItems(items) {
+		return items.reduce((sum, item) => sum + parseFloat(item.amount), 0)
 	}
 }

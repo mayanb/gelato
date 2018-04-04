@@ -4,7 +4,8 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "format": "eslint . --fix"
+    "format": "eslint . --fix",
+    "devtools": "react-devtools"
   },
   "jest": {
     "preset": "jest-expo"
@@ -37,6 +38,7 @@
   "devDependencies": {
     "eslint": "^4.16.0",
     "eslint-config-react-native-prettier": "^1.0.1",
-    "jest-expo": "^26.0.0"
+    "jest-expo": "^26.0.0",
+    "react-devtools": "^3.2.1"
   }
 }
