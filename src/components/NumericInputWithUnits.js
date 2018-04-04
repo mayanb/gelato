@@ -16,7 +16,7 @@ export default class NumericInputWithUnits extends Component {
 				<TextInput
 					style={styles.textInput}
 					onChangeText={onChangeText}
-					value={value}
+					value={value.toString(10)}
 					autoCorrect={false}
 					keyboardType="numeric"
 				/>

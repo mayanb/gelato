@@ -6,10 +6,12 @@ import {
 	Text,
 	View,
 } from 'react-native'
+import paramsToProps from '../resources/paramsToProps'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
 import Colors from '../resources/Colors'
 import Networking from '../resources/Networking-superagent'
+import * as errorActions from '../actions/ErrorActions'
 import {
 	ALREADY_ADDED_INPUT,
 	ALREADY_ADDED_OUTPUT,
@@ -19,30 +21,25 @@ import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
 import InputListModal from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
-import * as errorActions from '../actions/ErrorActions'
-import paramsToProps from '../resources/paramsToProps'
 import QRCamera from '../components/QRCamera'
 
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
-		let default_amount = props.task
-			? parseFloat(props.task.process_type.default_amount).toString()
-			: 0
 
 		this.state = {
 			expanded: false,
 			barcode: false,
 			foundQR: null,
 			semantic: '', // semantic is a string that indicates what to display out of the various options
-			default_amount: default_amount,
-			amount: default_amount,
+			amount: 0,
 			isLoading: false,
 			searchData: [],
 			request: null,
 		}
 	}
-
+	
+	
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode } = this.state
@@ -95,7 +92,8 @@ class QRScanner extends Component {
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
 				searchData: [],
-				creating_task_for_input: task.display
+				creating_task_for_input: task.display,
+				amount: genericItem.amount,// Compute.getBatchSizeFromItems(task.items), <-- WHAT WE WANT (BUT LACK): genericItem.items
 			})
 		}
 		this.setState({
@@ -166,7 +164,7 @@ class QRScanner extends Component {
 	}
 
 	renderInputQR(creatingTask) {
-		let { barcode, semantic, creating_task_for_input } = this.state
+		let { barcode, semantic, creating_task_for_input, amount } = this.state
 
 		return (
 			<QRDisplay
@@ -179,7 +177,7 @@ class QRScanner extends Component {
 				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
-				amount={this.state.amount}
+				amount={amount}
 			/>
 		)
 	}
@@ -202,7 +200,7 @@ class QRScanner extends Component {
 			barcode: false,
 			foundQR: false,
 			semantic: '',
-			amount: this.state.default_amount,
+			amount: '',
 			expanded: false,
 			isFetching: false,
 			creating_task_for_input: '',
@@ -305,8 +303,14 @@ class QRScanner extends Component {
 	}
 
 	fetchBarcodeData(code) {
-		let success = (data, semantic) =>
-			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
+		let success = (data, semantic) => {
+			this.setState({
+				foundQR: data,
+				semantic: semantic,
+				isFetching: false,
+				amount: data.amount,
+			})
+		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: '', isFetching: false })
 		Networking.get('/ics/items/')
