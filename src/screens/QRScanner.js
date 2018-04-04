@@ -238,6 +238,7 @@ class QRScanner extends Component {
 	}
 
 	handleOpenTask(creatingTask) {
+		return // TEMPORARY: creatingTask is an id, we need the full object
 		this.props.navigation.goBack()
 		// this.props.onOpenTask(creatingTask)
 		this.props.navigation.navigate('Task', {
