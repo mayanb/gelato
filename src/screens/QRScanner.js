@@ -21,26 +21,32 @@ import QRCamera from '../components/QRCamera'
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
+		let default_amount = props.task
+			? parseFloat(props.task.process_type.default_amount).toString()
+			: 0
 
 		this.state = {
 			expanded: false,
 			barcode: false,
 			foundQR: null,
-			semantic: '', // semantic is a string that indicates what to display out of the various options
-			amount: 0,
+			semantic: '',
+			default_amount: default_amount,
+			amount: default_amount,
 			isLoading: false,
 			searchData: [],
 			request: null,
+
 		}
 	}
 
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode } = this.state
-		let { task } = this.props
+		let { mode, task } = this.props
 		let item_array = []
-		if (task != null) {
-			item_array = task['inputs']
+		if (task != null && mode != null) {
+			// item_array = task['inputs']
+			item_array = task[mode]
 		} else {
 			return <View />
 		}
@@ -126,16 +132,29 @@ class QRScanner extends Component {
 	}
 
 	renderItemListModal() {
-		return (
-			<InputListModal
-				task={this.props.task}
-				processUnit={this.props.processUnit}
-				onCloseModal={this.handleCloseModal.bind(this)}
-				onRemove={this.handleRemoveInput.bind(this)}
-				onOpenTask={this.handleOpenTask.bind(this)}
-				inputs={this.props.task.inputs}
-			/>
-		)
+		if (this.props.mode === 'inputs') {
+			return (
+				<InputItemListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.handleCloseModal.bind(this)}
+					onRemove={this.handleRemoveInput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={this.props.task.inputs}
+				/>
+			)
+		} else {
+			return (
+				<OutputItemListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.handleCloseModal.bind(this)}
+					onRemove={this.handleRemoveOutput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={this.props.task.items}
+				/>
+			)
+		}
 	}
 
 	renderQRModal() {
@@ -150,7 +169,9 @@ class QRScanner extends Component {
 
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
-				{this.renderInputQR(creatingTask)}
+				{this.props.mode === 'inputs'
+					? this.renderInputQR(creatingTask)
+					: this.renderOutputQR(creatingTask)}
 			</Modal>
 		)
 	}
@@ -170,6 +191,24 @@ class QRScanner extends Component {
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
 				amount={amount}
+			/>
+		)
+	}
+
+	renderOutputQR(creatingTask) {
+		let { barcode, semantic } = this.state
+
+		return (
+			<QRDisplay
+				barcode={barcode}
+				creating_task={creatingTask.display}
+				semantic={semantic}
+				shouldShowAmount={Compute.isOkay(semantic)}
+				amount={this.state.amount}
+				default_amount={this.state.default_amount}
+				onChange={this.handleSetAmount.bind(this)}
+				onPress={this.handleAddOutput.bind(this)}
+				onCancel={this.handleCloseModal.bind(this)}
 			/>
 		)
 	}

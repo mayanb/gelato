@@ -39,7 +39,8 @@ class Task extends Component {
 	constructor(props) {
 		super(props)
 		this.handlePress = this.handlePress.bind(this)
-		this.addInputs = this.addInputs.bind(this)
+		//this.addInputs = this.addInputs.bind(this)
+		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.state = {
 			organized_attributes: props.task && props.task.organized_attributes,
@@ -134,13 +135,7 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					<ActionButton
-						activeOpacity={0.5}
-						buttonColor={Colors.base}
-						title="Inputs"
-						onPress={this.addInputs}
-						renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
-					/>
+					{this.renderActionButton()}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -223,11 +218,22 @@ class Task extends Component {
 		)
 	}
 
-	addInputs() {
+	// addInputs() {
+	// 	this.props.navigation.navigate('QRScanner', {
+	// 		task_id: this.props.task.id,
+	// 		open: this.props.open,
+	// 		taskSearch: this.props.taskSearch,
+	// 		processUnit: this.props.task.process_type.unit,
+	// 		onOpenTask: this.handleOpenTask.bind(this),
+	// 	})
+	// }
+
+	showCamera(mode) {
 		this.props.navigation.navigate('QRScanner', {
 			task_id: this.props.task.id,
 			open: this.props.open,
 			taskSearch: this.props.taskSearch,
+			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
 		})
@@ -299,6 +305,44 @@ class Task extends Component {
 				outputUnit={task.process_type.unit}
 			/>
 		)
+	}
+
+	renderActionButton() {
+		if(Compute.isDandelion(this.props.screenProps.team)) {
+			return (
+				<ActionButton
+					buttonColor={Colors.base}
+					activeOpacity={0.5}
+					icon={
+						<FAIcon name="qrcode" size={24} color="white" />
+					}>
+					{!isLabel && (
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Inputs"
+							onPress={() => this.showCamera('inputs')}>
+							<Image source={ImageUtility.requireIcon('inputs.png')} />
+						</ActionButton.Item>
+					)}
+					<ActionButton.Item
+						buttonColor={'blue'}
+						title={outputButtonName}
+						onPress={() => this.showCamera('items')}>
+						<Image source={ImageUtility.requireIcon('outputs.png')} />
+					</ActionButton.Item>
+				</ActionButton>
+			)
+		} else {
+			return (
+				<ActionButton
+					activeOpacity={0.5}
+					buttonColor={Colors.base}
+					title="Inputs"
+					onPress={() => this.showCamera('inputs'))}
+					renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
+				/>
+			)
+		}
 	}
 }
 
