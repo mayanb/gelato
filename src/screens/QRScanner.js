@@ -95,6 +95,7 @@ class QRScanner extends Component {
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
 				searchData: [],
+				creating_task_for_input: task.display
 			})
 		}
 		this.setState({
@@ -165,13 +166,13 @@ class QRScanner extends Component {
 	}
 
 	renderInputQR(creatingTask) {
-		let { barcode, semantic } = this.state
+		let { barcode, semantic, creating_task_for_input } = this.state
 
 		return (
 			<QRDisplay
 				unit={this.state.unit}
 				barcode={barcode}
-				creating_task={creatingTask.display}
+				creating_task={creating_task_for_input}
 				semantic={semantic}
 				shouldShowAmount={!semantic}
 				onChange={this.handleSetAmount.bind(this)}
@@ -204,6 +205,7 @@ class QRScanner extends Component {
 			amount: this.state.default_amount,
 			expanded: false,
 			isFetching: false,
+			creating_task_for_input: '',
 		})
 	}
 
@@ -266,7 +268,7 @@ class QRScanner extends Component {
 		if (expanded || barcode) {
 			return
 		}
-
+		
 		let valid = Compute.validateQR(data)
 		if (!valid) {
 			// not a valid qr code
@@ -275,6 +277,7 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: INVALID_QR,
+				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyInput(data, this.props.task)) {
 			// its already an input to this task
@@ -283,6 +286,7 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_INPUT,
+				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
 			// its already an output to this task
@@ -291,6 +295,7 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_OUTPUT,
+				creating_task_for_input: '',
 			})
 		} else {
 			// fetch all the data about this qr code
