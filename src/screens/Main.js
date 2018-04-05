@@ -195,9 +195,10 @@ class Main extends Component {
 	// In order to implement infinite scroll, we need to load data into state.
 	loadData() {
 		let data = this.props.tasks.data
+		let nonrepeatedData = new Set([...this.state.data, ...data])
 		return [
 			{
-				data: [...this.state.data, ...data], // Append new data to current list data
+				data: Array.from(nonrepeatedData), // Append new data to current list data
 				key: 'completed',
 				title: 'RECENT TASKS',
 				isLoading: this.props.tasks.ui.isFetchingData,
