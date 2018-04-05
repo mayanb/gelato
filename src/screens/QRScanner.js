@@ -308,7 +308,6 @@ class QRScanner extends Component {
 
 	handleOpenTask(creatingTask) {
 		this.props.navigation.goBack()
-		// this.props.onOpenTask(creatingTask)
 		this.props.navigation.navigate('Task', {
 			id: creatingTask.id,
 			name: creatingTask.display,
