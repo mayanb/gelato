@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Dimensions, StyleSheet, View } from 'react-native'
+import Storage from '../resources/Storage'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
 import { INVALID_QR } from '../resources/QRSemantics'
@@ -49,13 +50,14 @@ class Search extends Component {
 		this.props.navigation.goBack()
 	}
 
-	handleChangeText(text) {
+	async handleChangeText(text) {
 		const { request } = this.state
 		if (request) {
 			request.abort()
 		}
 
-		const r = Compute.getSearchResults(text, this.props.teamID)
+		const teamID = await Storage.get('teamID')
+		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res =>
 				this.setState({ searchData: res.body.results, isLoading: false })
