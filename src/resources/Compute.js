@@ -14,6 +14,10 @@ import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 export default class Compute {
 	constructor() {}
 
+	static isDandelion(teamName) {
+		return teamName.toLowerCase() === "valencia" || teamName.toLowerCase() === "alabama"
+	}
+
 	static equate(id1, id2) {
 		return parseInt(id1, 10) === parseInt(id2, 10)
 	}
@@ -34,7 +38,7 @@ export default class Compute {
 				Compute.equate(e.attribute, attr.id)
 			)
 			if (!attribute_value) {
-				attribute_value = "" 
+				attribute_value = ''
 			}
 			let filled_attribute = update(attr, {
 				$merge: { value: attribute_value.value },
@@ -110,7 +114,7 @@ export default class Compute {
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
 			default:
-				return 'Add me'
+				return 'Enter amount:'
 		}
 	}
 
@@ -136,7 +140,18 @@ export default class Compute {
 			attribute: attributeID,
 			value: value,
 		}
-		return Networking.post('/ics/taskAttributes/create/')
-			.send(payload)
+		return Networking.post('/ics/taskAttributes/create/').send(payload)
+	}
+
+	static getSearchResults(text, teamID) {
+		const r = Networking.get('/ics/tasks/search/').query({
+			label: text,
+			team: teamID,
+		})
+		return r
+	}
+
+	static getBatchSizeFromItems(items) {
+		return items.reduce((sum, item) => sum + parseFloat(item.amount), 0)
 	}
 }
