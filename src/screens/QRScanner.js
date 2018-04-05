@@ -53,6 +53,7 @@ class QRScanner extends Component {
 		return (
 			<View style={styles.container}>
 				<QRCamera
+					searchable={mode !== 'items'}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
 					searchData={this.state.searchData}
