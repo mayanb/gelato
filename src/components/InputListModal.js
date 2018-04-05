@@ -15,7 +15,7 @@ import Modal from '../components/Modal'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
-class InputListModal extends Component {
+class InputListModalUnconnected extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.fetchProcesses())
 	}
@@ -60,7 +60,67 @@ const mapStateToProps = (state, props) => {
 	}
 }
 
-export default connect(mapStateToProps)(InputListModal)
+export const InputListModal =  connect(mapStateToProps)(InputListModalUnconnected)
+
+
+export class OutputItemListModal extends Component {
+	render() {
+		return (
+			<Modal onPress={this.props.onCloseModal}>
+				<FlatList
+					renderItem={this.renderRow.bind(this)}
+					data={this.props.items}
+					ListHeaderComponent={() => header(this.props.items, 'outputs', this.props.processUnit)}
+					keyExtractor={this.keyExtractor}
+				/>
+			</Modal>
+		)
+	}
+
+	renderRow({item, index}) {
+		let itemAmount = parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount)
+		return <QRItemListRow
+			qr={item['item_qr']}
+			onRemove={() => this.props.onRemove(index)}
+			itemAmount={itemAmount}
+		/>
+	}
+
+	keyExtractor = (item, index) => item.id;
+}
+
+function header(items, typeName, unit) {
+	let styles = StyleSheet.create({
+		container: {
+			height: 50,
+			borderBottomWidth: 1,
+			borderBottomColor: Colors.ultraLightGray,
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'flex-start',
+			alignItems: 'center',
+			paddingLeft: 20,
+			paddingRight: 16,
+		},
+		text: {
+			fontSize: 14,
+			color: Colors.lightGrayText
+		}
+	})
+	const count = items.length
+	const totalAmount = items.reduce(function(total, current) {
+		return total + parseFloat(current.amount)
+	}, 0)
+
+	return (
+		<View style={styles.container}>
+			<Text style={styles.text}>
+				{`${count} ${pluralize(typeName, count)} (${totalAmount} ${pluralize(unit, totalAmount)})`}
+			</Text>
+		</View>
+	)
+}
+
 
 function inputHeader(inputs, typeName, unit) {
 	let styles = StyleSheet.create({

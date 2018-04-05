@@ -135,7 +135,7 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					{this.renderActionButton()}
+					{this.renderActionButton(isLabel, outputButtonName)}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -307,7 +307,7 @@ class Task extends Component {
 		)
 	}
 
-	renderActionButton() {
+	renderActionButton(isLabel, outputButtonName) {
 		if(Compute.isDandelion(this.props.screenProps.team)) {
 			return (
 				<ActionButton
@@ -338,7 +338,7 @@ class Task extends Component {
 					activeOpacity={0.5}
 					buttonColor={Colors.base}
 					title="Inputs"
-					onPress={() => this.showCamera('inputs'))}
+					onPress={() => this.showCamera('inputs')}
 					renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
 				/>
 			)

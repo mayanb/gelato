@@ -14,7 +14,7 @@ import {
 } from '../resources/QRSemantics'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import InputListModal from '../components/InputListModal'
+import { InputListModal, OutputItemListModal } from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
 import QRCamera from '../components/QRCamera'
 
@@ -134,13 +134,13 @@ class QRScanner extends Component {
 	renderItemListModal() {
 		if (this.props.mode === 'inputs') {
 			return (
-				<InputItemListModal
+				<InputListModal
 					task={this.props.task}
 					processUnit={this.props.processUnit}
 					onCloseModal={this.handleCloseModal.bind(this)}
 					onRemove={this.handleRemoveInput.bind(this)}
 					onOpenTask={this.handleOpenTask.bind(this)}
-					items={this.props.task.inputs}
+					inputs={this.props.task.inputs}
 				/>
 			)
 		} else {
@@ -187,7 +187,6 @@ class QRScanner extends Component {
 				semantic={semantic}
 				shouldShowAmount={!semantic}
 				onChange={this.handleSetAmount.bind(this)}
-				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
 				amount={amount}
@@ -255,6 +254,27 @@ class QRScanner extends Component {
 			.catch(e => console.log('error', e))
 	}
 
+	handleAddOutput() {
+		let { barcode, amount } = this.state
+		return this.dispatchWithError(
+			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
+		).then(() => this.handleCloseModal())
+	}
+
+	handleRemoveOutput(i) {
+		let { task } = this.props
+		let item = task['items'][i]
+		const success = () => {
+			if (this.props.task.items.length === 0) {
+				this.handleCloseModal()
+			}
+		}
+		this.dispatchWithError(
+			actions.removeOutput(task, item, i, this.props.taskSearch)
+		).then(success)
+	}
+
+
 	handleRemoveInput(i) {
 		let { task } = this.props
 		let item = task['inputs'][i]
@@ -277,7 +297,6 @@ class QRScanner extends Component {
 	}
 
 	handleOpenTask(creatingTask) {
-		return // TEMPORARY: creatingTask is an id, we need the full object
 		this.props.navigation.goBack()
 		// this.props.onOpenTask(creatingTask)
 		this.props.navigation.navigate('Task', {

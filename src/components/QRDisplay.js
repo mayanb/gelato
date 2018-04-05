@@ -60,8 +60,6 @@ export default class QRDisplay extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity
-          disabled={!this.props.onOpenTask}
-          onPress={() => this.props.onOpenTask()}
           style={styles.qr_top}>
           <Image
             source={ImageUtility.requireIcon('qr_icon')}
