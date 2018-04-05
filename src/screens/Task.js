@@ -9,7 +9,8 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
-	Button
+	Button,
+	Text,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -35,6 +36,17 @@ const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
+	constructor(props) {
+		super(props)
+		this.handlePress = this.handlePress.bind(this)
+		//this.addInputs = this.addInputs.bind(this)
+		this.showCamera = this.showCamera.bind(this)
+		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.state = {
+			organized_attributes: props.task && props.task.organized_attributes,
+		}
+	}
+
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
 		const { showActionSheet } = params
@@ -42,26 +54,24 @@ class Task extends Component {
 		return {
 			title: params.name,
 			headerRight: (
-				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
+				<NavHeader
+					IconComponent={Ionicons}
+					size={25}
+					color={Colors.white}>
+					<NavHeader.Item
+						iconName="md-print"
+						label="Print"
+						onPress={() =>
+							navigation.navigate('Print', { selectedTask: params.task })
+						}
+					/>
 					<NavHeader.Item
 						iconName="md-more"
-						label=""
+						label="More"
 						onPress={showActionSheet}
 					/>
 				</NavHeader>
 			),
-		}
-	}
-
-	constructor(props) {
-		super(props)
-		this.handlePress = this.handlePress.bind(this)
-		this.showCamera = this.showCamera.bind(this)
-		this.printTask = this.printTask.bind(this)
-		this.handleRenameTask = this.handleRenameTask.bind(this)
-
-		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes
 		}
 	}
 
@@ -78,6 +88,7 @@ class Task extends Component {
 		}
 		Networking.get(`/ics/tasks/${this.props.id}`)
 			.then(res => {
+				this.props.navigation.setParams({ task: res.body })
 				let organized = Compute.organizeAttributes(res.body)
 				this.setState({ organized_attributes: organized })
 			})
@@ -86,7 +97,6 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes } = this.state
-		console.log(organized_attributes)
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -103,14 +113,20 @@ class Task extends Component {
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
-				accessible={false}
-			>
+				accessible={false}>
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
-					{ this.renderHeader(task) }
-					<AttributeList data={organized_attributes} onSubmitEditing={this.handleSubmitEditing.bind(this)}/>
+					{this.renderHeader(task)}
+					<AttributeList
+						data={organized_attributes}
+						onSubmitEditing={this.handleSubmitEditing.bind(this)}
+					/>
 					<View style={styles.help}>
-						<Button onPress={this.showHelpAlert.bind(this)} title="Help" color={Colors.white} />
+						<Button
+							onPress={this.showHelpAlert.bind(this)}
+							title="Help"
+							color={Colors.white}
+						/>
 					</View>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
@@ -119,33 +135,7 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					<ActionButton
-						buttonColor={Colors.base}
-						activeOpacity={0.5}
-						icon={
-							<FAIcon name="qrcode" size={24} color="white" />
-						}>
-						{!isLabel && (
-							<ActionButton.Item
-								buttonColor={'green'}
-								title="Inputs"
-								onPress={() => this.showCamera('inputs')}>
-								<Image source={ImageUtility.requireIcon('inputs.png')} />
-							</ActionButton.Item>
-						)}
-						<ActionButton.Item
-							buttonColor={'blue'}
-							title={outputButtonName}
-							onPress={() => this.showCamera('items')}>
-							<Image source={ImageUtility.requireIcon('outputs.png')} />
-						</ActionButton.Item>
-						<ActionButton.Item
-							buttonColor={'purple'}
-							title={'Print'}
-							onPress={() => this.printTask()}>
-							<Image source={ImageUtility.requireIcon('print.png')} />
-						</ActionButton.Item>
-					</ActionButton>
+					{this.renderActionButton(isLabel, outputButtonName)}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -170,10 +160,9 @@ class Task extends Component {
 
 	showHelpAlert() {
 		AlertIOS.alert(
-			'Where do I see the scanned QR codes?',
-			`** Tap the QR code button on the bottom right 
-			\n ** Select inputs or outputs 
-			\n ** Tap the button with the # of scanned codes on the bottom left of the camera screen`
+			'Where do I see already scanned QR codes for this task?',
+			`** Tap the blue input button on the bottom right
+			\n ** Then tap the button with the # of scanned codes on the bottom left of the camera screen`
 		)
 	}
 
@@ -229,6 +218,16 @@ class Task extends Component {
 		)
 	}
 
+	// addInputs() {
+	// 	this.props.navigation.navigate('QRScanner', {
+	// 		task_id: this.props.task.id,
+	// 		open: this.props.open,
+	// 		taskSearch: this.props.taskSearch,
+	// 		processUnit: this.props.task.process_type.unit,
+	// 		onOpenTask: this.handleOpenTask.bind(this),
+	// 	})
+	// }
+
 	showCamera(mode) {
 		this.props.navigation.navigate('QRScanner', {
 			task_id: this.props.task.id,
@@ -237,12 +236,6 @@ class Task extends Component {
 			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
-		})
-	}
-
-	printTask() {
-		this.props.navigation.navigate('Print', {
-			selectedTask: this.props.task,
 		})
 	}
 
@@ -270,7 +263,7 @@ class Task extends Component {
 			Compute.equate(e.id, id)
 		)
 
-		// if there's no change, return 
+		// if there's no change, return
 		let currValue = organized_attributes[attributeIndex].value
 		if (newValue === currValue) {
 			return
@@ -278,16 +271,16 @@ class Task extends Component {
 
 		// else, do optimistic update
 		this.updateAttributeValue(attributeIndex, newValue)
-		return Compute.postAttributeUpdate(this.props.id, id, newValue)
-			.catch(e => this.updateAttributeValue(attributeIndex, currValue))
-
+		return Compute.postAttributeUpdate(this.props.id, id, newValue).catch(e =>
+			this.updateAttributeValue(attributeIndex, currValue)
+		)
 	}
 
 	updateAttributeValue(index, newValue) {
 		let ns = update(this.state.organized_attributes, {
-			[index] : {
-				$merge: { value: newValue }
-			}
+			[index]: {
+				$merge: { value: newValue },
+			},
 		})
 		this.setState({ organized_attributes: ns })
 	}
@@ -313,6 +306,44 @@ class Task extends Component {
 			/>
 		)
 	}
+
+	renderActionButton(isLabel, outputButtonName) {
+		if(Compute.isDandelion(this.props.screenProps.team)) {
+			return (
+				<ActionButton
+					buttonColor={Colors.base}
+					activeOpacity={0.5}
+					icon={
+						<FAIcon name="qrcode" size={24} color="white" />
+					}>
+					{!isLabel && (
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Inputs"
+							onPress={() => this.showCamera('inputs')}>
+							<Image source={ImageUtility.requireIcon('inputs.png')} />
+						</ActionButton.Item>
+					)}
+					<ActionButton.Item
+						buttonColor={'blue'}
+						title={outputButtonName}
+						onPress={() => this.showCamera('items')}>
+						<Image source={ImageUtility.requireIcon('outputs.png')} />
+					</ActionButton.Item>
+				</ActionButton>
+			)
+		} else {
+			return (
+				<ActionButton
+					activeOpacity={0.5}
+					buttonColor={Colors.base}
+					title="Inputs"
+					onPress={() => this.showCamera('inputs')}
+					renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
+				/>
+			)
+		}
+	}
 }
 
 const helpSize = 150
@@ -332,7 +363,7 @@ const styles = StyleSheet.create({
 		paddingLeft: helpSize / 4 + 20,
 		paddingTop: helpSize / 4 - 20,
 		backgroundColor: Colors.darkGray,
-	}
+	},
 })
 
 const mapStateToProps = (state, props) => {
