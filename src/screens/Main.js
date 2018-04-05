@@ -131,6 +131,10 @@ class Main extends Component {
 					<Text style={styles.emptyFooterText}>{text}</Text>
 				</View>
 			)
+		} else if (this.props.tasks.ui.isFetchingData) {
+			return (
+				<TaskRowHeader isLoading={true} />
+			)
 		}
 	}
 
@@ -180,7 +184,7 @@ class Main extends Component {
 	//		- Get new data, append that data to section list state
 	//	Note that the way this works is based on the fact that the latest data is stored in this.props.tasks.data
 	async loadMore() {
-		if (!this.props.tasks.ui.isFetchingData) {
+		if (!this.props.tasks.ui.isFetchingData && this.props.tasks.data.length > 0) {
 			await this.setState({data: [...this.state.data, ...this.props.tasks.data]}) // Append new data to state
 			await this.setState({page: this.state.page + 1}) // Set current page
 			this.fetchAllTasks(this.state.page)
