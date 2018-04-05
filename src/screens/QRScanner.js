@@ -4,6 +4,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
+import Storage from '../resources/Storage'
 import Colors from '../resources/Colors'
 import Networking from '../resources/Networking-superagent'
 import * as errorActions from '../actions/ErrorActions'
@@ -73,13 +74,14 @@ class QRScanner extends Component {
 		)
 	}
 
-	handleChangeText(text) {
+	async handleChangeText(text) {
 		const { request } = this.state
 		if (request) {
 			request.abort()
 		}
 
-		const r = Compute.getSearchResults(text, this.props.teamID)
+		const teamID = await Storage.get('teamID')
+		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res =>
 				this.setState({ searchData: res.body.results, isLoading: false })
