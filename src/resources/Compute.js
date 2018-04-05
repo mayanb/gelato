@@ -14,6 +14,10 @@ import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 export default class Compute {
 	constructor() {}
 
+	static isDandelion(teamName) {
+		return teamName.toLowerCase() === "valencia" || teamName.toLowerCase() === "alabama"
+	}
+
 	static equate(id1, id2) {
 		return parseInt(id1, 10) === parseInt(id2, 10)
 	}

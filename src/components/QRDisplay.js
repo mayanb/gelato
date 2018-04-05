@@ -19,7 +19,7 @@ export default class QRDisplay extends Component {
     let {
       unit,
       barcode,
-      creating_task,
+      creating_task_display,
       semantic,
       shouldShowAmount,
       onChange,
@@ -60,8 +60,6 @@ export default class QRDisplay extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity
-          disabled={true} // disabled
-          onPress={() => this.props.onOpenTask()}
           style={styles.qr_top}>
           <Image
             source={ImageUtility.requireIcon('qr_icon')}
@@ -70,7 +68,7 @@ export default class QRDisplay extends Component {
           <Text style={styles.qr_text}>
             {barcode.substring(barcode.length - 6)}
           </Text>
-          <Text>{creating_task}</Text>
+          <Text>{creating_task_display}</Text>
         </TouchableOpacity>
         <View style={styles.main}>
           <Text style={styles.semantic}>

@@ -12,8 +12,10 @@ import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
+import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
+
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -65,6 +67,7 @@ class Main extends Component {
 	componentDidMount() {
 		this.fetchOpenTasks()
 		this.fetchCompletedTasks()
+		this.fetchProcesses()
 	}
 
 	fetchOpenTasks() {
@@ -77,6 +80,13 @@ class Main extends Component {
 	fetchCompletedTasks() {
 		let { dispatch } = this.props
 		dispatch(actions.fetchCompletedTasks()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+	}
+
+	fetchProcesses() {
+		let { dispatch } = this.props
+		dispatch(processActions.fetchProcesses()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
 	}

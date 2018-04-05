@@ -245,14 +245,14 @@ export function addInput(task, item, isSearched, amount) {
 	}
 }
 
-export function addOutput(task, qr, amount) {
+export function addOutput(task, qr, amount, isSearched) {
 	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
 	return dispatch => {
-		dispatch(startAdding(task))
+		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
-				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body))
+				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
 				return task
 			})
 			.catch(e => {
@@ -262,16 +262,16 @@ export function addOutput(task, qr, amount) {
 	}
 }
 
-export function startAdding(task) {
-	let name = findReducer(task, false)
+export function startAdding(task, isSearched) {
+	let name = findReducer(task, isSearched)
 	return {
 		name: name,
 		type: START_ADDING,
 	}
 }
 
-function addSuccess(type, task, item) {
-	let name = findReducer(task, false)
+function addSuccess(type, task, item, isSearched) {
+	let name = findReducer(task, isSearched)
 	return {
 		type: type,
 		name: name,
@@ -287,6 +287,21 @@ function addFailure(err) {
 		error: err,
 	}
 }
+
+export function removeOutput(task, item, index, isSearched) {
+	removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
+	return dispatch => {
+		return Networking.del('/ics/items/', item.id)
+			.then(() => {
+				dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
+			})
+			.catch(e => {
+				dispatch(removeFailure(e))
+				throw e
+			})
+	}
+}
+
 
 export function removeInput(task, input, index, isSearched) {
 	return dispatch => {

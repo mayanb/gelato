@@ -84,7 +84,7 @@ class Print extends Component {
         results.join('')
         //alert('TODO!')
         // RNPrint.print({ html: `${results}` })
-        Expo.DangerZone.Print.printAsync({ html: `${results}`})
+        Expo.DangerZone.Print.printAsync({ html: `${results}` })
         // console.log(JSON.stringify(results))
       },
       function(err) {

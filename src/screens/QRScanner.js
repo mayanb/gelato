@@ -14,39 +14,50 @@ import {
 } from '../resources/QRSemantics'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import InputListModal from '../components/InputListModal'
+import { InputListModal, OutputItemListModal } from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
 import QRCamera from '../components/QRCamera'
 
 class QRScanner extends Component {
 	constructor(props) {
 		super(props)
+		let default_amount = props.task
+			? parseFloat(props.task.process_type.default_amount).toString()
+			: 0
 
 		this.state = {
 			expanded: false,
 			barcode: false,
 			foundQR: null,
-			semantic: '', // semantic is a string that indicates what to display out of the various options
-			amount: 0,
+			semantic: '',
+
+			// amount stuff ...
+			default_amount: default_amount,
+			amount: default_amount,
+
+			// search stuff
 			isLoading: false,
 			searchData: [],
 			request: null,
+
 		}
 	}
 
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode } = this.state
-		let { task } = this.props
+		let { mode, task } = this.props
 		let item_array = []
-		if (task != null) {
-			item_array = task['inputs']
+		if (task != null && mode != null) {
+			// item_array = task['inputs']
+			item_array = task[mode]
 		} else {
 			return <View />
 		}
 		return (
 			<View style={styles.container}>
 				<QRCamera
+					searchable={mode !== 'items'}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
 					searchData={this.state.searchData}
@@ -81,17 +92,15 @@ class QRScanner extends Component {
 	handleSelectTaskFromDropdown(task) {
 		if (task.items.length) {
 			const genericItem = task.items[0]
+			genericItem.creating_task = task
 			this.setState({
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
 				searchData: [],
-				creating_task_for_input: task.display,
-				amount: genericItem.amount, // Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
+				amount: genericItem.amount, 
+				// Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
 			})
 		}
-		this.setState({
-			unit: task.process_type.unit,
-		})
 	}
 
 	renderActiveItemListButton(items) {
@@ -126,16 +135,29 @@ class QRScanner extends Component {
 	}
 
 	renderItemListModal() {
-		return (
-			<InputListModal
-				task={this.props.task}
-				processUnit={this.props.processUnit}
-				onCloseModal={this.handleCloseModal.bind(this)}
-				onRemove={this.handleRemoveInput.bind(this)}
-				onOpenTask={this.handleOpenTask.bind(this)}
-				inputs={this.props.task.inputs}
-			/>
-		)
+		if (this.props.mode === 'inputs') {
+			return (
+				<InputListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.handleCloseModal.bind(this)}
+					onRemove={this.handleRemoveInput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					inputs={this.props.task.inputs}
+				/>
+			)
+		} else {
+			return (
+				<OutputItemListModal
+					task={this.props.task}
+					processUnit={this.props.processUnit}
+					onCloseModal={this.handleCloseModal.bind(this)}
+					onRemove={this.handleRemoveOutput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={this.props.task.items}
+				/>
+			)
+		}
 	}
 
 	renderQRModal() {
@@ -148,28 +170,54 @@ class QRScanner extends Component {
 		let creatingTask =
 			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
 
+		if (foundQR) {
+			let proc = this.props.processes.find(e => parseInt(e.id, 10) === parseInt(foundQR.creating_task.process_type, 10))
+			creatingTask.process_type = proc
+		}
+
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
-				{this.renderInputQR(creatingTask)}
+				{this.props.mode === 'inputs'
+					? this.renderInputQR(creatingTask)
+					: this.renderOutputQR(creatingTask)}
 			</Modal>
 		)
 	}
 
 	renderInputQR(creatingTask) {
-		let { barcode, semantic, creating_task_for_input, amount } = this.state
+		let { barcode, semantic, amount } = this.state
+		console.log(creatingTask)
 
 		return (
 			<QRDisplay
-				unit={this.state.unit}
+				unit={creatingTask.process_type ? creatingTask.process_type.unit : this.props.task.process_type.unit}
 				barcode={barcode}
-				creating_task={creating_task_for_input}
+				creating_task_display={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={!semantic}
+				shouldShowAmount={Compute.isOkay(semantic)}
 				onChange={this.handleSetAmount.bind(this)}
-				onOpenTask={() => this.handleOpenTask(creatingTask)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
 				amount={amount}
+			/>
+		)
+	}
+
+	renderOutputQR(creatingTask) {
+		let { barcode, semantic } = this.state
+
+		return (
+			<QRDisplay
+				unit={this.props.task.process_type.unit}
+				barcode={barcode}
+				creating_task_display={''}
+				semantic={semantic}
+				shouldShowAmount={Compute.isOkay(semantic)}
+				amount={this.state.amount}
+				default_amount={this.state.default_amount}
+				onChange={this.handleSetAmount.bind(this)}
+				onPress={this.handleAddOutput.bind(this)}
+				onCancel={this.handleCloseModal.bind(this)}
 			/>
 		)
 	}
@@ -215,6 +263,27 @@ class QRScanner extends Component {
 			.then(() => this.handleCloseModal())
 			.catch(e => console.log('error', e))
 	}
+
+	handleAddOutput() {
+		let { barcode, amount } = this.state
+		return this.dispatchWithError(
+			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
+		).then(() => this.handleCloseModal())
+	}
+
+	handleRemoveOutput(i) {
+		let { task } = this.props
+		let item = task['items'][i]
+		const success = () => {
+			if (this.props.task.items.length === 0) {
+				this.handleCloseModal()
+			}
+		}
+		this.dispatchWithError(
+			actions.removeOutput(task, item, i, this.props.taskSearch)
+		).then(success)
+	}
+
 
 	handleRemoveInput(i) {
 		let { task } = this.props
@@ -266,7 +335,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: INVALID_QR,
-				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyInput(data, this.props.task)) {
 			// its already an input to this task
@@ -275,7 +343,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_INPUT,
-				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
 			// its already an output to this task
@@ -284,7 +351,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_OUTPUT,
-				creating_task_for_input: '',
 			})
 		} else {
 			// fetch all the data about this qr code
@@ -294,12 +360,13 @@ class QRScanner extends Component {
 	}
 
 	fetchBarcodeData(code) {
+		let { mode } = this.props
 		let success = (data, semantic) => {
 			this.setState({
 				foundQR: data,
 				semantic: semantic,
 				isFetching: false,
-				amount: data.amount,
+				amount: data ? data.amount : this.state.default_amount,
 			})
 		}
 		let failure = () =>
@@ -311,7 +378,7 @@ class QRScanner extends Component {
 					failure(err)
 				} else {
 					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic('inputs', found)
+					let semantic = Compute.getQRSemantic(mode, found)
 					success(found, semantic)
 				}
 			})
@@ -325,7 +392,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/dsasd9adsadsddadsasaddfdsadsadasc'
+		let barcode = 'dande.li/ics/3996ca3c-9696-4cf3-ad34-e9d711aa9b30'
 		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 200)
 	}
 }
@@ -385,6 +452,7 @@ const mapStateToProps = (state, props) => {
 
 	return {
 		task: arr.find(e => Compute.equate(e.id, props.task_id)),
+		processes: state.processes.data,
 	}
 }
 
