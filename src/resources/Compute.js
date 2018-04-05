@@ -150,4 +150,15 @@ export default class Compute {
 		})
 		return r
 	}
+	
+	static filterExistingInputsFromSearchResults(inputs, searchResults) {
+		const existingInputItemIDs = new Set(
+			inputs.map(input => parseInt(input.input_item))
+		)
+		return searchResults.filter(task => {
+			return (
+				task.items.find(item => existingInputItemIDs.has(item.id)) === undefined
+			)
+		})
+	}
 }

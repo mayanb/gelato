@@ -77,7 +77,6 @@ class QRScanner extends Component {
 	}
 
 	async handleChangeText(text) {
-		console.log("text: ", text)
 		const { request } = this.state
 		if (request) {
 			request.abort()
@@ -87,19 +86,12 @@ class QRScanner extends Component {
 		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res => {
-				const existingInputItemIDs = new Set(this.props.task.inputs.map(input => parseInt(input.input_item)))
 				const searchResults = res.body.results
-				console.log(existingInputItemIDs, searchResults)
-				function taskDoesNotContainAnAddedInput(task) {
-					const found = task.items.find(item => {
-						if (item.id === 65677) console.log('found id 65677 in items', existingInputItemIDs, existingInputItemIDs.has(item.id))
-						return existingInputItemIDs.has(item.id)
-					})
-					console.log('found:', found)
-					return found === undefined
-				}
+				const searchDataWithoutExistingInputs = Compute.filterExistingInputsFromSearchResults(
+					this.props.task.inputs,
+					searchResults
+				)
 
-				const searchDataWithoutExistingInputs = searchResults.filter(taskDoesNotContainAnAddedInput)
 				this.setState({
 					searchData: searchDataWithoutExistingInputs,
 					isLoading: false,

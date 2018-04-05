@@ -68,6 +68,7 @@ export class SearchDropdown extends Component {
 				key={item.id}
 				id={item.id}
 				onPress={e => this.handleSelect(item)}
+				// containsAlreadyAddedInput={item.containsAlreadyAddedInput}
 			/>
 		)
 	}
