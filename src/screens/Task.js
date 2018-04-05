@@ -168,7 +168,7 @@ class Task extends Component {
 		this.setState({editingAttribute: id})
 	}
 
-	async datePicked(date) {
+	datePicked(date) {
 		// Submit data to server
 		this.handleSubmitEditing(this.state.editingAttribute, date)
 		Networking.get(`/ics/tasks/${this.props.id}`)

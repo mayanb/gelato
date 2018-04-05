@@ -53,7 +53,7 @@ export default class AttributeCell extends React.Component {
           ref={input => (this.input = input)}
         />
       )
-    } else if (this.props.value === 'TIME') {
+    } else if (this.props.type === 'TIME' && Boolean(this.props.value)) {
       return (
         <TouchableOpacity
           activeOpacity={0.5}
