@@ -15,7 +15,10 @@ import {
 } from '../resources/QRSemantics'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import { InputListModal, OutputItemListModal } from '../components/InputListModal'
+import {
+	InputListModal,
+	OutputItemListModal,
+} from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
 import QRCamera from '../components/QRCamera'
 
@@ -40,7 +43,6 @@ class QRScanner extends Component {
 			isLoading: false,
 			searchData: [],
 			request: null,
-
 		}
 	}
 
@@ -75,6 +77,7 @@ class QRScanner extends Component {
 	}
 
 	async handleChangeText(text) {
+		console.log("text: ", text)
 		const { request } = this.state
 		if (request) {
 			request.abort()
@@ -83,9 +86,25 @@ class QRScanner extends Component {
 		const teamID = await Storage.get('teamID')
 		const r = Compute.getSearchResults(text, teamID)
 		r
-			.then(res =>
-				this.setState({ searchData: res.body.results, isLoading: false })
-			)
+			.then(res => {
+				const existingInputItemIDs = new Set(this.props.task.inputs.map(input => parseInt(input.input_item)))
+				const searchResults = res.body.results
+				console.log(existingInputItemIDs, searchResults)
+				function taskDoesNotContainAnAddedInput(task) {
+					const found = task.items.find(item => {
+						if (item.id === 65677) console.log('found id 65677 in items', existingInputItemIDs, existingInputItemIDs.has(item.id))
+						return existingInputItemIDs.has(item.id)
+					})
+					console.log('found:', found)
+					return found === undefined
+				}
+
+				const searchDataWithoutExistingInputs = searchResults.filter(taskDoesNotContainAnAddedInput)
+				this.setState({
+					searchData: searchDataWithoutExistingInputs,
+					isLoading: false,
+				})
+			})
 			.catch(() => this.setState({ searchData: [], isLoading: false }))
 
 		this.setState({ request: r, isLoading: true })
@@ -99,8 +118,7 @@ class QRScanner extends Component {
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
 				searchData: [],
-				amount: genericItem.amount, 
-				// Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
+				amount: genericItem.amount,
 			})
 		}
 	}
@@ -173,7 +191,11 @@ class QRScanner extends Component {
 			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
 
 		if (foundQR) {
-			let proc = this.props.processes.find(e => parseInt(e.id, 10) === parseInt(foundQR.creating_task.process_type, 10))
+			let proc = this.props.processes.find(
+				e =>
+					parseInt(e.id, 10) ===
+					parseInt(foundQR.creating_task.process_type, 10)
+			)
 			creatingTask.process_type = proc
 		}
 
@@ -192,7 +214,11 @@ class QRScanner extends Component {
 
 		return (
 			<QRDisplay
-				unit={creatingTask.process_type ? creatingTask.process_type.unit : this.props.task.process_type.unit}
+				unit={
+					creatingTask.process_type
+						? creatingTask.process_type.unit
+						: this.props.task.process_type.unit
+				}
 				barcode={barcode}
 				creating_task_display={creatingTask.display}
 				semantic={semantic}
@@ -285,7 +311,6 @@ class QRScanner extends Component {
 			actions.removeOutput(task, item, i, this.props.taskSearch)
 		).then(success)
 	}
-
 
 	handleRemoveInput(i) {
 		let { task } = this.props

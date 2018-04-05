@@ -150,8 +150,4 @@ export default class Compute {
 		})
 		return r
 	}
-
-	static getBatchSizeFromItems(items) {
-		return items.reduce((sum, item) => sum + parseFloat(item.amount), 0)
-	}
 }
