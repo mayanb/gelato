@@ -63,7 +63,8 @@ class TaskInputs extends Component {
 		if (
 			selectedProcess.id !== -1 &&
 			selectedProduct.id !== -1 &&
-			!isCreatingTask
+			!isCreatingTask &&
+			!this.props.isDandelion
 		) {
 			return true
 		} else {
@@ -75,12 +76,20 @@ class TaskInputs extends Component {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
-		return (
+		if(this.props.isDandelion) {
+			return(
+				selectedProcess.id !== -1 &&
+				selectedProduct.id !== -1 &&
+				!isCreatingTask
+			)
+		} else {
+			return (
 			selectedProcess.id !== -1 &&
 			selectedProduct.id !== -1 &&
 			!isCreatingTask &&
 			isBatchSizeEntered
-		)
+			)
+		}
 	}
 
 	handleSelect(type, item) {

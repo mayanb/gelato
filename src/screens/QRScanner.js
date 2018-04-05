@@ -30,8 +30,12 @@ class QRScanner extends Component {
 			barcode: false,
 			foundQR: null,
 			semantic: '',
+
+			// amount stuff ...
 			default_amount: default_amount,
 			amount: default_amount,
+
+			// search stuff
 			isLoading: false,
 			searchData: [],
 			request: null,
@@ -88,17 +92,15 @@ class QRScanner extends Component {
 	handleSelectTaskFromDropdown(task) {
 		if (task.items.length) {
 			const genericItem = task.items[0]
+			genericItem.creating_task = task
 			this.setState({
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
 				searchData: [],
-				creating_task_for_input: task.display,
-				amount: genericItem.amount, // Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
+				amount: genericItem.amount, 
+				// Compute.getBatchSizeFromItems(genericItem.items), <-- WHAT WE WANT (BUT API DOESN'T SUPPORT):
 			})
 		}
-		this.setState({
-			unit: task.process_type.unit,
-		})
 	}
 
 	renderActiveItemListButton(items) {
@@ -168,6 +170,11 @@ class QRScanner extends Component {
 		let creatingTask =
 			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
 
+		if (foundQR) {
+			let proc = this.props.processes.find(e => parseInt(e.id, 10) === parseInt(foundQR.creating_task.process_type, 10))
+			creatingTask.process_type = proc
+		}
+
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.props.mode === 'inputs'
@@ -178,15 +185,16 @@ class QRScanner extends Component {
 	}
 
 	renderInputQR(creatingTask) {
-		let { barcode, semantic, creating_task_for_input, amount } = this.state
+		let { barcode, semantic, amount } = this.state
+		console.log(creatingTask)
 
 		return (
 			<QRDisplay
-				unit={this.state.unit}
+				unit={creatingTask.process_type ? creatingTask.process_type.unit : this.props.task.process_type.unit}
 				barcode={barcode}
-				creating_task={creating_task_for_input}
+				creating_task_display={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={!semantic}
+				shouldShowAmount={Compute.isOkay(semantic)}
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
@@ -200,8 +208,9 @@ class QRScanner extends Component {
 
 		return (
 			<QRDisplay
+				unit={this.props.task.process_type.unit}
 				barcode={barcode}
-				creating_task={creatingTask.display}
+				creating_task_display={''}
 				semantic={semantic}
 				shouldShowAmount={Compute.isOkay(semantic)}
 				amount={this.state.amount}
@@ -327,7 +336,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: INVALID_QR,
-				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyInput(data, this.props.task)) {
 			// its already an input to this task
@@ -336,7 +344,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_INPUT,
-				creating_task_for_input: '',
 			})
 		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
 			// its already an output to this task
@@ -345,7 +352,6 @@ class QRScanner extends Component {
 				isFetching: false,
 				foundQR: null,
 				semantic: ALREADY_ADDED_OUTPUT,
-				creating_task_for_input: '',
 			})
 		} else {
 			// fetch all the data about this qr code
@@ -355,12 +361,13 @@ class QRScanner extends Component {
 	}
 
 	fetchBarcodeData(code) {
+		let { mode } = this.props
 		let success = (data, semantic) => {
 			this.setState({
 				foundQR: data,
 				semantic: semantic,
 				isFetching: false,
-				amount: data.amount,
+				amount: data ? data.amount : this.state.default_amount,
 			})
 		}
 		let failure = () =>
@@ -372,7 +379,7 @@ class QRScanner extends Component {
 					failure(err)
 				} else {
 					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic('inputs', found)
+					let semantic = Compute.getQRSemantic(mode, found)
 					success(found, semantic)
 				}
 			})
@@ -386,7 +393,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/dsasd9adsadsddadsasaddfdsadsadasc'
+		let barcode = 'dande.li/ics/3996ca3c-9696-4cf3-ad34-e9d711aa9b30'
 		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 200)
 	}
 }
@@ -446,6 +453,7 @@ const mapStateToProps = (state, props) => {
 
 	return {
 		task: arr.find(e => Compute.equate(e.id, props.task_id)),
+		processes: state.processes.data,
 	}
 }
 
