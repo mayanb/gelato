@@ -38,7 +38,7 @@ export default class AttributeCell extends React.Component {
   }
 
   renderValue() {
-    if (this.state.editing || Boolean(this.props.value) && this.props.type !== 'DATE') {
+    if (this.state.editing || Boolean(this.props.value) && this.props.type !== 'TIME') {
       const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
       return (
         <TextInput
@@ -53,7 +53,7 @@ export default class AttributeCell extends React.Component {
           ref={input => (this.input = input)}
         />
       )
-    } else if (this.props.value === 'DATE') {
+    } else if (this.props.value === 'TIME') {
       return (
         <TouchableOpacity
           activeOpacity={0.5}
@@ -99,7 +99,7 @@ export default class AttributeCell extends React.Component {
       this.setState({ editing: true }, () => {
         this.input.focus()
       })
-    } else if (this.props.type === 'DATE') {
+    } else if (this.props.type === 'TIME') {
       this.changeDate()
     }
   }
