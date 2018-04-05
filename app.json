@@ -6,7 +6,7 @@
     "privacy": "unlisted",
     "sdkVersion": "26.0.0",
     "platforms": ["ios"],
-    "version": "3.0.1",
+    "version": "4.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -15,8 +15,11 @@
       "backgroundColor": "#1653D7"
     },
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.usepolymer.polymer"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.usepolymer.polymer",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
+      },
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
