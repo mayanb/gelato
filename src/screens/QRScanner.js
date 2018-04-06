@@ -191,7 +191,7 @@ class QRScanner extends Component {
 					parseInt(e.id, 10) ===
 					parseInt(foundQR.creating_task.process_type, 10)
 			)
-			if (!creatingTask.process_type) {
+			if (typeof creatingTask.process_type !== 'object') {
 				creatingTask.process_type = proc
 			}
 		}
