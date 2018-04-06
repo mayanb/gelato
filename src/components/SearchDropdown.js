@@ -101,7 +101,6 @@ function DisabledCell({ name }) {
 		<TouchableOpacity disabled={true}>
 			<View style={styles.result}>
 				<Text style={styles.disabledText}>{name} is added</Text>
-				{/*<Text style={styles.resultText}>(already added)</Text>*/}
 			</View>
 		</TouchableOpacity>
 	)
