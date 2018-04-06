@@ -17,8 +17,6 @@ export default class NumericInputWithUnits extends Component {
 	}
 	render() {
 		let { unit, value, onChangeText } = this.props
-		console.log('value (aka batchSize)', value)
-		console.log('unit: ', unit)
 		return (
 			<View>
 				<TextInput

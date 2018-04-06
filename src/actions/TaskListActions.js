@@ -234,7 +234,7 @@ export function addInput(task, item, isSearched, amount) {
 		return Networking.post('/ics/inputs/create/')
 			.send(payload)
 			.then(res => {
-				res.body.input_item = item
+				res.body.input_item = item.id
 				dispatch(addSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
 			})
 			.catch(e => {
