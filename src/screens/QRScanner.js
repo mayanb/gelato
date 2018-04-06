@@ -46,9 +46,13 @@ class QRScanner extends Component {
 		}
 	}
 
+	componentDidMount() {
+		// this.testBarCodeRead()
+	}
+
 	// MARK: - RENDERERS
 	render() {
-		let { expanded, barcode } = this.state
+		let { expanded, barcode, searchData } = this.state
 		let { mode, task } = this.props
 		let item_array = []
 		if (task != null && mode != null) {
@@ -63,7 +67,7 @@ class QRScanner extends Component {
 					searchable={mode !== 'items'}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
-					searchData={this.state.searchData}
+					searchData={searchData}
 					onChangeText={this.handleChangeText.bind(this)}
 					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 				/>
@@ -174,7 +178,6 @@ class QRScanner extends Component {
 
 	renderQRModal() {
 		let { foundQR, isFetching } = this.state
-
 		if (isFetching) {
 			return this.renderQRLoading()
 		}
@@ -188,9 +191,10 @@ class QRScanner extends Component {
 					parseInt(e.id, 10) ===
 					parseInt(foundQR.creating_task.process_type, 10)
 			)
-			creatingTask.process_type = proc
+			if (typeof creatingTask.process_type !== 'object') {
+				creatingTask.process_type = proc
+			}
 		}
-
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.props.mode === 'inputs'
