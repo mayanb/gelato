@@ -86,14 +86,15 @@ class QRScanner extends Component {
 		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res => {
+				console.log('props.task.inputs', this.props.task.inputs)
 				const searchResults = res.body.results
-				const searchDataWithoutExistingInputs = Compute.filterExistingInputsFromSearchResults(
+				const updatedSearchResults = Compute.markExistingInputsInSearchResults(
 					this.props.task.inputs,
 					searchResults
 				)
 
 				this.setState({
-					searchData: searchDataWithoutExistingInputs,
+					searchData: updatedSearchResults,
 					isLoading: false,
 				})
 			})

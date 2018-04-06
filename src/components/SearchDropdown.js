@@ -68,7 +68,7 @@ export class SearchDropdown extends Component {
 				key={item.id}
 				id={item.id}
 				onPress={e => this.handleSelect(item)}
-				// containsAlreadyAddedInput={item.containsAlreadyAddedInput}
+				containsAlreadyAddedInput={item.containsAlreadyAddedInput}
 			/>
 		)
 	}
@@ -82,11 +82,26 @@ export class SearchDropdown extends Component {
 	}
 }
 
-function SearchResultCell(props) {
+function SearchResultCell({ onPress, containsAlreadyAddedInput, name }) {
+	return containsAlreadyAddedInput ? <DisabledCell name={name}/> : <ClickableCell name={name} onPress={onPress}/>
+}
+
+function ClickableCell({ name, onPress }) {
 	return (
-		<TouchableOpacity onPress={props.onPress}>
+		<TouchableOpacity onPress={onPress}>
 			<View style={styles.result}>
-				<Text style={styles.resultText}>{props.name}</Text>
+				<Text style={styles.resultText}>{name}</Text>
+			</View>
+		</TouchableOpacity>
+	)
+}
+
+function DisabledCell({ name }) {
+	return (
+		<TouchableOpacity disabled={true}>
+			<View style={styles.result}>
+				<Text style={styles.disabledText}>{name} is added</Text>
+				{/*<Text style={styles.resultText}>(already added)</Text>*/}
 			</View>
 		</TouchableOpacity>
 	)
@@ -150,6 +165,11 @@ const styles = StyleSheet.create({
 	},
 	resultText: {
 		color: 'white',
+		fontSize: 17,
+		lineHeight: 24,
+	},
+	disabledText: {
+		color: Colors.gray,
 		fontSize: 17,
 		lineHeight: 24,
 	},

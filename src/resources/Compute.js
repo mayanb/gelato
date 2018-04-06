@@ -151,14 +151,13 @@ export default class Compute {
 		return r
 	}
 	
-	static filterExistingInputsFromSearchResults(inputs, searchResults) {
+	static markExistingInputsInSearchResults(inputs, searchResults) {
 		const existingInputItemIDs = new Set(
 			inputs.map(input => parseInt(input.input_item))
 		)
-		return searchResults.filter(task => {
-			return (
-				task.items.find(item => existingInputItemIDs.has(item.id)) === undefined
-			)
+		return searchResults.map(task => {
+			task.containsAlreadyAddedInput = task.items.some(item => existingInputItemIDs.has(item.id))
+			return task
 		})
 	}
 }
