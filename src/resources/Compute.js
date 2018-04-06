@@ -15,7 +15,10 @@ export default class Compute {
 	constructor() {}
 
 	static isDandelion(teamName) {
-		return teamName.toLowerCase() === "valencia" || teamName.toLowerCase() === "alabama"
+		return (
+			teamName.toLowerCase() === 'valencia' ||
+			teamName.toLowerCase() === 'alabama'
+		)
 	}
 
 	static equate(id1, id2) {
@@ -150,14 +153,16 @@ export default class Compute {
 		})
 		return r
 	}
-	
-	static markExistingInputsInSearchResults(inputs, searchResults) {
+
+	static markExistingInputsInSearchResults(taskToAddInputsTo, searchResults) {
 		const existingInputItemIDs = new Set(
-			inputs.map(input => parseInt(input.input_item))
+			taskToAddInputsTo.inputs.map(input => parseInt(input.input_item))
 		)
-		return searchResults.map(task => {
-			task.containsAlreadyAddedInput = task.items.some(item => existingInputItemIDs.has(item.id))
-			return task
+		return searchResults.filter(task => {
+			task.containsAlreadyAddedInput = task.items.some(item =>
+				existingInputItemIDs.has(item.id)
+			)
+			return task.id !== taskToAddInputsTo.id
 		})
 	}
 }

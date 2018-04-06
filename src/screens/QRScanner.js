@@ -86,10 +86,9 @@ class QRScanner extends Component {
 		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res => {
-				console.log('props.task.inputs', this.props.task.inputs)
 				const searchResults = res.body.results
 				const updatedSearchResults = Compute.markExistingInputsInSearchResults(
-					this.props.task.inputs,
+					this.props.task,
 					searchResults
 				)
 
@@ -203,7 +202,6 @@ class QRScanner extends Component {
 
 	renderInputQR(creatingTask) {
 		let { barcode, semantic, amount } = this.state
-		console.log(creatingTask)
 
 		return (
 			<QRDisplay
