@@ -46,6 +46,10 @@ class QRScanner extends Component {
 		}
 	}
 
+	componentDidMount() {
+		this.testBarCodeRead()
+	}
+
 	// MARK: - RENDERERS
 	render() {
 		let { expanded, barcode, searchData } = this.state
@@ -156,7 +160,6 @@ class QRScanner extends Component {
 					onRemove={this.handleRemoveInput.bind(this)}
 					onOpenTask={this.handleOpenTask.bind(this)}
 					inputs={this.props.task.inputs}
-					processes={this.props.processes}
 				/>
 			)
 		} else {
