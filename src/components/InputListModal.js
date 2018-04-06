@@ -36,7 +36,20 @@ class InputListModalUnconnected extends Component {
 	renderRow({item, index}) {
 		const process = this.props.processHash[item.input_task_n.process_type]
 		const processIconPath = process ? process.icon : ''
-		let itemAmount = item.amount ? parseFloat(item.amount) + " " + pluralize(this.props.processUnit, item.amount) : ''
+		console.log(item)
+		console.log(this.props.processes)
+		let proc = this.props.processes.find(
+				e =>
+					parseInt(e.id, 10) ===
+					parseInt(item.input_task_n.process_type, 10)
+			)
+		console.log(proc)
+		let unit = this.props.processUnit
+		if (proc) {
+			unit = proc.unit
+		}
+		let itemAmount = item.amount ? parseFloat(item.amount) + " " + pluralize(unit, item.amount) : ''
+
 
 		return <QRItemListRow
 			qr={item['input_qr']}
