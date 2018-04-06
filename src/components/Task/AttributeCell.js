@@ -41,6 +41,7 @@ export default class AttributeCell extends React.Component {
 				<BooleanCell
 					value={this.props.value}
 					onSubmit={this.handleSubmit.bind(this)}
+					isLoadingTask={this.props.isLoadingTask}
 				/>
 			)
 		} else {
@@ -49,13 +50,13 @@ export default class AttributeCell extends React.Component {
 					value={this.props.value}
 					onSubmit={this.handleSubmit.bind(this)}
 					type={this.props.type}
+					isLoadingTask={this.props.isLoadingTask}
 				/>
 			)
 		}
 	}
 
 	handleSubmit(value) {
-		console.log('handleSubmit', value)
 		if (value !== this.props.value) {
 			this.setState({ loading: true })
 			this.props
@@ -128,6 +129,9 @@ class TextNumberCell extends React.Component {
 	}
 
 	render() {
+		if (this.props.isLoadingTask)
+			return null
+
 		if (!this.state.editing && (this.props.value === undefined || this.props.value === null)) {
 			return <EditButton onEdit={this.handleEdit} />
 		} else {
@@ -138,7 +142,6 @@ class TextNumberCell extends React.Component {
 				flex: 1,
 				textAlign: 'right',
 			}
-			console.log('should show')
 			return (
 				<TextInput
 					style={style}
@@ -156,7 +159,6 @@ class TextNumberCell extends React.Component {
 	}
 }
 
-
 class BooleanCell extends React.Component {
 	constructor(props) {
 		super(props)
@@ -164,15 +166,15 @@ class BooleanCell extends React.Component {
 	}
 
 	handleChange(value) {
-		const storedValue = value ? 'true' : ''
+		const storedValue = value ? 'yes' : ''
 		this.props.onSubmit(storedValue)
 	}
 
 	render() {
-		if (this.props.value === undefined)
+		if (this.props.isLoadingTask)
 			return null
 
-		const booleanValue = this.props.value === 'true'
+		const booleanValue = this.props.value === 'yes'
 		const label = booleanValue ? 'Yes' : 'No'
 
 		return (
@@ -206,5 +208,3 @@ function EditButton({ onEdit }) {
 		</TouchableOpacity>
 	)
 }
-
-

@@ -21,6 +21,7 @@ export default class AttributeList extends React.Component {
 							value={item.value}
 							type={item.datatype}
 							onSubmitEditing={this.props.onSubmitEditing}
+							isLoadingTask={this.props.isLoadingTask}
 						/>
 					)
 				})}
