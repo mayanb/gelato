@@ -27,7 +27,7 @@ import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
-import AttributeList from '../components/AttributeList'
+import AttributeList from '../components/Task/AttributeList'
 import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
 
@@ -43,7 +43,7 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes,
+			organized_attributes: props.task && props.task.process_type.attributes,
 		}
 	}
 
