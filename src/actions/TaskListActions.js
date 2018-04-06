@@ -162,6 +162,7 @@ export function requestCreateTask(data) {
 				res.body.attribute_values = []
 				res.body.organized_attributes = Compute.organizeAttributes(res.body)
 				dispatch(createTaskSuccess(res.body))
+				return res.body
 			})
 			.catch(e => {
 				dispatch(createTaskFailure(OPEN_TASKS, e))
@@ -193,8 +194,8 @@ export function resetJustCreated() {
 	}
 }
 
-export function addInput(task, item, isSearched) {
-	let payload = { task: task.id, input_item: item.id }
+export function addInput(task, item, isSearched, amount) {
+	let payload = { task: task.id, input_item: item.id, amount: amount }
 	return dispatch => {
 		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/inputs/create/')
@@ -212,13 +213,14 @@ export function addInput(task, item, isSearched) {
 }
 
 export function addOutput(task, qr, amount, isSearched) {
-	let payload = { creating_task: task.id, item_qr: qr, amount: amount }
+	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
 	return dispatch => {
 		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
 				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
+				return task
 			})
 			.catch(e => {
 				dispatch(addFailure(e))
@@ -266,6 +268,7 @@ export function removeOutput(task, item, index, isSearched) {
 			})
 	}
 }
+
 
 export function removeInput(task, input, index, isSearched) {
 	return dispatch => {

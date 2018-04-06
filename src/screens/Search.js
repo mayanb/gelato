@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Dimensions, StyleSheet, View } from 'react-native'
-import { SafeAreaView } from 'react-navigation'
+import Storage from '../resources/Storage'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
 import { INVALID_QR } from '../resources/QRSemantics'
-import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 import QRCamera from '../components/QRCamera'
 import paramsToProps from '../resources/paramsToProps'
 import ModalAlert from '../components/ModalAlert'
@@ -21,53 +20,29 @@ class Search extends Component {
 			searchText: '',
 			typeSearch: false,
 			showNotFoundModal: false,
-			data: [],
+			isLoading: false,
+			searchData: [],
+			request: null,
 		}
 		this.closeModal = this.closeModal.bind(this)
 	}
 
 	render() {
-		let { typeSearch, searchText, data, showNotFoundModal } = this.state
+		let { typeSearch, searchText, searchData, showNotFoundModal } = this.state
 
 		return (
 			<View style={styles.container}>
 				<QRCamera
-					onBarCodeRead={this.onBarCodeRead.bind(this)}
+					searchable={true}
+					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
+					searchData={this.state.searchData}
+					onChangeText={this.handleChangeText.bind(this)}
+					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 				/>
-				<SafeAreaView
-					style={styles.searchContainer}
-					forceInset={{ top: 'always' }}>
-					<SearchBox
-						onChangeText={this.handleChangeText.bind(this)}
-						searchText={searchText}
-						typeSearch={typeSearch}
-						onFocus={this.handleFocus.bind(this)}
-						clearText={this.handleBlur.bind(this)}
-					/>
-				</SafeAreaView>
-				{typeSearch && (
-					<SearchDropdown
-						onSelect={this.onSelectTaskFromDropdown.bind(this)}
-						data={data}
-						isLoading={this.state.isLoading}
-					/>
-				)}
 				{showNotFoundModal && this.renderNotFoundModal()}
 			</View>
 		)
-	}
-
-	// <Button onPress={() => {setTimeout(() => this.onBarCodeRead({data: 'dande.li/ics/84a8c86e-2d23-47c8-996f-92f6834e27ed'}), 1000)}} title="hello" />
-	// <SearchDropdown onSelect={this.onSelectTaskFromDropdown.bind(this)}/>
-	//
-
-	handleFocus() {
-		this.setState({ data: [], searchText: '', typeSearch: true })
-	}
-
-	handleBlur() {
-		this.setState({ data: [], searchText: '', typeSearch: false })
 	}
 
 	handleClose() {
@@ -75,23 +50,19 @@ class Search extends Component {
 		this.props.navigation.goBack()
 	}
 
-	handleChangeText(text) {
-		let { request } = this.state
-		this.setState({ searchText: text })
+	async handleChangeText(text) {
+		const { request } = this.state
 		if (request) {
 			request.abort()
 		}
 
-		if (text.length < 2) return
-
-		let r = Networking.get('/ics/tasks/search/').query({
-			label: text,
-			team: this.props.teamID,
-		})
-
+		const teamID = await Storage.get('teamID')
+		const r = Compute.getSearchResults(text, teamID)
 		r
-			.then(res => this.setState({ data: res.body.results, isLoading: false }))
-			.catch(() => this.setState({ data: [], isLoading: false }))
+			.then(res =>
+				this.setState({ searchData: res.body.results, isLoading: false })
+			)
+			.catch(() => this.setState({ searchData: [], isLoading: false }))
 
 		this.setState({ request: r, isLoading: true })
 	}
@@ -100,23 +71,23 @@ class Search extends Component {
 		this.setState({ typeSearch: !this.state.typeSearch })
 	}
 
-	onSelectTaskFromDropdown(task) {
+	handleSelectTaskFromDropdown(task) {
 		this.navigateToFoundTask(task)
 	}
 
-	onBarCodeRead(e) {
-		let { data } = e
+	handleBarCodeRead(e) {
+		let { searchData } = e
 		let { expanded, barcode } = this.state
 		if (expanded || barcode) {
 			return
 		}
 
-		let valid = Compute.validateQR(data)
+		let valid = Compute.validateQR(searchData)
 		if (!valid) {
 			this.setState({ showNotFoundModal: true, semantic: INVALID_QR })
 		} else {
-			this.setState({ barcode: data, isFetching: true })
-			this.fetchBarcodeData(data) // get detailed info about this bar code from the server
+			this.setState({ barcode: searchData, isFetching: true })
+			this.fetchBarcodeData(searchData) // get detailed info about this bar code from the server
 		}
 	}
 
@@ -124,7 +95,7 @@ class Search extends Component {
 		let { mode } = this.props
 
 		let success = () => {
-			// this.setState({foundQR: data, semantic: semantic, isFetching: false})
+			// this.setState({foundQR: searchData, semantic: semantic, isFetching: false})
 		}
 
 		let failure = () =>
@@ -133,20 +104,15 @@ class Search extends Component {
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.end((err, res) => {
-				console.log(res.body)
 				if (err || !res.ok) {
 					failure(err)
 				} else {
 					let found = res.body.length ? res.body[0] : null
 					let semantic = Compute.getQRSemantic(mode, found)
 					success(found, semantic)
-
-					// it should only do this if found != null
-					if (!found) {
+					if (found) {
 						this.navigateToFoundTask(found.creating_task)
 					} else {
-						//TODO: should bring up a dialog saying this QR code isn't in our system
-						// alert("nope")
 						this.setState({ showNotFoundModal: true })
 					}
 				}

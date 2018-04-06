@@ -107,6 +107,7 @@ const MainStack = StackNavigator(
 		Print: { screen: Print },
 	},
 	{
+		initialRouteName: 'Main',
 		navigationOptions: {
 			headerStyle: {
 				backgroundColor: Colors.base,

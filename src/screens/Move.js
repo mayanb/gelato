@@ -141,8 +141,7 @@ class Move extends Component {
 			return this.renderQRLoading()
 		}
 
-		let creatingTask =
-			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
+		let creatingTask = foundQR && foundQR.creating_task 
 
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
@@ -157,7 +156,7 @@ class Move extends Component {
 		return (
 			<QRDisplay
 				barcode={barcode}
-				creating_task={creatingTask.display}
+				creating_task={creatingTask?creatingTask.display:""}
 				semantic={semantic}
 				shouldShowAmount={false}
 				onPress={this.handleAddInput.bind(this)}
@@ -186,6 +185,7 @@ class Move extends Component {
 		let scanned_items = this.state.scanned_items.concat([this.state.foundQR])
 		this.setState({ scanned_items: scanned_items })
 		this.handleCloseModal()
+		return Promise.resolve()
 	}
 
 	handleRemoveInput(i) {
@@ -248,16 +248,21 @@ class Move extends Component {
 			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
 		}
 		let failure = () =>
-			this.setState({ foundQR: null, semantic: '', isFetching: false })
+			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
+
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.end((err, res) => {
 				if (err || !res.ok) {
-					failure(err)
+					failure()
 				} else {
 					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic(mode, found)
-					success(found, semantic)
+					if (found) {
+						let semantic = Compute.getQRSemantic(mode, found)
+						success(found, semantic)
+					} else {
+						failure()
+					}
 				}
 			})
 	}

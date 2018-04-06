@@ -7,19 +7,21 @@ import {
   Image,
   TextInput,
 } from 'react-native'
+import * as ImageUtility from '../resources/ImageUtility'
 import { AddButton, CancelButton } from './Buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
-import * as ImageUtility from '../resources/ImageUtility'
+import NumericInputWithUnits from './NumericInputWithUnits'
+
 
 export default class QRDisplay extends Component {
   render() {
     let {
+      unit,
       barcode,
-      creating_task,
+      creating_task_display,
       semantic,
       shouldShowAmount,
-      default_amount,
       onChange,
       onPress,
       onCancel,
@@ -58,8 +60,6 @@ export default class QRDisplay extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity
-          disabled={!this.props.onOpenTask}
-          onPress={() => this.props.onOpenTask()}
           style={styles.qr_top}>
           <Image
             source={ImageUtility.requireIcon('qr_icon')}
@@ -68,63 +68,32 @@ export default class QRDisplay extends Component {
           <Text style={styles.qr_text}>
             {barcode.substring(barcode.length - 6)}
           </Text>
-          <Text>{creating_task}</Text>
+          <Text>{creating_task_display}</Text>
         </TouchableOpacity>
         <View style={styles.main}>
           <Text style={styles.semantic}>
             {Compute.getTextFromSemantic(semantic)}
           </Text>
           {shouldShowAmount ? (
-            <QRInput
-              placeholder={default_amount}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={onChange}
-              value={amount}
-            />
+            <View>
+              <NumericInputWithUnits
+                unit={unit}
+                value={amount}
+                onChangeText={num => onChange(num)}
+              />
+            </View>
           ) : null}
         </View>
-        {renderButtons(semantic, onPress, onCancel)}
+        {renderButtons(semantic, onPress, onCancel, amount)}
       </View>
     )
   }
 }
 
-function renderButtons(semantic, onPress, onCancel) {
+function renderButtons(semantic, onPress, onCancel, amount) {
 	if (Compute.isOkay(semantic)) {
-		return <AddButton onAdd={onPress} />
+		return <AddButton onAdd={onPress} disabled={!amount} />
 	} else {
 		return <CancelButton onCancel={onCancel} />
 	}
-}
-
-function QRInput(props) {
-  let styles = StyleSheet.create({
-    container: {
-      flexDirection: 'column',
-      alignItems: 'stretch',
-    },
-    help: {
-      textAlign: 'center',
-    },
-    input: {
-      borderRadius: 4,
-      backgroundColor: Colors.white,
-      borderColor: Colors.lightGray,
-      borderWidth: 1,
-      borderRadius: 3,
-      fontSize: 15,
-      color: Colors.gray,
-      marginBottom: 20,
-      padding: 10,
-      textAlign: 'center',
-      marginTop: 4,
-    },
-  })
-  return (
-	  <View style={styles.container}>
-		  <Text style={styles.help}>Enter amount</Text>
-      <TextInput keyboardType="numeric" returnKeyType='done' style={styles.input} {...props} />
-	  </View>
-  )
 }

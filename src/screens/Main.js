@@ -12,8 +12,10 @@ import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
 import { DateFormatter } from '../resources/Utility'
 import * as actions from '../actions/TaskListActions'
+import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
+
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -64,11 +66,19 @@ class Main extends Component {
 
 	componentDidMount() {
 		this.fetchRecentTasks()
+		this.fetchProcesses()
 	}
 
 	fetchRecentTasks() {
 		let { dispatch } = this.props
 		dispatch(actions.fetchRecentTasks()).catch(e => {
+			dispatch(errorActions.handleError(Compute.errorText(e)))
+		})
+	}
+
+	fetchProcesses() {
+		let { dispatch } = this.props
+		dispatch(processActions.fetchProcesses()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
 	}
@@ -88,7 +98,8 @@ class Main extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Move Items') {
 			this.props.navigation.navigate('Move', {
-				name: "Scan Items"
+				name: 'Scan Items',
+				mode: 'move',
 			})
 		}
 	}
@@ -195,13 +206,13 @@ const styles = StyleSheet.create({
 		paddingLeft: 20,
 		paddingRight: 20,
 		alignItems: 'center',
-		justifyContent: 'center'
+		justifyContent: 'center',
 	},
 	emptyFooterText: {
 		fontSize: 18,
 		color: Colors.lightGray,
 		textAlign: 'center',
-	}
+	},
 })
 
 const mapStateToProps = (state, props) => {
