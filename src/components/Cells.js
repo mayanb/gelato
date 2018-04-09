@@ -248,7 +248,7 @@ export class CreateTaskSelect extends Component {
         flex: 1,
         flexDirection: 'row',
 	      alignSelf: 'stretch',
-	      minHeight: 60,
+	      height: 60,
 	      shadowColor: 'rgba(0, 0, 0, 0.07)',
 	      shadowOffset: {
 		      width: 0,
