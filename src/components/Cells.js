@@ -46,7 +46,7 @@ export class TaskRow extends Component {
       display: {
         fontWeight: 'bold',
         fontSize: 17,
-        marginBottom: 5,
+        marginLeft: 4,
       },
       date: {
         fontSize: 13,
@@ -57,6 +57,11 @@ export class TaskRow extends Component {
         height: 38,
         marginRight: 8,
       },
+      header: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: 5,
+      }
     })
     return (
       <TouchableOpacity activeOpacity={0.5} onPress={this.openTask.bind(this)}>
@@ -68,7 +73,10 @@ export class TaskRow extends Component {
             />
           </View>
           <View style={styles.text_container}>
-            <Text style={styles.display}>{this.props.name}</Text>
+            <View style={styles.header}>
+              {this.props.is_flagged && <Flag />}
+              <Text style={styles.display}>{this.props.name}</Text>
+            </View>
             <Text style={styles.title}>{this.props.title}</Text>
             <Text style={styles.date}>{this.props.date}</Text>
           </View>
@@ -89,6 +97,28 @@ export class TaskRow extends Component {
       this.props.outputUnit
     )
   }
+}
+
+function Flag() {
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: Colors.red,
+      borderRadius: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingLeft: 4,
+      paddingRight: 4,
+    }, 
+    text: {
+      color: 'white',
+      fontSize: 10,
+    }
+  })
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>FLAGGED</Text>
+    </View>
+  )
 }
 
 export class TaskRowHeader extends Component {
