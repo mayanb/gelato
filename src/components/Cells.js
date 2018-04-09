@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native'
 import pluralize from 'pluralize'
+import { FlagPill } from './Flag'
 
 export class TaskRow extends Component {
   constructor(props) {
@@ -74,7 +75,7 @@ export class TaskRow extends Component {
           </View>
           <View style={styles.text_container}>
             <View style={styles.header}>
-              {this.props.is_flagged && <Flag />}
+              {this.props.is_flagged && <FlagPill />}
               <Text style={styles.display}>{this.props.name}</Text>
             </View>
             <Text style={styles.title}>{this.props.title}</Text>
@@ -97,28 +98,6 @@ export class TaskRow extends Component {
       this.props.outputUnit
     )
   }
-}
-
-function Flag() {
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: Colors.red,
-      borderRadius: 4,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingLeft: 4,
-      paddingRight: 4,
-    }, 
-    text: {
-      color: 'white',
-      fontSize: 10,
-    }
-  })
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>FLAGGED</Text>
-    </View>
-  )
 }
 
 export class TaskRowHeader extends Component {
