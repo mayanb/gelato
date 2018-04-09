@@ -47,7 +47,7 @@ class QRScanner extends Component {
 	}
 
 	componentDidMount() {
-		// this.testBarCodeRead()
+		//this.testBarCodeRead()
 	}
 
 	// MARK: - RENDERERS
@@ -113,6 +113,7 @@ class QRScanner extends Component {
 			this.setState({
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
+				semantic: Compute.getQRSemantic(this.props.mode, genericItem),
 				searchData: [],
 				amount: genericItem.amount,
 			})
