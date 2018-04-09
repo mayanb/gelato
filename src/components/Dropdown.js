@@ -35,8 +35,11 @@ export class Dropdown extends Component {
             data={data}
             renderItem={this.renderItem.bind(this)}
             extraData={this.state}
+            ListFooterComponent={<View style={{height: 40}} /> }
             keyExtractor={this.keyExtractor}
             style={styles.choices}
+            initialNumToRender={50}
+
           />
         </Collapsible>
       </View>
