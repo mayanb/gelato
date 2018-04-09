@@ -66,6 +66,10 @@ class CreateTask extends Component {
 	}
 
 	handleCreateTask(processType, productType, batchSize) {
+		if (this.state.isCreatingTask) {
+			return
+		}
+
 		let { dispatch } = this.props
 		let taskData = {
 			processType: processType,
@@ -84,6 +88,10 @@ class CreateTask extends Component {
 	}
 
 	handleCreateTaskDandelion(processType, productType, batchSize) {
+		if (this.state.isCreatingTask) {
+			return 
+		}
+		
 		let { dispatch } = this.props
 		let taskData = {
 			processType: processType,

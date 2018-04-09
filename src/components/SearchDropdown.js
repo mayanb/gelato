@@ -10,6 +10,7 @@ import {
 	Text,
 	TextInput,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	FlatList,
 	ScrollView,
 	View,
@@ -68,6 +69,7 @@ export class SearchDropdown extends Component {
 				key={item.id}
 				id={item.id}
 				onPress={e => this.handleSelect(item)}
+				containsAlreadyAddedInput={item.containsAlreadyAddedInput}
 			/>
 		)
 	}
@@ -81,11 +83,25 @@ export class SearchDropdown extends Component {
 	}
 }
 
-function SearchResultCell(props) {
+function SearchResultCell({ onPress, containsAlreadyAddedInput, name }) {
+	return containsAlreadyAddedInput ? <DisabledCell name={name}/> : <ClickableCell name={name} onPress={onPress}/>
+}
+
+function ClickableCell({ name, onPress }) {
 	return (
-		<TouchableOpacity onPress={props.onPress}>
+		<TouchableOpacity onPress={onPress}>
 			<View style={styles.result}>
-				<Text style={styles.resultText}>{props.name}</Text>
+				<Text style={styles.resultText}>{name}</Text>
+			</View>
+		</TouchableOpacity>
+	)
+}
+
+function DisabledCell({ name }) {
+	return (
+		<TouchableOpacity disabled={true}>
+			<View style={styles.result}>
+				<Text style={styles.disabledText}>{name} is added</Text>
 			</View>
 		</TouchableOpacity>
 	)
@@ -93,38 +109,48 @@ function SearchResultCell(props) {
 
 export function SearchBox(props) {
 	return (
-		<View style={styles.searchTextContainer}>
-			<TextInput
-				style={styles.searchText}
-				placeholderTextColor="white"
-				placeholder="Search"
-				value={props.searchText}
-				onChangeText={props.onChangeText}
-				onFocus={props.onFocus}
-				autoCorrect={false}
-				//onBlur={props.onBlur}
-				ref={input => (this.input = input)}
-			/>
-			<View style={styles.button}>
-				<TouchableOpacity
-					onPress={() => {
-						props.clearText()
-						this.input.blur()
-					}}>
-					<Image
-						source={ImageUtility.systemIcon('close_camera')}
-						title=""
-						color="white"
+		<TouchableWithoutFeedback onPress={() => this.input.focus() } >
+			<View  style={styles.searchTextTouchable} >
+				<View style={styles.searchTextContainer}>
+					<TextInput
+						style={styles.searchText}
+						placeholderTextColor="white"
+						placeholder="Search"
+						value={props.searchText}
+						onChangeText={props.onChangeText}
+						onFocus={props.onFocus}
+						autoCorrect={false}
+						//onBlur={props.onBlur}
+						ref={input => (this.input = input)}
 					/>
-				</TouchableOpacity>
+					<View style={styles.button}>
+						<TouchableOpacity
+							onPress={() => {
+								props.clearText()
+								this.input.blur()
+							}}>
+							<Image
+								source={ImageUtility.systemIcon('close_camera')}
+								title=""
+								color="white"
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>
 			</View>
-		</View>
+		</TouchableWithoutFeedback>
 	)
 }
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const styles = StyleSheet.create({
+	searchTextTouchable: {
+		paddingLeft: 32,
+		paddingBottom: 16,
+		paddingTop: 0,
+		marginRight: 32,
+	},
 	searchTextContainer: {
 		borderColor: 'white',
 		borderWidth: 1,
@@ -149,6 +175,11 @@ const styles = StyleSheet.create({
 	},
 	resultText: {
 		color: 'white',
+		fontSize: 17,
+		lineHeight: 24,
+	},
+	disabledText: {
+		color: Colors.gray,
 		fontSize: 17,
 		lineHeight: 24,
 	},
