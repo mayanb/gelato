@@ -27,39 +27,9 @@ export default class QRDisplay extends Component {
       onCancel,
       amount
     } = this.props
-    let styles = StyleSheet.create({
-      container: {
-        flexDirection: 'column',
-        flex: 1,
-      },
-      qr_top: {
-        flexDirection: 'row',
-        flex: 0,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.ultraLightGray,
-        padding: 16,
-      },
-      main: {
-        flex: 1,
-        padding: 16,
-      },
-      qr_text: {
-        flex: 1,
-      },
-      icon: {
-        height: 24,
-        width: 24,
-        marginRight: 8,
-      },
-      semantic: {
-        fontSize: 17,
-        lineHeight: 24,
-        textAlign: 'center',
-      },
-    })
     return (
       <View style={styles.container}>
-        <TouchableOpacity
+        <View
           style={styles.qr_top}>
           <Image
             source={ImageUtility.requireIcon('qr_icon')}
@@ -69,7 +39,8 @@ export default class QRDisplay extends Component {
             {barcode.substring(barcode.length - 6)}
           </Text>
           <Text>{creating_task_display}</Text>
-        </TouchableOpacity>
+        </View>
+        {Compute.isFlagged(semantic) && <Flag />}
         <View style={styles.main}>
           <Text style={styles.semantic}>
             {Compute.getTextFromSemantic(semantic)}
@@ -89,6 +60,54 @@ export default class QRDisplay extends Component {
     )
   }
 }
+
+function Flag() {
+  return (
+    <View style={styles.flag}>
+      <Text style={styles.flagText}>This task is flagged!</Text>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    flex: 1,
+  },
+  qr_top: {
+    flexDirection: 'row',
+    flex: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.ultraLightGray,
+    padding: 8,
+    alignItems: 'center',
+  },
+  main: {
+    flex: 1,
+    padding: 16,
+  },
+  qr_text: {
+    flex: 1,
+  },
+  icon: {
+    height: 24,
+    width: 24,
+    marginRight: 8,
+  },
+  semantic: {
+    fontSize: 17,
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  flag: {
+    backgroundColor: Colors.red,
+    padding: 8,
+  },
+  flagText: {
+    color: 'white',
+    textAlign: 'center',
+  }
+})
 
 function renderButtons(semantic, onPress, onCancel, amount) {
 	if (Compute.isOkay(semantic)) {
