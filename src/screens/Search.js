@@ -192,11 +192,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state /*, props */) => {
-	return {
-		openTasks: state.openTasks,
-		completedTasks: state.completedTasks,
-		task: state.task,
-	}
+	return {}
 }
 
 export default paramsToProps(connect(mapStateToProps)(Search))

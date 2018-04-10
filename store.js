@@ -5,7 +5,6 @@ import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
 const OPEN_TASKS = 'OPEN_TASKS'
-const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
@@ -36,14 +35,9 @@ function createFilteredReducer(
 }
 
 var reducer = combineReducers({
-  openTasks: createFilteredReducer(
+  recentTasks: createFilteredReducer(
     _taskAttribute,
     action => action.name === OPEN_TASKS,
-    defaultState
-  ),
-  completedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === COMPLETED_TASKS,
     defaultState
   ),
   searchedTasks: createFilteredReducer(
