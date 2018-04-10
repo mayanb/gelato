@@ -166,7 +166,7 @@ class BooleanCell extends React.Component {
 	}
 
 	handleChange(value) {
-		const storedValue = value ? 'yes' : ''
+		const storedValue = value ? 'true' : ''
 		this.props.onSubmit(storedValue)
 	}
 
@@ -174,7 +174,7 @@ class BooleanCell extends React.Component {
 		if (this.props.isLoadingTask)
 			return null
 
-		const booleanValue = this.props.value === 'yes'
+		const booleanValue = this.props.value === 'true'
 		const label = booleanValue ? 'Yes' : 'No'
 
 		return (
