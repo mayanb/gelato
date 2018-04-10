@@ -1,16 +1,10 @@
 import React from 'react'
 import {
-	Image,
-	View,
 	Text,
-	TextInput,
-	Dimensions,
 	StyleSheet,
-	ActivityIndicator,
-	TouchableOpacity,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Colors from '../resources/Colors'
+import Colors from '../../resources/Colors'
 import AttributeCell from './AttributeCell'
 
 export default class AttributeList extends React.Component {
@@ -27,6 +21,7 @@ export default class AttributeList extends React.Component {
 							value={item.value}
 							type={item.datatype}
 							onSubmitEditing={this.props.onSubmitEditing}
+							isLoadingTask={this.props.isLoadingTask}
 						/>
 					)
 				})}

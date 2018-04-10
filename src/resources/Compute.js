@@ -8,6 +8,7 @@ import {
 	ALREADY_ADDED_OUTPUT,
 	INVALID_QR,
 	ALREADY_ADDED_MOVE_ITEM,
+	IS_FLAGGED_INPUT,
 } from './QRSemantics'
 import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 
@@ -67,11 +68,19 @@ export default class Compute {
 		return task
 	}
 
+	static isFlagged(semantic) {
+		return semantic === IS_FLAGGED_INPUT
+	}
+
 	static getQRSemantic(mode, foundQR) {
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
 				return NOT_OUTPUT
+			}
+
+			if (foundQR.creating_task.is_flagged) {
+				return IS_FLAGGED_INPUT
 			}
 		}
 
@@ -116,6 +125,8 @@ export default class Compute {
 				return 'This QR code is invalid.'
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
+			case IS_FLAGGED_INPUT:
+				return "This task is flagged. Please ask an admin before using it."
 			default:
 				return 'Enter amount:'
 		}

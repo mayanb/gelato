@@ -21,13 +21,13 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
-import Flag from '../components/Flag'
+import { Flag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
-import AttributeList from '../components/AttributeList'
+import AttributeList from '../components/Task/AttributeList'
 import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
 
@@ -38,12 +38,15 @@ const CANCEL_INDEX = 0
 class Task extends Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			isLoadingTask: false
+		}
 		this.handlePress = this.handlePress.bind(this)
 		//this.addInputs = this.addInputs.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.state = {
-			organized_attributes: props.task && props.task.organized_attributes,
+			organized_attributes: props.task && props.task.process_type.attributes,
 		}
 	}
 
@@ -86,11 +89,12 @@ class Task extends Component {
 		if (this.props.taskSearch) {
 			this.dispatchWithError(actions.fetchTask(this.props.id))
 		}
+		this.setState({ isLoadingTask: true })
 		Networking.get(`/ics/tasks/${this.props.id}`)
 			.then(res => {
 				this.props.navigation.setParams({ task: res.body })
 				let organized = Compute.organizeAttributes(res.body)
-				this.setState({ organized_attributes: organized })
+				this.setState({ organized_attributes: organized, isLoadingTask: false })
 			})
 			.catch(e => console.log(e))
 	}
@@ -120,6 +124,7 @@ class Task extends Component {
 					<AttributeList
 						data={organized_attributes}
 						onSubmitEditing={this.handleSubmitEditing.bind(this)}
+						isLoadingTask={this.state.isLoadingTask}
 					/>
 					<View style={styles.help}>
 						<Button

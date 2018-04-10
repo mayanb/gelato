@@ -76,18 +76,18 @@ class Search extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		let { searchData } = e
+		let data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
 		let { expanded, barcode } = this.state
 		if (expanded || barcode) {
 			return
 		}
 
-		let valid = Compute.validateQR(searchData)
+		let valid = Compute.validateQR(data)
 		if (!valid) {
 			this.setState({ showNotFoundModal: true, semantic: INVALID_QR })
 		} else {
-			this.setState({ barcode: searchData, isFetching: true })
-			this.fetchBarcodeData(searchData) // get detailed info about this bar code from the server
+			this.setState({ barcode: data, isFetching: true })
+			this.fetchBarcodeData(data) // get detailed info about this bar code from the server
 		}
 	}
 

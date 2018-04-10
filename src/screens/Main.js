@@ -207,6 +207,7 @@ class Main extends Component {
 				imgpath={item.process_type.icon}
 				open={item.is_open}
 				name={item.process_type.name}
+				is_flagged={item.is_flagged}
 				date={DateFormatter.shorten(item.updated_at)}
 				onPress={this.openTask.bind(this)}
 			/>

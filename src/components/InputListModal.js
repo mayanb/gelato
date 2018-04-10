@@ -11,7 +11,8 @@ import {
 import { connect } from 'react-redux'
 import * as ImageUtility from '../resources/ImageUtility'
 import Colors from '../resources/Colors'
-import Modal from '../components/Modal'
+import Modal from './Modal'
+import { FlagPill } from './Flag'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
@@ -51,6 +52,7 @@ class InputListModalUnconnected extends Component {
 			onRemove={() => this.props.onRemove(index)}
 			onOpenTask={() => this.props.onOpenTask(item.input_task_n)}
 			itemAmount={itemAmount}
+			isFlagged={item.input_task_n.is_flagged}
 		/>
 	}
 
@@ -155,7 +157,7 @@ function inputHeader(inputs, typeName, unit) {
 
 class QRItemListRow extends Component {
 	render() {
-		let {task_display, qr, itemAmount, imgpath} = this.props
+		let {task_display, qr, itemAmount, imgpath, isFlagged} = this.props
 		let {index} = this.props
 		let styles = StyleSheet.create({
 			container: {
@@ -174,6 +176,8 @@ class QRItemListRow extends Component {
 				flexDirection: 'row',
 				justifyContent: 'space-between',
 				flex: 1,
+				marginBottom: 4,
+				alignItems: 'center',
 			},
 			infoContainer: {
 				display: 'flex',
@@ -187,9 +191,11 @@ class QRItemListRow extends Component {
 				marginLeft: 20,
 			},
 			shortQr: {
+				marginLeft: 4,
 				fontSize: 14,
 				color: Colors.lightGrayText,
-				paddingBottom: 4
+				paddingBottom: 4,
+				lineHeight: 18,
 			},
 			img : {
 				height: 16,
@@ -207,6 +213,7 @@ class QRItemListRow extends Component {
 					<View style={styles.topRow}>
 						<View style={styles.infoContainer}>
 							<Image source={ImageUtility.requireIcon('qricon.png')} style={styles.img} />
+							{ isFlagged && <FlagPill /> }
 							<Text style={styles.shortQr}>{qr.substring(qr.length - 6)}</Text>
 						</View>
 						<RemoveButton onPress={this.confirmRemove.bind(this)} />
