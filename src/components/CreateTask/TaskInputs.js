@@ -14,8 +14,8 @@ class TaskInputs extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			selectedProcess: { name: 'Select a process type', id: -1 },
-			selectedProduct: { name: 'Select a product type', id: -1 },
+			selectedProcess: null,
+			selectedProduct: null,
 			isCreatingTask: false,
 			batchSize: null,
 		}
@@ -29,7 +29,6 @@ class TaskInputs extends Component {
 		let { selectedProduct, selectedProcess } = this.state
 		return (
 			<View style={styles.container}>
-				<KeyboardAwareScrollView style={styles.scroll} extraScrollHeight={20}>
 					<SelectTypes
 						selectedProcess={selectedProcess}
 						selectedProduct={selectedProduct}
@@ -42,7 +41,6 @@ class TaskInputs extends Component {
 							batchSize={this.state.batchSize}
 						/>
 					)}
-				</KeyboardAwareScrollView>
 				{this.shouldShowNext() && (
 					<ActionButton
 						buttonColor={Colors.base}
@@ -60,41 +58,33 @@ class TaskInputs extends Component {
 
 	shouldShowBatchSize() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
-		if (
-			selectedProcess.id !== -1 &&
-			selectedProduct.id !== -1 &&
+		return (
+			selectedProcess &&
+			selectedProduct &&
 			!isCreatingTask &&
 			!this.props.isDandelion
-		) {
-			return true
-		} else {
-			return false
-		}
+		)
 	}
 
 	shouldShowNext() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
-		if(this.props.isDandelion) {
-			return(
-				selectedProcess.id !== -1 &&
-				selectedProduct.id !== -1 &&
-				!isCreatingTask
-			)
+		if (this.props.isDandelion) {
+			return selectedProcess && selectedProduct && !isCreatingTask
 		} else {
 			return (
-			selectedProcess.id !== -1 &&
-			selectedProduct.id !== -1 &&
-			!isCreatingTask &&
-			isBatchSizeEntered
+				selectedProcess &&
+				selectedProduct &&
+				!isCreatingTask &&
+				isBatchSizeEntered
 			)
 		}
 	}
 
 	handleSelect(type, item) {
 		const key = type === 'processes' ? 'selectedProcess' : 'selectedProduct'
-		if (key === 'selectedProcess') {
+		if (key === 'selectedProcess' && item) {
 			this.setState({ batchSize: parseFloat(item.default_amount) })
 		}
 		this.setState({ [key]: item })
@@ -119,15 +109,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingLeft: 16,
 		paddingRight: 16,
-	},
-	scroll: {
-		paddingTop: 20,
-		paddingBottom: 40,
-		position: 'relative',
-		flex: 1,
-	},
-	dropdownContainer: {
-		marginTop: 20,
 	},
 })
 

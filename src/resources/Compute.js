@@ -176,4 +176,16 @@ export default class Compute {
 			return task.id !== taskToAddInputsTo.id
 		})
 	}
+
+	static updateAllSearchVectors(list) {
+		list.forEach(e => {
+			e.search = Compute.createCompletedSearchVector(e)
+		})
+	}
+
+	static createCompletedSearchVector(item) {
+		let s = `${item.search} ${item.name.toLowerCase()} ${item.code.toLowerCase()}`
+		console.log(s)
+		return s
+	}
 }

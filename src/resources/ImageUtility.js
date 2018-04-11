@@ -103,6 +103,8 @@ export function systemIcon(icon) {
       return require('../resources/assets/system_icons/more_vert.png')
     case 'close_camera':
       return require('../resources/assets/system_icons/close_camera.png')
+    case 'unknown':
+      return require('../resources/assets/system_icons/unknown.png')
     default:
       return require('../resources/assets/system_icons/more_vert.png')
   }
