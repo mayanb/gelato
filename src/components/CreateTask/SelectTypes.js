@@ -69,6 +69,7 @@ class SelectTypes extends Component {
 					onSelect={item => this.onSelect('products', item)}
 					onFocus={() => this.onFocus('products')}
 					registerInput={this.registerInputFunction('products')}
+					done={true}
 				/>
 			</View>
 		)
@@ -121,7 +122,7 @@ class SelectTypes extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		marginTop: 20,
 	},
 })
 

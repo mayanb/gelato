@@ -11,11 +11,11 @@ import Colors from '../../resources/Colors'
 import * as ImageUtility from '../../resources/ImageUtility'
 
 export function SelectTypeInput({ style, selected, registerInput, ...rest }) {
-	let img = selected ? selected.icon : 'default.png'
+	let img = selected ? ImageUtility.requireIcon(selected.icon) : ImageUtility.systemIcon('unknown')
 	return (
 		<View style={styles.container}>
 			<Image
-				source={ImageUtility.requireIcon(img)}
+				source={img}
 				style={styles.process_icon}
 			/>
 			<TextInput
@@ -40,12 +40,10 @@ export class CreateTaskCell extends Component {
 		return (
 			<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 				<View style={styles.container}>
-					{Boolean(imgpath) && (
-						<Image
-							source={ImageUtility.requireIcon(imgpath)}
-							style={styles.process_icon}
-						/>
-					)}
+					<Image
+						source={ImageUtility.requireIcon(imgpath)}
+						style={styles.process_icon}
+					/>
 					<Text style={styles.display}>{name}</Text>
 					{this.props.header ? (
 						<Image
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
 	input: {
 		flex: 1,
 		height: 40,
-		fontSize: 15,
+		fontSize: 17,
 		color: Colors.gray,
 
 	},

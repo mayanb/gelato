@@ -19,7 +19,7 @@ export default class SelectTypes extends Component {
 				<SelectTypeInput
 					placeholder={this.props.placeholder}
 					onChangeText={t => this.props.onChangeText(t)}
-					returnKeyType="next"
+					returnKeyType={this.props.done ? "done" : "next"}
 					blurOnSubmit={false}
 					value={this.props.text}
 					selected={this.props.selected}
@@ -40,7 +40,7 @@ export default class SelectTypes extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		margin: 20,
+		marginTop: 20,
 		backgroundColor: 'white',
 		shadowColor: 'rgba(0, 0, 0, 0.07)',
 		shadowOffset: {
