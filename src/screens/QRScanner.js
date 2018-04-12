@@ -106,14 +106,15 @@ class QRScanner extends Component {
 		this.setState({ request: r, isLoading: true })
 	}
 
-	handleSelectTaskFromDropdown(task) {
-		if (task.items.length) {
-			const genericItem = task.items[0]
-			genericItem.creating_task = task
+	handleSelectTaskFromDropdown(inputTask) {
+		let { mode, task, isDandelion } = this.props
+		if (inputTask.items.length) {
+			const genericItem = inputTask.items[0]
+			genericItem.creating_task = inputTask
 			this.setState({
 				barcode: genericItem.item_qr,
 				foundQR: genericItem,
-				semantic: Compute.getQRSemantic(this.props.mode, genericItem),
+				semantic: Compute.getQRSemantic(mode, genericItem, task, isDandelion),
 				searchData: [],
 				amount: genericItem.amount,
 			})
@@ -218,7 +219,6 @@ class QRScanner extends Component {
 				barcode={barcode}
 				creating_task_display={creatingTask.display}
 				semantic={semantic}
-				shouldShowAmount={Compute.isOkay(semantic)}
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
@@ -236,7 +236,6 @@ class QRScanner extends Component {
 				barcode={barcode}
 				creating_task_display={''}
 				semantic={semantic}
-				shouldShowAmount={Compute.isOkay(semantic)}
 				amount={this.state.amount}
 				default_amount={this.state.default_amount}
 				onChange={this.handleSetAmount.bind(this)}
@@ -383,7 +382,7 @@ class QRScanner extends Component {
 	}
 
 	fetchBarcodeData(code) {
-		let { mode } = this.props
+		let { mode, task, isDandelion } = this.props
 		let success = (data, semantic) => {
 			this.setState({
 				foundQR: data,
@@ -401,10 +400,18 @@ class QRScanner extends Component {
 					failure(err)
 				} else {
 					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic(mode, found)
+					this.formatProductType(found)
+					let semantic = Compute.getQRSemantic(mode, found, task, isDandelion)
 					success(found, semantic)
 				}
 			})
+	}
+
+	formatProductType(qr) {
+		if(qr) {
+			let pid = qr.creating_task.product_type
+			qr.creating_task.product_type = { id: pid }
+		}
 	}
 
 	// MARK: - DEBUG
