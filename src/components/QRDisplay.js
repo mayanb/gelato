@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  TextInput,
+	StyleSheet,
+	Text,
+	View,
+	TouchableOpacity,
+	Image,
+	TextInput,
+	Button,
 } from 'react-native'
 import * as ImageUtility from '../resources/ImageUtility'
 import { AddButton, CancelButton } from './Buttons'
@@ -15,102 +16,141 @@ import NumericInputWithUnits from './NumericInputWithUnits'
 
 
 export default class QRDisplay extends Component {
-  render() {
-    let {
-      unit,
-      barcode,
-      creating_task_display,
-      semantic,
-      shouldShowAmount,
-      onChange,
-      onPress,
-      onCancel,
-      amount
-    } = this.props
-    return (
-      <View style={styles.container}>
-        <View
-          style={styles.qr_top}>
-          <Image
-            source={ImageUtility.requireIcon('qr_icon')}
-            style={styles.icon}
-          />
-          <Text style={styles.qr_text}>
-            {barcode.substring(barcode.length - 6)}
-          </Text>
-          <Text>{creating_task_display}</Text>
-        </View>
-        {Compute.isFlagged(semantic) && <Flag />}
-        <View style={styles.main}>
-          <Text style={styles.semantic}>
-            {Compute.getTextFromSemantic(semantic)}
-          </Text>
-          {shouldShowAmount ? (
-            <View>
-              <NumericInputWithUnits
-                unit={unit}
-                value={amount}
-                onChangeText={num => onChange(num)}
-              />
-            </View>
-          ) : null}
-        </View>
-        {renderButtons(semantic, onPress, onCancel, amount)}
-      </View>
-    )
-  }
+	render() {
+		let {
+			unit,
+			barcode: bc,
+			creating_task_display: display,
+			semantic,
+			onChange,
+			onPress,
+			onCancel,
+			amount
+		} = this.props
+		const warning = Compute.isWarning(semantic)
+		const shouldShowAmount = Compute.isOkay(semantic)
+		const text = Compute.getTextFromSemantic(semantic)
+		return (
+			<View style={styles.container}>
+				<Header left={bc.substring(bc.length - 6)} right={display} warning={warning}/>
+				{Compute.isFlagged(semantic) && <Flag />}
+				<View style={styles.main}>
+					{text && <Text style={styles.semantic}>{text}</Text>}
+					{shouldShowAmount ? (
+						<View>
+							<NumericInputWithUnits
+								unit={unit}
+								value={amount}
+								onChangeText={num => onChange(num)}
+							/>
+						</View>
+					) : null}
+				</View>
+				{renderButtons(semantic, onPress, onCancel, amount)}
+			</View>
+		)
+	}
+}
+
+function Header({ left, right, warning }) {
+	return (
+		<View style={[styles.qr_top, warning && styles.warning]}>
+			<Image source={ImageUtility.requireIcon('qr_icon')} style={styles.icon} />
+			<Text style={[styles.qr_text, warning && styles.warning]}>{left}</Text>
+			<Text style={[styles.qr_text, warning && styles.warning]}>{right}</Text>
+		</View>
+	)
 }
 
 function Flag() {
-  return (
-    <View style={styles.flag}>
-      <Text style={styles.flagText}>This task is flagged!</Text>
-    </View>
-  )
+	return (
+		<View style={styles.flag}>
+			<Text style={styles.flagText}>This task is flagged!</Text>
+		</View>
+	)
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    flex: 1,
-  },
-  qr_top: {
-    flexDirection: 'row',
-    flex: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.ultraLightGray,
-    padding: 8,
-    alignItems: 'center',
-  },
-  main: {
-    flex: 1,
-    padding: 16,
-  },
-  qr_text: {
-    flex: 1,
-  },
-  icon: {
-    height: 24,
-    width: 24,
-    marginRight: 8,
-  },
-  semantic: {
-    fontSize: 17,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  flag: {
-    backgroundColor: Colors.red,
-    padding: 8,
-  },
-  flagText: {
-    color: 'white',
-    textAlign: 'center',
-  }
+	container: {
+		flexDirection: 'column',
+		flex: 1,
+	},
+	qr_top: {
+		flexDirection: 'row',
+		flex: 0,
+		borderBottomWidth: 1,
+		borderBottomColor: Colors.ultraLightGray,
+		padding: 8,
+		alignItems: 'center',
+		borderTopRightRadius: 4,
+		borderTopLeftRadius: 4,
+	},
+	main: {
+		flex: 1,
+		padding: 16,
+	},
+	qr_text: {
+		flex: 1,
+	},
+	icon: {
+		height: 24,
+		width: 24,
+		marginRight: 8,
+	},
+	semantic: {
+		fontSize: 17,
+		lineHeight: 24,
+		textAlign: 'center',
+	},
+	flag: {
+		backgroundColor: Colors.red,
+		padding: 8,
+	},
+	flagText: {
+		color: 'white',
+		textAlign: 'center',
+	}, 
+	warning: {
+		backgroundColor: 'orange',
+		color: 'white',
+	},
+	warningButtonsContainer: {
+		display: 'flex',
+		flexDirection: 'row',
+	}, 
+	warningAddButton: {
+		flex: 1,
+		borderTopWidth: 1,
+		borderTopColor: Colors.ultraLightGray,
+		borderRightWidth: 1,
+		borderRightColor: Colors.ultraLightGray,
+	},
+	warningCancelButton: {
+		flex: 1,
+	}
 })
 
 function renderButtons(semantic, onPress, onCancel, amount) {
-	if (Compute.isOkay(semantic)) {
+	if(Compute.isWarning(semantic)) {
+		return (
+			<View style={styles.warningButtonsContainer}>
+				<AddButton 
+					title="Add Anyway" 
+					backgroundColor="white" 
+					color={Colors.red} 
+					style={styles.warningAddButton} 
+					onAdd={onPress} 
+					disabled={!amount} 
+				/>
+				<CancelButton 
+					title="Cancel" 
+					style={styles.warningCancelButton}
+					onCancel={onCancel} 
+					backgroundColor="white"
+				/>
+			</View>
+		)
+	} else if (Compute.isOkay(semantic)) {
 		return <AddButton onAdd={onPress} disabled={!amount} />
 	} else {
 		return <CancelButton onCancel={onCancel} />

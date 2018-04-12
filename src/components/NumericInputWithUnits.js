@@ -35,7 +35,7 @@ export default class NumericInputWithUnits extends Component {
 
 const styles = StyleSheet.create({
 	textInput: {
-		marginTop: 20,
+		marginTop: 16,
 		padding: 16,
 		height: 60,
 		backgroundColor: Colors.white,
