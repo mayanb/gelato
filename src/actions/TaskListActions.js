@@ -24,11 +24,15 @@ import {
 	ADD_FAILURE,
 	REMOVE_OUTPUT_SUCCESS,
 	REMOVE_INPUT_SUCCESS,
+	REQUEST_TASK,
+	REQUEST_TASK_SUCCESS,
+	REQUEST_TASK_FAILURE,
 } from '../reducers/TaskAttributeReducerExtension'
 
 const OPEN_TASKS = 'OPEN_TASKS'
 const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
+const TASK_DETAILS = 'TASK_DETAILS'
 
 export function fetchOpenTasks() {
 	return dispatch => {
@@ -99,31 +103,6 @@ export function fetchCompletedTasks() {
 	}
 }
 
-export function fetchTask(task_id) {
-	return dispatch => {
-		dispatch(requestTasks(SEARCHED_TASKS))
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
-			let localStorage = {}
-			values.forEach(element => {
-				let key = element[0]
-				let val = element[1]
-				localStorage[key] = val
-			})
-
-			return Networking.get(`/ics/tasks/${task_id}/`)
-				.then(res => {
-					let organized = Compute.organizeAttributes(res.body)
-					res.body.organized_attributes = organized
-					dispatch(requestTasksSuccess(SEARCHED_TASKS, [res.body], true))
-				})
-				.catch(e => {
-					dispatch(requestTasksFailure(SEARCHED_TASKS, e))
-					throw e
-				})
-		})
-	}
-}
-
 function requestTasks(name) {
 	return {
 		type: REQUEST,
@@ -144,6 +123,54 @@ function requestTasksFailure(name, err) {
 	return {
 		type: REQUEST_FAILURE,
 		name: name,
+		error: err,
+	}
+}
+
+export function fetchTask(task_id) {
+	return dispatch => {
+		dispatch(requestTask())
+		return Storage.multiGet(['teamID', 'userID']).then(values => {
+			let localStorage = {}
+			values.forEach(element => {
+				let key = element[0]
+				let val = element[1]
+				localStorage[key] = val
+			})
+
+			return Networking.get(`/ics/tasks/${task_id}/`)
+				.then(res => {
+					let organized = Compute.organizeAttributes(res.body)
+					res.body.organized_attributes = organized
+					dispatch(requestTaskSuccess(res.body))
+				})
+				.catch(e => {
+					dispatch(requestTaskFailure(e))
+					throw e
+				})
+		})
+	}
+}
+
+function requestTask() {
+	return {
+		type: REQUEST,
+		name: TASK_DETAILS,
+	}
+}
+
+function requestTaskSuccess(data) {
+	return {
+		type: REQUEST_TASK_SUCCESS,
+		name: TASK_DETAILS,
+		data: data,
+	}
+}
+
+function requestTaskFailure(err) {
+	return {
+		type: REQUEST_FAILURE,
+		name: TASK_DETAILS,
 		error: err,
 	}
 }
@@ -419,3 +446,4 @@ function findReducer(task, isSearched) {
 	}
 	return name
 }
+

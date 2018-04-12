@@ -60,7 +60,6 @@ class Ingredients extends Component {
 
 	// MARK: - RENDERERS
 	render() {
-		let { expanded, barcode, searchData } = this.state
 		let { mode, task } = this.props
 		let item_array = []
 		if (task != null && mode != null) {
@@ -71,28 +70,30 @@ class Ingredients extends Component {
 		}
 		return (
 			<PanelExpander
-				camera={<QRCamera
-					searchable={mode !== 'items'}
-					onBarCodeRead={this.handleBarCodeRead.bind(this)}
-					onClose={this.handleClose.bind(this)}
-					searchData={searchData}
-					onChangeText={this.handleChangeText.bind(this)}
-					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
-				/>}
+				camera={this.renderCamera()}
 				ingredientsContent={this.renderContent()}
+			/>
+		)
+	}
+
+	renderCamera() {
+		return (
+			<QRCamera
+				searchable={this.props.mode !== 'items'}
+				onBarCodeRead={this.handleBarCodeRead.bind(this)}
+				onClose={this.handleClose.bind(this)}
+				searchData={this.state.searchData}
+				onChangeText={this.handleChangeText.bind(this)}
+				onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 			/>
 		)
 	}
 
 	renderContent() {
 		let { task } = this.props
-		if(task.task_ingredients && task.task_ingredients.length) {
-			task.task_ingredients[0].inputs = [{}, {}]
-			task.task_ingredients[1].inputs = [{}]
-		}
 		return (
-			<ScrollView style={{backgroundColor: Colors.ultraLightGray, flex: 1,}}>
-				{task.task_ingredients.map(ta => <TaskIngredient taskIngredient={ta} key={ta.id}/>)}
+			<ScrollView style={{ backgroundColor: Colors.ultraLightGray, flex: 1, }}>
+				{task.task_ingredients.map(ta => <TaskIngredient taskIngredient={ta} key={ta.id} />)}
 			</ScrollView>
 		)
 	}
@@ -483,6 +484,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
+	console.log('state', state)
 	let { taskSearch, open } = props
 	let arr = state.searchedTasks.data
 	if (!taskSearch && open) {
@@ -493,7 +495,7 @@ const mapStateToProps = (state, props) => {
 
 	return {
 		//task: arr.find(e => Compute.equate(e.id, props.task_id)),
-		task: state.searchedTasks.data[0],
+		task: state.taskDetailsByID.data[14406],
 		processes: state.processes.data,
 		mode: 'inputs'
 	}

@@ -13,9 +13,15 @@ export const ADD_FAILURE = 'ADD_FAILURE'
 export const REMOVE_INPUT_SUCCESS = 'REMOVE_INPUT_SUCCESS'
 export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
 
+export const REQUEST_TASK = 'REQUEST_TASK'
+export const REQUEST_TASK_SUCCESS = 'REQUEST_TASK_SUCCESS'
+export const REQUEST_TASK_FAILURE = 'REQUEST_TASK_FAILURE'
+
 export function _taskAttribute(state, action) {
 	let ns = BasicReducer(state, action)
 	switch (action.type) {
+		case REQUEST_TASK_SUCCESS:
+			return requestTaskSuccess(ns, action)
 		case UPDATE_ATTRIBUTE_SUCCESS:
 			return updateAttributeSuccess(ns, action)
 		case UPDATE_ATTRIBUTE_FAILURE:
@@ -44,6 +50,35 @@ function startAdding(state, action) {
 	return update(state, {
 		ui: {
 			isAdding: { $set: true },
+		},
+	})
+}
+
+function addInputsToTaskIngredients(taskIngredients, inputs) {
+	return taskIngredients.map(ta => {
+		console.log('ta', ta)
+		const { ingredient } = ta
+		ta.inputs = inputs.filter(input => {
+			return ingredient.process_type.id === input.input_task_n.process_type &&
+				ingredient.product_type.id === input.input_task_n.product_type
+		})
+		return ta
+	})
+}
+
+function requestTaskSuccess(state, action) {
+	console.log('requestTaskSuccess action.data', action.data)
+	const task = action.data
+	task.task_ingredients = addInputsToTaskIngredients(task.task_ingredients, task.inputs)
+
+	return update(state, {
+		ui: {
+			$merge: {
+				isFetchingData: false,
+			},
+		},
+		data: {
+			[action.data.id]: { $set: task }
 		},
 	})
 }

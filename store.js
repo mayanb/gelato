@@ -10,12 +10,17 @@ const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
 const TEAMS = 'TEAMS'
-const TASK = 'TASK'
+const TASK_DETAILS = 'TASK_DETAILS'
 const ERROR = 'ERROR'
 const MOVE = 'MOVE'
 
 let defaultState = {
 	data: [],
+	ui: {},
+}
+
+let defaultStateByID = {
+	data: {},
 	ui: {},
 }
 
@@ -51,6 +56,11 @@ var reducer = combineReducers({
     action => action.name === SEARCHED_TASKS,
     defaultState
   ),
+	taskDetailsByID: createFilteredReducer(
+		_taskAttribute,
+		action => action.name === TASK_DETAILS,
+		defaultStateByID
+	),
   processes: createFilteredReducer(
     BasicReducer,
     action => action.name === PROCESSES,
