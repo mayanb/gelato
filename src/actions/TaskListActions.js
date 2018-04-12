@@ -291,7 +291,7 @@ function addFailure(err) {
 export function removeOutput(task, item, index, isSearched) {
 	removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
 	return dispatch => {
-		return Networking.del('/ics/items/', item.id)
+		return Networking.del(`/ics/items/${item.id}/`)
 			.then(() => {
 				dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
 			})
@@ -305,8 +305,9 @@ export function removeOutput(task, item, index, isSearched) {
 
 export function removeInput(task, input, index, isSearched) {
 	return dispatch => {
-		return Networking.del('/ics/inputs/', input.id)
-			.then(() => {
+		return Networking.del(`/ics/inputs/${input.id}/`)
+			.then((res) => {
+				console.log(res)
 				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
 			})
 			.catch(e => {
