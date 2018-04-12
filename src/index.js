@@ -8,7 +8,7 @@ import Colors from './resources/Colors'
 import Storage from './resources/Storage'
 import Login from './screens/Login'
 import Main from './screens/Main'
-import QRScanner from './screens/QRScanner'
+import Ingredients from './screens/Ingredients'
 import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
 import Print from './screens/Print'
@@ -122,10 +122,11 @@ const Navigation = StackNavigator(
 	{
 		MainStack: { screen: MainStack },
 		MoveStack: { screen: MoveStack },
-		QRScanner: { screen: QRScanner },
+		Ingredients: { screen: Ingredients },
 		Search: { screen: Search },
 	},
 	{
+		initialRouteName: 'Ingredients',
 		mode: 'modal',
 		navigationOptions: {
 			header: null,

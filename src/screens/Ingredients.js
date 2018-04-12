@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, View, ScrollView } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
@@ -22,7 +22,12 @@ import {
 import * as actions from '../actions/TaskListActions'
 import QRCamera from '../components/QRCamera'
 
-class QRScanner extends Component {
+import PanelExpander from '../components/Ingredients/PanelExpander'
+import TaskIngredient from '../components/Ingredients/TaskIngredient'
+
+import * as processesAndProductsActions from "../actions/ProcessesAndProductsActions"
+
+class Ingredients extends Component {
 	constructor(props) {
 		super(props)
 		let default_amount = props.task
@@ -44,9 +49,12 @@ class QRScanner extends Component {
 			searchData: [],
 			request: null,
 		}
+
 	}
 
 	componentDidMount() {
+		this.props.dispatch(actions.fetchTask('14406'))
+		this.props.dispatch(processesAndProductsActions.fetchProcesses())
 		//this.testBarCodeRead()
 	}
 
@@ -62,21 +70,30 @@ class QRScanner extends Component {
 			return <View />
 		}
 		return (
-			<View style={styles.container}>
-				<QRCamera
+			<PanelExpander
+				camera={<QRCamera
 					searchable={mode !== 'items'}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
 					searchData={searchData}
 					onChangeText={this.handleChangeText.bind(this)}
 					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
-				/>
+				/>}
+				ingredientsContent={this.renderContent()}
+			/>
+		)
+	}
 
-				{expanded || barcode ? this.renderModal() : null}
-				{item_array.length && !(expanded || barcode)
-					? this.renderActiveItemListButton(item_array)
-					: this.renderDisabledItemListButton(item_array)}
-			</View>
+	renderContent() {
+		let { task } = this.props
+		if(task.task_ingredients && task.task_ingredients.length) {
+			task.task_ingredients[0].inputs = [{}, {}]
+			task.task_ingredients[1].inputs = [{}]
+		}
+		return (
+			<ScrollView style={{backgroundColor: Colors.ultraLightGray, flex: 1,}}>
+				{task.task_ingredients.map(ta => <TaskIngredient taskIngredient={ta} key={ta.id}/>)}
+			</ScrollView>
 		)
 	}
 
@@ -426,6 +443,7 @@ const height = Dimensions.get('window').height
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		justifyContent: 'flex-end',
 	},
 	preview: {
 		position: 'absolute',
@@ -474,9 +492,11 @@ const mapStateToProps = (state, props) => {
 	}
 
 	return {
-		task: arr.find(e => Compute.equate(e.id, props.task_id)),
+		//task: arr.find(e => Compute.equate(e.id, props.task_id)),
+		task: state.searchedTasks.data[0],
 		processes: state.processes.data,
+		mode: 'inputs'
 	}
 }
 
-export default paramsToProps(connect(mapStateToProps)(QRScanner))
+export default paramsToProps(connect(mapStateToProps)(Ingredients))

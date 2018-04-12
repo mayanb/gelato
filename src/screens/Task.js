@@ -234,7 +234,7 @@ class Task extends Component {
 	// }
 
 	showCamera(mode) {
-		this.props.navigation.navigate('QRScanner', {
+		this.props.navigation.navigate('Ingredients', {
 			task_id: this.props.task.id,
 			open: this.props.open,
 			taskSearch: this.props.taskSearch,
