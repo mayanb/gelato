@@ -26,9 +26,8 @@ function put(path) {
   //.send({team: team, created_by: team})
 }
 
-function del(path, id) {
-  let url = host + path + id
-
+function del(path) {
+  let url = urls.latest(host, path)
   return request('DELETE', url)
   //.withCredentials()
 }

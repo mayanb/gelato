@@ -85,6 +85,7 @@ class Task extends Component {
 	}
 
 	componentDidMount() {
+		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
 		this.props.dispatch(actions.resetJustCreated())
 		if (this.props.taskSearch) {
 			this.dispatchWithError(actions.fetchTask(this.props.id))
@@ -126,13 +127,6 @@ class Task extends Component {
 						onSubmitEditing={this.handleSubmitEditing.bind(this)}
 						isLoadingTask={this.state.isLoadingTask}
 					/>
-					<View style={styles.help}>
-						<Button
-							onPress={this.showHelpAlert.bind(this)}
-							title="Help"
-							color={Colors.white}
-						/>
-					</View>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
@@ -241,6 +235,7 @@ class Task extends Component {
 			mode: mode,
 			processUnit: this.props.task.process_type.unit,
 			onOpenTask: this.handleOpenTask.bind(this),
+			isDandelion: this.state.isDandelion,
 		})
 	}
 
@@ -313,7 +308,7 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if(Compute.isDandelion(this.props.screenProps.team)) {
+		if(this.state.isDandelion) {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}
