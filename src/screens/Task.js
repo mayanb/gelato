@@ -127,13 +127,6 @@ class Task extends Component {
 						onSubmitEditing={this.handleSubmitEditing.bind(this)}
 						isLoadingTask={this.state.isLoadingTask}
 					/>
-					<View style={styles.help}>
-						<Button
-							onPress={this.showHelpAlert.bind(this)}
-							title="Help"
-							color={Colors.white}
-						/>
-					</View>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
