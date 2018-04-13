@@ -205,7 +205,7 @@ export class AttributeHeaderCell extends Component {
 				  <View style={{ flexDirection: 'row' }}>
 					  <Text style={styles.output}>
               {`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
-            <Text style={styles.date}>started at {this.props.date}</Text>
+            <Text style={styles.date}>started {this.props.date}</Text>
 				  </View>
 			  </View>
 		  </View>
