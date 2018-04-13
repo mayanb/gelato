@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import * as ImageUtility from '../resources/ImageUtility'
 import Colors from '../resources/Colors'
 import Modal from './Modal'
-import { FlagPill } from './Flag'
+import { FlagPill, AncestorFlagPill } from './Flag'
 import pluralize from 'pluralize'
 import * as actions from "../actions/ProcessesAndProductsActions"
 
@@ -53,6 +53,7 @@ class InputListModalUnconnected extends Component {
 			onOpenTask={() => this.props.onOpenTask(item.input_task_n)}
 			itemAmount={itemAmount}
 			isFlagged={item.input_task_n.is_flagged}
+			isAncestorFlagged={item.input_task_n.num_flagged_ancestors > 0}
 		/>
 	}
 
@@ -157,7 +158,7 @@ function inputHeader(inputs, typeName, unit) {
 
 class QRItemListRow extends Component {
 	render() {
-		let {task_display, qr, itemAmount, imgpath, isFlagged} = this.props
+		let {task_display, qr, itemAmount, imgpath, isFlagged, isAncestorFlagged} = this.props
 		let {index} = this.props
 		let styles = StyleSheet.create({
 			container: {
@@ -214,6 +215,7 @@ class QRItemListRow extends Component {
 						<View style={styles.infoContainer}>
 							<Image source={ImageUtility.requireIcon('qricon.png')} style={styles.img} />
 							{ isFlagged && <FlagPill /> }
+							{ !isFlagged && isAncestorFlagged && <AncestorFlagPill />}
 							<Text style={styles.shortQr}>{qr.substring(qr.length - 6)}</Text>
 						</View>
 						<RemoveButton onPress={this.confirmRemove.bind(this)} />
