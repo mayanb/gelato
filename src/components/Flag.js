@@ -44,27 +44,6 @@ const styles = StyleSheet.create({
   },
 })
 
-// export function FlagPill(props) {
-//   const styles = StyleSheet.create({
-//     container: {
-//       backgroundColor: Colors.red,
-//       borderRadius: 4,
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       paddingLeft: 4,
-//       paddingRight: 4,
-//     }, 
-//     text: {
-//       color: 'white',
-//       fontSize: 10,
-//     }
-//   })
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.text}>FLAGGED</Text>
-//     </View>
-//   )
-// }
 
 export function FlagPill(props) {
   const styles = StyleSheet.create({

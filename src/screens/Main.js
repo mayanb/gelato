@@ -136,7 +136,6 @@ class Main extends Component {
 		let openRefreshing = this.props.openTasks.ui.isFetchingData
 		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
 		let isRefreshing = openRefreshing || completedRefreshing || false
-		console.log(sections)
 		return (
 			<View style={styles.container}>
 				<ActionSheet
