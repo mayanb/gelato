@@ -136,6 +136,7 @@ class Main extends Component {
 		let openRefreshing = this.props.openTasks.ui.isFetchingData
 		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
 		let isRefreshing = openRefreshing || completedRefreshing || false
+		console.log(sections)
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -208,6 +209,7 @@ class Main extends Component {
 				open={item.is_open}
 				name={item.process_type.name}
 				is_flagged={item.is_flagged}
+				is_ancestor_flagged={item.num_flagged_ancestors > 0}
 				date={DateFormatter.shorten(item.updated_at)}
 				onPress={this.openTask.bind(this)}
 			/>

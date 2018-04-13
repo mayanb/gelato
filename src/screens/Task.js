@@ -21,7 +21,7 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
-import { Flag } from '../components/Flag'
+import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
@@ -121,6 +121,7 @@ class Task extends Component {
 				accessible={false}>
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
+					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
 					<AttributeList
 						data={organized_attributes}

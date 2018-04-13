@@ -34,6 +34,7 @@ export default class QRDisplay extends Component {
 			<View style={styles.container}>
 				<Header left={bc.substring(bc.length - 6)} right={display} warning={warning}/>
 				{Compute.isFlagged(semantic) && <Flag />}
+				{!Compute.isFlagged(semantic) && Compute.isAncestorFlagged(semantic) && <AncestorFlag />}
 				<View style={styles.main}>
 					{text && <Text style={styles.semantic}>{text}</Text>}
 					{shouldShowAmount ? (
@@ -66,6 +67,14 @@ function Flag() {
 	return (
 		<View style={styles.flag}>
 			<Text style={styles.flagText}>This task is flagged!</Text>
+		</View>
+	)
+}
+
+function AncestorFlag() {
+	return (
+		<View style={styles.ancestorFlag}>
+			<Text style={styles.flagText}>This task has a flagged ancestor!</Text>
 		</View>
 	)
 }
@@ -104,6 +113,10 @@ const styles = StyleSheet.create({
 	},
 	flag: {
 		backgroundColor: Colors.red,
+		padding: 8,
+	},
+	ancestorFlag: {
+		backgroundColor: Colors.orange,
 		padding: 8,
 	},
 	flagText: {
