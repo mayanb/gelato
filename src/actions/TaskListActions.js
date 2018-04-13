@@ -139,7 +139,7 @@ export function fetchTask(task_id) {
 				.then(res => {
 					let organized = Compute.organizeAttributes(res.body)
 					res.body.organized_attributes = organized
-					dispatch(requestTaskSuccess(res.body))
+					return dispatch(requestTaskSuccess(res.body))
 				})
 				.catch(e => {
 					dispatch(requestTaskFailure(e))
@@ -251,14 +251,14 @@ export function resetJustCreated() {
 	}
 }
 
-export function addInput(task, item, isSearched, amount) {
-	let payload = { task: task.id, input_item: item.id, amount: amount }
+export function addInput(task, item) {
+	let payload = { task: task.id, input_item: item.id }
 	return dispatch => {
-		dispatch(startAddingInput(task, isSearched))
+		dispatch(startAddingInput())
 		return Networking.post('/ics/inputs/create-without-amount/')
 			.send(payload)
 			.then(res => {
-				dispatch(addInputSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
+				dispatch(addInputSuccess(task, res.body))
 			})
 			.catch(e => {
 				dispatch(addInputFailure(e))
@@ -291,9 +291,9 @@ export function startAddingInput() {
 	}
 }
 
-function addInputSuccess(type, task, input) {
+function addInputSuccess(task, input) {
 	return {
-		type: type,
+		type: ADD_INPUT_SUCCESS,
 		name: TASK_DETAILS,
 		input: input,
 		taskID: task.id,

@@ -86,17 +86,14 @@ class Task extends Component {
 
 	componentDidMount() {
 		this.props.dispatch(actions.resetJustCreated())
-		if (this.props.taskSearch) {
-			this.dispatchWithError(actions.fetchTask(this.props.id))
-		}
 		this.setState({ isLoadingTask: true })
-		Networking.get(`/ics/tasks/${this.props.id}`)
+		this.props.dispatch(actions.fetchTask(this.props.id))
 			.then(res => {
-				this.props.navigation.setParams({ task: res.body })
-				let organized = Compute.organizeAttributes(res.body)
+				this.props.navigation.setParams({ task: res.data })
+				let organized = Compute.organizeAttributes(res.data)
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
 			})
-			.catch(e => console.log(e))
+			.catch(e => console.error('Error fetching task', e))
 	}
 
 	render() {
@@ -235,11 +232,7 @@ class Task extends Component {
 
 	showCamera(mode) {
 		this.props.navigation.navigate('Ingredients', {
-			task_id: this.props.task.id,
-			open: this.props.open,
-			taskSearch: this.props.taskSearch,
-			mode: mode,
-			processUnit: this.props.task.process_type.unit,
+			taskID: this.props.task.id,
 			onOpenTask: this.handleOpenTask.bind(this),
 		})
 	}
@@ -372,16 +365,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
-	let { taskSearch, open } = props
-	let arr = state.searchedTasks.data
-	if (!taskSearch && open) {
-		arr = state.openTasks.data
-	} else if (!taskSearch) {
-		arr = state.completedTasks.data
-	}
-
 	return {
-		task: arr.find(e => Compute.equate(e.id, props.id)),
+		task: state.taskDetailsByID.data[props.id],
 	}
 }
 

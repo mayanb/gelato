@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView, Alert } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import Compute from '../resources/Compute'
 import Storage from '../resources/Storage'
@@ -22,7 +22,6 @@ import QRCamera from '../components/QRCamera'
 import PanelExpander from '../components/Ingredients/PanelExpander'
 import TaskIngredient from '../components/Ingredients/TaskIngredient'
 
-import * as processesAndProductsActions from "../actions/ProcessesAndProductsActions"
 
 class Ingredients extends Component {
 	constructor(props) {
@@ -30,33 +29,31 @@ class Ingredients extends Component {
 
 		this.state = {
 			expanded: false,
-			scanError: null,
-			isFetching: false,
+			inputError: null,
+			isFetchingItem: false,
+			isAddingInput: false,
 
 			// search stuff
-			isLoading: false,
+			isFetchingSearch: false,
 			searchData: [],
 			request: null,
 		}
-
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchTask('14406'))
-		this.props.dispatch(processesAndProductsActions.fetchProcesses())
-		this.testBarCodeRead()
+		//this.testBarCodeRead()
 	}
 
 	// MARK: - RENDERERS
 	render() {
-		let { mode, task } = this.props
-		if (task == null || mode == null) {
+		let { task } = this.props
+		if (!task) {
 			return <View />
 		}
 
 		return (
 			<View style={{ flex: 1 }}>
-				{this.state.scanError && this.renderQRModal()}
+				{this.state.inputError && this.renderQRModal()}
 				<PanelExpander
 					open={this.state.expanded}
 					camera={this.renderCamera()}
@@ -69,7 +66,7 @@ class Ingredients extends Component {
 	renderCamera() {
 		return (
 			<QRCamera
-				searchable={this.props.mode !== 'items'}
+				searchable={true}
 				onBarCodeRead={this.handleBarCodeRead.bind(this)}
 				onClose={this.handleClose.bind(this)}
 				searchData={this.state.searchData}
@@ -99,43 +96,36 @@ class Ingredients extends Component {
 		r
 			.then(res => {
 				const searchResults = res.body.results
-				const updatedSearchResults = Compute.markExistingInputsInSearchResults(
-					this.props.task,
-					searchResults
-				)
-
-				this.setState({
-					searchData: updatedSearchResults,
-					isLoading: false,
-				})
+				const updatedSearchResults = Compute.markExistingInputsInSearchResults(this.props.task, searchResults)
+				this.setState({ searchData: updatedSearchResults })
 			})
-			.catch(() => this.setState({ searchData: [], isLoading: false }))
+			.catch(err => console.error('Error retrieving search results', err))
+			.finally(() => this.setState({ isFetchingSearch: false }))
 
-		this.setState({ request: r, isLoading: true })
+		this.setState({ request: r, isFetchingSearch: true, searchData: [] })
 	}
 
 	handleSelectTaskFromDropdown(task) {
 		if (task.items.length) {
 			const genericItem = task.items[0]
 			genericItem.creating_task = task
-			const errorSemantic = Compute.getQRSemantic(this.props.mode, genericItem)
+			const errorSemantic = Compute.getQRSemantic('inputs', genericItem)
 			if (errorSemantic) {
 				this.setInputError(errorSemantic, genericItem.item_qr, task.display)
+			} else {
+				this.setState({
+					searchData: [],
+				})
+				this.handleAddInput(task)
 			}
-			this.setState({
-				semantic: Compute.getQRSemantic(this.props.mode, genericItem),
-				searchData: [],
-				expanded: true,
-			})
-			this.handleAddInput(task)
 		} else {
 			this.setInputError(NO_OUTPUT_ITEMS, '', task.display)
 		}
 	}
 
 	renderQRModal() {
-		let { scanError, isFetching } = this.state
-		if (isFetching) {
+		let { inputError, isFetchingItem } = this.state
+		if (isFetchingItem) {
 			return this.renderQRLoading()
 		}
 
@@ -143,9 +133,9 @@ class Ingredients extends Component {
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				<QRDisplay
 					unit={null}
-					barcode={scanError.barcode}
-					creating_task_display={scanError.taskName}
-					semantic={scanError.semantic}
+					barcode={inputError.barcode}
+					creating_task_display={inputError.taskName}
+					semantic={inputError.semantic}
 					shouldShowAmount={false}
 					onChange={() => null}
 					onPress={() => null}
@@ -172,20 +162,17 @@ class Ingredients extends Component {
 
 	handleCloseModal() {
 		this.setState({
-			scanError: null,
+			inputError: null,
 			expanded: false,
 		})
 	}
 
 	handleAddInput(task) {
-		return this.dispatchWithError(
-			actions.addInput(
-				this.props.task,
-				task.items[0],
-				this.props.taskSearch,
-				null,
-			)
-		)
+		this.setState({ isAddingInput: true })
+		return this.dispatchWithError(actions.addInput(this.props.task, task.items[0]))
+			.then(() => this.setState({ expanded: true }))
+			.catch(err => console.error('Error adding input', err))
+			.finally(() => this.setState({ isAddingInput: false }))
 	}
 
 	handleRemoveInput(i) {
@@ -197,7 +184,7 @@ class Ingredients extends Component {
 			}
 		}
 		this.dispatchWithError(
-			actions.removeInput(task, item, i, this.props.taskSearch)
+			actions.removeInput(task, item, i, false)
 		).then(success)
 	}
 
@@ -221,8 +208,8 @@ class Ingredients extends Component {
 
 	handleBarCodeRead(e) {
 		const data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
-		const { expanded } = this.state
-		if (expanded) {
+		const { expanded, inputError, isFetchingItem, isAddingInput } = this.state
+		if (expanded || inputError || isFetchingItem || isAddingInput) {
 			return
 		}
 
@@ -248,34 +235,34 @@ class Ingredients extends Component {
 	}
 
 	fetchBarcodeData(code) {
-		let { mode } = this.props
-		this.setState({ isFetching: true })
+		this.setState({ isFetchingItem: true })
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
 			.then(res => {
-				let found = res.body.length ? res.body[0] : null
-				let errorSemantic = Compute.getQRSemantic(mode, found)
+				const item = res.body.length ? res.body[0] : null
+				const task = item.creating_task
+				const errorSemantic = Compute.getQRSemantic('inputs', item)
 				if (errorSemantic) {
-					this.setInputError(errorSemantic, code, data.display)
+					this.setInputError(errorSemantic, code, task.display)
 				} else {
-					this.setState({
-						expanded: true,
-					})
-					this.handleAddInput(data)
+					return this.handleAddInput(task)
 				}
 			})
-			.catch(err => this.setInputError(SCAN_ERROR, code))
-			.finally(() => this.setState({ isFetching: false }))
+			.catch(err => {
+				console.error('Error fetching barcode data', err)
+				this.setInputError(SCAN_ERROR, code)
+			})
+			.finally(() => this.setState({ isFetchingItem: false }))
 	}
 
 	setInputError(errorSemantic, barcode, taskName) {
 		this.setState({
-			scanError: {
+			inputError: {
 				semantic: errorSemantic,
 				barcode: barcode,
 				taskName: taskName
 			},
-		}, () => console.log('setting input error', this.state))
+		})
 	}
 
 	// MARK: - DEBUG
@@ -287,25 +274,13 @@ class Ingredients extends Component {
 	 */
 	testBarCodeRead() {
 		let barcode = 'dande.li/ics/5dd1995d-b80b-4952-bf3a-4a88bee70e7a'
-		//setTimeout(() => this.handleBarCodeRead({ data: barcode }), 2000)
+		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 2000)
 	}
 }
 
 const mapStateToProps = (state, props) => {
-	console.log('state', state)
-	let { taskSearch, open } = props
-	let arr = state.searchedTasks.data
-	if (!taskSearch && open) {
-		arr = state.openTasks.data
-	} else if (!taskSearch) {
-		arr = state.completedTasks.data
-	}
-
 	return {
-		//task: arr.find(e => Compute.equate(e.id, props.task_id)),
-		task: state.taskDetailsByID.data[14406],
-		processes: state.processes.data,
-		mode: 'inputs'
+		task: state.taskDetailsByID.data[props.taskID],
 	}
 }
 
