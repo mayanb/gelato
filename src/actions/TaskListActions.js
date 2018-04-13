@@ -22,11 +22,8 @@ import {
 	ADD_OUTPUT_SUCCESS,
 	START_ADDING,
 	ADD_FAILURE,
-	REMOVE_OUTPUT_SUCCESS,
 	REMOVE_INPUT_SUCCESS,
-	REQUEST_TASK,
 	REQUEST_TASK_SUCCESS,
-	REQUEST_TASK_FAILURE,
 } from '../reducers/TaskAttributeReducerExtension'
 
 const OPEN_TASKS = 'OPEN_TASKS'
@@ -257,16 +254,14 @@ export function resetJustCreated() {
 export function addInput(task, item, isSearched, amount) {
 	let payload = { task: task.id, input_item: item.id, amount: amount }
 	return dispatch => {
-		dispatch(startAdding(task, isSearched))
-		return Networking.post('/ics/inputs/create/')
+		dispatch(startAddingInput(task, isSearched))
+		return Networking.post('/ics/inputs/create-without-amount/')
 			.send(payload)
 			.then(res => {
-				res.body.input_item = item.id
-				dispatch(addSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
+				dispatch(addInputSuccess(ADD_INPUT_SUCCESS, task, res.body, isSearched))
 			})
 			.catch(e => {
-				dispatch(addFailure(e))
-				failure(err)
+				dispatch(addInputFailure(e))
 				throw e
 			})
 	}
@@ -286,6 +281,31 @@ export function addOutput(task, qr, amount, isSearched) {
 				dispatch(addFailure(e))
 				throw e
 			})
+	}
+}
+
+export function startAddingInput() {
+	return {
+		name: TASK_DETAILS,
+		type: START_ADDING,
+	}
+}
+
+function addInputSuccess(type, task, input) {
+	return {
+		type: type,
+		name: TASK_DETAILS,
+		input: input,
+		taskID: task.id,
+		taskIngredients: input.input_task_ingredients,
+	}
+}
+
+function addInputFailure(err) {
+	return {
+		type: ADD_FAILURE,
+		name: TASK_DETAILS,
+		error: err,
 	}
 }
 
@@ -314,21 +334,6 @@ function addFailure(err) {
 		error: err,
 	}
 }
-
-export function removeOutput(task, item, index, isSearched) {
-	removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched)
-	return dispatch => {
-		return Networking.del('/ics/items/', item.id)
-			.then(() => {
-				dispatch(removeSuccess(REMOVE_OUTPUT_SUCCESS, task, index, isSearched))
-			})
-			.catch(e => {
-				dispatch(removeFailure(e))
-				throw e
-			})
-	}
-}
-
 
 export function removeInput(task, input, index, isSearched) {
 	return dispatch => {

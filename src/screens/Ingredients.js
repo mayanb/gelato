@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
-import ActionButton from 'react-native-action-button'
 import Compute from '../resources/Compute'
 import Storage from '../resources/Storage'
 import Colors from '../resources/Colors'
@@ -12,13 +11,11 @@ import {
 	ALREADY_ADDED_INPUT,
 	ALREADY_ADDED_OUTPUT,
 	INVALID_QR,
+	NO_OUTPUT_ITEMS,
+	SCAN_ERROR,
 } from '../resources/QRSemantics'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import {
-	InputListModal,
-	OutputItemListModal,
-} from '../components/InputListModal'
 import * as actions from '../actions/TaskListActions'
 import QRCamera from '../components/QRCamera'
 
@@ -30,19 +27,11 @@ import * as processesAndProductsActions from "../actions/ProcessesAndProductsAct
 class Ingredients extends Component {
 	constructor(props) {
 		super(props)
-		let default_amount = props.task
-			? parseFloat(props.task.process_type.default_amount).toString()
-			: 0
 
 		this.state = {
 			expanded: false,
-			barcode: false,
-			foundQR: null,
-			semantic: '',
-
-			// amount stuff ...
-			default_amount: default_amount,
-			amount: default_amount,
+			scanError: null,
+			isFetching: false,
 
 			// search stuff
 			isLoading: false,
@@ -55,24 +44,25 @@ class Ingredients extends Component {
 	componentDidMount() {
 		this.props.dispatch(actions.fetchTask('14406'))
 		this.props.dispatch(processesAndProductsActions.fetchProcesses())
-		//this.testBarCodeRead()
+		this.testBarCodeRead()
 	}
 
 	// MARK: - RENDERERS
 	render() {
 		let { mode, task } = this.props
-		let item_array = []
-		if (task != null && mode != null) {
-			// item_array = task['inputs']
-			item_array = task[mode]
-		} else {
+		if (task == null || mode == null) {
 			return <View />
 		}
+
 		return (
-			<PanelExpander
-				camera={this.renderCamera()}
-				ingredientsContent={this.renderContent()}
-			/>
+			<View style={{ flex: 1 }}>
+				{this.state.scanError && this.renderQRModal()}
+				<PanelExpander
+					open={this.state.expanded}
+					camera={this.renderCamera()}
+					ingredientsContent={this.renderContent()}
+				/>
+			</View>
 		)
 	}
 
@@ -128,139 +118,41 @@ class Ingredients extends Component {
 		if (task.items.length) {
 			const genericItem = task.items[0]
 			genericItem.creating_task = task
+			const errorSemantic = Compute.getQRSemantic(this.props.mode, genericItem)
+			if (errorSemantic) {
+				this.setInputError(errorSemantic, genericItem.item_qr, task.display)
+			}
 			this.setState({
-				barcode: genericItem.item_qr,
-				foundQR: genericItem,
 				semantic: Compute.getQRSemantic(this.props.mode, genericItem),
 				searchData: [],
-				amount: genericItem.amount,
+				expanded: true,
 			})
-		}
-	}
-
-	renderActiveItemListButton(items) {
-		return (
-			<ActionButton
-				buttonColor={Colors.base}
-				activeOpacity={0.5}
-				buttonText={String(items.length)}
-				position="left"
-				onPress={this.handleToggleItemList.bind(this)}
-			/>
-		)
-	}
-
-	renderDisabledItemListButton(items) {
-		return (
-			<ActionButton
-				buttonColor={Colors.gray}
-				activeOpacity={1}
-				buttonText={String(items.length)}
-				position="left"
-			/>
-		)
-	}
-
-	renderModal() {
-		if (this.state.expanded) {
-			return this.renderItemListModal()
-		} else if (this.state.barcode) {
-			return this.renderQRModal()
-		}
-	}
-
-	renderItemListModal() {
-		if (this.props.mode === 'inputs') {
-			return (
-				<InputListModal
-					task={this.props.task}
-					processUnit={this.props.processUnit}
-					onCloseModal={this.handleCloseModal.bind(this)}
-					onRemove={this.handleRemoveInput.bind(this)}
-					onOpenTask={this.handleOpenTask.bind(this)}
-					inputs={this.props.task.inputs}
-				/>
-			)
+			this.handleAddInput(task)
 		} else {
-			return (
-				<OutputItemListModal
-					task={this.props.task}
-					processUnit={this.props.processUnit}
-					onCloseModal={this.handleCloseModal.bind(this)}
-					onRemove={this.handleRemoveOutput.bind(this)}
-					onOpenTask={this.handleOpenTask.bind(this)}
-					items={this.props.task.items}
-				/>
-			)
+			this.setInputError(NO_OUTPUT_ITEMS, '', task.display)
 		}
 	}
 
 	renderQRModal() {
-		let { foundQR, isFetching } = this.state
+		let { scanError, isFetching } = this.state
 		if (isFetching) {
 			return this.renderQRLoading()
 		}
 
-		let creatingTask =
-			foundQR && foundQR.creating_task ? foundQR.creating_task : {}
-
-		if (foundQR) {
-			let proc = this.props.processes.find(
-				e =>
-					parseInt(e.id, 10) ===
-					parseInt(foundQR.creating_task.process_type, 10)
-			)
-			if (typeof creatingTask.process_type !== 'object') {
-				creatingTask.process_type = proc
-			}
-		}
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
-				{this.props.mode === 'inputs'
-					? this.renderInputQR(creatingTask)
-					: this.renderOutputQR(creatingTask)}
+				<QRDisplay
+					unit={null}
+					barcode={scanError.barcode}
+					creating_task_display={scanError.taskName}
+					semantic={scanError.semantic}
+					shouldShowAmount={false}
+					onChange={() => null}
+					onPress={() => null}
+					onCancel={this.handleCloseModal.bind(this)}
+					amount={null}
+				/>
 			</Modal>
-		)
-	}
-
-	renderInputQR(creatingTask) {
-		let { barcode, semantic, amount } = this.state
-
-		return (
-			<QRDisplay
-				unit={
-					creatingTask.process_type
-						? creatingTask.process_type.unit
-						: this.props.task.process_type.unit
-				}
-				barcode={barcode}
-				creating_task_display={creatingTask.display}
-				semantic={semantic}
-				shouldShowAmount={Compute.isOkay(semantic)}
-				onChange={this.handleSetAmount.bind(this)}
-				onPress={this.handleAddInput.bind(this)}
-				onCancel={this.handleCloseModal.bind(this)}
-				amount={amount}
-			/>
-		)
-	}
-
-	renderOutputQR(creatingTask) {
-		let { barcode, semantic } = this.state
-
-		return (
-			<QRDisplay
-				unit={this.props.task.process_type.unit}
-				barcode={barcode}
-				creating_task_display={''}
-				semantic={semantic}
-				shouldShowAmount={Compute.isOkay(semantic)}
-				amount={this.state.amount}
-				default_amount={this.state.default_amount}
-				onChange={this.handleSetAmount.bind(this)}
-				onPress={this.handleAddOutput.bind(this)}
-				onCancel={this.handleCloseModal.bind(this)}
-			/>
 		)
 	}
 
@@ -274,56 +166,26 @@ class Ingredients extends Component {
 		let { dispatch } = this.props
 		return dispatch(f).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
+			throw e
 		})
 	}
 
 	handleCloseModal() {
 		this.setState({
-			barcode: false,
-			foundQR: false,
-			semantic: '',
-			amount: '',
+			scanError: null,
 			expanded: false,
-			isFetching: false,
-			creating_task_for_input: '',
 		})
 	}
 
-	handleSetAmount(text) {
-		this.setState({ amount: text })
-	}
-
-	handleAddInput() {
+	handleAddInput(task) {
 		return this.dispatchWithError(
 			actions.addInput(
 				this.props.task,
-				this.state.foundQR,
+				task.items[0],
 				this.props.taskSearch,
-				this.state.amount
+				null,
 			)
 		)
-			.then(() => this.handleCloseModal())
-			.catch(e => console.log('error', e))
-	}
-
-	handleAddOutput() {
-		let { barcode, amount } = this.state
-		return this.dispatchWithError(
-			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
-		).then(() => this.handleCloseModal())
-	}
-
-	handleRemoveOutput(i) {
-		let { task } = this.props
-		let item = task['items'][i]
-		const success = () => {
-			if (this.props.task.items.length === 0) {
-				this.handleCloseModal()
-			}
-		}
-		this.dispatchWithError(
-			actions.removeOutput(task, item, i, this.props.taskSearch)
-		).then(success)
 	}
 
 	handleRemoveInput(i) {
@@ -337,10 +199,6 @@ class Ingredients extends Component {
 		this.dispatchWithError(
 			actions.removeInput(task, item, i, this.props.taskSearch)
 		).then(success)
-	}
-
-	handleToggleItemList() {
-		this.setState({ expanded: !this.state.expanded })
 	}
 
 	handleClose() {
@@ -362,67 +220,62 @@ class Ingredients extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		let data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
-		let { expanded, barcode } = this.state
-		if (expanded || barcode) {
+		const data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
+		const { expanded } = this.state
+		if (expanded) {
 			return
 		}
 
-		let valid = Compute.validateQR(data)
+		let errorSemantic
+		const valid = Compute.validateQR(data)
 		if (!valid) {
 			// not a valid qr code
-			this.setState({
-				barcode: data,
-				isFetching: false,
-				foundQR: null,
-				semantic: INVALID_QR,
-			})
+			errorSemantic = INVALID_QR
 		} else if (Compute.isAlreadyInput(data, this.props.task)) {
 			// its already an input to this task
-			this.setState({
-				barcode: data,
-				isFetching: false,
-				foundQR: null,
-				semantic: ALREADY_ADDED_INPUT,
-			})
+			errorSemantic = ALREADY_ADDED_INPUT
 		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
 			// its already an output to this task
-			this.setState({
-				barcode: data,
-				isFetching: false,
-				foundQR: null,
-				semantic: ALREADY_ADDED_OUTPUT,
-			})
+			errorSemantic = ALREADY_ADDED_OUTPUT
+		}
+
+		if (errorSemantic) {
+			this.setInputError(errorSemantic, data)
 		} else {
 			// fetch all the data about this qr code
-			this.setState({ barcode: data, isFetching: true })
 			this.fetchBarcodeData(data)
 		}
 	}
 
 	fetchBarcodeData(code) {
 		let { mode } = this.props
-		let success = (data, semantic) => {
-			this.setState({
-				foundQR: data,
-				semantic: semantic,
-				isFetching: false,
-				amount: data ? data.amount : this.state.default_amount,
-			})
-		}
-		let failure = () =>
-			this.setState({ foundQR: null, semantic: '', isFetching: false })
+		this.setState({ isFetching: true })
 		Networking.get('/ics/items/')
 			.query({ item_qr: code })
-			.end((err, res) => {
-				if (err || !res.ok) {
-					failure(err)
+			.then(res => {
+				let found = res.body.length ? res.body[0] : null
+				let errorSemantic = Compute.getQRSemantic(mode, found)
+				if (errorSemantic) {
+					this.setInputError(errorSemantic, code, data.display)
 				} else {
-					let found = res.body.length ? res.body[0] : null
-					let semantic = Compute.getQRSemantic(mode, found)
-					success(found, semantic)
+					this.setState({
+						expanded: true,
+					})
+					this.handleAddInput(data)
 				}
 			})
+			.catch(err => this.setInputError(SCAN_ERROR, code))
+			.finally(() => this.setState({ isFetching: false }))
+	}
+
+	setInputError(errorSemantic, barcode, taskName) {
+		this.setState({
+			scanError: {
+				semantic: errorSemantic,
+				barcode: barcode,
+				taskName: taskName
+			},
+		}, () => console.log('setting input error', this.state))
 	}
 
 	// MARK: - DEBUG
@@ -433,55 +286,10 @@ class Ingredients extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/3996ca3c-9696-4cf3-ad34-e9d711aa9b30'
-		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 200)
+		let barcode = 'dande.li/ics/5dd1995d-b80b-4952-bf3a-4a88bee70e7a'
+		//setTimeout(() => this.handleBarCodeRead({ data: barcode }), 2000)
 	}
 }
-
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-	},
-	preview: {
-		position: 'absolute',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		top: 0,
-		left: 0,
-		height: height,
-		width: width,
-	},
-	scrim: {
-		position: 'absolute',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		top: 0,
-		left: 0,
-		height: height,
-		width: width,
-		backgroundColor: 'rgba(255,0,0,0.5)',
-	},
-	close: {
-		position: 'absolute',
-		top: 20 + 16,
-		left: 16,
-	},
-	closeTouchableOpacity: {
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		width: 50,
-		height: 80,
-	},
-	title: {
-		alignItems: 'center',
-		marginTop: 20 + 16,
-	},
-})
 
 const mapStateToProps = (state, props) => {
 	console.log('state', state)

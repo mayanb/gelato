@@ -21,6 +21,14 @@ export default class PanelExpander extends Component {
 		this.handleClose = this.handleClose.bind(this)
 	}
 
+	componentWillReceiveProps(np) {
+		if(np.open && !this.state.open)
+			this.handleOpen()
+
+		if(!np.open && this.state.open)
+			this.handleClose()
+	}
+
 	handleOpen() {
 		this.setState({ open: true })
 		Animated.timing(this.state.panelHeight, {

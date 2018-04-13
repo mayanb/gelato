@@ -9,6 +9,8 @@ import {
 	INVALID_QR,
 	ALREADY_ADDED_MOVE_ITEM,
 	IS_FLAGGED_INPUT,
+	NO_OUTPUT_ITEMS,
+	SCAN_ERROR,
 } from './QRSemantics'
 import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
 
@@ -127,6 +129,10 @@ export default class Compute {
 				return "Hooray! You've already chosen this item to be moved."
 			case IS_FLAGGED_INPUT:
 				return "This task is flagged. Please ask an admin before using it."
+			case NO_OUTPUT_ITEMS:
+				return "This task doesn't have any output items."
+			case SCAN_ERROR:
+				return "There was an error scanning this QR code."
 			default:
 				return 'Enter amount:'
 		}
@@ -185,7 +191,6 @@ export default class Compute {
 
 	static createCompletedSearchVector(item) {
 		let s = `${item.search} ${item.name.toLowerCase()} ${item.code.toLowerCase()}`
-		console.log(s)
 		return s
 	}
 }

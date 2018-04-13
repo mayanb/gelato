@@ -29,17 +29,15 @@ export function _taskAttribute(state, action) {
 		case RESET_JUST_CREATED:
 			return resetJustCreated(ns, action)
 		case ADD_OUTPUT_SUCCESS:
-			return addSuccess(ns, action, 'items')
+			return addOutputSuccess(ns, action)
 		case ADD_INPUT_SUCCESS:
-			return addSuccess(ns, action, 'inputs')
+			return addInputSuccess(ns, action)
 		case START_ADDING:
 			return startAdding(ns, action)
 		case ADD_FAILURE:
 			return addFailure(ns, action)
-		case REMOVE_OUTPUT_SUCCESS:
-			return removeSuccess(ns, action, 'items')
 		case REMOVE_INPUT_SUCCESS:
-			return removeSuccess(ns, action, 'inputs')
+			return removeInputSuccess(ns, action, 'inputs')
 		default:
 			return ns
 	}
@@ -56,7 +54,6 @@ function startAdding(state, action) {
 
 function addInputsToTaskIngredients(taskIngredients, inputs) {
 	return taskIngredients.map(ta => {
-		console.log('ta', ta)
 		const { ingredient } = ta
 		ta.inputs = inputs.filter(input => {
 			return ingredient.process_type.id === input.input_task_n.process_type &&
@@ -67,7 +64,6 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 }
 
 function requestTaskSuccess(state, action) {
-	console.log('requestTaskSuccess action.data', action.data)
 	const task = action.data
 	task.task_ingredients = addInputsToTaskIngredients(task.task_ingredients, task.inputs)
 
@@ -117,7 +113,23 @@ function resetJustCreated(state, action) {
 	})
 }
 
-function addSuccess(state, action, key) {
+function addInputSuccess(state, action) {
+	const task = state.data[action.taskID]
+	task.inputs.push(action.input)
+	task.task_ingredients = addInputsToTaskIngredients(action.taskIngredients, task.inputs)
+	return update(state, {
+		data: {
+			[task.id]: {
+				$set: task,
+			},
+		},
+		ui: {
+			isAdding: { $set: false },
+		},
+	})
+}
+
+function addOutputSuccess(state, action) {
 	let task_index = state.data.findIndex(e =>
 		Compute.equate(e.id, action.task_id)
 	)
@@ -125,7 +137,7 @@ function addSuccess(state, action, key) {
 	return update(state, {
 		data: {
 			[task_index]: {
-				[key]: {
+				['items']: {
 					$push: [action.item],
 				},
 			},
@@ -135,7 +147,6 @@ function addSuccess(state, action, key) {
 		},
 	})
 }
-
 function addFailure(state, action) {
 	return update(state, {
 		ui: {
@@ -144,7 +155,7 @@ function addFailure(state, action) {
 	})
 }
 
-function removeSuccess(state, action, key) {
+function removeInputSuccess(state, action, key) {
 	let task_index = state.data.findIndex(e =>
 		Compute.equate(e.id, action.task_id)
 	)
