@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native'
 import pluralize from 'pluralize'
-import { FlagPill } from './Flag'
+import { FlagPill, AncestorFlagPill } from './Flag'
 
 export class TaskRow extends Component {
   constructor(props) {
@@ -76,6 +76,7 @@ export class TaskRow extends Component {
           <View style={styles.text_container}>
             <View style={styles.header}>
               {this.props.is_flagged && <FlagPill />}
+              {!this.props.is_flagged && this.props.is_ancestor_flagged && <AncestorFlagPill />}
               <Text style={styles.display}>{this.props.name}</Text>
             </View>
             <Text style={styles.title}>{this.props.title}</Text>
@@ -204,7 +205,7 @@ export class AttributeHeaderCell extends Component {
 				  <View style={{ flexDirection: 'row' }}>
 					  <Text style={styles.output}>
               {`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
-            <Text style={styles.date}>started at {this.props.date}</Text>
+            <Text style={styles.date}>started {this.props.date}</Text>
 				  </View>
 			  </View>
 		  </View>

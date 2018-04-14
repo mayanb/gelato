@@ -11,8 +11,10 @@ import {
 	IS_FLAGGED_INPUT,
 	NO_OUTPUT_ITEMS,
 	SCAN_ERROR,
+	IS_ANCESTOR_FLAGGED_INPUT,
+	UNLIKELY_INPUT,
 } from './QRSemantics'
-import { NETWORK_ERROR, PROGRAM_ERROR } from './ErrorTypes'
+import { PROGRAM_ERROR } from './ErrorTypes'
 
 export default class Compute {
 	constructor() {}
@@ -63,6 +65,7 @@ export default class Compute {
 			label: label,
 			is_open: true,
 			is_flagged: false,
+			is_ancestor_flagged: false,
 			label_index: 0,
 			custom_display: '',
 			is_trashed: false,
@@ -73,16 +76,35 @@ export default class Compute {
 	static isFlagged(semantic) {
 		return semantic === IS_FLAGGED_INPUT
 	}
+	static isAncestorFlagged(semantic) {
+		return semantic === IS_ANCESTOR_FLAGGED_INPUT
+	}
 
-	static getQRSemantic(mode, foundQR) {
+
+	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
 				return NOT_OUTPUT
 			}
 
-			if (foundQR.creating_task.is_flagged) {
+			const input_task = foundQR.creating_task
+
+			// if the input is flagged
+			if (input_task.is_flagged) {
 				return IS_FLAGGED_INPUT
+			}
+			if (input_task.num_flagged_ancestors > 0) {
+				return IS_ANCESTOR_FLAGGED_INPUT
+			}
+
+			console.log(input_task.product_type.id)
+			console.log(currentTask.product_type.id)
+			// if the product types don't match
+			if (input_task.product_type.id !== currentTask.product_type.id) {
+				if (isDandelion) {
+					return UNLIKELY_INPUT
+				}
 			}
 		}
 
@@ -97,7 +119,11 @@ export default class Compute {
 	}
 
 	static isOkay(semantic) {
-		return !semantic.length
+		return !semantic.length || Compute.isWarning(semantic)
+	}
+
+	static isWarning(semantic) {
+		return semantic === UNLIKELY_INPUT
 	}
 
 	// VALIDATE THE QR CODE SEQ
@@ -129,6 +155,10 @@ export default class Compute {
 				return "Hooray! You've already chosen this item to be moved."
 			case IS_FLAGGED_INPUT:
 				return "This task is flagged. Please ask an admin before using it."
+			case IS_ANCESTOR_FLAGGED_INPUT:
+				return "This task has a flagged ancestor. Please ask an admin before using it."
+			case UNLIKELY_INPUT:
+				return "This origin doesn't match. Are you sure you want to add it?"
 			case NO_OUTPUT_ITEMS:
 				return "This task doesn't have any output items."
 			case SCAN_ERROR:
@@ -185,7 +215,7 @@ export default class Compute {
 
 	static updateAllSearchVectors(list) {
 		list.forEach(e => {
-			e.search = Compute.createCompletedSearchVector(e)
+			e.search = `${e.search} ${e.name.toLowerCase()} ${e.code.toLowerCase()}`
 		})
 	}
 

@@ -112,6 +112,10 @@ export function systemIcon(icon) {
       return require('../resources/assets/system_icons/close_camera.png')
     case 'unknown':
       return require('../resources/assets/system_icons/unknown.png')
+    case 'orange_warning':
+      return require('../resources/assets/system_icons/orange_warning.png')
+    case 'red_warning':
+      return require('../resources/assets/system_icons/red_warning.png')
     default:
       return require('../resources/assets/system_icons/more_vert.png')
   }

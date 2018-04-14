@@ -337,8 +337,8 @@ function addFailure(err) {
 
 export function removeInput(task, input, index, isSearched) {
 	return dispatch => {
-		return Networking.del('/ics/inputs/', input.id)
-			.then(() => {
+		return Networking.del(`/ics/inputs/${input.id}/`)
+			.then((res) => {
 				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
 			})
 			.catch(e => {
