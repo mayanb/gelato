@@ -29,7 +29,9 @@ class Ingredients extends Component {
 
 		this.state = {
 			expanded: false,
+			foundTask: null,
 			inputError: null,
+
 			isFetchingItem: false,
 			isAddingInput: false,
 
@@ -38,9 +40,12 @@ class Ingredients extends Component {
 			searchData: [],
 			request: null,
 		}
+
+		this.handleAddInput = this.handleAddInput.bind(this)
 	}
 
 	componentDidMount() {
+		this.props.dispatch(actions.fetchTask(14406))
 		//this.testBarCodeRead()
 	}
 
@@ -53,7 +58,8 @@ class Ingredients extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				{this.state.inputError && this.renderQRModal()}
+				{this.state.foundTask && this.renderConfirmModal()}
+				{this.state.inputError && this.renderErrorModal()}
 				<PanelExpander
 					open={this.state.expanded}
 					camera={this.renderCamera()}
@@ -116,14 +122,35 @@ class Ingredients extends Component {
 				this.setState({
 					searchData: [],
 				})
-				this.handleAddInput(task)
+				this.setState({ foundTask: task })
 			}
 		} else {
 			this.setInputError(NO_OUTPUT_ITEMS, '', task.display)
 		}
 	}
 
-	renderQRModal() {
+	renderConfirmModal() {
+		const { foundTask } = this.state
+		const item = foundTask.items[0]
+
+		return (
+			<Modal onPress={this.handleCloseModal.bind(this)}>
+				<QRDisplay
+					unit={null}
+					barcode={item.item_qr}
+					creating_task_display={foundTask.display}
+					semantic={''}
+					shouldShowAmount={false}
+					onChange={() => null}
+					onPress={() => this.handleAddInput(foundTask)}
+					onCancel={this.handleCloseModal.bind(this)}
+					amount={null}
+				/>
+			</Modal>
+		)
+	}
+
+	renderErrorModal() {
 		let { inputError, isFetchingItem } = this.state
 		if (isFetchingItem) {
 			return this.renderQRLoading()
@@ -163,12 +190,13 @@ class Ingredients extends Component {
 	handleCloseModal() {
 		this.setState({
 			inputError: null,
+			foundTask: null,
 			expanded: false,
 		})
 	}
 
 	handleAddInput(task) {
-		this.setState({ isAddingInput: true })
+		this.setState({ isAddingInput: true, foundTask: null })
 		return this.dispatchWithError(actions.addInput(this.props.task, task.items[0]))
 			.then(() => this.setState({ expanded: true }))
 			.catch(err => console.error('Error adding input', err))
@@ -245,7 +273,7 @@ class Ingredients extends Component {
 				if (errorSemantic) {
 					this.setInputError(errorSemantic, code, task.display)
 				} else {
-					return this.handleAddInput(task)
+					this.setState({ foundTask: task })
 				}
 			})
 			.catch(err => {
@@ -280,7 +308,7 @@ class Ingredients extends Component {
 
 const mapStateToProps = (state, props) => {
 	return {
-		task: state.taskDetailsByID.data[props.taskID],
+		task: state.taskDetailsByID.data[14406],
 	}
 }
 

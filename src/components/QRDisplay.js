@@ -27,6 +27,12 @@ export default class QRDisplay extends Component {
       onCancel,
       amount
     } = this.props
+	  let text = ''
+    if(semantic && semantic.length) {
+	    text = Compute.getTextFromSemantic(semantic)
+    } else if(shouldShowAmount) {
+      text = 'Enter amount:'
+    }
     return (
       <View style={styles.container}>
         <View
@@ -43,7 +49,7 @@ export default class QRDisplay extends Component {
         {Compute.isFlagged(semantic) && <Flag />}
         <View style={styles.main}>
           <Text style={styles.semantic}>
-            {Compute.getTextFromSemantic(semantic)}
+            {text}
           </Text>
           {shouldShowAmount ? (
             <View>
@@ -55,7 +61,7 @@ export default class QRDisplay extends Component {
             </View>
           ) : null}
         </View>
-        {renderButtons(semantic, onPress, onCancel, amount)}
+        {renderButtons(semantic, onPress, onCancel, amount, shouldShowAmount)}
       </View>
     )
   }
@@ -109,9 +115,9 @@ const styles = StyleSheet.create({
   }
 })
 
-function renderButtons(semantic, onPress, onCancel, amount) {
+function renderButtons(semantic, onPress, onCancel, amount, shouldShowAmount) {
 	if (Compute.isOkay(semantic)) {
-		return <AddButton onAdd={onPress} disabled={!amount} />
+		return <AddButton onAdd={onPress} disabled={shouldShowAmount && !amount} />
 	} else {
 		return <CancelButton onCancel={onCancel} />
 	}

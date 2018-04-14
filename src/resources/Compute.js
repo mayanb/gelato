@@ -134,7 +134,7 @@ export default class Compute {
 			case SCAN_ERROR:
 				return "There was an error scanning this QR code."
 			default:
-				return 'Enter amount:'
+				return ''
 		}
 	}
 
