@@ -79,7 +79,7 @@ export class SearchDropdown extends Component {
 	}
 
 	keyExtractor = (item, index) => {
-		item.id
+		return item.id
 	}
 }
 

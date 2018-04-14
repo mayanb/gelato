@@ -126,7 +126,7 @@ const Navigation = StackNavigator(
 		Search: { screen: Search },
 	},
 	{
-		initialRouteName: 'Ingredients',
+		initialRouteName: 'MainStack',
 		mode: 'modal',
 		navigationOptions: {
 			header: null,

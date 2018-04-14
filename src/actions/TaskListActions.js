@@ -27,21 +27,19 @@ import {
 } from '../reducers/TaskAttributeReducerExtension'
 
 const OPEN_TASKS = 'OPEN_TASKS'
-const COMPLETED_TASKS = 'COMPLETED_TASKS'
 const SEARCHED_TASKS = 'SEARCHED_TASKS'
 const TASK_DETAILS = 'TASK_DETAILS'
 
-export function fetchOpenTasks() {
+export function fetchRecentTasks() {
 	return dispatch => {
 		dispatch(requestTasks(OPEN_TASKS))
-		var yesterday = new Date()
-		yesterday.setDate(yesterday.getDate() - 1)
+		const yesterday = new Date()
+		yesterday.setDate(yesterday.getDate() - 2)
 
 		// Get all open tasks
-		let openPayload = {
+		let payload = {
 			team: 1,
 			ordering: '-updated_at',
-			is_open: true,
 			start: DateFormatter.format(yesterday),
 			end: DateFormatter.format(new Date()),
 		}
@@ -53,47 +51,15 @@ export function fetchOpenTasks() {
 				let val = element[1]
 				localStorage[key] = val
 			})
-			openPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/')
-				.query(openPayload)
+			payload['team'] = localStorage['teamID']
+			return Networking.get('/ics/tasks/simple/')
+				.query(payload)
 				.then(res => {
-					let organized = Compute.organizeAttributesForTasks(res.body)
-					dispatch(requestTasksSuccess(OPEN_TASKS, organized))
+					console.log('res', res)
+					dispatch(requestTasksSuccess(OPEN_TASKS, res.body.results))
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(OPEN_TASKS, e))
-					throw e
-				})
-		})
-	}
-}
-
-export function fetchCompletedTasks() {
-	return dispatch => {
-		dispatch(requestTasks(COMPLETED_TASKS))
-
-		const completedPayload = {
-			team: 1,
-			ordering: '-updated_at',
-			is_open: false,
-		}
-
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
-			let localStorage = {}
-			values.forEach(element => {
-				let key = element[0]
-				let val = element[1]
-				localStorage[key] = val
-			})
-			completedPayload['team'] = localStorage['teamID']
-			return Networking.get('/ics/tasks/search/')
-				.query(completedPayload)
-				.then(res => {
-					let organized = Compute.organizeAttributesForTasks(res.body.results)
-					dispatch(requestTasksSuccess(COMPLETED_TASKS, organized))
-				})
-				.catch(e => {
-					dispatch(requestTasksFailure(COMPLETED_TASKS, e))
 					throw e
 				})
 		})

@@ -125,22 +125,10 @@ export class TaskRowHeader extends Component {
         fontSize: 15,
         color: Colors.lightGray,
       },
-      indicator: {
-        alignSelf: 'center',
-        marginTop: 20,
-        marginBottom: 20,
-      },
     })
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{this.props.title}</Text>
-        {this.props.isLoading && (
-          <ActivityIndicator
-            size="large"
-            color={Colors.base}
-            style={styles.indicator}
-          />
-        )}
       </View>
     )
   }
