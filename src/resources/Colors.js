@@ -13,6 +13,7 @@ export default class Colors {
 	static red = '#FF5C5C'
 	static black = 'rgba(0, 0, 0, 0.88)'
 	static darkGray = 'rgba(0,0,0,0.68)'
+	static orange = '#FFA300'
 
 	static lightPurple = '#A566E8'
 }

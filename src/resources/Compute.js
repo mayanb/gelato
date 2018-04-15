@@ -9,6 +9,7 @@ import {
 	INVALID_QR,
 	ALREADY_ADDED_MOVE_ITEM,
 	IS_FLAGGED_INPUT,
+	IS_ANCESTOR_FLAGGED_INPUT,
 	UNLIKELY_INPUT,
 } from './QRSemantics'
 import { PROGRAM_ERROR } from './ErrorTypes'
@@ -62,6 +63,7 @@ export default class Compute {
 			label: label,
 			is_open: true,
 			is_flagged: false,
+			is_ancestor_flagged: false,
 			label_index: 0,
 			custom_display: '',
 			is_trashed: false,
@@ -72,6 +74,10 @@ export default class Compute {
 	static isFlagged(semantic) {
 		return semantic === IS_FLAGGED_INPUT
 	}
+	static isAncestorFlagged(semantic) {
+		return semantic === IS_ANCESTOR_FLAGGED_INPUT
+	}
+
 
 	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
 		if (mode === 'inputs') {
@@ -85,6 +91,9 @@ export default class Compute {
 			// if the input is flagged
 			if (input_task.is_flagged) {
 				return IS_FLAGGED_INPUT
+			}
+			if (input_task.num_flagged_ancestors > 0) {
+				return IS_ANCESTOR_FLAGGED_INPUT
 			}
 
 			console.log(input_task.product_type.id)
@@ -144,6 +153,8 @@ export default class Compute {
 				return "Hooray! You've already chosen this item to be moved."
 			case IS_FLAGGED_INPUT:
 				return "This task is flagged. Please ask an admin before using it."
+			case IS_ANCESTOR_FLAGGED_INPUT:
+				return "This task has a flagged ancestor. Please ask an admin before using it."
 			case UNLIKELY_INPUT:
 				return "This origin doesn't match. Are you sure you want to add it?"
 			default:
