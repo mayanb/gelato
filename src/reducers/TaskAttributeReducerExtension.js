@@ -17,6 +17,7 @@ export const REQUEST_TASKS = 'REQUEST_TASKS'
 export const REQUEST_TASKS_SUCCESS = 'REQUEST_TASKS_SUCCESS'
 export const REQUEST_TASKS_FAILURE = 'REQUEST_TASKS_FAILURE'
 export const REQUEST_TASK_DETAIL_SUCCESS = 'REQUEST_TASK_DETAIL_SUCCESS'
+export const REQUEST_CREATE_TASK_SUCCESS = 'REQUEST_CREATE_TASK_SUCCESS'
 export const REQUEST_EDIT_TASK_SUCCESS = 'REQUEST_EDIT_TASK_SUCCESS'
 export const REQUEST_DELETE_TASK_SUCCESS = 'REQUEST_DELETE_TASK_SUCCESS'
 
@@ -31,6 +32,8 @@ export function _taskAttribute(state, action) {
 			return requestFailure(state, action, 'isFetchingTasksData')
 		case REQUEST_TASK_DETAIL_SUCCESS:
 			return requestTaskDetailSuccess(ns, action)
+		case REQUEST_CREATE_TASK_SUCCESS:
+			return requestCreateTaskSuccess(ns, action)
 		case REQUEST_EDIT_TASK_SUCCESS:
 			return requestEditTaskSuccess(ns, action)
 		case REQUEST_DELETE_TASK_SUCCESS:
@@ -127,6 +130,22 @@ function requestDeleteTaskSuccess(state, action) {
 	})
 }
 
+function requestCreateTaskSuccess(state, action) {
+	return update(state, {
+		ui: {
+			$merge: {
+				isCreatingItem: false,
+			},
+		},
+		dataByID: {
+			[action.task.id]: { $set: action.task },
+		},
+		recentIDs: {
+			$unshift: [action.task.id],
+		},
+	})
+}
+
 function requestEditTaskSuccess(state, action) {
 	let obj = { [action.field]: action.value }
 	return update(state, {
@@ -202,13 +221,9 @@ function addInputSuccess(state, action) {
 }
 
 function addOutputSuccess(state, action) {
-	let task_index = state.data.findIndex(e =>
-		Compute.equate(e.id, action.task_id)
-	)
-	if (task_index === -1) return state
 	return update(state, {
-		data: {
-			[task_index]: {
+		dataByID: {
+			[action.task_id]: {
 				['items']: {
 					$push: [action.item],
 				},

@@ -22,6 +22,7 @@ import {
 	ADD_FAILURE,
 	REMOVE_INPUT_SUCCESS,
 	REQUEST_TASK_DETAIL_SUCCESS,
+	REQUEST_CREATE_TASK_SUCCESS,
 	REQUEST_EDIT_TASK_SUCCESS,
 	REQUEST_DELETE_TASK_SUCCESS,
 	REQUEST_TASKS,
@@ -193,8 +194,8 @@ export function requestCreateTask(data) {
 function createTaskSuccess(data) {
 	return {
 		name: TASKS,
-		type: REQUEST_CREATE_SUCCESS,
-		item: data,
+		type: REQUEST_CREATE_TASK_SUCCESS,
+		task: data,
 	}
 }
 
