@@ -309,15 +309,41 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		return (
-			<ActionButton
-				activeOpacity={0.5}
-				buttonColor={Colors.base}
-				title="Inputs"
-				onPress={() => this.showCamera('inputs')}
-				renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
-			/>
-		)
+		if(this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
+			return (
+				<ActionButton
+					buttonColor={Colors.base}
+					activeOpacity={0.5}
+					icon={
+						<FAIcon name="qrcode" size={24} color="white" />
+					}>
+					{!isLabel && (
+						<ActionButton.Item
+							buttonColor={'green'}
+							title="Inputs"
+							onPress={() => this.showCamera('inputs')}>
+							<Image source={ImageUtility.requireIcon('inputs.png')} />
+						</ActionButton.Item>
+					)}
+					<ActionButton.Item
+						buttonColor={'blue'}
+						title={outputButtonName}
+						onPress={() => this.showCamera('items')}>
+						<Image source={ImageUtility.requireIcon('outputs.png')} />
+					</ActionButton.Item>
+				</ActionButton>
+			)
+		} else {
+			return (
+				<ActionButton
+					activeOpacity={0.5}
+					buttonColor={Colors.base}
+					title="Inputs"
+					onPress={() => this.showCamera('inputs')}
+					renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
+				/>
+			)
+		}
 	}
 }
 

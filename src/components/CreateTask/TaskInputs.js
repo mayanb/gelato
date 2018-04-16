@@ -58,23 +58,39 @@ class TaskInputs extends Component {
 
 	shouldShowBatchSize() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
-		return (
-			selectedProcess &&
-			selectedProduct &&
-			!isCreatingTask
-		)
+		if(this.props.isDandelion) {
+			return(
+				selectedProcess &&
+				selectedProduct &&
+				!isCreatingTask &&
+				selectedProcess.name.toLowerCase() !== "package"
+
+			)
+		} else {
+			return (
+				selectedProcess &&
+				selectedProduct &&
+				!isCreatingTask
+			)
+		}
+		
 	}
 
 	shouldShowNext() {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
-		return (
-			selectedProcess &&
-			selectedProduct &&
-			!isCreatingTask &&
-			isBatchSizeEntered
-		)
+		if (this.props.isDandelion && selectedProcess && selectedProcess.name.toLowerCase === "package") {
+			return selectedProcess && selectedProduct && !isCreatingTask
+		} else {
+			return (
+				selectedProcess &&
+				selectedProduct &&
+				!isCreatingTask &&
+				isBatchSizeEntered
+			)
+		}
+
 	}
 
 	handleSelect(type, item) {

@@ -22,6 +22,7 @@ class CreateTask extends Component {
 		}
 
 		this.handleCreateTask = this.handleCreateTask.bind(this)
+		this.handleCreateTaskDandelion = this.handleCreateTaskDandelion.bind(this)
 		this.handleOpenTask = this.handleOpenTask.bind(this)
 	}
 
@@ -45,6 +46,11 @@ class CreateTask extends Component {
 	}
 
 	renderTaskInputs() {
+		if(Compute.isDandelion(this.props.screenProps.team)) {
+			return (
+				<TaskInputs onNext={this.handleCreateTaskDandelion} isDandelion={true}/>
+			)
+		}
 		return (
 			<TaskInputs onNext={this.handleCreateTask} isDandelion={false}/>
 		)
@@ -80,6 +86,33 @@ class CreateTask extends Component {
 			.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 			.finally(() => this.setState({ isCreatingTask: false }))
 	}
+
+	handleCreateTaskDandelion(processType, productType, batchSize) {
+		if (this.state.isCreatingTask) {
+			return 
+		}
+		if(processType.name.toLowerCase() === "package") {
+			let { dispatch } = this.props
+			let taskData = {
+				processType: processType,
+				productType: productType,
+				amount: 0,
+			}
+			this.setState({ isCreatingTask: true })
+			Promise.all([
+				dispatch(taskActions.requestCreateTask(taskData)),
+			])
+				.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
+				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
+				.finally(() => this.setState({ isCreatingTask: false }))
+		} else {
+			this.handleCreateTask(processType, productType, batchSize)
+		}
+
+		
+	}
+
+
 
 	handleOpenTask() {
 		let { newTask } = this.state
