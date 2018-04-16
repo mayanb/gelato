@@ -141,7 +141,6 @@ function requestCreateSuccess(state, action) {
 		ui: {
 			$merge: {
 				isCreatingItem: false,
-				hasJustCreatedItem: action.item,
 			},
 		},
 		data: {

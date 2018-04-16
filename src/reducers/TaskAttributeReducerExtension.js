@@ -39,8 +39,6 @@ export function _taskAttribute(state, action) {
 			return updateAttributeSuccess(ns, action)
 		case UPDATE_ATTRIBUTE_FAILURE:
 			return updateAttributeFailure(ns, action)
-		case RESET_JUST_CREATED:
-			return resetJustCreated(ns, action)
 		case ADD_OUTPUT_SUCCESS:
 			return addOutputSuccess(ns, action)
 		case ADD_INPUT_SUCCESS:
@@ -185,14 +183,6 @@ function updateAttributeSuccess(state, action) {
 
 function updateAttributeFailure(state, action) {
 	return state
-}
-
-function resetJustCreated(state, action) {
-	return update(state, {
-		ui: {
-			$merge: { hasJustCreatedItem: false },
-		},
-	})
 }
 
 function addInputSuccess(state, action) {

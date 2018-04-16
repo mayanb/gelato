@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
 import { View, Image, StyleSheet } from 'react-native'
-import { connect } from 'react-redux'
 import ActionButton from 'react-native-action-button'
 import * as ImageUtility from '../../resources/ImageUtility'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import Colors from '../../resources/Colors'
 import SelectTypes from './SelectTypes'
 import SelectBatchSize from './SelectBatchSize'
 import pluralize from 'pluralize'
 
-class TaskInputs extends Component {
+export default class TaskInputs extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -112,10 +110,3 @@ const styles = StyleSheet.create({
 	},
 })
 
-const mapStateToProps = (state /*, props */) => {
-	return {
-		hasJustCreatedItem: state.openTasks.ui.hasJustCreatedItem,
-	}
-}
-
-export default connect(mapStateToProps)(TaskInputs)

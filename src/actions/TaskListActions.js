@@ -16,7 +16,6 @@ import {
 import {
 	UPDATE_ATTRIBUTE_SUCCESS,
 	UPDATE_ATTRIBUTE_FAILURE,
-	RESET_JUST_CREATED,
 	ADD_INPUT_SUCCESS,
 	ADD_OUTPUT_SUCCESS,
 	START_ADDING,
@@ -204,13 +203,6 @@ function createTaskFailure(err) {
 		name: TASKS,
 		type: REQUEST_CREATE_FAILURE,
 		error: err,
-	}
-}
-
-export function resetJustCreated() {
-	return {
-		name: TASKS,
-		type: RESET_JUST_CREATED,
 	}
 }
 

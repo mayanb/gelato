@@ -86,7 +86,6 @@ class Task extends Component {
 
 	componentDidMount() {
 		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
-		this.props.dispatch(actions.resetJustCreated())
 		this.setState({ isLoadingTask: true })
 		this.props.dispatch(actions.fetchTask(this.props.id))
 			.then(res => {

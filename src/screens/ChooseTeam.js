@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state /*, props */) => {
 	return {
 		teams: state.teams.data,
-		hasJustCreatedItem: state.move.ui.hasJustCreatedItem,
 		isCreatingItem: state.move.ui.isCreatingItem,
 	}
 }

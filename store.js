@@ -4,8 +4,7 @@ import { BasicReducer } from './src/reducers/BasicReducer'
 import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
-const OPEN_TASKS = 'OPEN_TASKS'
-const SEARCHED_TASKS = 'SEARCHED_TASKS'
+const TASKS = 'TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
 const TEAMS = 'TEAMS'
@@ -18,8 +17,10 @@ let defaultState = {
 	ui: {},
 }
 
-let defaultStateByID = {
-	data: {},
+let tasksDefaultState = {
+	dataByID: {},
+	recentIDs: [],
+	searchedIDs: [],
 	ui: {},
 }
 
@@ -40,20 +41,10 @@ function createFilteredReducer(
 }
 
 var reducer = combineReducers({
-  openTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === OPEN_TASKS,
-    defaultState
-  ),
-  searchedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === SEARCHED_TASKS,
-    defaultState
-  ),
-	taskDetailsByID: createFilteredReducer(
+	tasks: createFilteredReducer(
 		_taskAttribute,
-		action => action.name === TASK_DETAILS,
-		defaultStateByID
+		action => action.name === TASKS,
+		tasksDefaultState,
 	),
   processes: createFilteredReducer(
     BasicReducer,
