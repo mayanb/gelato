@@ -45,7 +45,6 @@ class Ingredients extends Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchTask(14406))
 		//this.testBarCodeRead()
 	}
 
@@ -115,7 +114,7 @@ class Ingredients extends Component {
 		if (task.items.length) {
 			const genericItem = task.items[0]
 			genericItem.creating_task = task
-			const errorSemantic = Compute.getQRSemantic('inputs', genericItem)
+			const errorSemantic = Compute.getQRSemantic('inputs', genericItem, this.props.task)
 			if (errorSemantic) {
 				this.setInputError(errorSemantic, genericItem.item_qr, task.display)
 			} else {
@@ -268,7 +267,7 @@ class Ingredients extends Component {
 			.then(res => {
 				const item = res.body.length ? res.body[0] : null
 				const task = item.creating_task
-				const errorSemantic = Compute.getQRSemantic('inputs', item)
+				const errorSemantic = Compute.getQRSemantic('inputs', item, this.props.task)
 				if (errorSemantic) {
 					this.setInputError(errorSemantic, code, task.display)
 				} else {
@@ -307,7 +306,7 @@ class Ingredients extends Component {
 
 const mapStateToProps = (state, props) => {
 	return {
-		task: state.taskDetailsByID.data[14406],
+		task: state.tasks.dataByID[props.taskID],
 	}
 }
 

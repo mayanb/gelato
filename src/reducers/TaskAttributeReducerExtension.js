@@ -205,7 +205,7 @@ function updateAttributeFailure(state, action) {
 }
 
 function addInputSuccess(state, action) {
-	const task = state.data[action.taskID]
+	const task = state.dataByID[action.taskID]
 	task.inputs.push(action.input)
 	task.task_ingredients = addInputsToTaskIngredients(action.taskIngredients, task.inputs)
 	return update(state, {

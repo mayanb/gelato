@@ -98,8 +98,6 @@ export default class Compute {
 				return IS_ANCESTOR_FLAGGED_INPUT
 			}
 
-			console.log(input_task.product_type.id)
-			console.log(currentTask.product_type.id)
 			// if the product types don't match
 			if (input_task.product_type.id !== currentTask.product_type.id) {
 				if (isDandelion) {

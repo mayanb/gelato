@@ -1,4 +1,3 @@
-// Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
@@ -9,8 +8,6 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
-	Button,
-	Text,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -20,14 +17,13 @@ import NavHeader from 'react-navigation-header-buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import * as actions from '../actions/TaskListActions'
-import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
+import { AttributeHeaderCell } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import AttributeList from '../components/Task/AttributeList'
-import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
 
 const ACTION_TITLE = 'More'
@@ -154,14 +150,6 @@ class Task extends Component {
 		)
 	}
 
-	showHelpAlert() {
-		AlertIOS.alert(
-			'Where do I see already scanned QR codes for this task?',
-			`** Tap the blue input button on the bottom right
-			\n ** Then tap the button with the # of scanned codes on the bottom left of the camera screen`
-		)
-	}
-
 	showConfirmDeleteAlert() {
 		let { task } = this.props
 		// Works on both iOS and Android
@@ -214,7 +202,7 @@ class Task extends Component {
 		)
 	}
 
-	showCamera(mode) {
+	showCamera() {
 		this.props.navigation.navigate('Ingredients', {
 			taskID: this.props.task.id,
 			onOpenTask: this.handleOpenTask.bind(this),
