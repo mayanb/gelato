@@ -13,15 +13,28 @@ export const ADD_FAILURE = 'ADD_FAILURE'
 export const REMOVE_INPUT_SUCCESS = 'REMOVE_INPUT_SUCCESS'
 export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
 
-export const REQUEST_TASK = 'REQUEST_TASK'
-export const REQUEST_TASK_SUCCESS = 'REQUEST_TASK_SUCCESS'
-export const REQUEST_TASK_FAILURE = 'REQUEST_TASK_FAILURE'
+export const REQUEST_TASKS = 'REQUEST_TASKS'
+export const REQUEST_TASKS_SUCCESS = 'REQUEST_TASKS_SUCCESS'
+export const REQUEST_TASKS_FAILURE = 'REQUEST_TASKS_FAILURE'
+export const REQUEST_TASK_DETAIL_SUCCESS = 'REQUEST_TASK_DETAIL_SUCCESS'
+export const REQUEST_EDIT_TASK_SUCCESS = 'REQUEST_EDIT_TASK_SUCCESS'
+export const REQUEST_DELETE_TASK_SUCCESS = 'REQUEST_DELETE_TASK_SUCCESS'
 
 export function _taskAttribute(state, action) {
 	let ns = BasicReducer(state, action)
 	switch (action.type) {
-		case REQUEST_TASK_SUCCESS:
-			return requestTaskSuccess(ns, action)
+		case REQUEST_TASKS:
+			return request(state, action, 'isFetchingTasksData')
+		case REQUEST_TASKS_SUCCESS:
+			return requestTasksSuccess(ns, action)
+		case REQUEST_TASKS_FAILURE:
+			return requestFailure(state, action, 'isFetchingTasksData')
+		case REQUEST_TASK_DETAIL_SUCCESS:
+			return requestTaskDetailSuccess(ns, action)
+		case REQUEST_EDIT_TASK_SUCCESS:
+			return requestEditTaskSuccess(ns, action)
+		case REQUEST_DELETE_TASK_SUCCESS:
+			return requestDeleteTaskSuccess(ns, action)
 		case UPDATE_ATTRIBUTE_SUCCESS:
 			return updateAttributeSuccess(ns, action)
 		case UPDATE_ATTRIBUTE_FAILURE:
@@ -44,6 +57,27 @@ export function _taskAttribute(state, action) {
 	return ns
 }
 
+function request(state, action, fetchingAttribute) {
+	return update(state, {
+		ui: {
+			[fetchingAttribute]: {
+				$set: true,
+			},
+		},
+	})
+}
+
+function requestFailure(state, action, fetchingAttribute) {
+	return update(state, {
+		ui: {
+			$merge: {
+				[fetchingAttribute]: false,
+				error: action.error,
+			},
+		},
+	})
+}
+
 function startAdding(state, action) {
 	return update(state, {
 		ui: {
@@ -63,7 +97,55 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 	})
 }
 
-function requestTaskSuccess(state, action) {
+function requestTasksSuccess(state, action) {
+	const recentTaskIDs = action.data.map(task => task.id)
+	const taskHash = {}
+	action.data.forEach(task => {
+		taskHash[task.id] = task
+	})
+	return update(state, {
+		ui: {
+			$merge: {
+				isFetchingTasksData: false,
+			},
+		},
+		recentIDs: { $set: recentTaskIDs },
+		dataByID: { $merge: taskHash },
+	})
+}
+
+function requestDeleteTaskSuccess(state, action) {
+	return update(state, {
+		ui: {
+			isDeletingItem: {
+				$set: false,
+			},
+		},
+		dataByID: {
+			$unset: [action.task.id],
+		},
+		recentIDs: { $set: state.recentIDs.filter(id => id !== action.task.id) },
+		searchedIDs: { $set: state.searchedIDs.filter(id => id !== action.task.id) },
+	})
+}
+
+function requestEditTaskSuccess(state, action) {
+	let obj = { [action.field]: action.value }
+	return update(state, {
+		ui: {
+			isEditingItem: {
+				$set: false,
+			},
+		},
+		dataByID: {
+			[action.task.id]: {
+				$merge: obj,
+			},
+		},
+	})
+}
+
+function requestTaskDetailSuccess(state, action) {
 	const task = action.data
 	task.task_ingredients = addInputsToTaskIngredients(task.task_ingredients, task.inputs)
 
@@ -73,7 +155,7 @@ function requestTaskSuccess(state, action) {
 				isFetchingData: false,
 			},
 		},
-		data: {
+		dataByID: {
 			[action.data.id]: { $set: task }
 		},
 	})
@@ -118,7 +200,7 @@ function addInputSuccess(state, action) {
 	task.inputs.push(action.input)
 	task.task_ingredients = addInputsToTaskIngredients(action.taskIngredients, task.inputs)
 	return update(state, {
-		data: {
+		dataByID: {
 			[task.id]: {
 				$set: task,
 			},
@@ -147,6 +229,7 @@ function addOutputSuccess(state, action) {
 		},
 	})
 }
+
 function addFailure(state, action) {
 	return update(state, {
 		ui: {
@@ -156,13 +239,9 @@ function addFailure(state, action) {
 }
 
 function removeInputSuccess(state, action, key) {
-	let task_index = state.data.findIndex(e =>
-		Compute.equate(e.id, action.task_id)
-	)
-	if (task_index === -1) return state
 	return update(state, {
-		data: {
-			[task_index]: {
+		dataByID: {
+			[action.task_id]: {
 				[key]: {
 					$splice: [[action.index, 1]],
 				},

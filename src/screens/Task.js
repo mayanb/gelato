@@ -46,7 +46,7 @@ class Task extends Component {
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.state = {
-			organized_attributes: props.task && props.task.process_type.attributes,
+			organized_attributes: props.task && props.task.process_type && props.task.process_type.attributes,
 		}
 	}
 
@@ -100,7 +100,8 @@ class Task extends Component {
 	render() {
 		let { organized_attributes } = this.state
 		let { task } = this.props
-		if (!task) {
+		//Check that full task object is loaded
+		if (!task || task.items === undefined) {
 			return null
 		}
 		const isLabel = task.process_type.name.toLowerCase() === 'label'
@@ -362,7 +363,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	return {
-		task: state.taskDetailsByID.data[props.id],
+		task: state.tasks.dataByID[props.id],
 	}
 }
 

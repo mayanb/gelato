@@ -71,6 +71,7 @@ class Main extends Component {
 
 	fetchRecentTasks() {
 		this.props.dispatch(actions.fetchRecentTasks())
+			.finally(() => this.setState({ refreshing: false }))
 	}
 
 	fetchProcesses() {
@@ -119,8 +120,8 @@ class Main extends Component {
 	}
 
 	render() {
-		let data = this.props.recentTasks.data
-		let isRefreshing = this.props.recentTasks.ui.isFetchingData || false
+		let data = this.props.recentTasks
+		let isRefreshing = this.props.loading || false
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -160,9 +161,9 @@ class Main extends Component {
 				title={item.display}
 				key={item.id}
 				id={item.id}
-				imgpath={item.process_icon}
+				imgpath={item.process_type.icon}
 				open={item.is_open}
-				name={item.process_name}
+				name={item.process_type.name}
 				is_flagged={item.is_flagged}
 				is_ancestor_flagged={item.num_flagged_ancestors > 0}
 				date={moment(item.updated_at).fromNow()}
@@ -215,8 +216,10 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
+	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
 	return {
-		recentTasks: state.openTasks,
+		recentTasks: recentTasks,
+		loading: state.tasks.ui.isFetchingTasksData,
 	}
 }
 

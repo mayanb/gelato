@@ -11,7 +11,6 @@ import {
 	REQUEST_CREATE_FAILURE,
 	REQUEST_DELETE_SUCCESS,
 	REQUEST_DELETE_FAILURE,
-	REQUEST_EDIT_ITEM_SUCCESS,
 	REQUEST_EDIT_ITEM_FAILURE,
 } from '../reducers/BasicReducer'
 import {
@@ -23,25 +22,24 @@ import {
 	START_ADDING,
 	ADD_FAILURE,
 	REMOVE_INPUT_SUCCESS,
-	REQUEST_TASK_SUCCESS,
+	REQUEST_TASK_DETAIL_SUCCESS,
+	REQUEST_EDIT_TASK_SUCCESS,
+	REQUEST_DELETE_TASK_SUCCESS,
+	REQUEST_TASKS,
+	REQUEST_TASKS_SUCCESS,
+	REQUEST_TASKS_FAILURE,
 } from '../reducers/TaskAttributeReducerExtension'
 
-const OPEN_TASKS = 'OPEN_TASKS'
-const SEARCHED_TASKS = 'SEARCHED_TASKS'
-const TASK_DETAILS = 'TASK_DETAILS'
+const TASKS = 'TASKS'
 
 export function fetchRecentTasks() {
 	return dispatch => {
-		dispatch(requestTasks(OPEN_TASKS))
-		const yesterday = new Date()
-		yesterday.setDate(yesterday.getDate() - 2)
+		dispatch(requestTasks(TASKS))
 
 		// Get all open tasks
 		let payload = {
 			team: 1,
 			ordering: '-updated_at',
-			start: DateFormatter.format(yesterday),
-			end: DateFormatter.format(new Date()),
 		}
 
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
@@ -55,11 +53,10 @@ export function fetchRecentTasks() {
 			return Networking.get('/ics/tasks/simple/')
 				.query(payload)
 				.then(res => {
-					console.log('res', res)
-					dispatch(requestTasksSuccess(OPEN_TASKS, res.body.results))
+					dispatch(requestTasksSuccess(TASKS, res.body.results))
 				})
 				.catch(e => {
-					dispatch(requestTasksFailure(OPEN_TASKS, e))
+					dispatch(requestTasksFailure(TASKS, e))
 					throw e
 				})
 		})
@@ -68,15 +65,15 @@ export function fetchRecentTasks() {
 
 function requestTasks(name) {
 	return {
-		type: REQUEST,
+		type: REQUEST_TASKS,
 		name: name,
 	}
 }
 
 function requestTasksSuccess(name, data, append = false) {
 	return {
-		type: REQUEST_SUCCESS,
-		name: name,
+		type: REQUEST_TASKS_SUCCESS,
+		name: TASKS,
 		data: data,
 		append: append,
 	}
@@ -84,7 +81,7 @@ function requestTasksSuccess(name, data, append = false) {
 
 function requestTasksFailure(name, err) {
 	return {
-		type: REQUEST_FAILURE,
+		type: REQUEST_TASKS_FAILURE,
 		name: name,
 		error: err,
 	}
@@ -118,14 +115,14 @@ export function fetchTask(task_id) {
 function requestTask() {
 	return {
 		type: REQUEST,
-		name: TASK_DETAILS,
+		name: TASKS,
 	}
 }
 
 function requestTaskSuccess(data) {
 	return {
-		type: REQUEST_TASK_SUCCESS,
-		name: TASK_DETAILS,
+		type: REQUEST_TASK_DETAIL_SUCCESS,
+		name: TASKS,
 		data: data,
 	}
 }
@@ -133,7 +130,7 @@ function requestTaskSuccess(data) {
 function requestTaskFailure(err) {
 	return {
 		type: REQUEST_FAILURE,
-		name: TASK_DETAILS,
+		name: TASKS,
 		error: err,
 	}
 }
@@ -188,7 +185,7 @@ export function requestCreateTask(data) {
 				return res.body
 			})
 			.catch(e => {
-				dispatch(createTaskFailure(OPEN_TASKS, e))
+				dispatch(createTaskFailure(TASKS, e))
 				throw e
 			})
 	}
@@ -196,7 +193,7 @@ export function requestCreateTask(data) {
 
 function createTaskSuccess(data) {
 	return {
-		name: OPEN_TASKS,
+		name: TASKS,
 		type: REQUEST_CREATE_SUCCESS,
 		item: data,
 	}
@@ -204,7 +201,7 @@ function createTaskSuccess(data) {
 
 function createTaskFailure(err) {
 	return {
-		name: OPEN_TASKS,
+		name: TASKS,
 		type: REQUEST_CREATE_FAILURE,
 		error: err,
 	}
@@ -212,7 +209,7 @@ function createTaskFailure(err) {
 
 export function resetJustCreated() {
 	return {
-		name: OPEN_TASKS,
+		name: TASKS,
 		type: RESET_JUST_CREATED,
 	}
 }
@@ -252,7 +249,7 @@ export function addOutput(task, qr, amount, isSearched) {
 
 export function startAddingInput() {
 	return {
-		name: TASK_DETAILS,
+		name: TASKS,
 		type: START_ADDING,
 	}
 }
@@ -260,7 +257,7 @@ export function startAddingInput() {
 function addInputSuccess(task, input) {
 	return {
 		type: ADD_INPUT_SUCCESS,
-		name: TASK_DETAILS,
+		name: TASKS,
 		input: input,
 		taskID: task.id,
 		taskIngredients: input.input_task_ingredients,
@@ -270,7 +267,7 @@ function addInputSuccess(task, input) {
 function addInputFailure(err) {
 	return {
 		type: ADD_FAILURE,
-		name: TASK_DETAILS,
+		name: TASKS,
 		error: err,
 	}
 }
@@ -296,7 +293,7 @@ function addSuccess(type, task, item, isSearched) {
 function addFailure(err) {
 	return {
 		type: ADD_FAILURE,
-		name: OPEN_TASKS,
+		name: TASKS,
 		error: err,
 	}
 }
@@ -344,8 +341,8 @@ export function requestDeleteTask(task, isSearched, success) {
 function deleteTaskSuccess(name, data) {
 	return {
 		name: name,
-		type: REQUEST_DELETE_SUCCESS,
-		item: data,
+		type: REQUEST_DELETE_TASK_SUCCESS,
+		task: data,
 	}
 }
 
@@ -381,11 +378,11 @@ function requestEditItemFailure(name, err) {
 	}
 }
 
-function requestEditItemSuccess(name, item, key, value) {
+function requestEditItemSuccess(name, task, key, value) {
 	return {
 		name: name,
-		type: REQUEST_EDIT_ITEM_SUCCESS,
-		item: item,
+		type: REQUEST_EDIT_TASK_SUCCESS,
+		task: task,
 		field: key,
 		value: value,
 	}
@@ -409,12 +406,6 @@ export function requestRenameTask(task, custom_display, isSearched) {
 }
 
 function findReducer(task, isSearched) {
-	let name = SEARCHED_TASKS
-	if (!isSearched && task.is_open) {
-		name = OPEN_TASKS
-	} else if (!isSearched) {
-		name = COMPLETED_TASKS
-	}
-	return name
+	return TASKS
 }
 
