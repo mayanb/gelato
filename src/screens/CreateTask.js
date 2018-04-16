@@ -46,11 +46,6 @@ class CreateTask extends Component {
 	}
 
 	renderTaskInputs() {
-		if(Compute.isDandelion(this.props.screenProps.team)) {
-			return (
-				<TaskInputs onNext={this.handleCreateTaskDandelion} isDandelion={true}/>
-			)
-		}
 		return (
 			<TaskInputs onNext={this.handleCreateTask} isDandelion={false}/>
 		)

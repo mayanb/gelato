@@ -61,8 +61,7 @@ class TaskInputs extends Component {
 		return (
 			selectedProcess &&
 			selectedProduct &&
-			!isCreatingTask &&
-			!this.props.isDandelion
+			!isCreatingTask
 		)
 	}
 
@@ -70,16 +69,12 @@ class TaskInputs extends Component {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
-		if (this.props.isDandelion) {
-			return selectedProcess && selectedProduct && !isCreatingTask
-		} else {
-			return (
-				selectedProcess &&
-				selectedProduct &&
-				!isCreatingTask &&
-				isBatchSizeEntered
-			)
-		}
+		return (
+			selectedProcess &&
+			selectedProduct &&
+			!isCreatingTask &&
+			isBatchSizeEntered
+		)
 	}
 
 	handleSelect(type, item) {
