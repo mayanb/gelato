@@ -28,7 +28,7 @@ export default class QRDisplay extends Component {
 			amount
 		} = this.props
 		const warning = Compute.isWarning(semantic)
-		const shouldShowAmount = Compute.isOkay(semantic)
+		const shouldShowAmount = this.props.shouldShowAmount && Compute.isOkay(semantic)
 		const text = Compute.getTextFromSemantic(semantic)
 		return (
 			<View style={styles.container}>

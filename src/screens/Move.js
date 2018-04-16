@@ -93,6 +93,7 @@ class Move extends Component {
 				activeOpacity={active ? 0.5 : 1}
 				buttonText={String(items.length)}
 				position="left"
+				key="itemList"
 				onPress={active && this.handleToggleItemList.bind(this)}
 			/>
 		)
@@ -109,6 +110,7 @@ class Move extends Component {
 				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 				onPress={active && this.navigateToNext}
 				position="right"
+				key="next"
 			/>
 		)
 	}
