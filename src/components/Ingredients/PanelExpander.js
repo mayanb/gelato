@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Animated, Image, Dimensions } from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
+import GestureRecognizer from 'react-native-swipe-gestures';
+
 
 import Colors from '../../resources/Colors'
 
@@ -22,10 +24,10 @@ export default class PanelExpander extends Component {
 	}
 
 	componentWillReceiveProps(np) {
-		if(np.open && !this.state.open)
+		if (np.open && !this.state.open)
 			this.handleOpen()
 
-		if(!np.open && this.state.open)
+		if (!np.open && this.state.open)
 			this.handleClose()
 	}
 
@@ -59,7 +61,7 @@ export default class PanelExpander extends Component {
 		})
 
 		return (
-			<View style={styles.container}>
+			<GestureRecognizer onSwipeUp={this.handleOpen} style={styles.container}>
 				{this.state.open && <Overlay onClose={this.handleClose} />}
 				{camera}
 				<Animated.View style={{
@@ -70,7 +72,7 @@ export default class PanelExpander extends Component {
 					              animateOpen={this.state.panelHeight} />
 					<IngredientsContainer onOpen={this.handleOpen} content={ingredientsContent} />
 				</Animated.View>
-			</View>
+			</GestureRecognizer>
 		)
 	}
 }
