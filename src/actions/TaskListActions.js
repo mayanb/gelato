@@ -135,8 +135,7 @@ function requestTaskFailure(err) {
 	}
 }
 
-export function updateAttribute(task, attribute_id, new_value, isSearched) {
-	let name = findReducer(task, isSearched)
+export function updateAttribute(task, attribute_id, new_value) {
 	return dispatch => {
 		let payload = {
 			task: task.id,
@@ -146,25 +145,25 @@ export function updateAttribute(task, attribute_id, new_value, isSearched) {
 
 		return Networking.post('/ics/taskAttributes/create/')
 			.send(payload)
-			.then(res => dispatch(updateAttributeSuccess(name, res.body)))
+			.then(res => dispatch(updateAttributeSuccess(res.body)))
 			.catch(e => {
-				dispatch(updateAttributeFailure(name, e))
+				dispatch(updateAttributeFailure(e))
 				throw e
 			})
 	}
 }
 
-function updateAttributeSuccess(name, data) {
+function updateAttributeSuccess(data) {
 	return {
-		name: name,
+		name: TASKS,
 		type: UPDATE_ATTRIBUTE_SUCCESS,
 		data: data,
 	}
 }
 
-function updateAttributeFailure(name, err) {
+function updateAttributeFailure(err) {
 	return {
-		name: name,
+		name: TASKS,
 		type: UPDATE_ATTRIBUTE_FAILURE,
 		error: err,
 	}
@@ -223,14 +222,14 @@ export function addInput(task, item) {
 	}
 }
 
-export function addOutput(task, qr, amount, isSearched) {
+export function addOutput(task, qr, amount) {
 	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
 	return dispatch => {
-		dispatch(startAdding(task, isSearched))
+		dispatch(startAdding())
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
-				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
+				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body))
 				return task
 			})
 			.catch(e => {
@@ -265,19 +264,17 @@ function addInputFailure(err) {
 	}
 }
 
-export function startAdding(task, isSearched) {
-	let name = findReducer(task, isSearched)
+export function startAdding() {
 	return {
-		name: name,
+		name: TASKS,
 		type: START_ADDING,
 	}
 }
 
-function addSuccess(type, task, item, isSearched) {
-	let name = findReducer(task, isSearched)
+function addSuccess(type, task, item) {
 	return {
 		type: type,
-		name: name,
+		name: TASKS,
 		item: item,
 		task_id: task.id,
 	}
@@ -291,11 +288,11 @@ function addFailure(err) {
 	}
 }
 
-export function removeInput(task, input, index, isSearched) {
+export function removeInput(task, input, index) {
 	return dispatch => {
 		return Networking.del(`/ics/inputs/${input.id}/`)
 			.then((res) => {
-				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
+				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index))
 			})
 			.catch(e => {
 				//dispatch(removeFailure(e))
@@ -304,76 +301,73 @@ export function removeInput(task, input, index, isSearched) {
 	}
 }
 
-function removeSuccess(type, task, index, isSearched) {
-	let name = findReducer(task, isSearched)
+function removeSuccess(type, task, index) {
 	return {
 		type: type,
-		name: name,
+		name: TASKS,
 		task_id: task.id,
 		index: index,
 	}
 }
 
-export function requestDeleteTask(task, isSearched, success) {
-	let name = findReducer(task, isSearched)
+export function requestDeleteTask(task, success) {
 	let payload = { is_trashed: true }
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
 			.then(() => {
-				dispatch(deleteTaskSuccess(name, task))
+				dispatch(deleteTaskSuccess(task))
 				success()
 			})
 			.catch(e => {
-				dispatch(deleteTaskFailure(name, e))
+				dispatch(deleteTaskFailure(e))
 				throw e
 			})
 	}
 }
 
-function deleteTaskSuccess(name, data) {
+function deleteTaskSuccess(data) {
 	return {
-		name: name,
+		name: TASKS,
 		type: REQUEST_DELETE_TASK_SUCCESS,
 		task: data,
 	}
 }
 
-function deleteTaskFailure(name, err) {
+function deleteTaskFailure(err) {
 	return {
-		name: name,
+		name: TASKS,
 		type: REQUEST_DELETE_FAILURE,
 		error: err,
 	}
 }
 
-export function requestFlagTask(task, isSearched) {
-	let name = findReducer(task, isSearched)
+export function requestFlagTask(task) {
 	let payload = { is_flagged: true }
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
 			.then(() => {
-				dispatch(requestEditItemSuccess(name, task, 'is_flagged', true))
+				dispatch(requestEditItemSuccess(task, 'is_flagged', true))
 			})
 			.catch(e => {
-				dispatch(requestEditItemFailure(name, e))
+				dispatch(requestEditItemFailure(e))
 				throw e
 			})
 	}
 }
 
-function requestEditItemFailure(name, err) {
+function requestEditItemFailure(err) {
 	return {
-		name: name,
+		name: TASKS,
 		type: REQUEST_EDIT_ITEM_FAILURE,
 		error: err,
 	}
 }
 
-function requestEditItemSuccess(name, task, key, value) {
+function requestEditItemSuccess(task, key, value) {
 	return {
-		name: name,
+		name: TASKS,
 		type: REQUEST_EDIT_TASK_SUCCESS,
 		task: task,
 		field: key,
@@ -381,24 +375,19 @@ function requestEditItemSuccess(name, task, key, value) {
 	}
 }
 
-export function requestRenameTask(task, custom_display, isSearched) {
-	let name = findReducer(task, isSearched)
+export function requestRenameTask(task, custom_display) {
 	let payload = { custom_display: custom_display }
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
 			.then(() => {
 				let key = custom_display.length ? 'display' : 'custom_display'
-				dispatch(requestEditItemSuccess(name, task, key, custom_display))
+				dispatch(requestEditItemSuccess(task, key, custom_display))
 			})
 			.catch(e => {
-				dispatch(requestEditItemFailure(name, e))
+				dispatch(requestEditItemFailure(e))
 				throw e
 			})
 	}
-}
-
-function findReducer(task, isSearched) {
-	return TASKS
 }
 

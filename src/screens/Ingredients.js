@@ -212,7 +212,7 @@ class Ingredients extends Component {
 			}
 		}
 		this.dispatchWithError(
-			actions.removeInput(task, item, i, false)
+			actions.removeInput(task, item, i)
 		).then(success)
 	}
 
@@ -228,7 +228,6 @@ class Ingredients extends Component {
 			open: creatingTask.open,
 			task: creatingTask,
 			date: creatingTask.created_at,
-			taskSearch: true,
 			title: creatingTask.display,
 			imgpath: creatingTask.process_type.icon,
 		})

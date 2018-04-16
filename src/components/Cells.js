@@ -13,7 +13,9 @@ import {
   View,
 } from 'react-native'
 import pluralize from 'pluralize'
+import moment from 'moment'
 import { FlagPill, AncestorFlagPill } from './Flag'
+import { DateFormatter } from '../resources/Utility'
 
 export class TaskRow extends Component {
   constructor(props) {
@@ -80,7 +82,7 @@ export class TaskRow extends Component {
               <Text style={styles.display}>{this.props.name}</Text>
             </View>
             <Text style={styles.title}>{this.props.title}</Text>
-            <Text style={styles.date}>{this.props.date}</Text>
+            <Text style={styles.date}>{moment(this.props.date).fromNow()}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -193,7 +195,7 @@ export class AttributeHeaderCell extends Component {
 				  <View style={{ flexDirection: 'row' }}>
 					  <Text style={styles.output}>
               {`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
-            <Text style={styles.date}>started {this.props.date}</Text>
+            <Text style={styles.date}>started {DateFormatter.shorten(this.props.date)}</Text>
 				  </View>
 			  </View>
 		  </View>

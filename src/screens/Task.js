@@ -23,7 +23,6 @@ import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
-import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
@@ -191,7 +190,7 @@ class Task extends Component {
 		}
 		if (ACTION_OPTIONS[i] === 'Flag') {
 			this.dispatchWithError(
-				actions.requestFlagTask(this.props.task, this.props.taskSearch)
+				actions.requestFlagTask(this.props.task)
 			)
 		}
 		if (ACTION_OPTIONS[i] === 'Delete') {
@@ -201,7 +200,7 @@ class Task extends Component {
 
 	handleRenameTask(text) {
 		this.dispatchWithError(
-			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
+			actions.requestRenameTask(this.props.task, text)
 		)
 		this.props.navigation.setParams({ name: text })
 	}
@@ -211,19 +210,9 @@ class Task extends Component {
 			this.props.navigation.goBack()
 		}
 		this.dispatchWithError(
-			actions.requestDeleteTask(this.props.task, this.props.taskSearch, success)
+			actions.requestDeleteTask(this.props.task, success)
 		)
 	}
-
-	// addInputs() {
-	// 	this.props.navigation.navigate('QRScanner', {
-	// 		task_id: this.props.task.id,
-	// 		open: this.props.open,
-	// 		taskSearch: this.props.taskSearch,
-	// 		processUnit: this.props.task.process_type.unit,
-	// 		onOpenTask: this.handleOpenTask.bind(this),
-	// 	})
-	// }
 
 	showCamera(mode) {
 		this.props.navigation.navigate('Ingredients', {
@@ -241,7 +230,6 @@ class Task extends Component {
 			animated: true,
 			passProps: {
 				task: task,
-				taskSearch: true,
 				id: task.id,
 				open: task.is_open,
 				title: task.display,
@@ -283,9 +271,6 @@ class Task extends Component {
 		let imgpath = this.props.imgpath
 			? this.props.imgpath
 			: task.process_type.icon
-		let date = this.props.taskSearch
-			? DateFormatter.shorten(this.props.date)
-			: this.props.date
 		let outputAmount = task.items.reduce((total, current) => {
 			return total + parseFloat(current.amount)
 		}, 0)
@@ -293,7 +278,7 @@ class Task extends Component {
 			<AttributeHeaderCell
 				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
-				date={date}
+				date={this.props.date}
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}

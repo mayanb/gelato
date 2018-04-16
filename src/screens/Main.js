@@ -15,7 +15,6 @@ import * as actions from '../actions/TaskListActions'
 import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
-import moment from 'moment'
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -166,7 +165,7 @@ class Main extends Component {
 				name={item.process_type.name}
 				is_flagged={item.is_flagged}
 				is_ancestor_flagged={item.num_flagged_ancestors > 0}
-				date={moment(item.updated_at).fromNow()}
+				date={item.updated_at}
 				onPress={this.openTask.bind(this)}
 			/>
 		)

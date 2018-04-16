@@ -149,7 +149,6 @@ class Search extends Component {
 			open: foundTask.open,
 			task: foundTask,
 			date: foundTask.created_at,
-			taskSearch: true,
 			title: foundTask.display,
 			imgpath: foundTask.process_type.icon,
 		})

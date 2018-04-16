@@ -116,8 +116,7 @@ class CreateTask extends Component {
 			name: newTask.display,
 			open: true,
 			task: newTask,
-			date: DateFormatter.shorten(newTask.created_at),
-			taskSearch: false,
+			date: newTask.created_at,
 			title: newTask.display,
 		})
 	}

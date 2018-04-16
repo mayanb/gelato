@@ -113,8 +113,7 @@ class ChooseTeam extends Component {
 			name: task.display,
 			open: true,
 			task: task,
-			date: DateFormatter.shorten(task.created_at),
-			taskSearch: false,
+			date: task.created_at,
 			title: task.display,
 		})
 	}
