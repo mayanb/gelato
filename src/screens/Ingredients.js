@@ -43,10 +43,11 @@ class Ingredients extends Component {
 
 		this.handleAddInput = this.handleAddInput.bind(this)
 		this.handleEditAmount = this.handleEditAmount.bind(this)
+		this.handleRemoveInput = this.handleRemoveInput.bind(this)
 	}
 
 	componentDidMount() {
-		this.props.dispatch(actions.fetchTask(14406))
+		//this.props.dispatch(actions.fetchTask(14406))
 		//this.testBarCodeRead()
 	}
 
@@ -92,6 +93,7 @@ class Ingredients extends Component {
 					taskIngredient={ta}
 					key={ta.id}
 					onEditAmount={this.handleEditAmount}
+					onRemoveInput={this.handleRemoveInput}
 				/>)}
 			</ScrollView>
 		)
@@ -213,17 +215,8 @@ class Ingredients extends Component {
 			.finally(() => this.setState({ isAddingInput: false }))
 	}
 
-	handleRemoveInput(i) {
-		let { task } = this.props
-		let item = task['inputs'][i]
-		const success = () => {
-			if (this.props.task.inputs.length === 0) {
-				this.handleCloseModal()
-			}
-		}
-		this.dispatchWithError(
-			actions.removeInput(task, item, i)
-		).then(success)
+	handleRemoveInput(inputID) {
+		this.dispatchWithError(actions.removeInput(inputID, this.props.task.id))
 	}
 
 	handleClose() {
@@ -317,8 +310,8 @@ class Ingredients extends Component {
 
 const mapStateToProps = (state, props) => {
 	return {
-		//task: state.tasks.dataByID[props.taskID],
-		task: state.tasks.dataByID[14406],
+		task: state.tasks.dataByID[props.taskID],
+		//task: state.tasks.dataByID[14406],
 	}
 }
 

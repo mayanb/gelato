@@ -332,11 +332,11 @@ function addFailure(err) {
 	}
 }
 
-export function removeInput(task, input, index) {
+export function removeInput(inputID, taskID) {
 	return dispatch => {
-		return Networking.del(`/ics/inputs/${input.id}/`)
+		return Networking.del(`/ics/inputs/${inputID}/`)
 			.then((res) => {
-				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index))
+				dispatch(removeInputSuccess(inputID, taskID))
 			})
 			.catch(e => {
 				//dispatch(removeFailure(e))
@@ -345,12 +345,12 @@ export function removeInput(task, input, index) {
 	}
 }
 
-function removeSuccess(type, task, index) {
+function removeInputSuccess(inputID, taskID) {
 	return {
-		type: type,
+		type: REMOVE_INPUT_SUCCESS,
 		name: TASKS,
-		task_id: task.id,
-		index: index,
+		taskID: taskID,
+		inputID: inputID,
 	}
 }
 

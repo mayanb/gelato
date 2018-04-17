@@ -4,6 +4,7 @@ import * as ImageUtility from '../../resources/ImageUtility'
 import Colors from '../../resources/Colors'
 import { formatNumber, formatAmount } from '../../resources/Utility'
 import pluralize from 'pluralize'
+import TaskContainer from './TaskContainer'
 
 export default class TaskIngredient extends Component {
 	constructor(props) {
@@ -42,7 +43,7 @@ export default class TaskIngredient extends Component {
 				paddingBottom: 12,
 			},
 		})
-		const { taskIngredient } = this.props
+		const { taskIngredient, onRemoveInput } = this.props
 		const { ingredient, inputs, scaled_amount, actual_amount } = taskIngredient
 		const { process_type } = ingredient
 		return (
@@ -58,7 +59,7 @@ export default class TaskIngredient extends Component {
 					</View>
 					<EditButton onEdit={this.handleEdit} />
 				</View>
-				<TaskContainer inputs={inputs} />
+				<TaskContainer inputs={inputs} onRemove={onRemoveInput} />
 			</View>
 		)
 	}
@@ -138,41 +139,4 @@ function EditButton({ onEdit }) {
 	)
 }
 
-function TaskContainer({ inputs }) {
-	const styles = StyleSheet.create({
-		container: {
-			height: 36,
-			paddingLeft: 32,
-			flexDirection: 'row',
-			alignItems: 'center',
-			backgroundColor: Colors.extremelyLightGray,
-		},
-		taskCountContainer: {
-			width: 72,
-			flex: 0,
-		},
-		taskCount: {
-			color: Colors.lightGray,
-		},
-		expandButton: {
-			height: 36,
-			width: 36,
-			justifyContent: 'center',
-		},
-		arrowIcon: {
-			height: 16,
-			width: 16,
-		},
-	})
-	const taskCount = `${inputs.length} ${pluralize('task', inputs.length)}`
-	return (
-		<View style={styles.container}>
-			<View style={styles.taskCountContainer}>
-				<Text style={styles.taskCount}>{taskCount}</Text>
-			</View>
-			<TouchableOpacity style={styles.expandButton}>
-				<Image source={ImageUtility.requireIcon('downarrow.png')} style={styles.arrowIcon} />
-			</TouchableOpacity>
-		</View>
-	)
-}
+

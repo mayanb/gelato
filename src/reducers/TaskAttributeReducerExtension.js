@@ -54,7 +54,7 @@ export function _taskAttribute(state, action) {
 		case ADD_FAILURE:
 			return addFailure(ns, action)
 		case REMOVE_INPUT_SUCCESS:
-			return removeInputSuccess(ns, action, 'inputs')
+			return removeInputSuccess(ns, action)
 		case REQUEST_EDIT_TASK_INGREDIENT:
 			return request(state, action, 'isEditingTaskIngredient')
 		case REQUEST_EDIT_TASK_INGREDIENT_SUCCESS:
@@ -253,12 +253,14 @@ function addFailure(state, action) {
 }
 
 function removeInputSuccess(state, action, key) {
+	const task = state.dataByID[action.taskID]
+	const inputs = task.inputs.filter(input => input.id !== action.inputID)
+	const taskIngredients = addInputsToTaskIngredients(task.task_ingredients, inputs)
 	return update(state, {
 		dataByID: {
-			[action.task_id]: {
-				[key]: {
-					$splice: [[action.index, 1]],
-				},
+			[action.taskID]: {
+				task_ingredients: { $set: taskIngredients },
+				inputs: { $set: inputs },
 			},
 		},
 	})
