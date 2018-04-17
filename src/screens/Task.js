@@ -86,6 +86,12 @@ class Task extends Component {
 		})
 	}
 
+	componentWillReceiveProps(np) {
+		if (np.task.is_flagged !== this.props.task.is_flagged) {
+			this.updateActionSheet(np.task)
+		}
+	}
+
 	componentDidMount() {
 		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
 		this.props.dispatch(actions.resetJustCreated())
@@ -101,19 +107,24 @@ class Task extends Component {
 			})
 			.catch(e => console.log(e))
 
-		let action_options = this.props.task.is_flagged
+		this.updateActionSheet(this.props.task)
+	}
+
+	updateActionSheet(task) {
+		console.log('hello updating action sheet')
+		console.log(task.is_flagged)
+		let action_options = task.is_flagged
 			? ACTION_OPTIONS.filter(o => o !== 'Flag')
 			: ACTION_OPTIONS
 
-		action_options = !this.allowEditBatchSize()
+		action_options = !this.allowEditBatchSize(task)
 			? action_options.filter(o => o !== 'Edit batch size')
 			: action_options
 
-		this.setState({action_options: action_options})
+		this.setState({ action_options: action_options })
 	}
 
-	allowEditBatchSize() {
-		let { task } = this.props
+	allowEditBatchSize(task) {
 		let proc = task.process_type.name.toLowerCase()
 		return (
 			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
@@ -226,7 +237,7 @@ class Task extends Component {
 
 	handlePress(i) {
 		let { action_options } = this.state
-		if (action_options === 'Rename') {
+		if (action_options[i] === 'Rename') {
 			this.showCustomNameAlert()
 		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(
