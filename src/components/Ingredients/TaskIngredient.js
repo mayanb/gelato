@@ -4,7 +4,7 @@ import * as ImageUtility from '../../resources/ImageUtility'
 import Colors from '../../resources/Colors'
 import { formatNumber, formatAmount } from '../../resources/Utility'
 import pluralize from 'pluralize'
-import TaskContainer from './TaskContainer'
+import InputsContainer from './InputsContainer'
 
 export default class TaskIngredient extends Component {
 	constructor(props) {
@@ -59,7 +59,7 @@ export default class TaskIngredient extends Component {
 					</View>
 					<EditButton onEdit={this.handleEdit} />
 				</View>
-				<TaskContainer inputs={inputs} onRemove={onRemoveInput} />
+				<InputsContainer inputs={inputs} onRemove={onRemoveInput} />
 			</View>
 		)
 	}

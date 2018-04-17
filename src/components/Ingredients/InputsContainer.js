@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import Colors from '../../resources/Colors'
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, AlertIOS } from 'react-native'
 import pluralize from 'pluralize'
 import * as ImageUtility from '../../resources/ImageUtility'
 
-export default class TaskContainer extends Component {
+export default class InputsContainer extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -58,36 +58,61 @@ export default class TaskContainer extends Component {
 					</TouchableOpacity>
 				</View>
 				<View>
-					{this.state.expanded && inputs.map(input => <InputRow key={input.id} input={input} onRemove={onRemove} />)}
+					{this.state.expanded && inputs.map(input => <InputRow key={input.id} input={input}
+					                                                      onRemove={onRemove} />)}
 				</View>
 			</View>
 		)
 	}
 }
 
-function InputRow({ input, onRemove }) {
-	const styles = StyleSheet.create({
-		container: {
-			paddingLeft: 48,
-			paddingRight: 48,
-			height: 32,
-			flexDirection: 'row',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-		},
-		remove: {
-			color: Colors.red,
-			fontSize: 12,
-		},
-	})
-	return (
-		<View style={styles.container}>
-			<Text>{shortQR(input.input_qr)}</Text>
-			<TouchableOpacity onPress={() => onRemove(input.id)}>
-				<Text style={styles.remove}>Remove</Text>
-			</TouchableOpacity>
-		</View>
-	)
+class InputRow extends Component {
+	constructor(props) {
+		super(props)
+		this.handleRemove = this.handleRemove.bind(this)
+	}
+
+	handleRemove() {
+		AlertIOS.alert(
+			'Are you sure you want to remove this item?',
+			'',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel'
+				},
+				{
+					text: 'Remove',
+					onPress: () => this.props.onRemove(this.props.input.id)
+				}
+			]
+		)
+	}
+
+	render() {
+		const styles = StyleSheet.create({
+			container: {
+				paddingLeft: 48,
+				paddingRight: 48,
+				height: 32,
+				flexDirection: 'row',
+				justifyContent: 'space-between',
+				alignItems: 'center',
+			},
+			remove: {
+				color: Colors.red,
+				fontSize: 12,
+			},
+		})
+		return (
+			<View style={styles.container}>
+				<Text>{shortQR(this.props.input.input_qr)}</Text>
+				<TouchableOpacity onPress={this.handleRemove}>
+					<Text style={styles.remove}>Remove</Text>
+				</TouchableOpacity>
+			</View>
+		)
+	}
 }
 
 function shortQR(qr) {
