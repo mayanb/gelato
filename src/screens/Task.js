@@ -87,10 +87,8 @@ class Task extends Component {
 	}
 
 	componentWillReceiveProps(np) {
-		if (!np.task) { 
-			return
-		}
-		if (np.task.is_flagged !== this.props.task.is_flagged) {
+		if (!np.task) return
+		if (!this.props.task || (np.task.is_flagged !== this.props.task.is_flagged)) {
 			this.updateActionSheet(np.task)
 		}
 	}
@@ -114,8 +112,7 @@ class Task extends Component {
 	}
 
 	updateActionSheet(task) {
-		console.log('hello updating action sheet')
-		console.log(task.is_flagged)
+		if (!task) return 
 		let action_options = task.is_flagged
 			? ACTION_OPTIONS.filter(o => o !== 'Flag')
 			: ACTION_OPTIONS
