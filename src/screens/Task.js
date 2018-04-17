@@ -87,6 +87,9 @@ class Task extends Component {
 	}
 
 	componentWillReceiveProps(np) {
+		if (!np.task) { 
+			return
+		}
 		if (np.task.is_flagged !== this.props.task.is_flagged) {
 			this.updateActionSheet(np.task)
 		}
