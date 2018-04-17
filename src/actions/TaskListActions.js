@@ -248,7 +248,6 @@ export function addOutput(task, qr, amount, isSearched) {
 	let name = findReducer(task, isSearched)
 	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
 	let total_amount = parseFloat(task.total_amount || 0) + parseFloat(amount)
-	console.log(total_amount)
 	return dispatch => {
 		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/items/create/')

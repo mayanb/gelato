@@ -115,7 +115,6 @@ class Task extends Component {
 		if (!task) {
 			return null
 		}
-		console.log(task.total_amount)
 		const isLabel = task.process_type.name.toLowerCase() === 'label'
 		let outputButtonName = 'Outputs'
 		if (isLabel) {
