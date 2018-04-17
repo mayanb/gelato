@@ -226,7 +226,6 @@ export function resetJustCreated() {
 		type: RESET_JUST_CREATED,
 	}
 }
-
 export function addInput(task, item, isSearched, amount) {
 	let payload = { task: task.id, input_item: item.id, amount: amount }
 	return dispatch => {
@@ -246,13 +245,17 @@ export function addInput(task, item, isSearched, amount) {
 }
 
 export function addOutput(task, qr, amount, isSearched) {
+	let name = findReducer(task, isSearched)
 	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
+	let total_amount = parseFloat(task.total_amount || 0) + parseFloat(amount)
+	console.log(total_amount)
 	return dispatch => {
 		dispatch(startAdding(task, isSearched))
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
 				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body, isSearched))
+				dispatch(requestEditItemSuccess(name, task, 'total_amount', total_amount))
 				return task
 			})
 			.catch(e => {
@@ -307,7 +310,6 @@ export function removeInput(task, input, index, isSearched) {
 	return dispatch => {
 		return Networking.del(`/ics/inputs/${input.id}/`)
 			.then((res) => {
-				console.log(res)
 				dispatch(removeSuccess(REMOVE_INPUT_SUCCESS, task, index, isSearched))
 			})
 			.catch(e => {
@@ -368,6 +370,22 @@ export function requestFlagTask(task, isSearched) {
 			.send(payload)
 			.then(() => {
 				dispatch(requestEditItemSuccess(name, task, 'is_flagged', true))
+			})
+			.catch(e => {
+				dispatch(requestEditItemFailure(name, e))
+				throw e
+			})
+	}
+}
+
+export function editBatchSize(task, amount, isSearched) {
+	let name = findReducer(task, isSearched)
+	let id = task.items[0].id
+	return dispatch => {
+		return Networking.put(`/ics/items/${id}/`)
+			.send({ amount: amount })
+			.then((res) => {
+				dispatch(requestEditItemSuccess(name, task, 'total_amount', amount))
 			})
 			.catch(e => {
 				dispatch(requestEditItemFailure(name, e))

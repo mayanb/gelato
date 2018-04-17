@@ -148,7 +148,7 @@ function renderButtons(semantic, onPress, onCancel, amount) {
 		return (
 			<View style={styles.warningButtonsContainer}>
 				<AddButton 
-					title="Add Anyway" 
+					title="Add input" 
 					backgroundColor="white" 
 					color={Colors.red} 
 					style={styles.warningAddButton} 
