@@ -209,7 +209,8 @@ class Task extends Component {
 			null,
 			this.handleEditBatchSize,
 			'plain-text',
-			String(parseFloat(item.amount))
+			String(parseFloat(item.amount)),
+			'numeric'
 		)
 	}
 
