@@ -1,21 +1,13 @@
 import Colors from '../resources/Colors'
-import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react'
 import {
   Dimensions,
-  Image,
-  Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
-  FlatList,
-  ScrollView,
   View,
   Button,
 } from 'react-native'
-import { CreateTaskSelect } from './Cells'
-import Collapsible from 'react-native-collapsible'
 
 export default class ModalAlert extends Component {
   constructor(props) {

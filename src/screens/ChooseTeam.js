@@ -10,7 +10,6 @@ import * as errorActions from '../actions/ErrorActions'
 import * as inventoryActions from '../actions/InventoryActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
-import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
 import pluralize from 'pluralize'
 

@@ -3,9 +3,7 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { PrintButton, PrintNumberInput } from '../components/Forms'
 //import RNPrint from 'react-native-print'
-import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
-import uuid from 'uuid/v4'
 import paramsToProps from '../resources/paramsToProps'
 
 class Print extends Component {

@@ -5,7 +5,6 @@ import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskActions'
 import paramsToProps from '../resources/paramsToProps'
-import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
 

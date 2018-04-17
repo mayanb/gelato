@@ -5,19 +5,14 @@ import {
 	ActivityIndicator,
 	Dimensions,
 	Image,
-	Platform,
 	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	FlatList,
-	ScrollView,
 	View,
 } from 'react-native'
-import { CreateTaskSelect } from './Cells'
-import Collapsible from 'react-native-collapsible'
-import Networking from '../resources/Networking-superagent'
 
 export class SearchDropdown extends Component {
 	render() {

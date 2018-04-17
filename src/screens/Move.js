@@ -7,7 +7,6 @@ import {
 	View,
 	Image,
 	TouchableOpacity,
-	Button,
 } from 'react-native'
 import { Camera } from 'expo'
 import ActionButton from 'react-native-action-button'

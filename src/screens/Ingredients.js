@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Text, View, ScrollView, Alert } from 'react-native'
+import { Text, View, ScrollView } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import Compute from '../resources/Compute'
 import Storage from '../resources/Storage'

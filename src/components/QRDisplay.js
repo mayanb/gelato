@@ -3,10 +3,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	TouchableOpacity,
 	Image,
-	TextInput,
-	Button,
 } from 'react-native'
 import * as ImageUtility from '../resources/ImageUtility'
 import { AddButton, CancelButton } from './Buttons'
