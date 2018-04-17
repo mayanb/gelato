@@ -13,7 +13,6 @@ export default class PanelExpander extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			open: false,
 			panelHeight: new Animated.Value(0),
 		}
 
@@ -22,15 +21,15 @@ export default class PanelExpander extends Component {
 	}
 
 	componentWillReceiveProps(np) {
-		if(np.open && !this.state.open)
+		if(np.expanded && !this.props.expanded)
 			this.handleOpen()
 
-		if(!np.open && this.state.open)
+		if(!np.expanded && this.props.expanded)
 			this.handleClose()
 	}
 
 	handleOpen() {
-		this.setState({ open: true })
+		this.props.setExpanded(true)
 		Animated.timing(this.state.panelHeight, {
 			toValue: 1,
 			duration: 400,
@@ -38,7 +37,7 @@ export default class PanelExpander extends Component {
 	}
 
 	handleClose() {
-		this.setState({ open: false })
+		this.props.setExpanded(false)
 		Animated.timing(this.state.panelHeight, {
 			toValue: 0,
 			duration: 400,
@@ -60,13 +59,13 @@ export default class PanelExpander extends Component {
 
 		return (
 			<View style={styles.container}>
-				{this.state.open && <Overlay onClose={this.handleClose} />}
+				{this.props.expanded && <Overlay onClose={this.handleClose} />}
 				{camera}
 				<Animated.View style={{
 					flex: flex,
 					maxHeight: OPEN_PERCENTAGE * WINDOW_HEIGHT,
 				}}>
-					<ArrowOverlay open={this.state.open} onOpen={this.handleOpen} onClose={this.handleClose}
+					<ArrowOverlay expanded={this.props.expanded} onOpen={this.handleOpen} onClose={this.handleClose}
 					              animateOpen={this.state.panelHeight} />
 					<IngredientsContainer onOpen={this.handleOpen} content={ingredientsContent} />
 				</Animated.View>
@@ -88,7 +87,7 @@ function Overlay({ onClose }) {
 	)
 }
 
-function ArrowOverlay({ open, onOpen, onClose, animateOpen }) {
+function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
 	const spin = animateOpen.interpolate({
 		inputRange: [0, 1],
 		outputRange: ['0deg', '180deg']
@@ -107,7 +106,7 @@ function ArrowOverlay({ open, onOpen, onClose, animateOpen }) {
 		},
 	})
 	return (
-		<TouchableWithoutFeedback onPress={open ? onClose : onOpen}>
+		<TouchableWithoutFeedback onPress={expanded ? onClose : onOpen}>
 			<Animated.View
 				style={styles.container}>
 				<Animated.Image source={ImageUtility.requireIcon('uparrowwhite.png')} style={styles.image} />

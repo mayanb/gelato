@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, AlertIOS } from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
 import Colors from '../../resources/Colors'
 import { formatNumber, formatAmount } from '../../resources/Utility'
@@ -8,6 +8,23 @@ import pluralize from 'pluralize'
 export default class TaskIngredient extends Component {
 	constructor(props) {
 		super(props)
+
+		this.handleEdit = this.handleEdit.bind(this)
+	}
+
+
+	handleEdit() {
+		const ingredient = this.props.taskIngredient.ingredient
+		const formattedAmount = String(Number(this.props.taskIngredient.actual_amount))
+		const subtitle = `${pluralize(ingredient.process_type.unit)} of ${ingredientName(ingredient)}`
+		AlertIOS.prompt(
+			'Enter amount used',
+			subtitle,
+			(amount) => this.props.onEditAmount(this.props.taskIngredient.id, amount),
+			'plain-text',
+			formattedAmount,
+			'numeric',
+		)
 	}
 
 	render() {
@@ -27,19 +44,19 @@ export default class TaskIngredient extends Component {
 		})
 		const { taskIngredient } = this.props
 		const { ingredient, inputs, scaled_amount, actual_amount } = taskIngredient
-		const { process_type, product_type } = ingredient
+		const { process_type } = ingredient
 		return (
 			<View style={styles.container}>
 				<View style={styles.topContainer}>
 					<View style={styles.mainContent}>
-						<TitleRow process_type={process_type} product_type={product_type} />
+						<TitleRow ingredient={ingredient} />
 						<AmountRow
 							actual={actual_amount}
 							expected={scaled_amount}
 							unit={process_type.unit}
 						/>
 					</View>
-					<EditButton />
+					<EditButton onEdit={this.handleEdit} />
 				</View>
 				<TaskContainer inputs={inputs} />
 			</View>
@@ -47,7 +64,12 @@ export default class TaskIngredient extends Component {
 	}
 }
 
-function TitleRow({ process_type, product_type }) {
+function ingredientName(ingredient) {
+	const { process_type, product_type } = ingredient
+	return `${process_type.name} ${product_type.name}`
+}
+
+function TitleRow({ ingredient }) {
 	const styles = StyleSheet.create({
 		titleRow: {
 			flexDirection: 'row',
@@ -64,11 +86,10 @@ function TitleRow({ process_type, product_type }) {
 			paddingBottom: 8,
 		},
 	})
-	const title = `${process_type.name} ${product_type.name}`
 	return (
 		<View style={styles.titleRow}>
-			<Image source={ImageUtility.requireIcon(process_type.icon)} style={styles.processIcon} />
-			<Text style={styles.title}>{title}</Text>
+			<Image source={ImageUtility.requireIcon(ingredient.process_type.icon)} style={styles.processIcon} />
+			<Text style={styles.title}>{ingredientName(ingredient)}</Text>
 		</View>
 	)
 }

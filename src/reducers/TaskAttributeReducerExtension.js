@@ -20,6 +20,9 @@ export const REQUEST_TASK_DETAIL_SUCCESS = 'REQUEST_TASK_DETAIL_SUCCESS'
 export const REQUEST_CREATE_TASK_SUCCESS = 'REQUEST_CREATE_TASK_SUCCESS'
 export const REQUEST_EDIT_TASK_SUCCESS = 'REQUEST_EDIT_TASK_SUCCESS'
 export const REQUEST_DELETE_TASK_SUCCESS = 'REQUEST_DELETE_TASK_SUCCESS'
+export const REQUEST_EDIT_TASK_INGREDIENT = 'REQUEST_EDIT_TASK_INGREDIENT'
+export const REQUEST_EDIT_TASK_INGREDIENT_SUCCESS = 'REQUEST_EDIT_TASK_INGREDIENT_SUCCESS'
+export const REQUEST_EDIT_TASK_INGREDIENT_FAILURE = 'REQUEST_EDIT_TASK_INGREDIENT_FAILURE'
 
 export function _taskAttribute(state, action) {
 	let ns = BasicReducer(state, action)
@@ -52,6 +55,12 @@ export function _taskAttribute(state, action) {
 			return addFailure(ns, action)
 		case REMOVE_INPUT_SUCCESS:
 			return removeInputSuccess(ns, action, 'inputs')
+		case REQUEST_EDIT_TASK_INGREDIENT:
+			return request(state, action, 'isEditingTaskIngredient')
+		case REQUEST_EDIT_TASK_INGREDIENT_SUCCESS:
+			return requestEditTaskIngredientSuccess(ns, action)
+		case REQUEST_EDIT_TASK_INGREDIENT_FAILURE:
+			return requestFailure(state, action, 'isEditingTaskIngredient')
 		default:
 			return ns
 	}
@@ -251,6 +260,25 @@ function removeInputSuccess(state, action, key) {
 					$splice: [[action.index, 1]],
 				},
 			},
+		},
+	})
+}
+
+function requestEditTaskIngredientSuccess(state, action) {
+	const task = state.dataByID[action.taskID]
+	let taskIngredientIndex = task.task_ingredients.findIndex(ta => ta.id === action.id)
+	return update(state, {
+		dataByID: {
+			[action.taskID]: {
+				task_ingredients: {
+					[taskIngredientIndex]: {
+						actual_amount: { $set: action.amount },
+					},
+				},
+			},
+		},
+		ui: {
+			isEditingTaskIngredient: { $set: false },
 		},
 	})
 }

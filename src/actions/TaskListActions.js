@@ -28,6 +28,9 @@ import {
 	REQUEST_TASKS,
 	REQUEST_TASKS_SUCCESS,
 	REQUEST_TASKS_FAILURE,
+	REQUEST_EDIT_TASK_INGREDIENT,
+	REQUEST_EDIT_TASK_INGREDIENT_SUCCESS,
+	REQUEST_EDIT_TASK_INGREDIENT_FAILURE,
 } from '../reducers/TaskAttributeReducerExtension'
 
 const TASKS = 'TASKS'
@@ -80,6 +83,7 @@ function requestTasksSuccess(name, data, append = false) {
 }
 
 function requestTasksFailure(name, err) {
+	console.error(err)
 	return {
 		type: REQUEST_TASKS_FAILURE,
 		name: name,
@@ -236,6 +240,46 @@ export function addOutput(task, qr, amount) {
 				dispatch(addFailure(e))
 				throw e
 			})
+	}
+}
+
+export function updateTaskIngredientAmount(taskIngredientID, amount) {
+	let payload = { actual_amount: amount }
+	return dispatch => {
+		dispatch(requestEditTaskIngredient())
+		return Networking.patch(`/ics/taskIngredients/${taskIngredientID}/`)
+			.send(payload)
+			.then(res => {
+				dispatch(requestEditTaskIngredientSuccess(res.body.id, res.body.task, res.body.actual_amount))
+			})
+			.catch(e => {
+				console.error(e)
+				dispatch(requestEditTaskIngredientFailure())
+			})
+	}
+}
+
+function requestEditTaskIngredient() {
+	return {
+		name: TASKS,
+		type: REQUEST_EDIT_TASK_INGREDIENT,
+	}
+}
+
+function requestEditTaskIngredientSuccess(taskIngredientID, taskID, amount) {
+	return {
+		name: TASKS,
+		type: REQUEST_EDIT_TASK_INGREDIENT_SUCCESS,
+		id: taskIngredientID,
+		taskID: taskID,
+		amount: amount,
+	}
+}
+
+function requestEditTaskIngredientFailure() {
+	return {
+		name: TASKS,
+		type: REQUEST_EDIT_TASK_INGREDIENT_FAILURE,
 	}
 }
 

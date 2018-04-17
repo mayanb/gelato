@@ -42,9 +42,11 @@ class Ingredients extends Component {
 		}
 
 		this.handleAddInput = this.handleAddInput.bind(this)
+		this.handleEditAmount = this.handleEditAmount.bind(this)
 	}
 
 	componentDidMount() {
+		this.props.dispatch(actions.fetchTask(14406))
 		//this.testBarCodeRead()
 	}
 
@@ -60,7 +62,8 @@ class Ingredients extends Component {
 				{this.state.foundTask && this.renderConfirmModal()}
 				{this.state.inputError && this.renderErrorModal()}
 				<PanelExpander
-					open={this.state.expanded}
+					expanded={this.state.expanded}
+					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
 				/>
@@ -85,9 +88,17 @@ class Ingredients extends Component {
 		let { task } = this.props
 		return (
 			<ScrollView style={{ backgroundColor: Colors.ultraLightGray, flex: 1, }}>
-				{task.task_ingredients.map(ta => <TaskIngredient taskIngredient={ta} key={ta.id} />)}
+				{task.task_ingredients.map(ta => <TaskIngredient
+					taskIngredient={ta}
+					key={ta.id}
+					onEditAmount={this.handleEditAmount}
+				/>)}
 			</ScrollView>
 		)
+	}
+
+	handleEditAmount(taskIngredientID, amount) {
+		this.props.dispatch(actions.updateTaskIngredientAmount(taskIngredientID, amount))
 	}
 
 	async handleChangeText(text) {
@@ -306,7 +317,8 @@ class Ingredients extends Component {
 
 const mapStateToProps = (state, props) => {
 	return {
-		task: state.tasks.dataByID[props.taskID],
+		//task: state.tasks.dataByID[props.taskID],
+		task: state.tasks.dataByID[14406],
 	}
 }
 
