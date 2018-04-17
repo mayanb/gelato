@@ -69,10 +69,13 @@ class SelectTypes extends Component {
 					onSelect={item => this.onSelect('products', item)}
 					onFocus={() => this.onFocus('products')}
 					registerInput={this.registerInputFunction('products')}
-					done={true}
 				/>
 			</View>
 		)
+	}
+
+	doneButtonPressed(key) {
+		this.inputs[key].blur()
 	}
 
 	handleChangeText(type, text) {
