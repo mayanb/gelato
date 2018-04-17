@@ -125,8 +125,8 @@ class Task extends Component {
 			: ACTION_OPTIONS
 
 		actionOptions = !this.allowEditBatchSize()
-			? ACTION_OPTIONS.filter(o => o !== 'Edit batch size')
-			: ACTION_OPTIONS
+			? actionOptions.filter(o => o !== 'Edit batch size')
+			: actionOptions
 
 		return (
 			<TouchableWithoutFeedback
