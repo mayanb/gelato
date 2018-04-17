@@ -1,14 +1,13 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { BasicReducer } from './src/reducers/BasicReducer'
-import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
+import { _task } from './src/reducers/TaskReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
 const TASKS = 'TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
 const TEAMS = 'TEAMS'
-const TASK_DETAILS = 'TASK_DETAILS'
 const ERROR = 'ERROR'
 const MOVE = 'MOVE'
 
@@ -42,7 +41,7 @@ function createFilteredReducer(
 
 var reducer = combineReducers({
 	tasks: createFilteredReducer(
-		_taskAttribute,
+		_task,
 		action => action.name === TASKS,
 		tasksDefaultState,
 	),

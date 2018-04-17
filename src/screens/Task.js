@@ -16,7 +16,7 @@ import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
-import * as actions from '../actions/TaskListActions'
+import * as actions from '../actions/TaskActions'
 import { AttributeHeaderCell } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'

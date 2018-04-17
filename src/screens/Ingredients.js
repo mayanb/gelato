@@ -16,7 +16,7 @@ import {
 } from '../resources/QRSemantics'
 import Modal from '../components/Modal'
 import QRDisplay from '../components/QRDisplay'
-import * as actions from '../actions/TaskListActions'
+import * as actions from '../actions/TaskActions'
 import QRCamera from '../components/QRCamera'
 
 import PanelExpander from '../components/Ingredients/PanelExpander'

@@ -1,15 +1,11 @@
 import Storage from '../resources/Storage'
 import Networking from '../resources/Networking-superagent'
 import Compute from '../resources/Compute'
-import { DateFormatter } from '../resources/Utility'
 
 import {
 	REQUEST,
-	REQUEST_SUCCESS,
 	REQUEST_FAILURE,
-	REQUEST_CREATE_SUCCESS,
 	REQUEST_CREATE_FAILURE,
-	REQUEST_DELETE_SUCCESS,
 	REQUEST_DELETE_FAILURE,
 	REQUEST_EDIT_ITEM_FAILURE,
 } from '../reducers/BasicReducer'
@@ -31,7 +27,7 @@ import {
 	REQUEST_EDIT_TASK_INGREDIENT,
 	REQUEST_EDIT_TASK_INGREDIENT_SUCCESS,
 	REQUEST_EDIT_TASK_INGREDIENT_FAILURE,
-} from '../reducers/TaskAttributeReducerExtension'
+} from '../reducers/TaskReducerExtension'
 
 const TASKS = 'TASKS'
 

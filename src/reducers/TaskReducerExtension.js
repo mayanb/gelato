@@ -5,13 +5,11 @@ import Compute from '../resources/Compute'
 export const UPDATE_ATTRIBUTE_SUCCESS = 'UPDATE_ATTRIBUTE_SUCCESS'
 export const UPDATE_ATTRIBUTE_FAILURE = 'UPDATE_ATTRIBUTE_FAILURE'
 
-export const RESET_JUST_CREATED = 'RESET_JUST_CREATED'
 export const ADD_INPUT_SUCCESS = 'ADD_INPUT_SUCCESS'
 export const ADD_OUTPUT_SUCCESS = 'ADD_OUTPUT_SUCCSS'
 export const START_ADDING = 'START_ADDING'
 export const ADD_FAILURE = 'ADD_FAILURE'
 export const REMOVE_INPUT_SUCCESS = 'REMOVE_INPUT_SUCCESS'
-export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
 
 export const REQUEST_TASKS = 'REQUEST_TASKS'
 export const REQUEST_TASKS_SUCCESS = 'REQUEST_TASKS_SUCCESS'
@@ -24,7 +22,7 @@ export const REQUEST_EDIT_TASK_INGREDIENT = 'REQUEST_EDIT_TASK_INGREDIENT'
 export const REQUEST_EDIT_TASK_INGREDIENT_SUCCESS = 'REQUEST_EDIT_TASK_INGREDIENT_SUCCESS'
 export const REQUEST_EDIT_TASK_INGREDIENT_FAILURE = 'REQUEST_EDIT_TASK_INGREDIENT_FAILURE'
 
-export function _taskAttribute(state, action) {
+export function _task(state, action) {
 	let ns = BasicReducer(state, action)
 	switch (action.type) {
 		case REQUEST_TASKS:
