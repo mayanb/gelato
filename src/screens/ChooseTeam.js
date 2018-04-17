@@ -107,14 +107,7 @@ class ChooseTeam extends Component {
 	openCreatedTask(task) {
 		this.props.navigation.goBack()
 
-		this.props.navigation.navigate('Task', {
-			id: task.id,
-			name: task.display,
-			open: true,
-			task: task,
-			date: task.created_at,
-			title: task.display,
-		})
+		this.props.navigation.navigate('Task', { id: task.id })
 	}
 
 	handleSelect(item) {

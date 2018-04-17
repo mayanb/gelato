@@ -76,6 +76,7 @@ class Task extends Component {
 	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
+			name: this.props.task.display,
 		})
 	}
 
@@ -205,25 +206,7 @@ class Task extends Component {
 	showCamera() {
 		this.props.navigation.navigate('Ingredients', {
 			taskID: this.props.task.id,
-			onOpenTask: this.handleOpenTask.bind(this),
 			isDandelion: this.state.isDandelion,
-		})
-	}
-
-	handleOpenTask(task) {
-		//let x = 'hi'
-		this.props.navigation.navigate({
-			screen: 'gelato.Task',
-			title: task.display,
-			animated: true,
-			passProps: {
-				task: task,
-				id: task.id,
-				open: task.is_open,
-				title: task.display,
-				date: task.created_at,
-				imgpath: null,
-			},
 		})
 	}
 
@@ -256,9 +239,7 @@ class Task extends Component {
 	}
 
 	renderHeader = task => {
-		let imgpath = this.props.imgpath
-			? this.props.imgpath
-			: task.process_type.icon
+		let imgpath = task.process_type.icon
 		let outputAmount = task.items.reduce((total, current) => {
 			return total + parseFloat(current.amount)
 		}, 0)
@@ -266,7 +247,7 @@ class Task extends Component {
 			<AttributeHeaderCell
 				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
-				date={this.props.date}
+				date={task.created_at}
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}

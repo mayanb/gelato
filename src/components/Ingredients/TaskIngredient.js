@@ -43,7 +43,7 @@ export default class TaskIngredient extends Component {
 				paddingBottom: 12,
 			},
 		})
-		const { taskIngredient, onRemoveInput } = this.props
+		const { taskIngredient, onRemoveInput, onOpenTask } = this.props
 		const { ingredient, inputs, scaled_amount, actual_amount } = taskIngredient
 		const { process_type } = ingredient
 		return (
@@ -59,7 +59,7 @@ export default class TaskIngredient extends Component {
 					</View>
 					<EditButton onEdit={this.handleEdit} />
 				</View>
-				<InputsContainer inputs={inputs} onRemove={onRemoveInput} />
+				<InputsContainer inputs={inputs} onRemove={onRemoveInput} onOpenTask={onOpenTask} />
 			</View>
 		)
 	}

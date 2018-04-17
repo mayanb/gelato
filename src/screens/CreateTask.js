@@ -110,14 +110,7 @@ class CreateTask extends Component {
 		let { newTask } = this.state
 		this.props.navigation.goBack()
 
-		this.props.navigation.navigate('Task', {
-			id: newTask.id,
-			name: newTask.display,
-			open: true,
-			task: newTask,
-			date: newTask.created_at,
-			title: newTask.display,
-		})
+		this.props.navigation.navigate('Task', { id: newTask.id })
 	}
 }
 

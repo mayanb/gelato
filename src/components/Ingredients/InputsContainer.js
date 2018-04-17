@@ -19,7 +19,7 @@ export default class InputsContainer extends Component {
 	}
 
 	render() {
-		const { inputs, onRemove } = this.props
+		const { inputs, onRemove, onOpenTask } = this.props
 		const styles = StyleSheet.create({
 			container: {},
 			firstRowContainer: {
@@ -58,8 +58,12 @@ export default class InputsContainer extends Component {
 					</TouchableOpacity>
 				</View>
 				<View>
-					{this.state.expanded && inputs.map(input => <InputRow key={input.id} input={input}
-					                                                      onRemove={onRemove} />)}
+					{this.state.expanded && inputs.map(input => <InputRow
+						key={input.id}
+						input={input}
+						onRemove={onRemove}
+						onOpenTask={onOpenTask}
+					/>)}
 				</View>
 			</View>
 		)
@@ -69,7 +73,12 @@ export default class InputsContainer extends Component {
 class InputRow extends Component {
 	constructor(props) {
 		super(props)
+		this.handleOpenTask = this.handleOpenTask.bind(this)
 		this.handleRemove = this.handleRemove.bind(this)
+	}
+
+	handleOpenTask() {
+		this.props.onOpenTask(this.props.input.input_task_n.id)
 	}
 
 	handleRemove() {
@@ -106,7 +115,9 @@ class InputRow extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<Text>{shortQR(this.props.input.input_qr)}</Text>
+				<TouchableOpacity onPress={this.handleOpenTask}>
+					<Text>{shortQR(this.props.input.input_qr)}</Text>
+				</TouchableOpacity>
 				<TouchableOpacity onPress={this.handleRemove}>
 					<Text style={styles.remove}>Remove</Text>
 				</TouchableOpacity>

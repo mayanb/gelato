@@ -180,14 +180,7 @@ class Main extends Component {
 
 	// Event for navigating to task detail page
 	openTask(id, name, open, imgpath, title, date) {
-		this.props.navigation.navigate('Task', {
-			id: id,
-			name: name,
-			open: open,
-			imgpath: imgpath,
-			title: title,
-			date: date,
-		})
+		this.props.navigation.navigate('Task', { id: id })
 	}
 }
 

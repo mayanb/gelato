@@ -44,6 +44,7 @@ class Ingredients extends Component {
 		this.handleAddInput = this.handleAddInput.bind(this)
 		this.handleEditAmount = this.handleEditAmount.bind(this)
 		this.handleRemoveInput = this.handleRemoveInput.bind(this)
+		this.handleOpenTask = this.handleOpenTask.bind(this)
 	}
 
 	componentDidMount() {
@@ -94,6 +95,7 @@ class Ingredients extends Component {
 					key={ta.id}
 					onEditAmount={this.handleEditAmount}
 					onRemoveInput={this.handleRemoveInput}
+					onOpenTask={this.handleOpenTask}
 				/>)}
 			</ScrollView>
 		)
@@ -223,17 +225,9 @@ class Ingredients extends Component {
 		this.props.navigation.goBack()
 	}
 
-	handleOpenTask(creatingTask) {
+	handleOpenTask(taskID) {
 		this.props.navigation.goBack()
-		this.props.navigation.navigate('Task', {
-			id: creatingTask.id,
-			name: creatingTask.display,
-			open: creatingTask.open,
-			task: creatingTask,
-			date: creatingTask.created_at,
-			title: creatingTask.display,
-			imgpath: creatingTask.process_type.icon,
-		})
+		this.props.navigation.navigate('Task', { id: taskID })
 	}
 
 	handleBarCodeRead(e) {
