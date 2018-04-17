@@ -32,7 +32,7 @@ import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
 
 const ACTION_TITLE = 'More'
-const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
+const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
@@ -45,6 +45,7 @@ class Task extends Component {
 		//this.addInputs = this.addInputs.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
 		this.state = {
 			organized_attributes: props.task && props.task.process_type.attributes,
 		}
@@ -100,6 +101,14 @@ class Task extends Component {
 			.catch(e => console.log(e))
 	}
 
+	allowEditBatchSize() {
+		let { task } = this.props
+		let proc = task.process_type.name.toLowerCase()
+		return (
+			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
+		)
+	}
+
 	render() {
 		let { organized_attributes } = this.state
 		let { task } = this.props
@@ -111,9 +120,13 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-		const actionOptions = task.is_flagged
+		let actionOptions = task.is_flagged
 			? ACTION_OPTIONS.filter(o => o !== 'Flag')
 			: ACTION_OPTIONS
+
+		actionOptions = !this.allowEditBatchSize()
+			? actionOptions.filter(o => o !== 'Edit batch size')
+			: actionOptions
 
 		return (
 			<TouchableWithoutFeedback
@@ -188,18 +201,36 @@ class Task extends Component {
 		)
 	}
 
+	showEditBatchSizeAlert() {
+		let { task } = this.props
+		let item = task.items[0]
+		AlertIOS.prompt(
+			'Enter a new batch sie',
+			null,
+			this.handleEditBatchSize,
+			'plain-text',
+			String(parseFloat(item.amount))
+		)
+	}
+
+	handleEditBatchSize(text) {
+		this.dispatchWithError(
+			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
+		)
+	}
+
 	handlePress(i) {
 		if (ACTION_OPTIONS[i] === 'Rename') {
 			this.showCustomNameAlert()
-		}
-		if (ACTION_OPTIONS[i] === 'Flag') {
+		} else if (ACTION_OPTIONS[i] === 'Flag') {
 			this.dispatchWithError(
 				actions.requestFlagTask(this.props.task, this.props.taskSearch)
 			)
-		}
-		if (ACTION_OPTIONS[i] === 'Delete') {
+		}	else if (ACTION_OPTIONS[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
-		}
+		} else if (ACTION_OPTIONS[i] === 'Edit batch size') {
+			this.showEditBatchSizeAlert()
+		} 
 	}
 
 	handleRenameTask(text) {
@@ -293,9 +324,7 @@ class Task extends Component {
 		let date = this.props.taskSearch
 			? DateFormatter.shorten(this.props.date)
 			: this.props.date
-		let outputAmount = task.items.reduce((total, current) => {
-			return total + parseFloat(current.amount)
-		}, 0)
+		let outputAmount = parseFloat(task.total_amount || 0)
 		return (
 			<AttributeHeaderCell
 				name={Compute.getReadableTaskDescriptor(task)}
