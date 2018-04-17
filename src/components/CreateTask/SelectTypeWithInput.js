@@ -26,12 +26,12 @@ export default class SelectTypeWithInput extends Component {
 				<EditableCell
 					placeholder={this.props.placeholder}
 					onChangeText={t => this.props.onChangeText(t)}
-					returnKeyType={this.props.done ? 'done' : 'next'}
-					blurOnSubmit={false}
+					blurOnSubmit={true}
 					value={this.props.text}
 					selected={this.props.selected}
 					registerInput={this.props.registerInput}
 					onFocus={this.props.onFocus}
+					returnKeyType="done"
 				/>
 				{this.props.dropdown_open && (
 					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
@@ -78,7 +78,7 @@ export class NonEditableCell extends Component {
 	}
 
 	render() {
-		let { onPress, imgpath, name } = this.props
+		let { onPress, imgpath, name, code } = this.props
 		return (
 			<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 				<View style={styles.cell_container}>
@@ -86,7 +86,7 @@ export class NonEditableCell extends Component {
 						source={ImageUtility.requireIcon(imgpath)}
 						style={styles.process_icon}
 					/>
-					<Text style={styles.display}>{name}</Text>
+					<Text style={styles.display}>{code} - {name}</Text>
 					{this.props.header ? (
 						<Image
 							style={styles.arrow}
