@@ -42,12 +42,13 @@ class Task extends Component {
 			isLoadingTask: false
 		}
 		this.handlePress = this.handlePress.bind(this)
-		//this.addInputs = this.addInputs.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
+
 		this.state = {
 			organized_attributes: props.task && props.task.process_type.attributes,
+			action_options: ACTION_OPTIONS,
 		}
 	}
 
@@ -99,6 +100,16 @@ class Task extends Component {
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
 			})
 			.catch(e => console.log(e))
+
+		let action_options = this.props.task.is_flagged
+			? ACTION_OPTIONS.filter(o => o !== 'Flag')
+			: ACTION_OPTIONS
+
+		action_options = !this.allowEditBatchSize()
+			? action_options.filter(o => o !== 'Edit batch size')
+			: action_options
+
+		this.setState({action_options: action_options})
 	}
 
 	allowEditBatchSize() {
@@ -110,7 +121,7 @@ class Task extends Component {
 	}
 
 	render() {
-		let { organized_attributes } = this.state
+		let { organized_attributes, action_options } = this.state
 		let { task } = this.props
 		if (!task) {
 			return null
@@ -120,13 +131,6 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-		let actionOptions = task.is_flagged
-			? ACTION_OPTIONS.filter(o => o !== 'Flag')
-			: ACTION_OPTIONS
-
-		actionOptions = !this.allowEditBatchSize()
-			? actionOptions.filter(o => o !== 'Edit batch size')
-			: actionOptions
 
 		return (
 			<TouchableWithoutFeedback
@@ -144,7 +148,7 @@ class Task extends Component {
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
-						options={actionOptions}
+						options={action_options}
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
@@ -221,17 +225,18 @@ class Task extends Component {
 	}
 
 	handlePress(i) {
-		if (ACTION_OPTIONS[i] === 'Rename') {
+		let { action_options } = this.state
+		if (action_options === 'Rename') {
 			this.showCustomNameAlert()
-		} else if (ACTION_OPTIONS[i] === 'Flag') {
+		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(
 				actions.requestFlagTask(this.props.task, this.props.taskSearch)
 			)
-		}	else if (ACTION_OPTIONS[i] === 'Delete') {
+		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
-		} else if (ACTION_OPTIONS[i] === 'Edit batch size') {
+		} else if (action_options[i] === 'Edit batch size') {
 			this.showEditBatchSizeAlert()
-		} 
+		}
 	}
 
 	handleRenameTask(text) {
