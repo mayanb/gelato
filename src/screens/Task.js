@@ -309,7 +309,7 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if(this.state.isDandelion) {
+		if(this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}
