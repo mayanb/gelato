@@ -192,7 +192,7 @@ export default class Compute {
 	}
 
 	static getSearchResults(text, teamID) {
-		const r = Networking.get('/ics/tasks/search/').query({
+		const r = Networking.get('/ics/tasks/simple/').query({
 			label: text,
 			team: teamID,
 		})
