@@ -27,7 +27,7 @@ import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
 
 const ACTION_TITLE = 'More'
-const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag']
+const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
 const CANCEL_INDEX = 0
 
 class Task extends Component {
@@ -37,11 +37,13 @@ class Task extends Component {
 			isLoadingTask: false
 		}
 		this.handlePress = this.handlePress.bind(this)
-		//this.addInputs = this.addInputs.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
+
 		this.state = {
 			organized_attributes: props.task && props.task.process_type && props.task.process_type.attributes,
+			action_options: ACTION_OPTIONS,
 		}
 	}
 
@@ -80,6 +82,13 @@ class Task extends Component {
 		})
 	}
 
+	componentWillReceiveProps(np) {
+		if (!np.task) return
+		if (!this.props.task || (np.task.is_flagged !== this.props.task.is_flagged)) {
+			this.updateActionSheet(np.task)
+		}
+	}
+
 	componentDidMount() {
 		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
 		this.setState({ isLoadingTask: true })
@@ -90,10 +99,32 @@ class Task extends Component {
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
 			})
 			.catch(e => console.error('Error fetching task', e))
+
+		this.updateActionSheet(this.props.task)
+	}
+
+	updateActionSheet(task) {
+		if (!task) return
+		let action_options = task.is_flagged
+			? ACTION_OPTIONS.filter(o => o !== 'Flag')
+			: ACTION_OPTIONS
+
+		action_options = !this.allowEditBatchSize(task)
+			? action_options.filter(o => o !== 'Edit batch size')
+			: action_options
+
+		this.setState({ action_options: action_options })
+	}
+
+	allowEditBatchSize(task) {
+		let proc = task.process_type.name.toLowerCase()
+		return (
+			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
+		)
 	}
 
 	render() {
-		let { organized_attributes } = this.state
+		let { organized_attributes, action_options } = this.state
 		let { task } = this.props
 		//Check that full task object is loaded
 		if (!task || task.items === undefined) {
@@ -104,9 +135,6 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-		const actionOptions = task.is_flagged
-			? ACTION_OPTIONS.filter(o => o !== 'Flag')
-			: ACTION_OPTIONS
 
 		return (
 			<TouchableWithoutFeedback
@@ -124,7 +152,7 @@ class Task extends Component {
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
-						options={actionOptions}
+						options={action_options}
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
@@ -173,17 +201,37 @@ class Task extends Component {
 		)
 	}
 
+	showEditBatchSizeAlert() {
+		let { task } = this.props
+		let item = task.items[0]
+		AlertIOS.prompt(
+			'Enter a new batch sie',
+			null,
+			this.handleEditBatchSize,
+			'plain-text',
+			String(parseFloat(item.amount)),
+			'numeric'
+		)
+	}
+
+	handleEditBatchSize(text) {
+		this.dispatchWithError(
+			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
+		)
+	}
+
 	handlePress(i) {
-		if (ACTION_OPTIONS[i] === 'Rename') {
+		let { action_options } = this.state
+		if (action_options[i] === 'Rename') {
 			this.showCustomNameAlert()
-		}
-		if (ACTION_OPTIONS[i] === 'Flag') {
+		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(
 				actions.requestFlagTask(this.props.task)
 			)
-		}
-		if (ACTION_OPTIONS[i] === 'Delete') {
+		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
+		} else if (action_options[i] === 'Edit batch size') {
+			this.showEditBatchSizeAlert()
 		}
 	}
 
@@ -240,9 +288,7 @@ class Task extends Component {
 
 	renderHeader = task => {
 		let imgpath = task.process_type.icon
-		let outputAmount = task.items.reduce((total, current) => {
-			return total + parseFloat(current.amount)
-		}, 0)
+		let outputAmount = parseFloat(task.total_amount || 0)
 		return (
 			<AttributeHeaderCell
 				name={Compute.getReadableTaskDescriptor(task)}
@@ -256,7 +302,7 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if(this.state.isDandelion) {
+		if(this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}

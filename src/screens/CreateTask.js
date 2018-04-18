@@ -90,21 +90,28 @@ class CreateTask extends Component {
 		if (this.state.isCreatingTask) {
 			return 
 		}
-		
-		let { dispatch } = this.props
-		let taskData = {
-			processType: processType,
-			productType: productType,
-			amount: 0,
+		if(processType.name.toLowerCase() === "package") {
+			let { dispatch } = this.props
+			let taskData = {
+				processType: processType,
+				productType: productType,
+				amount: 0,
+			}
+			this.setState({ isCreatingTask: true })
+			Promise.all([
+				dispatch(taskActions.requestCreateTask(taskData)),
+			])
+				.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
+				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
+				.finally(() => this.setState({ isCreatingTask: false }))
+		} else {
+			this.handleCreateTask(processType, productType, batchSize)
 		}
-		this.setState({ isCreatingTask: true })
-		Promise.all([
-			dispatch(taskActions.requestCreateTask(taskData)),
-		])
-			.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
-			.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
-			.finally(() => this.setState({ isCreatingTask: false }))
+
+		
 	}
+
+
 
 	handleOpenTask() {
 		let { newTask } = this.state

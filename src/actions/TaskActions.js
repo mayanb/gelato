@@ -223,13 +223,15 @@ export function addInput(task, item) {
 }
 
 export function addOutput(task, qr, amount) {
-	let payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
+	const payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
+	const total_amount = parseFloat(task.total_amount || 0) + parseFloat(amount)
 	return dispatch => {
 		dispatch(startAdding())
 		return Networking.post('/ics/items/create/')
 			.send(payload)
 			.then(res => {
 				dispatch(addSuccess(ADD_OUTPUT_SUCCESS, task, res.body))
+				dispatch(requestEditItemSuccess(task, 'total_amount', total_amount))
 				return task
 			})
 			.catch(e => {
@@ -389,6 +391,20 @@ export function requestFlagTask(task) {
 			.send(payload)
 			.then(() => {
 				dispatch(requestEditItemSuccess(task, 'is_flagged', true))
+			})
+			.catch(e => {
+				dispatch(requestEditItemFailure(e))
+				throw e
+			})
+	}
+}
+export function editBatchSize(task, amount, isSearched) {
+	let id = task.items[0].id
+	return dispatch => {
+		return Networking.put(`/ics/items/${id}/`)
+			.send({ amount: amount })
+			.then((res) => {
+				dispatch(requestEditItemSuccess(task, 'total_amount', amount))
 			})
 			.catch(e => {
 				dispatch(requestEditItemFailure(e))
