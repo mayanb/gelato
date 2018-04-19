@@ -73,14 +73,10 @@ class CreateTask extends Component {
 		let taskData = {
 			processType: processType,
 			productType: productType,
-			amount: batchSize,
+			batch_size: batchSize,
 		}
 		this.setState({ isCreatingTask: true })
-		Promise.all([
-			dispatch(taskActions.requestCreateTask(taskData)),
-			Networking.get('/qr/codes/?count=1'),
-		])
-			.then(([task, qrcodeRes]) => dispatch(taskActions.addOutput(task, qrcodeRes.text, batchSize)))
+		dispatch(taskActions.requestCreateTask(taskData))
 			.then(task => this.setState({ currentStep: 1, newTask: task }))
 			.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 			.finally(() => this.setState({ isCreatingTask: false }))

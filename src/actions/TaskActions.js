@@ -173,7 +173,7 @@ export function requestCreateTask(data) {
 	return dispatch => {
 		let payload = Compute.generateNewTask(data)
 
-		return Networking.post('/ics/tasks/create/')
+		return Networking.post('/ics/tasks/create-with-output/')
 			.send(payload)
 			.then(res => {
 				res.body.process_type = data.processType
@@ -184,7 +184,7 @@ export function requestCreateTask(data) {
 				return res.body
 			})
 			.catch(e => {
-				dispatch(createTaskFailure(TASKS, e))
+				dispatch(createTaskFailure(e))
 				throw e
 			})
 	}
