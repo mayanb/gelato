@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Dimensions, StyleSheet, View } from 'react-native'
+import { Dimensions, StyleSheet, View, Text } from 'react-native'
 import Storage from '../resources/Storage'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
@@ -123,7 +123,7 @@ class Search extends Component {
 		return (
 			<ModalAlert
 				onPress={this.closeModal}
-				message="This QR Code isn't in our system!"
+				message={<Text>{"This QR Code isn't in our system!"}</Text>}
 				buttonText="Close"
 			/>
 		)
