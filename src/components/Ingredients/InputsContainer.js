@@ -3,6 +3,7 @@ import Colors from '../../resources/Colors'
 import { StyleSheet, Text, View, Image, TouchableOpacity, AlertIOS } from 'react-native'
 import pluralize from 'pluralize'
 import * as ImageUtility from '../../resources/ImageUtility'
+import { FlagPill, AncestorFlagPill } from '../Flag'
 
 export default class InputsContainer extends Component {
 	constructor(props) {
@@ -20,7 +21,7 @@ export default class InputsContainer extends Component {
 
 	render() {
 		const { inputs, onRemove, onOpenTask } = this.props
-		const rotation = this.state.expanded ? '180deg': '0deg'
+		const rotation = this.state.expanded ? '180deg' : '0deg'
 		const styles = StyleSheet.create({
 			container: {},
 			firstRowContainer: {
@@ -103,13 +104,25 @@ class InputRow extends Component {
 	}
 
 	render() {
+		const { input } = this.props
+		const isFlagged = input.input_task_n.is_flagged
+		const isAncestorFlagged = input.input_task_n.num_flagged_ancestors > 0
 		const styles = StyleSheet.create({
 			container: {
-				paddingLeft: 48,
 				paddingRight: 48,
 				height: 32,
 				flexDirection: 'row',
 				justifyContent: 'space-between',
+				alignItems: 'center',
+			},
+			labelContainer: {
+				flexDirection: 'row',
+				alignItems: 'center',
+			},
+			flagContainer: {
+				width: 40,
+				height: 32,
+				justifyContent: 'center',
 				alignItems: 'center',
 			},
 			remove: {
@@ -119,9 +132,15 @@ class InputRow extends Component {
 		})
 		return (
 			<View style={styles.container}>
-				<TouchableOpacity onPress={this.handleOpenTask}>
-					<Text>{this.props.input.task_display}</Text>
-				</TouchableOpacity>
+				<View style={styles.labelContainer}>
+					<View style={styles.flagContainer}>
+						{isFlagged && <FlagPill />}
+						{!isFlagged && isAncestorFlagged && <AncestorFlagPill />}
+					</View>
+					<TouchableOpacity onPress={this.handleOpenTask}>
+						<Text>{input.task_display}</Text>
+					</TouchableOpacity>
+				</View>
 				<TouchableOpacity onPress={this.handleRemove}>
 					<Text style={styles.remove}>Remove</Text>
 				</TouchableOpacity>
