@@ -80,7 +80,7 @@ class Task extends Component {
 	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
-			name: this.props.task.display,
+			name: this.props.task ? this.props.task.display : '',
 		})
 	}
 

@@ -120,7 +120,7 @@ class InputRow extends Component {
 		return (
 			<View style={styles.container}>
 				<TouchableOpacity onPress={this.handleOpenTask}>
-					<Text>{shortQR(this.props.input.input_qr)}</Text>
+					<Text>{this.props.input.task_display}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={this.handleRemove}>
 					<Text style={styles.remove}>Remove</Text>
@@ -128,9 +128,5 @@ class InputRow extends Component {
 			</View>
 		)
 	}
-}
-
-function shortQR(qr) {
-	return qr.substring(qr.length - 6)
 }
 
