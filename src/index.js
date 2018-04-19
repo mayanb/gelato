@@ -20,7 +20,7 @@ import Snackbar from './components/Snackbar'
 import ShouldUpdateModal from './components/Main/ShouldUpdateModal'
 import { connect } from 'react-redux'
 
-let { releaseChannel, publishedTime, extra = {} } = Expo.Constants.manifest
+let { releaseChannel, publishedTime} = Expo.Constants.manifest
 const LATEST_MANIFEST_URL = `https://expo.io/@polymer/polymer/index.exp?release-channel=${releaseChannel || 'staging'}&sdkVersion=26.0.0`
 
 class App extends React.Component {
@@ -29,6 +29,7 @@ class App extends React.Component {
 		ready: false,
 		loggedIn: false,
 		hasLatestUpdates: false,
+		requiredUpdate: false,
 	}
 
 	_onStartup = async () => {
@@ -37,9 +38,11 @@ class App extends React.Component {
 	}
 
 	_loadLatestBundle = async () => {
+		const currentPublishedTime = moment(publishedTime)
 		const latestManifest = await request.get(LATEST_MANIFEST_URL)
 		const latestPublishedTime = moment(latestManifest.body.publishedTime)
-		const currentPublishedTime = moment(publishedTime)
+		const requiredUpdate = latestManifest.body.extra.requiredUpdate
+		this.setState({ requiredUpdate: true })
 
 		if (latestPublishedTime.isAfter(currentPublishedTime)) {
 			Expo.Util.reload()
@@ -86,7 +89,7 @@ class App extends React.Component {
 			)
 		}
 
-		let shouldUpdate = !this.state.hasLatestUpdates && extra.requiredUpdate 
+		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate 
 		return (
 			<View style={{ flex: 1 }}>
 				{this.state.loggedIn ? <Navigation screenProps={user} /> : <Login />}
