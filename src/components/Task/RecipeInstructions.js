@@ -89,7 +89,7 @@ function Toggle({ expanded, onPress }) {
 	return (
 		<TouchableOpacity style={styles.toggleContainer} onPress={onPress}>
 			<Text style={styles.toggleText}>{text}</Text>
-			<Image source={ImageUtility.requireIcon('uparrowwhite.png')} style={styles.icon} />
+			<Image source={ImageUtility.requireIcon('uparrowblue.png')} style={styles.icon} />
 		</TouchableOpacity>
 	)
 }
