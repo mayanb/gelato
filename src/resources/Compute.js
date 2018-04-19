@@ -53,6 +53,9 @@ export default class Compute {
 			})
 			attributes.push(filled_attribute)
 		})
+		console.log(attributes)
+		attributes.sort(function(obj1, obj2) {return obj1.rank - obj2.rank})
+		console.log(attributes)
 		return attributes
 	}
 
