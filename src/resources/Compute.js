@@ -63,6 +63,7 @@ export default class Compute {
 		let task = {
 			process_type: data.processType.id,
 			product_type: data.productType.id,
+			batch_size: data.batch_size,
 			label: label,
 			is_open: true,
 			is_flagged: false,
