@@ -86,7 +86,7 @@ class Task extends Component {
 
 	componentWillReceiveProps(np) {
 		if (!np.task) return
-		if (!this.props.task || (np.task.is_flagged !== this.props.task.is_flagged)) {
+		if (!this.props.task || !this.props.task.task_ingredients || (np.task.is_flagged !== this.props.task.is_flagged)) {
 			this.updateActionSheet(np.task)
 		}
 	}
@@ -120,8 +120,9 @@ class Task extends Component {
 
 	allowEditBatchSize(task) {
 		let proc = task.process_type.name.toLowerCase()
+		const hasRecipe = task.task_ingredients && task.task_ingredients.length && task.task_ingredients[0].ingredient.recipe_id
 		return (
-			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
+			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package') && !hasRecipe
 		)
 	}
 
