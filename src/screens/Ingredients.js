@@ -165,7 +165,7 @@ class Ingredients extends Component {
 	}
 
 	renderErrorModal() {
-		let { inputError, isFetchingItem } = this.state
+		let { inputError, isFetchingItem, foundTask } = this.state
 		if (isFetchingItem) {
 			return this.renderQRLoading()
 		}
@@ -179,7 +179,7 @@ class Ingredients extends Component {
 					semantic={inputError.semantic}
 					shouldShowAmount={false}
 					onChange={() => null}
-					onPress={() => null}
+					onPress={() => this.handleAddInput(foundTask)}
 					onCancel={this.handleCloseModal.bind(this)}
 					amount={null}
 				/>

@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
 	},
 	warning: {
 		backgroundColor: 'orange',
-		color: 'white',
 	},
 	warningButtonsContainer: {
 		display: 'flex',
@@ -150,7 +149,7 @@ function renderButtons(semantic, onPress, onCancel, amount, shouldShowAmount) {
 					color={Colors.red}
 					style={styles.warningAddButton}
 					onAdd={onPress}
-					disabled={!amount}
+					disabled={shouldShowAmount && !amount}
 				/>
 				<CancelButton
 					title="Cancel"

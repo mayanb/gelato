@@ -83,7 +83,8 @@ export default class Compute {
 	}
 
 
-	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
+	static getQRSemantic(mode, foundQR, currentTask) {
+		const isDandelion = Compute.isDandelion(currentTask.process_type.team_created_by_name)
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
@@ -101,7 +102,7 @@ export default class Compute {
 			}
 
 			// if the product types don't match
-			if (input_task.product_type.id !== currentTask.product_type.id) {
+			if (input_task.product_type !== currentTask.product_type.id) {
 				if (isDandelion) {
 					return UNLIKELY_INPUT
 				}
