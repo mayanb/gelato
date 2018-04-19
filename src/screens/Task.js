@@ -25,6 +25,8 @@ import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
+import RecipeInstructions from "../components/Task/RecipeInstructions"
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
@@ -90,7 +92,7 @@ class Task extends Component {
 	}
 
 	componentDidMount() {
-		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
+		this.setState({ isDandelion: Compute.isDandelion(this.props.screenProps.team) })
 		this.setState({ isLoadingTask: true })
 		this.props.dispatch(actions.fetchTask(this.props.id))
 			.then(res => {
@@ -144,11 +146,14 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
-					<AttributeList
-						data={organized_attributes}
-						onSubmitEditing={this.handleSubmitEditing.bind(this)}
-						isLoadingTask={this.state.isLoadingTask}
-					/>
+					<KeyboardAwareScrollView>
+						{task.recipe_instructions && <RecipeInstructions instructions={task.recipe_instructions} />}
+						<AttributeList
+							data={organized_attributes}
+							onSubmitEditing={this.handleSubmitEditing.bind(this)}
+							isLoadingTask={this.state.isLoadingTask}
+						/>
+					</KeyboardAwareScrollView>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
@@ -188,7 +193,8 @@ class Task extends Component {
 			[
 				{
 					text: 'Cancel',
-					onPress: () => {},
+					onPress: () => {
+					},
 					style: 'cancel',
 				},
 				{
@@ -302,7 +308,7 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if(this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
+		if (this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}
