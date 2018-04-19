@@ -20,6 +20,7 @@ export default class InputsContainer extends Component {
 
 	render() {
 		const { inputs, onRemove, onOpenTask } = this.props
+		const rotation = this.state.expanded ? '180deg': '0deg'
 		const styles = StyleSheet.create({
 			container: {},
 			firstRowContainer: {
@@ -44,6 +45,7 @@ export default class InputsContainer extends Component {
 			arrowIcon: {
 				height: 16,
 				width: 16,
+				transform: [{ rotate: rotation }],
 			},
 		})
 		const taskCount = `${inputs.length} ${pluralize('task', inputs.length)}`
@@ -53,9 +55,11 @@ export default class InputsContainer extends Component {
 					<View style={styles.taskCountContainer}>
 						<Text style={styles.taskCount}>{taskCount}</Text>
 					</View>
-					<TouchableOpacity onPress={this.handleToggleExpanded} style={styles.expandButton}>
-						<Image source={ImageUtility.requireIcon('downarrow.png')} style={styles.arrowIcon} />
-					</TouchableOpacity>
+					{inputs.length && (
+						<TouchableOpacity onPress={this.handleToggleExpanded} style={styles.expandButton}>
+							<Image source={ImageUtility.requireIcon('downarrow.png')} style={styles.arrowIcon} />
+						</TouchableOpacity>
+					)}
 				</View>
 				<View>
 					{this.state.expanded && inputs.map(input => <InputRow
