@@ -258,10 +258,11 @@ class Task extends Component {
 		)
 	}
 
-	showCamera() {
+	showCamera(mode) {
 		this.props.navigation.navigate('Ingredients', {
 			taskID: this.props.task.id,
 			isDandelion: this.state.isDandelion,
+			mode: mode,
 		})
 	}
 

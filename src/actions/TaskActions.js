@@ -206,8 +206,8 @@ function createTaskFailure(err) {
 	}
 }
 
-export function addInput(task, item) {
-	let payload = { task: task.id, input_item: item.id }
+export function addInput(task, item, amount) {
+	let payload = { task: task.id, input_item: item.id, amount: amount }
 	return dispatch => {
 		dispatch(startAddingInput())
 		return Networking.post('/ics/inputs/create-without-amount/')
@@ -240,6 +240,7 @@ export function addOutput(task, qr, amount) {
 			})
 	}
 }
+
 
 export function updateTaskIngredientAmount(taskIngredientID, amount) {
 	let payload = { actual_amount: amount }

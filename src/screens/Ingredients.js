@@ -29,8 +29,8 @@ class Ingredients extends Component {
 
 		this.state = {
 			expanded: false,
-			foundTask: null,
-			inputError: null,
+			foundItem: null,
+			semantic: '',
 
 			isFetchingItem: false,
 			isAddingInput: false,
@@ -61,8 +61,7 @@ class Ingredients extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				{this.state.foundTask && this.renderConfirmModal()}
-				{this.state.inputError && this.renderErrorModal()}
+				{(this.state.foundItem || this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
 					expanded={this.state.expanded}
 					setExpanded={expanded => this.setState({ expanded: expanded })}
@@ -125,65 +124,81 @@ class Ingredients extends Component {
 		this.setState({ request: r, isFetchingSearch: true, searchData: [] })
 	}
 
-	handleSelectTaskFromDropdown(task) {
-		if (task.items.length) {
-			const genericItem = task.items[0]
-			genericItem.creating_task = task
-			const errorSemantic = Compute.getQRSemantic('inputs', genericItem, this.props.task)
-			if (errorSemantic) {
-				this.setInputError(errorSemantic, genericItem.item_qr, task.display)
-			} else {
-				this.setState({
-					searchData: [],
-				})
-				this.setState({ foundTask: task })
-			}
+	handleSelectTaskFromDropdown(inputTask) {
+		let { mode, task } = this.props
+		if (inputTask.items.length) {
+			const genericItem = inputTask.items[0]
+			genericItem.creating_task = inputTask
+			this.setState({
+				barcode: genericItem.item_qr,
+				foundItem: genericItem,
+				semantic: Compute.getQRSemantic(mode, genericItem, task),
+				searchData: [],
+				amount: genericItem.amount,
+			})
 		} else {
-			this.setInputError(NO_OUTPUT_ITEMS, '', task.display)
+			this.setState({ semantic: NO_OUTPUT_ITEMS })
 		}
 	}
 
-	renderConfirmModal() {
-		const { foundTask } = this.state
-		const item = foundTask.items[0]
+	handleSetAmount(text) {
+		this.setState({ amount: text })
+	}
+
+	renderQRModal() {
+		let { foundItem, isFetching } = this.state
+		if (isFetching) {
+			return this.renderQRLoading()
+		}
+
+		let creatingTask =
+			foundItem && foundItem.creating_task ? foundItem.creating_task : {}
 
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
-				<QRDisplay
-					unit={null}
-					barcode={item.item_qr}
-					creating_task_display={foundTask.display}
-					semantic={''}
-					shouldShowAmount={false}
-					onChange={() => null}
-					onPress={() => this.handleAddInput(foundTask)}
-					onCancel={this.handleCloseModal.bind(this)}
-					amount={null}
-				/>
+				{this.props.mode === 'inputs'
+					? this.renderInputQR(creatingTask)
+					: this.renderOutputQR(creatingTask)}
 			</Modal>
 		)
 	}
 
-	renderErrorModal() {
-		let { inputError, isFetchingItem, foundTask } = this.state
-		if (isFetchingItem) {
-			return this.renderQRLoading()
-		}
+	renderInputQR(creatingTask) {
+		let { barcode, semantic, amount } = this.state
 
 		return (
-			<Modal onPress={this.handleCloseModal.bind(this)}>
-				<QRDisplay
-					unit={null}
-					barcode={inputError.barcode}
-					creating_task_display={inputError.taskName}
-					semantic={inputError.semantic}
-					shouldShowAmount={false}
-					onChange={() => null}
-					onPress={() => this.handleAddInput(foundTask)}
-					onCancel={this.handleCloseModal.bind(this)}
-					amount={null}
-				/>
-			</Modal>
+			<QRDisplay
+				unit={
+					creatingTask.process_type
+						? creatingTask.process_type.unit
+						: this.props.task.process_type.unit
+				}
+				barcode={barcode}
+				creating_task_display={creatingTask.display}
+				semantic={semantic}
+				onChange={this.handleSetAmount.bind(this)}
+				onPress={this.handleAddInput.bind(this)}
+				onCancel={this.handleCloseModal.bind(this)}
+				amount={amount}
+			/>
+		)
+	}
+
+	renderOutputQR(creatingTask) {
+		let { barcode, semantic } = this.state
+
+		return (
+			<QRDisplay
+				unit={this.props.task.process_type.unit}
+				barcode={barcode}
+				creating_task_display={''}
+				semantic={semantic}
+				amount={this.state.amount}
+				default_amount={this.state.default_amount}
+				onChange={this.handleSetAmount.bind(this)}
+				onPress={this.handleAddOutput.bind(this)}
+				onCancel={this.handleCloseModal.bind(this)}
+			/>
 		)
 	}
 
@@ -203,22 +218,45 @@ class Ingredients extends Component {
 
 	handleCloseModal() {
 		this.setState({
-			inputError: null,
-			foundTask: null,
+			barcode: null,
+			foundItem: null,
+			semantic: '',
+			amount: '',
 			expanded: false,
 		})
 	}
 
-	handleAddInput(task) {
-		this.setState({ isAddingInput: true, foundTask: null })
-		return this.dispatchWithError(actions.addInput(this.props.task, task.items[0]))
+	handleAddInput() {
+		this.setState({ isAddingInput: true })
+		return this.dispatchWithError(actions.addInput(this.props.task, this.state.foundItem, this.state.amount))
+			.then(() => this.handleCloseModal())
 			.then(() => this.setState({ expanded: true }))
 			.catch(err => console.error('Error adding input', err))
-			.finally(() => this.setState({ isAddingInput: false }))
+			.finally(() => this.setState({ isAddingInput: false, foundItem: null, barcode: null }))
 	}
 
 	handleRemoveInput(inputID) {
 		this.dispatchWithError(actions.removeInput(inputID, this.props.task.id))
+	}
+
+	handleAddOutput() {
+		let { barcode, amount } = this.state
+		return this.dispatchWithError(
+			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
+		).then(() => this.handleCloseModal())
+	}
+
+	handleRemoveOutput(i) {
+		let { task } = this.props
+		let item = task['items'][i]
+		const success = () => {
+			if (this.props.task.items.length === 0) {
+				this.handleCloseModal()
+			}
+		}
+		this.dispatchWithError(
+			//actions.removeOutput(task, item, i, this.props.taskSearch)
+		).then(success)
 	}
 
 	handleClose() {
@@ -231,62 +269,57 @@ class Ingredients extends Component {
 	}
 
 	handleBarCodeRead(e) {
-		const data = e.data.trim() // for some reason the qr code printed has some spaces sometimes
-		const { expanded, inputError, isFetchingItem, isAddingInput } = this.state
-		if (expanded || inputError || isFetchingItem || isAddingInput) {
+		const barcode = e.data.trim() // for some reason the qr code printed has some spaces sometimes
+		const { expanded, foundItem, semantic, isFetchingItem, isAddingInput } = this.state
+		if (expanded || foundItem || semantic || isFetchingItem || isAddingInput) {
 			return
 		}
 
 		let errorSemantic
-		const valid = Compute.validateQR(data)
+		const valid = Compute.validateQR(barcode)
 		if (!valid) {
 			// not a valid qr code
 			errorSemantic = INVALID_QR
-		} else if (Compute.isAlreadyInput(data, this.props.task)) {
+		} else if (Compute.isAlreadyInput(barcode, this.props.task)) {
 			// its already an input to this task
 			errorSemantic = ALREADY_ADDED_INPUT
-		} else if (Compute.isAlreadyOutput(data, this.props.task)) {
+		} else if (Compute.isAlreadyOutput(barcode, this.props.task)) {
 			// its already an output to this task
 			errorSemantic = ALREADY_ADDED_OUTPUT
 		}
 
 		if (errorSemantic) {
-			this.setInputError(errorSemantic, data)
+			this.setState({
+				barcode: barcode,
+				semantic: errorSemantic,
+			})
 		} else {
 			// fetch all the data about this qr code
-			this.fetchBarcodeData(data)
+			this.fetchBarcodeData(barcode)
 		}
 	}
 
-	fetchBarcodeData(code) {
-		this.setState({ isFetchingItem: true })
+	fetchBarcodeData(barcode) {
+		const { mode } = this.props
+		this.setState({ isFetchingItem: true, barcode: barcode })
 		Networking.get('/ics/items/')
-			.query({ item_qr: code })
+			.query({ item_qr: barcode })
 			.then(res => {
 				const item = res.body.length ? res.body[0] : null
-				const task = item.creating_task
-				const errorSemantic = Compute.getQRSemantic('inputs', item, this.props.task)
+				const creatingTask = item.creating_task
+				const amount = item ? item.amount : creatingTask.process_type.default_amount
+				const errorSemantic = Compute.getQRSemantic(mode, item, this.props.task)
 				if (errorSemantic) {
-					this.setInputError(errorSemantic, code, task.display)
+					this.setState({ semantic: errorSemantic })
 				} else {
-					this.setState({ foundTask: task })
+					this.setState({ foundItem: item, barcode: item.item_qr, amount: amount })
 				}
 			})
 			.catch(err => {
 				console.error('Error fetching barcode data', err)
-				this.setInputError(SCAN_ERROR, code)
+				this.setState({ semantic: SCAN_ERROR })
 			})
 			.finally(() => this.setState({ isFetchingItem: false }))
-	}
-
-	setInputError(errorSemantic, barcode, taskName) {
-		this.setState({
-			inputError: {
-				semantic: errorSemantic,
-				barcode: barcode,
-				taskName: taskName
-			},
-		})
 	}
 
 	// MARK: - DEBUG
