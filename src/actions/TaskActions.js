@@ -27,6 +27,7 @@ import {
 	REQUEST_EDIT_TASK_INGREDIENT,
 	REQUEST_EDIT_TASK_INGREDIENT_SUCCESS,
 	REQUEST_EDIT_TASK_INGREDIENT_FAILURE,
+	REMOVE_OUTPUT_SUCCESS,
 } from '../reducers/TaskReducerExtension'
 
 const TASKS = 'TASKS'
@@ -169,6 +170,27 @@ function updateAttributeFailure(err) {
 	}
 }
 
+export function requestCreatePackageTask(data) {
+	return dispatch => {
+		let payload = Compute.generateNewTask(data)
+
+		return Networking.post('/ics/tasks/create/')
+			.send(payload)
+			.then(res => {
+				res.body.process_type = data.processType
+				res.body.product_type = data.productType
+				res.body.attribute_values = []
+				res.body.organized_attributes = Compute.organizeAttributes(res.body)
+				dispatch(createTaskSuccess(res.body))
+				return res.body
+			})
+			.catch(e => {
+				dispatch(createTaskFailure(e))
+				throw e
+			})
+	}
+}
+
 export function requestCreateTask(data) {
 	return dispatch => {
 		let payload = Compute.generateNewTask(data)
@@ -206,8 +228,8 @@ function createTaskFailure(err) {
 	}
 }
 
-export function addInput(task, item, amount) {
-	let payload = { task: task.id, input_item: item.id, amount: amount }
+export function addInput(task, item) {
+	let payload = { task: task.id, input_item: item.id }
 	return dispatch => {
 		dispatch(startAddingInput())
 		return Networking.post('/ics/inputs/create-without-amount/')
@@ -448,3 +470,23 @@ export function requestRenameTask(task, custom_display) {
 	}
 }
 
+export function removeOutput(taskID, item, index) {
+	return dispatch => {
+		return Networking.del(`/ics/items/${item.id}/`)
+			.then(() => {
+				dispatch(removeOutputSuccess(index, taskID))
+			})
+			.catch(e => {
+				throw e
+			})
+	}
+}
+
+function removeOutputSuccess(outputIndex, taskID) {
+	return {
+		type: REMOVE_OUTPUT_SUCCESS,
+		name: TASKS,
+		taskID: taskID,
+		index: outputIndex,
+	}
+}

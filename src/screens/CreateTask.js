@@ -95,7 +95,7 @@ class CreateTask extends Component {
 			}
 			this.setState({ isCreatingTask: true })
 			Promise.all([
-				dispatch(taskActions.requestCreateTask(taskData)),
+				dispatch(taskActions.requestCreatePackageTask(taskData)),
 			])
 				.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
 				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))

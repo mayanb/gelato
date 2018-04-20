@@ -22,6 +22,8 @@ export const REQUEST_EDIT_TASK_INGREDIENT = 'REQUEST_EDIT_TASK_INGREDIENT'
 export const REQUEST_EDIT_TASK_INGREDIENT_SUCCESS = 'REQUEST_EDIT_TASK_INGREDIENT_SUCCESS'
 export const REQUEST_EDIT_TASK_INGREDIENT_FAILURE = 'REQUEST_EDIT_TASK_INGREDIENT_FAILURE'
 
+export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
+
 export function _task(state, action) {
 	let ns = BasicReducer(state, action)
 	switch (action.type) {
@@ -59,6 +61,8 @@ export function _task(state, action) {
 			return requestEditTaskIngredientSuccess(ns, action)
 		case REQUEST_EDIT_TASK_INGREDIENT_FAILURE:
 			return requestFailure(state, action, 'isEditingTaskIngredient')
+		case REMOVE_OUTPUT_SUCCESS:
+			return removeOutputSuccess(ns, action)
 		default:
 			return ns
 	}
@@ -279,6 +283,18 @@ function requestEditTaskIngredientSuccess(state, action) {
 		},
 		ui: {
 			isEditingTaskIngredient: { $set: false },
+		},
+	})
+}
+
+function removeOutputSuccess(state, action) {
+	return update(state, {
+		dataByID: {
+			[action.taskID]: {
+				['items']: {
+					$splice: [[action.index, 1]],
+				},
+			},
 		},
 	})
 }

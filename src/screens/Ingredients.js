@@ -21,6 +21,7 @@ import QRCamera from '../components/QRCamera'
 
 import PanelExpander from '../components/Ingredients/PanelExpander'
 import TaskIngredient from '../components/Ingredients/TaskIngredient'
+import OutputItemList from '../components/Ingredients/OutputItemList'
 
 
 class Ingredients extends Component {
@@ -39,6 +40,8 @@ class Ingredients extends Component {
 			isFetchingSearch: false,
 			searchData: [],
 			request: null,
+
+			outputAmount: 0,
 		}
 
 		this.handleAddInput = this.handleAddInput.bind(this)
@@ -61,7 +64,7 @@ class Ingredients extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				{(this.state.foundItem || this.state.semantic) && this.renderQRModal()}
+				{(this.state.barcode || this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
 					expanded={this.state.expanded}
 					setExpanded={expanded => this.setState({ expanded: expanded })}
@@ -87,6 +90,18 @@ class Ingredients extends Component {
 
 	renderContent() {
 		let { task } = this.props
+		if (this.props.mode === 'items') {
+			return (
+				<OutputItemList
+					task={task}
+					processUnit={task.process_type.unit}
+					onRemove={this.handleRemoveOutput.bind(this)}
+					onOpenTask={this.handleOpenTask.bind(this)}
+					items={task.items}
+				/>
+			)
+		}
+
 		return (
 			<ScrollView style={{ backgroundColor: Colors.ultraLightGray, flex: 1, }}>
 				{task.task_ingredients.map(ta => <TaskIngredient
@@ -134,7 +149,6 @@ class Ingredients extends Component {
 				foundItem: genericItem,
 				semantic: Compute.getQRSemantic(mode, genericItem, task),
 				searchData: [],
-				amount: genericItem.amount,
 			})
 		} else {
 			this.setState({ semantic: NO_OUTPUT_ITEMS })
@@ -142,7 +156,7 @@ class Ingredients extends Component {
 	}
 
 	handleSetAmount(text) {
-		this.setState({ amount: text })
+		this.setState({ outputAmount: text })
 	}
 
 	renderQRModal() {
@@ -164,7 +178,7 @@ class Ingredients extends Component {
 	}
 
 	renderInputQR(creatingTask) {
-		let { barcode, semantic, amount } = this.state
+		let { barcode, semantic } = this.state
 
 		return (
 			<QRDisplay
@@ -179,7 +193,7 @@ class Ingredients extends Component {
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddInput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
-				amount={amount}
+				amount={null}
 			/>
 		)
 	}
@@ -193,11 +207,12 @@ class Ingredients extends Component {
 				barcode={barcode}
 				creating_task_display={''}
 				semantic={semantic}
-				amount={this.state.amount}
-				default_amount={this.state.default_amount}
+				amount={this.state.outputAmount}
+				default_amount={0}
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddOutput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
+				shouldShowAmount={true}
 			/>
 		)
 	}
@@ -221,14 +236,14 @@ class Ingredients extends Component {
 			barcode: null,
 			foundItem: null,
 			semantic: '',
-			amount: '',
 			expanded: false,
+			outputAmount: 0,
 		})
 	}
 
 	handleAddInput() {
 		this.setState({ isAddingInput: true })
-		return this.dispatchWithError(actions.addInput(this.props.task, this.state.foundItem, this.state.amount))
+		return this.dispatchWithError(actions.addInput(this.props.task, this.state.foundItem))
 			.then(() => this.handleCloseModal())
 			.then(() => this.setState({ expanded: true }))
 			.catch(err => console.error('Error adding input', err))
@@ -240,23 +255,16 @@ class Ingredients extends Component {
 	}
 
 	handleAddOutput() {
-		let { barcode, amount } = this.state
+		let { barcode, outputAmount } = this.state
 		return this.dispatchWithError(
-			actions.addOutput(this.props.task, barcode, amount, this.props.taskSearch)
+			actions.addOutput(this.props.task, barcode, outputAmount)
 		).then(() => this.handleCloseModal())
 	}
 
 	handleRemoveOutput(i) {
 		let { task } = this.props
 		let item = task['items'][i]
-		const success = () => {
-			if (this.props.task.items.length === 0) {
-				this.handleCloseModal()
-			}
-		}
-		this.dispatchWithError(
-			//actions.removeOutput(task, item, i, this.props.taskSearch)
-		).then(success)
+		this.dispatchWithError(actions.removeOutput(task.id, item, i))
 	}
 
 	handleClose() {
@@ -306,10 +314,8 @@ class Ingredients extends Component {
 			.query({ item_qr: barcode })
 			.then(res => {
 				const item = res.body.length ? res.body[0] : null
-				const creatingTask = item.creating_task
-				const amount = item ? item.amount : creatingTask.process_type.default_amount
 				const errorSemantic = Compute.getQRSemantic(mode, item, this.props.task)
-				this.setState({ foundItem: item, barcode: item.item_qr, amount: amount, semantic: errorSemantic })
+				this.setState({ foundItem: item, semantic: errorSemantic })
 			})
 			.catch(err => {
 				console.error('Error fetching barcode data', err)
