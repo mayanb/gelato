@@ -102,7 +102,7 @@ export default class Compute {
 			}
 
 			// if the product types don't match
-			if (input_task.product_type !== currentTask.product_type.id) {
+			if (input_task.product_type.id !== currentTask.product_type.id) {
 				if (isDandelion) {
 					return UNLIKELY_INPUT
 				}

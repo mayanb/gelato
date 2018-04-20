@@ -212,7 +212,7 @@ class Task extends Component {
 		let { task } = this.props
 		let item = task.items[0]
 		AlertIOS.prompt(
-			'Enter a new batch sie',
+			'Enter a new batch size',
 			null,
 			this.handleEditBatchSize,
 			'plain-text',

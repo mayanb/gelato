@@ -91,7 +91,7 @@ class CreateTask extends Component {
 			let taskData = {
 				processType: processType,
 				productType: productType,
-				amount: 0,
+				batch_size: 0,
 			}
 			this.setState({ isCreatingTask: true })
 			Promise.all([

@@ -138,7 +138,7 @@ class InputRow extends Component {
 						{!isFlagged && isAncestorFlagged && <AncestorFlagPill />}
 					</View>
 					<TouchableOpacity onPress={this.handleOpenTask}>
-						<Text>{input.task_display}</Text>
+						<Text>{input.input_task_display}</Text>
 					</TouchableOpacity>
 				</View>
 				<TouchableOpacity onPress={this.handleRemove}>

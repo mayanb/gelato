@@ -309,11 +309,7 @@ class Ingredients extends Component {
 				const creatingTask = item.creating_task
 				const amount = item ? item.amount : creatingTask.process_type.default_amount
 				const errorSemantic = Compute.getQRSemantic(mode, item, this.props.task)
-				if (errorSemantic) {
-					this.setState({ semantic: errorSemantic })
-				} else {
-					this.setState({ foundItem: item, barcode: item.item_qr, amount: amount })
-				}
+				this.setState({ foundItem: item, barcode: item.item_qr, amount: amount, semantic: errorSemantic })
 			})
 			.catch(err => {
 				console.error('Error fetching barcode data', err)
