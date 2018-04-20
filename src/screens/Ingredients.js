@@ -100,6 +100,8 @@ class Ingredients extends Component {
 					items={task.items}
 				/>
 			)
+		} else if(task.task_ingredients && task.task_ingredients.length === 0) {
+			return <ZeroIngredientsState />
 		}
 
 		const hasRecipe = task.task_ingredients.some(ta => ta.ingredient.recipe_id)
@@ -337,6 +339,19 @@ class Ingredients extends Component {
 		let barcode = 'dande.li/ics/5dd1995d-b80b-4952-bf3a-4a88bee70e7a'
 		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 2000)
 	}
+}
+
+function ZeroIngredientsState() {
+	return (
+		<View style={{
+			padding: 12,
+			alignItems: 'center',
+		}}>
+			<Text>
+				Add an ingredient by scanning a QR code or searching for a task
+			</Text>
+		</View>
+		)
 }
 
 const mapStateToProps = (state, props) => {
