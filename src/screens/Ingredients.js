@@ -309,17 +309,17 @@ class Ingredients extends Component {
 
 	fetchBarcodeData(barcode) {
 		const { mode } = this.props
-		this.setState({ isFetchingItem: true, barcode: barcode })
+		this.setState({ isFetchingItem: true })
 		Networking.get('/ics/items/')
 			.query({ item_qr: barcode })
 			.then(res => {
 				const item = res.body.length ? res.body[0] : null
 				const errorSemantic = Compute.getQRSemantic(mode, item, this.props.task)
-				this.setState({ foundItem: item, semantic: errorSemantic })
+				this.setState({ foundItem: item, semantic: errorSemantic, barcode: barcode })
 			})
 			.catch(err => {
 				console.error('Error fetching barcode data', err)
-				this.setState({ semantic: SCAN_ERROR })
+				this.setState({ semantic: SCAN_ERROR, barcode: barcode })
 			})
 			.finally(() => this.setState({ isFetchingItem: false }))
 	}
