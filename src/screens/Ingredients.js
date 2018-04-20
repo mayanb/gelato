@@ -102,6 +102,7 @@ class Ingredients extends Component {
 			)
 		}
 
+		const hasRecipe = task.task_ingredients.some(ta => ta.ingredient.recipe_id)
 		return (
 			<ScrollView style={{ backgroundColor: Colors.ultraLightGray, flex: 1, }}>
 				{task.task_ingredients.map(ta => <TaskIngredient
@@ -110,6 +111,7 @@ class Ingredients extends Component {
 					onEditAmount={this.handleEditAmount}
 					onRemoveInput={this.handleRemoveInput}
 					onOpenTask={this.handleOpenTask}
+					hasRecipe={hasRecipe}
 				/>)}
 			</ScrollView>
 		)

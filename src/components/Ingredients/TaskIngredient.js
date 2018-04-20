@@ -43,14 +43,14 @@ export default class TaskIngredient extends Component {
 				paddingBottom: 12,
 			},
 		})
-		const { taskIngredient, onRemoveInput, onOpenTask } = this.props
+		const { taskIngredient, onRemoveInput, onOpenTask, hasRecipe } = this.props
 		const { ingredient, inputs, scaled_amount, actual_amount } = taskIngredient
 		const { process_type } = ingredient
 		return (
 			<View style={styles.container}>
 				<View style={styles.topContainer}>
 					<View style={styles.mainContent}>
-						<TitleRow ingredient={ingredient} />
+						<TitleRow ingredient={ingredient} hasRecipe={hasRecipe} />
 						<AmountRow
 							actual={actual_amount}
 							expected={scaled_amount}
@@ -70,10 +70,12 @@ function ingredientName(ingredient) {
 	return `${process_type.name} ${product_type.name}`
 }
 
-function TitleRow({ ingredient }) {
+function TitleRow({ ingredient, hasRecipe }) {
 	const styles = StyleSheet.create({
 		titleRow: {
 			flexDirection: 'row',
+			alignItems: 'center',
+			paddingBottom: 8,
 		},
 		processIcon: {
 			height: 16,
@@ -84,13 +86,20 @@ function TitleRow({ ingredient }) {
 		title: {
 			fontSize: 17,
 			fontWeight: 'bold',
-			paddingBottom: 8,
+		},
+		notInRecipe: {
+			fontSize: 14,
+			color: Colors.lightGray,
+			marginLeft: 4,
 		},
 	})
 	return (
 		<View style={styles.titleRow}>
 			<Image source={ImageUtility.requireIcon(ingredient.process_type.icon)} style={styles.processIcon} />
 			<Text style={styles.title}>{ingredientName(ingredient)}</Text>
+			{(hasRecipe && !ingredient.recipe_id) && (
+				<Text style={styles.notInRecipe}>(not in recipe)</Text>
+			)}
 		</View>
 	)
 }
