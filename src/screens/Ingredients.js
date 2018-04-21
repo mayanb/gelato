@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import paramsToProps from '../resources/paramsToProps'
 import Compute from '../resources/Compute'
 import Storage from '../resources/Storage'
@@ -107,14 +107,18 @@ class Ingredients extends Component {
 		const hasRecipe = task.task_ingredients.some(ta => ta.ingredient.recipe_id)
 		return (
 			<ScrollView style={{ backgroundColor: Colors.ultraLightGray, flex: 1, }}>
-				{task.task_ingredients.map(ta => <TaskIngredient
-					taskIngredient={ta}
-					key={ta.id}
-					onEditAmount={this.handleEditAmount}
-					onRemoveInput={this.handleRemoveInput}
-					onOpenTask={this.handleOpenTask}
-					hasRecipe={hasRecipe}
-				/>)}
+				<TouchableWithoutFeedback>{/**Need this to make scrolling work (not sure why)*/}
+					<View>
+						{task.task_ingredients.map(ta => <TaskIngredient
+							taskIngredient={ta}
+							key={ta.id}
+							onEditAmount={this.handleEditAmount}
+							onRemoveInput={this.handleRemoveInput}
+							onOpenTask={this.handleOpenTask}
+							hasRecipe={hasRecipe}
+						/>)}
+					</View>
+				</TouchableWithoutFeedback>
 			</ScrollView>
 		)
 	}
