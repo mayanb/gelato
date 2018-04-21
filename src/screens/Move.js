@@ -244,9 +244,8 @@ class Move extends Component {
 	}
 
 	fetchBarcodeData(code) {
-		let { mode } = this.props
-		let success = (data, semantic) => {
-			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
+		let success = (data) => {
+			this.setState({ foundQR: data, isFetching: false })
 		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
@@ -259,8 +258,7 @@ class Move extends Component {
 				} else {
 					let found = res.body.length ? res.body[0] : null
 					if (found) {
-						let semantic = Compute.getQRSemantic(mode, found)
-						success(found, semantic)
+						success(found)
 					} else {
 						failure()
 					}
