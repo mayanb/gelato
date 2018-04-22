@@ -85,7 +85,7 @@ class QRScanner extends Component {
 	async handleChangeText(text) {
 		this.setState({ searchText: text })
 		if (text.length < 2) {
-			this.setState({ searchData: [] }) // NECESSARY??
+			this.setState({ searchData: [] })
 			return
 		}
 		const { request } = this.state

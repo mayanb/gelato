@@ -77,13 +77,11 @@ export default class QRCamera extends Component {
 
 	handleFocus() {
 		this.setState({ typeSearch: true })
-		//  TO DO: clear prop searchData
 		this.props.onChangeText('')
 	}
 
 	handleBlur() {
 		this.setState({ typeSearch: false })
-		//  TO DO: clear prop searchData
 		this.props.onChangeText('')
 	}
 }
