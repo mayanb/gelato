@@ -42,6 +42,7 @@ class QRScanner extends Component {
 			// search stuff
 			isLoading: false,
 			searchData: [],
+			searchText: '',
 			request: null,
 		}
 	}
@@ -67,6 +68,7 @@ class QRScanner extends Component {
 					searchable={mode !== 'items'}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
+					searchText={this.state.searchText}
 					searchData={searchData}
 					onChangeText={this.handleChangeText.bind(this)}
 					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
@@ -81,6 +83,11 @@ class QRScanner extends Component {
 	}
 
 	async handleChangeText(text) {
+		this.setState({ searchText: text })
+		if (text.length < 2) {
+			this.setState({ searchData: [] }) // NECESSARY??
+			return
+		}
 		const { request } = this.state
 		if (request) {
 			request.abort()
@@ -101,7 +108,7 @@ class QRScanner extends Component {
 					isLoading: false,
 				})
 			})
-			.catch(() => this.setState({ searchData: [], isLoading: false }))
+			.catch(() => this.setState({ searchData: [], searchText: '', isLoading: false }))
 
 		this.setState({ request: r, isLoading: true })
 	}
@@ -116,6 +123,7 @@ class QRScanner extends Component {
 				foundQR: genericItem,
 				semantic: Compute.getQRSemantic(mode, genericItem, task, isDandelion),
 				searchData: [],
+				searchText: '',
 				amount: genericItem.amount,
 			})
 		}
