@@ -1,7 +1,7 @@
 import React from 'react'
-import { TextInput } from 'react-native'
 import Colors from '../../resources/Colors'
 import EditButton from './EditButton'
+import { SearchDropdown, SearchBox} from '../SearchDropdown'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -51,17 +51,11 @@ export default class UserCell extends React.Component {
 				textAlign: 'right',
 			}
 			return (
-				<TextInput
-					style={style}
-					onChangeText={this.handleChangeText}
-					onSubmitEditing={this.handleSubmitText}
-					onBlur={this.handleSubmitText}
-					returnKeyType="done"
-					value={this.state.draftValue}
-					keyboardType={keyboardType}
-					autoCorrent={false}
-					ref={input => (this.input = input)}
-				/>
+        <SearchDropdown
+          onSelect={() => 'hi'}
+          data={[{id: '123', name: 'bob'}]}
+          isLoading={() => 'hi'}
+        />
 			)
 		}
 	}
