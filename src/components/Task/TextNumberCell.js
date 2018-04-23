@@ -31,16 +31,18 @@ export default class TextNumberCell extends React.Component {
 
 	handleEdit() {
 		this.setState({ editing: true }, () => {
-			if (this.input)
-				this.input.focus()
+			if (this.input) this.input.focus()
 		})
 	}
 
 	render() {
-		if (this.props.isLoadingTask)
-			return null
+		if (this.props.isLoadingTask) return null
 
-		if (!this.state.editing && (this.props.value === undefined || this.props.value === null)) {
+		const { value } = this.props
+		if (
+			!this.state.editing &&
+			(value === undefined || value === null || value === '')
+		) {
 			return <EditButton onEdit={this.handleEdit} />
 		} else {
 			const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
