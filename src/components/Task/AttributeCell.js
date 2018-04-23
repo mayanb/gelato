@@ -9,6 +9,7 @@ import {
 import Colors from '../../resources/Colors'
 import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
+import UserCell from './UserCell'
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -25,7 +26,9 @@ export default class AttributeCell extends React.Component {
 			<View style={styles.container}>
 				<View style={styles.nameContainer}>
 					<Text style={styles.name}>{name}</Text>
-					{this.state.loading && <ActivityIndicator size="small" color={Colors.base} />}
+					{this.state.loading && (
+						<ActivityIndicator size="small" color={Colors.base} />
+					)}
 				</View>
 				{this.renderValue()}
 			</View>
@@ -33,23 +36,34 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderValue() {
-		if (this.props.type === 'BOOL') {
-			return (
-				<BooleanCell
-					value={this.props.value}
-					onSubmit={this.handleSubmit.bind(this)}
-					isLoadingTask={this.props.isLoadingTask}
-				/>
-			)
-		} else {
-			return (
-				<TextNumberCell
-					value={this.props.value}
-					onSubmit={this.handleSubmit.bind(this)}
-					type={this.props.type}
-					isLoadingTask={this.props.isLoadingTask}
-				/>
-			)
+		console.log('this.props.type: ', this.props.type)
+		switch (this.props.type) {
+			case 'BOOL':
+				return (
+					<BooleanCell
+						value={this.props.value}
+						onSubmit={this.handleSubmit.bind(this)}
+						isLoadingTask={this.props.isLoadingTask}
+					/>
+				)
+			case 'USER':
+				return (
+					<UserCell
+						value={this.props.value}
+						onSubmit={this.handleSubmit.bind(this)}
+						type={this.props.type}
+						isLoadingTask={this.props.isLoadingTask}
+					/>
+				)
+			default:
+				return (
+					<TextNumberCell
+						value={this.props.value}
+						onSubmit={this.handleSubmit.bind(this)}
+						type={this.props.type}
+						isLoadingTask={this.props.isLoadingTask}
+					/>
+				)
 		}
 	}
 
