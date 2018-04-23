@@ -1,23 +1,18 @@
 import Colors from '../resources/Colors'
-import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react'
 import {
 	ActivityIndicator,
 	Dimensions,
 	Image,
-	Platform,
 	StyleSheet,
-	Text,
 	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	FlatList,
-	ScrollView,
 	View,
 } from 'react-native'
+import * as ImageUtility from '../resources/ImageUtility'
 import { CreateTaskSelect } from './Cells'
-import Collapsible from 'react-native-collapsible'
-import Networking from '../resources/Networking-superagent'
 
 export class SearchDropdown extends Component {
 	render() {
@@ -41,7 +36,7 @@ export class SearchDropdown extends Component {
 						data={this.props.data}
 						renderItem={this.renderItem.bind(this)}
 						extraData={this.state}
-						keyExtractor={this.keyExtractor}
+						keyExtractor={item => item.id}
 						style={styles.choices}
 						ListHeaderComponent={this.renderLoader()}
 					/>
@@ -63,54 +58,24 @@ export class SearchDropdown extends Component {
 	}
 
 	renderItem({ item }) {
+		const { onSelect } = this.props
+    console.log(onSelect)
 		return (
-			<SearchResultCell
-				name={item.display}
-				key={item.id}
-				id={item.id}
-				onPress={e => this.handleSelect(item)}
-				containsAlreadyAddedInput={item.containsAlreadyAddedInput}
-			/>
+			<TouchableOpacity onPress={e => {console.log(item, onSelect); onSelect(item)} }>
+				{this.props.renderItem(item)}
+			</TouchableOpacity>
 		)
 	}
 
-	handleSelect(item) {
-		this.props.onSelect(item)
-	}
-
-	keyExtractor = (item, index) => {
-		item.id
-	}
-}
-
-function SearchResultCell({ onPress, containsAlreadyAddedInput, name }) {
-	return containsAlreadyAddedInput ? <DisabledCell name={name}/> : <ClickableCell name={name} onPress={onPress}/>
-}
-
-function ClickableCell({ name, onPress }) {
-	return (
-		<TouchableOpacity onPress={onPress}>
-			<View style={styles.result}>
-				<Text style={styles.resultText}>{name}</Text>
-			</View>
-		</TouchableOpacity>
-	)
-}
-
-function DisabledCell({ name }) {
-	return (
-		<TouchableOpacity disabled={true}>
-			<View style={styles.result}>
-				<Text style={styles.disabledText}>{name} is added</Text>
-			</View>
-		</TouchableOpacity>
-	)
+	// handleSelect(item) {
+	// 	this.props.onSelect(item)
+	// }
 }
 
 export function SearchBox(props) {
 	return (
-		<TouchableWithoutFeedback onPress={() => this.input.focus() } >
-			<View  style={styles.searchTextTouchable} >
+		<TouchableWithoutFeedback onPress={() => this.input.focus()}>
+			<View style={styles.searchTextTouchable}>
 				<View style={styles.searchTextContainer}>
 					<TextInput
 						style={styles.searchText}
@@ -166,22 +131,6 @@ const styles = StyleSheet.create({
 		color: 'white',
 		flex: 1,
 		fontSize: 20,
-	},
-
-	result: {
-		borderBottomWidth: 1,
-		borderBottomColor: 'rgba(255,255,255,0.5)',
-		padding: 16,
-	},
-	resultText: {
-		color: 'white',
-		fontSize: 17,
-		lineHeight: 24,
-	},
-	disabledText: {
-		color: Colors.gray,
-		fontSize: 17,
-		lineHeight: 24,
 	},
 	button: {
 		flex: 0,
