@@ -9,6 +9,9 @@
     "version": "4.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "extra": {
+      "requiredUpdate": true
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

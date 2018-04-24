@@ -1,9 +1,10 @@
 import React from 'react'
-import { StatusBar, View, Text } from 'react-native'
+import moment from 'moment'
+import request from 'superagent'
+import { StatusBar, View } from 'react-native'
 import { AppLoading } from 'expo'
 import { StackNavigator } from 'react-navigation'
 import { setUser, withUser } from 'react-native-authentication-helpers'
-
 import Colors from './resources/Colors'
 import Storage from './resources/Storage'
 import Login from './screens/Login'
@@ -11,22 +12,45 @@ import Main from './screens/Main'
 import QRScanner from './screens/QRScanner'
 import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
-import Print from './screens/Print'
 import Search from './screens/Search'
 import Move from './screens/Move'
 import ChooseTeam from './screens/ChooseTeam'
 import Snackbar from './components/Snackbar'
-
-import paramsToProps from './resources/paramsToProps'
+import ShouldUpdateModal from './components/Main/ShouldUpdateModal'
 import { connect } from 'react-redux'
+
+let { releaseChannel, publishedTime} = Expo.Constants.manifest
+const LATEST_MANIFEST_URL = `https://expo.io/@polymer/polymer/index.exp?release-channel=${releaseChannel || 'staging'}&sdkVersion=26.0.0`
 
 class App extends React.Component {
 	state = {
+		mostRecentBundle: false,
 		ready: false,
 		loggedIn: false,
+		hasLatestUpdates: false,
+		requiredUpdate: false,
 	}
 
-	_loadDataAsync = async () => {
+	_onStartup = async () => {
+		this._loadLatestBundle()
+		await this._loadUserInformation()
+	}
+
+	_loadLatestBundle = async () => {
+		const currentPublishedTime = moment(publishedTime)
+		const latestManifest = await request.get(LATEST_MANIFEST_URL)
+		const latestPublishedTime = moment(latestManifest.body.publishedTime)
+		const requiredUpdate = latestManifest.body.extra.requiredUpdate
+		this.setState({ requiredUpdate: true })
+
+		if (latestPublishedTime.isAfter(currentPublishedTime)) {
+			Expo.Util.reload()
+		} else {
+			this.setState({ hasLatestUpdates: true })
+		}
+	}
+
+	_loadUserInformation = async () => {
 		const token = await Storage.get('token')
 		const loggedIn = !!token
 
@@ -53,29 +77,24 @@ class App extends React.Component {
 	}
 
 	render() {
-		let {errors, user} = this.props
-		console.log(errors)
+		let { errors, user } = this.props
 		if (!this.state.ready) {
 			return (
 				<AppLoading
-					startAsync={this._loadDataAsync}
+					startAsync={this._onStartup.bind(this)}
 					onError={console.warn}
 					onFinish={() => this.setState({ ready: true })}
 				/>
 			)
 		}
 
+		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate 
 		return (
 			<View style={{ flex: 1 }}>
-				{this.state.loggedIn ? (
-					<Navigation screenProps={user} />
-				) : (
-					<Login />
-				)}
-				{errors.data.length ? (
-					<Snackbar>{errors.data[errors.data.length-1].errorType}</Snackbar>
-				) : (
-					false
+				{this.state.loggedIn ? <Navigation screenProps={user} /> : <Login />}
+				{shouldUpdate && <ShouldUpdateModal />}
+				{errors.data.length && (
+					<Snackbar>{errors.data[errors.data.length - 1].errorType}</Snackbar>
 				)}
 				<StatusBar barStyle="light-content" />
 			</View>
@@ -104,7 +123,6 @@ const MainStack = StackNavigator(
 		Main: { screen: Main },
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
-		Print: { screen: Print },
 	},
 	{
 		initialRouteName: 'Main',
@@ -136,7 +154,7 @@ const Navigation = StackNavigator(
 
 const mapStateToProps = (state /*, props */) => {
 	return {
-		errors: state.errors
+		errors: state.errors,
 	}
 }
 
