@@ -20,6 +20,7 @@ export function fetchUsers() {
 					const orderedUsers = res.body.users.sort(
 						Compute.sortAlphabeticallyUsing('username_display')
 					)
+					Compute.updateAllUserSearchVectors(orderedUsers)
 					dispatch(requestUsersSuccess(USERS, orderedUsers))
 				})
 				.catch(e => {

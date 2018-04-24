@@ -215,10 +215,21 @@ export default class Compute {
 		})
 	}
 
+	static updateAllUserSearchVectors(list) {
+		list.forEach(u => {
+			u.search = `${u.search} ${u.first_name.toLowerCase()} ${u.last_name.toLowerCase()} ${u.username.toLowerCase()} ${u.username_display.toLowerCase()}`
+		})
+	}
+
+	static searchItems(text, arr) {
+		let r = new RegExp(`\\b${text.toLowerCase()}`)
+		return arr.filter(e => e.search.search(r) !== -1)
+	}
+
 	static sortAlphabeticallyUsing(property) {
 		return function(a, b) {
-			const A = a[property].toUpperCase()
-			const B = b[property].toUpperCase()
+			const A = a[property].toLowerCase()
+			const B = b[property].toLowerCase()
 			if (A < B) {
 				return -1
 			} else if (A > B) {

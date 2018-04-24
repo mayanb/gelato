@@ -7,26 +7,16 @@ export default class UserCell extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			draftValue: this.props.value,
 			editing: false,
 		}
 
-		this.handleChangeText = this.handleChangeText.bind(this)
 		this.handleSubmitText = this.handleSubmitText.bind(this)
 		this.handleEdit = this.handleEdit.bind(this)
 	}
 
-	componentWillReceiveProps(np) {
-		this.setState({ draftValue: np.value })
-	}
-
-	handleChangeText(text) {
-		this.setState({ draftValue: text })
-	}
-
 	handleSubmitText() {
 		this.setState({ editing: false })
-		this.props.onSubmit(this.state.draftValue)
+		this.props.onSubmit(this.state.searchText)
 	}
 
 	handleEdit() {
@@ -46,8 +36,7 @@ export default class UserCell extends React.Component {
 
 		return editing ? (
 			<SelectUserWithInput
-				onChangeText={this.handleChangeText}
-				value={value}
+				initialValue={value}
 				onSelect={this.handleSelect}
 			/>
 		) : (

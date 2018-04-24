@@ -83,18 +83,13 @@ class SelectTypes extends Component {
 		let filteredKey = type + '_filtered'
 		let filtered = this.props[type].slice(0, 4)
 		if (text !== '') {
-			filtered = this.searchItems(text.toLowerCase(), this.props[type])
+			filtered = Compute.searchItems(text, this.props[type])
 		}
 		this.setState({
 			[textKey]: text,
 			[filteredKey]: filtered,
 		})
 		this.props.onSelect(type, null)
-	}
-
-	searchItems(text, arr) {
-		let r = new RegExp(`\\b${text}`)
-		return arr.filter(e => e.search.search(r) !== -1)
 	}
 
 	onSelect(type, item) {

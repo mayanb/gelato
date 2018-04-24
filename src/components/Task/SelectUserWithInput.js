@@ -9,51 +9,58 @@ import {
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
+import Compute from '../../resources/Compute'
 import * as actions from '../../actions/UserListActions'
 
 class SelectUserWithInput extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			text: '',
+			searchText: props.initialVaue,
 			filtered_results: [],
 		}
+
+		this.handleChangeText = this.handleChangeText.bind(this)
 	}
 
 	componentDidMount() {
 		this.props.dispatch(actions.fetchUsers())
 	}
 
+	handleChangeText(text) {
+		this.setState({
+			searchText: text,
+			filtered_results: Compute.searchItems(text, this.props.users),
+		})
+	}
+
 	render() {
 		console.log('users: ', this.props.users)
+		const { searchText } = this.state
 		return (
 			<View style={styles.container}>
 				<EditableCell
 					placeholder={'search a user'}
-					onChangeText={t => this.props.onChangeText(t)}
-					value={this.props.value}
-					// registerInput={this.props.registerInput}
+					onChangeText={this.handleChangeText}
+					value={searchText}
 				/>
-				{this.props.dropdown_open && (
-					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
-						{this.props.users.map(user => {
-							return (
-								<NonEditableCell
-									key={'user-' + user.id}
-									{...user}
-									onPress={() => this.props.onSelect(user)}
-								/>
-							)
-						})}
-					</KeyboardAwareScrollView>
-				)}
+				<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+					{this.state.filtered_results.map(user => {
+						return (
+							<NonEditableCell
+								key={'user-' + user.id}
+								{...user}
+								onPress={() => this.props.onSelect(user)}
+							/>
+						)
+					})}
+				</KeyboardAwareScrollView>
 			</View>
 		)
 	}
 }
 
-function EditableCell(props) {
-	// { placeholder, onChangeText, blurOnSubmit, value }
+function EditableCell({ placeholder, onChangeText, value }) {
 	return (
 		<View style={styles.cell_container}>
 			<TextInput
@@ -63,7 +70,9 @@ function EditableCell(props) {
 				underlineColorAndroid="transparent"
 				blurOnSubmit={true}
 				returnKeyType="done"
-				{...props}
+				placeholder={placeholder}
+				onChangeText={onChangeText}
+				value={value}
 			/>
 		</View>
 	)
