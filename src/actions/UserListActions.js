@@ -10,13 +10,11 @@ import {
 import { USERS } from '../../store'
 
 export function fetchUsers() {
-	console.log('wee, fetchUsers')
 	return dispatch => {
 		dispatch(requestUsers(USERS))
 		return Storage.get('teamID').then(teamID =>
 			Networking.get(`/ics/teams/${teamID}`)
 				.then(res => {
-					console.log('got users: ', res.body.users)
 					const orderedUsers = res.body.users.sort(
 						Compute.sortAlphabeticallyUsing('username_display')
 					)

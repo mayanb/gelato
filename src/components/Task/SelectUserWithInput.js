@@ -35,7 +35,6 @@ class SelectUserWithInput extends Component {
 	}
 
 	render() {
-		console.log('users: ', this.props.users)
 		const { onCancel, onSelectUser } = this.props
 		const { searchText } = this.state
 		return (

@@ -21,7 +21,6 @@ export default class UserCell extends React.Component {
 	}
 
 	handleSelectUser(username) {
-		console.log('selected username: ', username)
 		this.setState({ editing: false })
 		this.props.onSubmit(username)
 	}
