@@ -12,17 +12,17 @@ export default class UserCell extends React.Component {
 		}
 
 		this.handleSelectUser = this.handleSelectUser.bind(this)
-		this.handleEdit = this.handleEdit.bind(this)
+		this.toggleEditing = this.toggleEditing.bind(this)
 	}
+  
+  toggleEditing() {
+    this.setState({ editing: !this.state.editing })
+  }
 
-	handleEdit() {
-		this.setState({ editing: true })
-	}
-
-	handleSelectUser(user) {
-		console.log('selected user: ', user)
+	handleSelectUser(username) {
+		console.log('selected username: ', username)
 		this.setState({ editing: false })
-		this.props.onSubmit(user.username)
+		this.props.onSubmit(username)
 	}
 
 	render() {
@@ -33,16 +33,17 @@ export default class UserCell extends React.Component {
 		return editing ? (
 			<SelectUserWithInput
 				initialValue={value}
+				onCancel={this.toggleEditing}
 				onSelect={this.handleSelect}
 				onSelectUser={this.handleSelectUser}
 			/>
 		) : (
-			<NotEditingDisplay onEdit={this.handleEdit} value={value} />
+			<UserDisplay onEdit={this.toggleEditing} value={value} />
 		)
 	}
 }
 
-function NotEditingDisplay({ onEdit, value }) {
+function UserDisplay({ onEdit, value }) {
 	if (attributeBlank(value)) {
 		return <EditButton onEdit={onEdit} />
 	} else {

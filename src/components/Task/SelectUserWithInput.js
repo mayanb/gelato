@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
-	View,
-	StyleSheet,
-	TouchableWithoutFeedback,
-	Text,
-	TextInput,
-} from 'react-native'
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Text,
+  TextInput, Dimensions
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import Compute from '../../resources/Compute'
@@ -36,21 +36,23 @@ class SelectUserWithInput extends Component {
 
 	render() {
 		console.log('users: ', this.props.users)
+		const { onCancel, onSelectUser } = this.props
 		const { searchText } = this.state
 		return (
 			<View style={styles.container}>
 				<EditableCell
 					placeholder={'search a user'}
+					onCancel={onCancel}
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+				<KeyboardAwareScrollView keyboardShouldPersistTaps='handled'>
 					{this.state.filtered_results.map(user => {
 						return (
 							<NonEditableCell
 								key={'user-' + user.id}
 								{...user}
-								onPress={() => this.props.onSelectUser(user)}
+								onPress={() => onSelectUser(user.username)}
 							/>
 						)
 					})}
@@ -60,16 +62,16 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-function EditableCell({ placeholder, onChangeText, value }) {
+function EditableCell({ placeholder, onChangeText, value, onCancel }) {
 	return (
 		<View style={styles.cell_container}>
 			<TextInput
 				style={styles.input}
-				autoCapitalize="none"
+				autoCapitalize='none'
 				autoCorrect={false}
-				underlineColorAndroid="transparent"
-				blurOnSubmit={true}
-				returnKeyType="done"
+				underlineColorAndroid='transparent'
+				returnKeyType='done'
+				onSubmitEditing={onCancel}
 				placeholder={placeholder}
 				onChangeText={onChangeText}
 				value={value}
@@ -88,10 +90,9 @@ function NonEditableCell({ onPress, username_display }) {
 	)
 }
 
-const imgSize = 24
+const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
-		marginTop: 20,
 		backgroundColor: 'white',
 		shadowColor: 'rgba(0, 0, 0, 0.07)',
 		shadowOffset: {
@@ -118,14 +119,9 @@ const styles = StyleSheet.create({
 		paddingLeft: 8,
 		paddingRight: 8,
 	},
-	process_icon: {
-		width: imgSize,
-		height: imgSize,
-		marginRight: 8,
-		flexGrow: 0,
-	},
 	input: {
-		flex: 0,
+		// flex: 0,
+		width: width,
 		height: 40,
 		fontSize: 17,
 		textAlign: 'right',
