@@ -2,6 +2,7 @@ import React from 'react'
 import { TextInput } from 'react-native'
 import Colors from '../../resources/Colors'
 import EditButton from './EditButton'
+import SelectUserWithInput from './SelectUserWithInput'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -51,17 +52,7 @@ export default class UserCell extends React.Component {
 				textAlign: 'right',
 			}
 			return (
-				<TextInput
-					style={style}
-					onChangeText={this.handleChangeText}
-					onSubmitEditing={this.handleSubmitText}
-					onBlur={this.handleSubmitText}
-					returnKeyType="done"
-					value={this.state.draftValue}
-					keyboardType={keyboardType}
-					autoCorrent={false}
-					ref={input => (this.input = input)}
-				/>
+				<SelectUserWithInput/>
 			)
 		}
 	}

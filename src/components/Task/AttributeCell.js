@@ -36,7 +36,6 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderValue() {
-		console.log('this.props.type: ', this.props.type)
 		switch (this.props.type) {
 			case 'BOOL':
 				return (

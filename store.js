@@ -4,15 +4,16 @@ import { BasicReducer } from './src/reducers/BasicReducer'
 import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
-const OPEN_TASKS = 'OPEN_TASKS'
-const COMPLETED_TASKS = 'COMPLETED_TASKS'
-const SEARCHED_TASKS = 'SEARCHED_TASKS'
-const PROCESSES = 'PROCESSES'
-const PRODUCTS = 'PRODUCTS'
-const TEAMS = 'TEAMS'
-const TASK = 'TASK'
-const ERROR = 'ERROR'
-const MOVE = 'MOVE'
+export const OPEN_TASKS = 'OPEN_TASKS'
+export const COMPLETED_TASKS = 'COMPLETED_TASKS'
+export const SEARCHED_TASKS = 'SEARCHED_TASKS'
+export const PROCESSES = 'PROCESSES'
+export const PRODUCTS = 'PRODUCTS'
+export const TEAMS = 'TEAMS'
+export const TASK = 'TASK'
+export const ERROR = 'ERROR'
+export const MOVE = 'MOVE'
+export const USERS = 'USERS'
 
 let defaultState = {
 	data: [],
@@ -74,6 +75,11 @@ var reducer = combineReducers({
   errors: createFilteredReducer(
     ErrorReducer,
     action => action.name === ERROR,
+    defaultState
+  ),
+  users: createFilteredReducer(
+    BasicReducer,
+    action => action.name === USERS,
     defaultState
   ),
 })
