@@ -1,7 +1,7 @@
 import React from 'react'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -10,23 +10,18 @@ export default class UserCell extends React.Component {
 			editing: false,
 		}
 
-		this.handleSubmitText = this.handleSubmitText.bind(this)
+		this.handleSelectUser = this.handleSelectUser.bind(this)
 		this.handleEdit = this.handleEdit.bind(this)
 	}
 
-	handleSubmitText() {
-		this.setState({ editing: false })
-		this.props.onSubmit(this.state.searchText)
-	}
-
 	handleEdit() {
-		this.setState({ editing: true }, () => {
-			if (this.input) this.input.focus()
-		})
+		this.setState({ editing: true })
 	}
 
-	handleSelect(user) {
+	handleSelectUser(user) {
 		console.log('selected user: ', user)
+    this.setState({ editing: false })
+    this.props.onSubmit(user.id)
 	}
 
 	render() {
@@ -38,9 +33,13 @@ export default class UserCell extends React.Component {
 			<SelectUserWithInput
 				initialValue={value}
 				onSelect={this.handleSelect}
+				onSelectUser={this.handleSelectUser}
 			/>
 		) : (
-			<NotEditingDisplay onEdit={this.handleEdit} value={value} />
+			<NotEditingDisplay
+				onEdit={this.handleEdit}
+				value={value}
+			/>
 		)
 	}
 }
@@ -50,9 +49,9 @@ function NotEditingDisplay({ onEdit, value }) {
 		return <EditButton onEdit={onEdit} />
 	} else {
 		return (
-			<View>
+			<TouchableOpacity onPress={onEdit} hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
 				<Text>{value}</Text>
-			</View>
+			</TouchableOpacity>
 		)
 	}
 }

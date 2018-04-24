@@ -50,7 +50,7 @@ class SelectUserWithInput extends Component {
 							<NonEditableCell
 								key={'user-' + user.id}
 								{...user}
-								onPress={() => this.props.onSelect(user)}
+								onPress={() => this.props.onSelectUser(user)}
 							/>
 						)
 					})}
