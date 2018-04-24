@@ -1,7 +1,8 @@
 import React from 'react'
+import Compute from '../../resources/Compute'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -20,8 +21,8 @@ export default class UserCell extends React.Component {
 
 	handleSelectUser(user) {
 		console.log('selected user: ', user)
-    this.setState({ editing: false })
-    this.props.onSubmit(user.id)
+		this.setState({ editing: false })
+		this.props.onSubmit(user.username)
 	}
 
 	render() {
@@ -36,10 +37,7 @@ export default class UserCell extends React.Component {
 				onSelectUser={this.handleSelectUser}
 			/>
 		) : (
-			<NotEditingDisplay
-				onEdit={this.handleEdit}
-				value={value}
-			/>
+			<NotEditingDisplay onEdit={this.handleEdit} value={value} />
 		)
 	}
 }
@@ -49,8 +47,10 @@ function NotEditingDisplay({ onEdit, value }) {
 		return <EditButton onEdit={onEdit} />
 	} else {
 		return (
-			<TouchableOpacity onPress={onEdit} hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-				<Text>{value}</Text>
+			<TouchableOpacity
+				onPress={onEdit}
+				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
+				<Text>{Compute.getDisplayFromUsername(value)}</Text>
 			</TouchableOpacity>
 		)
 	}

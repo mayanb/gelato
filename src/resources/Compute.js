@@ -180,6 +180,10 @@ export default class Compute {
 		return task.process_type.name + ' ' + task.product_type.name
 	}
 
+	static getDisplayFromUsername(username) {
+		return username.split('_')[0]
+	}
+
 	static postAttributeUpdate(taskID, attributeID, value) {
 		let payload = {
 			task: taskID,
@@ -217,7 +221,9 @@ export default class Compute {
 
 	static updateAllUserSearchVectors(list) {
 		list.forEach(u => {
-			u.search = `${u.search} ${u.first_name.toLowerCase()} ${u.last_name.toLowerCase()} ${u.username.toLowerCase()} ${u.username_display.toLowerCase()}`
+			u.search = `${
+				u.search
+			} ${u.first_name.toLowerCase()} ${u.last_name.toLowerCase()} ${u.username.toLowerCase()} ${u.username_display.toLowerCase()}`
 		})
 	}
 
