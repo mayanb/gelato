@@ -12,7 +12,6 @@ import Main from './screens/Main'
 import QRScanner from './screens/QRScanner'
 import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
-import Print from './screens/Print'
 import Search from './screens/Search'
 import Move from './screens/Move'
 import ChooseTeam from './screens/ChooseTeam'
@@ -124,7 +123,6 @@ const MainStack = StackNavigator(
 		Main: { screen: Main },
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
-		Print: { screen: Print },
 	},
 	{
 		initialRouteName: 'Main',
