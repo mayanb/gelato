@@ -10,22 +10,24 @@ import {
 import { USERS } from '../../store'
 
 export function fetchUsers() {
-  console.log('wee, fetchUsers')
-  return dispatch => {
+	console.log('wee, fetchUsers')
+	return dispatch => {
 		dispatch(requestUsers(USERS))
-		const teamID = 1 // TEMPORARY await Storage.get('teamID')
-		console.log('wee, fetchUsers', dispatch)
-		return Networking.get(`/ics/teams/${teamID}`)
-			.then(res => {
-				console.log('got users: ', res.body.users)
-				const orderedUsers = res.body.users.sort(Compute.sortAlphabeticallyUsing('username_display'))
-				dispatch(requestUsersSuccess(USERS, orderedUsers))
-			})
-			.catch(e => {
-				console.log('error', e)
-				dispatch(requestUsersFailure(USERS, e))
-				throw e
-			})
+		return Storage.get('teamID').then(teamID =>
+			Networking.get(`/ics/teams/${teamID}`)
+				.then(res => {
+					console.log('got users: ', res.body.users)
+					const orderedUsers = res.body.users.sort(
+						Compute.sortAlphabeticallyUsing('username_display')
+					)
+					dispatch(requestUsersSuccess(USERS, orderedUsers))
+				})
+				.catch(e => {
+					console.log('error', e)
+					dispatch(requestUsersFailure(USERS, e))
+					throw e
+				})
+		)
 	}
 }
 
