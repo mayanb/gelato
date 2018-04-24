@@ -139,13 +139,11 @@ class Task extends Component {
 		
 		QRCode.toString(qrtext, (err, string) => {
 			if (err) {
-				console.log('error')
-				console.log(err)
-				throw err
+				console.error('Error converting QR Code to string', err)
 			} else {
-				let updatedSVG = string.slice(0, 4) + ` height="204px" ` + string.slice(4)
+				let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(4)}`
 				let updatedHTML = Print.generateHTML(updatedSVG, task)
-				Expo.DangerZone.Print.printAsync({ html: `${updatedHTML}` })
+				Expo.DangerZone.Print.printAsync({ html: updatedHTML })
 			}
 		})
 	}
