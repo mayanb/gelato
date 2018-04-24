@@ -1,5 +1,4 @@
 import React from 'react'
-import { TextInput } from 'react-native'
 import Colors from '../../resources/Colors'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
@@ -53,6 +52,7 @@ export default class UserCell extends React.Component {
 			}
 			return (
 				<SelectUserWithInput/>
+
 			)
 		}
 	}
