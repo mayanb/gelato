@@ -4,7 +4,6 @@ import {
 	View,
 	StyleSheet,
 	TouchableWithoutFeedback,
-	Image,
 	Text,
 	TextInput,
 } from 'react-native'
@@ -37,12 +36,12 @@ class SelectUserWithInput extends Component {
 				/>
 				{this.props.dropdown_open && (
 					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
-						{this.props.data.map(e => {
+						{this.props.users.map(user => {
 							return (
 								<NonEditableCell
-									key={'stwi-' + e.id}
-									{...e}
-									onPress={() => this.props.onSelect(e)}
+									key={'user-' + user.id}
+									{...user}
+									onPress={() => this.props.onSelect(user)}
 								/>
 							)
 						})}
@@ -53,7 +52,7 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-export function EditableCell(props) {
+function EditableCell(props) {
 	// { placeholder, onChangeText, blurOnSubmit, value }
 	return (
 		<View style={styles.cell_container}>
@@ -70,11 +69,11 @@ export function EditableCell(props) {
 	)
 }
 
-function NonEditableCell({ onPress, name }) {
+function NonEditableCell({ onPress, username_display }) {
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.cell_container}>
-				<Text style={styles.display}>{name}</Text>
+				<Text style={styles.display}>{username_display}</Text>
 			</View>
 		</TouchableWithoutFeedback>
 	)
@@ -107,8 +106,8 @@ const styles = StyleSheet.create({
 	cell_container: {
 		paddingTop: 8,
 		paddingBottom: 8,
-		paddingLeft: 20,
-		paddingRight: 20,
+		paddingLeft: 8,
+		paddingRight: 8,
 	},
 	process_icon: {
 		width: imgSize,
@@ -120,11 +119,12 @@ const styles = StyleSheet.create({
 		flex: 0,
 		height: 40,
 		fontSize: 17,
-		color: Colors.gray,
+		textAlign: 'right',
+		color: Colors.textBlack,
 	},
 	display: {
 		fontSize: 17,
-		color: Colors.textblack,
+		color: Colors.textBlack,
 		flex: 1,
 	},
 })

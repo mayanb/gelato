@@ -1,7 +1,7 @@
 import React from 'react'
-import Colors from '../../resources/Colors'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
+import { View, Text } from 'react-native'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -40,30 +40,34 @@ export default class UserCell extends React.Component {
 	}
 
 	render() {
-		if (this.props.isLoadingTask) return null
+		const { isLoadingTask, value } = this.props
+		const { editing } = this.state
+		if (isLoadingTask) return null
 
-		if (
-			!this.state.editing &&
-			(this.props.value === undefined || this.props.value === null)
-		) {
-			return <EditButton onEdit={this.handleEdit} />
-		} else {
-			const keyboardType = 'default'
-			const style = {
-				fontSize: 17,
-				color: Colors.textBlack,
-				flex: 1,
-				textAlign: 'right',
-			}
-			const { editing } = this.state
-			const { value } = this.props
-			return (
-				<SelectUserWithInput
-					onChangeText={this.handleChangeText}
-					value={value}
-					onSelect={this.handleSelect}
-				/>
-			)
-		}
+		return editing ? (
+			<SelectUserWithInput
+				onChangeText={this.handleChangeText}
+				value={value}
+				onSelect={this.handleSelect}
+			/>
+		) : (
+			<NotEditingDisplay onEdit={this.handleEdit} value={value} />
+		)
 	}
+}
+
+function NotEditingDisplay({ onEdit, value }) {
+	if (attributeBlank(value)) {
+		return <EditButton onEdit={onEdit} />
+	} else {
+		return (
+			<View>
+				<Text>{value}</Text>
+			</View>
+		)
+	}
+}
+
+function attributeBlank(value) {
+	return value === undefined || value === null
 }
