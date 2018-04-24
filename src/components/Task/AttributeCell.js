@@ -50,7 +50,6 @@ export default class AttributeCell extends React.Component {
 					<UserCell
 						value={this.props.value}
 						onSubmit={this.handleSubmit.bind(this)}
-						type={this.props.type}
 						isLoadingTask={this.props.isLoadingTask}
 					/>
 				)

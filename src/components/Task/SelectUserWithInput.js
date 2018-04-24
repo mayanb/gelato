@@ -10,9 +10,7 @@ import {
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
-import * as ImageUtility from '../../resources/ImageUtility'
 import * as actions from '../../actions/UserListActions'
-import paramsToProps from '../../resources/paramsToProps'
 
 class SelectUserWithInput extends Component {
 	constructor(props) {
@@ -22,25 +20,20 @@ class SelectUserWithInput extends Component {
 			filtered_results: [],
 		}
 	}
-	
+
 	componentDidMount() {
 		this.props.dispatch(actions.fetchUsers())
 	}
 
 	render() {
 		console.log('users: ', this.props.users)
-		return <View><Text>Yay.</Text></View>
 		return (
 			<View style={styles.container}>
 				<EditableCell
-					placeholder={this.props.placeholder}
+					placeholder={'search a user'}
 					onChangeText={t => this.props.onChangeText(t)}
-					blurOnSubmit={true}
-					value={this.props.text}
-					selected={this.props.selected}
-					registerInput={this.props.registerInput}
-					onFocus={this.props.onFocus}
-					returnKeyType="done"
+					value={this.props.value}
+					// registerInput={this.props.registerInput}
 				/>
 				{this.props.dropdown_open && (
 					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
@@ -49,7 +42,6 @@ class SelectUserWithInput extends Component {
 								<NonEditableCell
 									key={'stwi-' + e.id}
 									{...e}
-									imgpath={e.icon}
 									onPress={() => this.props.onSelect(e)}
 								/>
 							)
@@ -61,51 +53,31 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-export function EditableCell({ style, selected, registerInput, ...rest }) {
-	let img = selected ? ImageUtility.requireIcon(selected.icon) : ImageUtility.systemIcon('unknown')
+export function EditableCell(props) {
+	// { placeholder, onChangeText, blurOnSubmit, value }
 	return (
 		<View style={styles.cell_container}>
-			<Image
-				source={img}
-				style={styles.process_icon}
-			/>
 			<TextInput
-				style={[style, styles.input]}
+				style={styles.input}
 				autoCapitalize="none"
 				autoCorrect={false}
 				underlineColorAndroid="transparent"
-				ref={input => registerInput(input)}
-				{...rest}
+				blurOnSubmit={true}
+				returnKeyType="done"
+				{...props}
 			/>
 		</View>
 	)
 }
 
-export class NonEditableCell extends Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		let { onPress, imgpath, name, code } = this.props
-		return (
-			<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
-				<View style={styles.cell_container}>
-					<Image
-						source={ImageUtility.requireIcon(imgpath)}
-						style={styles.process_icon}
-					/>
-					<Text style={styles.display}>{code} - {name}</Text>
-					{this.props.header ? (
-						<Image
-							style={styles.arrow}
-							source={ImageUtility.requireIcon('downarrow.png')}
-						/>
-					) : null}
-				</View>
-			</TouchableWithoutFeedback>
-		)
-	}
+function NonEditableCell({ onPress, name }) {
+	return (
+		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
+			<View style={styles.cell_container}>
+				<Text style={styles.display}>{name}</Text>
+			</View>
+		</TouchableWithoutFeedback>
+	)
 }
 
 const imgSize = 24
@@ -137,14 +109,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 8,
 		paddingLeft: 20,
 		paddingRight: 20,
-		// borderBottomStyle: 'solid',
-		// borderBottomRadius: 4,
-		borderBottomWidth: 1,
-		borderColor: 'rgba(0, 0, 0, 0.08)',
-		display: 'flex',
-		flexDirection: 'row',
-		alignItems: 'center',
-	}, 
+	},
 	process_icon: {
 		width: imgSize,
 		height: imgSize,
@@ -152,11 +117,10 @@ const styles = StyleSheet.create({
 		flexGrow: 0,
 	},
 	input: {
-		flex: 1,
+		flex: 0,
 		height: 40,
 		fontSize: 17,
 		color: Colors.gray,
-
 	},
 	display: {
 		fontSize: 17,
@@ -165,10 +129,10 @@ const styles = StyleSheet.create({
 	},
 })
 
-const mapStateToProps = (state) => {
-  return {
-    users: state.users.data,
-  }
+const mapStateToProps = state => {
+	return {
+		users: state.users.data,
+	}
 }
 
-export default (connect(mapStateToProps)(SelectUserWithInput))
+export default connect(mapStateToProps)(SelectUserWithInput)

@@ -31,16 +31,21 @@ export default class UserCell extends React.Component {
 
 	handleEdit() {
 		this.setState({ editing: true }, () => {
-			if (this.input)
-				this.input.focus()
+			if (this.input) this.input.focus()
 		})
 	}
 
-	render() {
-		if (this.props.isLoadingTask)
-			return null
+	handleSelect(user) {
+		console.log('selected user: ', user)
+	}
 
-		if (!this.state.editing && (this.props.value === undefined || this.props.value === null)) {
+	render() {
+		if (this.props.isLoadingTask) return null
+
+		if (
+			!this.state.editing &&
+			(this.props.value === undefined || this.props.value === null)
+		) {
 			return <EditButton onEdit={this.handleEdit} />
 		} else {
 			const keyboardType = 'default'
@@ -50,8 +55,14 @@ export default class UserCell extends React.Component {
 				flex: 1,
 				textAlign: 'right',
 			}
+			const { editing } = this.state
+			const { value } = this.props
 			return (
-				<SelectUserWithInput/>
+				<SelectUserWithInput
+					onChangeText={this.handleChangeText}
+					value={value}
+					onSelect={this.handleSelect}
+				/>
 			)
 		}
 	}
