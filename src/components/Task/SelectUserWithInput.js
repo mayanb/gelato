@@ -91,6 +91,7 @@ function NonEditableCell({ onPress, username_display }) {
 }
 
 const width = Dimensions.get('window').width
+const inputMarginRight = 24
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: 'white',
@@ -117,11 +118,10 @@ const styles = StyleSheet.create({
 		paddingTop: 8,
 		paddingBottom: 8,
 		paddingLeft: 8,
-		paddingRight: 8,
+		paddingRight: inputMarginRight,
 	},
 	input: {
-		// flex: 0,
-		width: width,
+		width: width - inputMarginRight,
 		height: 40,
 		fontSize: 17,
 		textAlign: 'right',
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 		color: Colors.textBlack,
 		flex: 1,
+		textAlign: 'right',
 	},
 })
 

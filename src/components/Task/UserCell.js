@@ -3,6 +3,7 @@ import Compute from '../../resources/Compute'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
 import { Text, TouchableOpacity } from 'react-native'
+import Colors from '../../resources/Colors'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -14,10 +15,10 @@ export default class UserCell extends React.Component {
 		this.handleSelectUser = this.handleSelectUser.bind(this)
 		this.toggleEditing = this.toggleEditing.bind(this)
 	}
-  
-  toggleEditing() {
-    this.setState({ editing: !this.state.editing })
-  }
+
+	toggleEditing() {
+		this.setState({ editing: !this.state.editing })
+	}
 
 	handleSelectUser(username) {
 		console.log('selected username: ', username)
@@ -51,7 +52,7 @@ function UserDisplay({ onEdit, value }) {
 			<TouchableOpacity
 				onPress={onEdit}
 				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-				<Text>{Compute.getDisplayFromUsername(value)}</Text>
+				<Text style={styles.display}>{Compute.getDisplayFromUsername(value)}</Text>
 			</TouchableOpacity>
 		)
 	}
@@ -59,4 +60,11 @@ function UserDisplay({ onEdit, value }) {
 
 function attributeBlank(value) {
 	return value === undefined || value === null
+}
+
+const styles = {
+	display: {
+		fontSize: 17,
+		color: Colors.textBlack,
+	},
 }
