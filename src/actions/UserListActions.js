@@ -15,13 +15,10 @@ export function fetchUsers() {
 		dispatch(requestUsers(USERS))
 		const teamID = 1 // TEMPORARY await Storage.get('teamID')
 		console.log('wee, fetchUsers', dispatch)
-		return Networking.get(`/ics/users/`)
+		return Networking.get(`/ics/teams/${teamID}`)
 			.then(res => {
-				console.log('got users: ', res.body)
-				const orderedUsers = res.body.sort(function(user1, user2) {
-					return user1.name - user2.name
-				})
-				console.log(res.body)
+				console.log('got users: ', res.body.users)
+				const orderedUsers = res.body.users.sort(Compute.sortAlphabeticallyUsing('username_display'))
 				dispatch(requestUsersSuccess(USERS, orderedUsers))
 			})
 			.catch(e => {

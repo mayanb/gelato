@@ -52,7 +52,6 @@ export default class UserCell extends React.Component {
 			}
 			return (
 				<SelectUserWithInput/>
-
 			)
 		}
 	}

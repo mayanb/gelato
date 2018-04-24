@@ -51,7 +51,9 @@ export default class Compute {
 			})
 			attributes.push(filled_attribute)
 		})
-		attributes.sort(function(obj1, obj2) {return obj1.rank - obj2.rank})
+		attributes.sort(function(obj1, obj2) {
+			return obj1.rank - obj2.rank
+		})
 		return attributes
 	}
 
@@ -78,7 +80,6 @@ export default class Compute {
 	static isAncestorFlagged(semantic) {
 		return semantic === IS_ANCESTOR_FLAGGED_INPUT
 	}
-
 
 	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
 		if (mode === 'inputs') {
@@ -122,7 +123,7 @@ export default class Compute {
 	}
 
 	static isWarning(semantic) {
-		return semantic === UNLIKELY_INPUT 
+		return semantic === UNLIKELY_INPUT
 	}
 
 	// VALIDATE THE QR CODE SEQ
@@ -153,9 +154,9 @@ export default class Compute {
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
 			case IS_FLAGGED_INPUT:
-				return "This task is flagged. Please ask an admin before using it."
+				return 'This task is flagged. Please ask an admin before using it.'
 			case IS_ANCESTOR_FLAGGED_INPUT:
-				return "This task has a flagged ancestor. Please ask an admin before using it."
+				return 'This task has a flagged ancestor. Please ask an admin before using it.'
 			case UNLIKELY_INPUT:
 				return "This origin doesn't match. Are you sure you want to add it?"
 			default:
@@ -212,5 +213,19 @@ export default class Compute {
 		list.forEach(e => {
 			e.search = `${e.search} ${e.name.toLowerCase()} ${e.code.toLowerCase()}`
 		})
+	}
+
+	static sortAlphabeticallyUsing(property) {
+		return function(a, b) {
+			const A = a[property].toUpperCase()
+			const B = b[property].toUpperCase()
+			if (A < B) {
+				return -1
+			} else if (A > B) {
+				return 1
+			} else {
+				return 0
+			}
+		}
 	}
 }

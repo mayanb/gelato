@@ -28,7 +28,7 @@ class SelectUserWithInput extends Component {
 	}
 
 	render() {
-		console.log(this.props.data)
+		console.log('users: ', this.props.users)
 		return <View><Text>Yay.</Text></View>
 		return (
 			<View style={styles.container}>
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    // users: state.users.data,
+    users: state.users.data,
   }
 }
 
