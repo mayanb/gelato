@@ -19,6 +19,7 @@ import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
+import Print from '../resources/PrintFormat'
 import * as actions from '../actions/TaskListActions'
 import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
@@ -30,6 +31,8 @@ import FAIcon from 'react-native-vector-icons/FontAwesome'
 import AttributeList from '../components/Task/AttributeList'
 import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
+import { DangerZone } from 'expo'
+import QRCode from 'qrcode'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
@@ -54,7 +57,7 @@ class Task extends Component {
 
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet } = params
+		const { showActionSheet, printHTML } = params
 
 		return {
 			title: params.name,
@@ -66,9 +69,7 @@ class Task extends Component {
 					<NavHeader.Item
 						iconName="md-print"
 						label="Print"
-						onPress={() =>
-							navigation.navigate('Print', { selectedTask: params.task })
-						}
+						onPress={printHTML}
 					/>
 					<NavHeader.Item
 						iconName="md-more"
@@ -83,6 +84,7 @@ class Task extends Component {
 	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
+			printHTML: () => this.printHTML(),
 		})
 	}
 
@@ -129,6 +131,23 @@ class Task extends Component {
 		return (
 			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
 		)
+	}
+
+	printHTML() {
+		let task = this.props.task
+		let qrtext = task.items[0].item_qr
+		
+		QRCode.toString(qrtext, (err, string) => {
+			if (err) {
+				console.log('error')
+				console.log(err)
+				throw err
+			} else {
+				let updatedSVG = string.slice(0, 4) + ` height="204px" ` + string.slice(4)
+				let updatedHTML = Print.generateHTML(updatedSVG, task)
+				Expo.DangerZone.Print.printAsync({ html: `${updatedHTML}` })
+			}
+		})
 	}
 
 	render() {
