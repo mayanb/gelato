@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Text,
-  TextInput, Dimensions
-} from 'react-native';
+	View,
+	StyleSheet,
+	TouchableWithoutFeedback,
+	Text,
+	TextInput,
+	Dimensions,
+} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import Compute from '../../resources/Compute'
@@ -40,12 +41,12 @@ class SelectUserWithInput extends Component {
 		return (
 			<View style={styles.container}>
 				<EditableCell
-					placeholder={'search a user'}
+					placeholder="search a user"
 					onCancel={onCancel}
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				<KeyboardAwareScrollView keyboardShouldPersistTaps='handled'>
+				<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
 					{this.state.filtered_results.map(user => {
 						return (
 							<NonEditableCell
@@ -66,10 +67,10 @@ function EditableCell({ placeholder, onChangeText, value, onCancel }) {
 		<View style={styles.cell_container}>
 			<TextInput
 				style={styles.input}
-				autoCapitalize='none'
+				autoCapitalize="none"
 				autoCorrect={false}
-				underlineColorAndroid='transparent'
-				returnKeyType='done'
+				underlineColorAndroid="transparent"
+				returnKeyType="done"
 				onSubmitEditing={onCancel}
 				placeholder={placeholder}
 				onChangeText={onChangeText}
