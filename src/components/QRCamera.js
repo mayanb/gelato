@@ -10,7 +10,6 @@ import { Camera } from 'expo'
 import { SafeAreaView } from 'react-navigation'
 import * as ImageUtility from '../resources/ImageUtility'
 import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
-import TaskSearchResultItem from './TaskSearchResultItem'
 
 export default class QRCamera extends Component {
 	constructor(props) {
@@ -71,8 +70,6 @@ export default class QRCamera extends Component {
 						onSelect={onSelectFromDropdown}
 						data={searchData}
 						isLoading={isLoading}
-						// containerStyle={containerStyle}
-						renderItem={TaskSearchResultItem}
 					/>
 				)}
 			</View>
