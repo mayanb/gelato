@@ -34,7 +34,6 @@ export default class UserCell extends React.Component {
 			<SelectUserWithInput
 				initialValue={value}
 				onCancel={this.toggleEditing}
-				onSelect={this.handleSelect}
 				onSelectUser={this.handleSelectUser}
 			/>
 		) : (

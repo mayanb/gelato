@@ -2,8 +2,8 @@ import React from 'react'
 import {
 	Text,
 	StyleSheet,
+	ScrollView,
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import AttributeCell from './AttributeCell'
 
@@ -11,8 +11,8 @@ export default class AttributeList extends React.Component {
 	render() {
 		let data = this.props.data || []
 		return (
-			<KeyboardAwareScrollView>
-				{data.map((item, index) => {
+			<ScrollView keyboardShouldPersistTaps="always">
+				{data.map(item => {
 					return (
 						<AttributeCell
 							key={item.id}
@@ -26,7 +26,7 @@ export default class AttributeList extends React.Component {
 					)
 				})}
 				<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
-			</KeyboardAwareScrollView>
+			</ScrollView>
 		)
 	}
 }
