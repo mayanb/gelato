@@ -1,6 +1,7 @@
 import React from 'react'
 import { TextInput } from 'react-native'
 import Colors from '../../resources/Colors'
+import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
 
 export default class TextNumberCell extends React.Component {
@@ -39,10 +40,7 @@ export default class TextNumberCell extends React.Component {
 		if (this.props.isLoadingTask) return null
 
 		const { value } = this.props
-		if (
-			!this.state.editing &&
-			(value === undefined || value === null || value === '')
-		) {
+		if (!this.state.editing && fieldIsBlank(value)) {
 			return <EditButton onEdit={this.handleEdit} />
 		} else {
 			const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'

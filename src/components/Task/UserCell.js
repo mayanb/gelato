@@ -1,5 +1,6 @@
 import React from 'react'
 import Compute from '../../resources/Compute'
+import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
 import { Text, TouchableOpacity } from 'react-native'
@@ -37,13 +38,13 @@ export default class UserCell extends React.Component {
 				onSelectUser={this.handleSelectUser}
 			/>
 		) : (
-			<UserDisplay onEdit={this.toggleEditing} value={value} />
+			<NonEditingDisplay onEdit={this.toggleEditing} value={value} />
 		)
 	}
 }
 
-function UserDisplay({ onEdit, value }) {
-	if (attributeBlank(value)) {
+function NonEditingDisplay({ onEdit, value }) {
+	if (fieldIsBlank(value)) {
 		return <EditButton onEdit={onEdit} />
 	} else {
 		return (
@@ -54,10 +55,6 @@ function UserDisplay({ onEdit, value }) {
 			</TouchableOpacity>
 		)
 	}
-}
-
-function attributeBlank(value) {
-	return value === undefined || value === null
 }
 
 const styles = {

@@ -93,3 +93,7 @@ export class DateFormatter {
     }
   }
 }
+
+export function fieldIsBlank(value) {
+  return value === undefined || value === null || value === ''
+}
