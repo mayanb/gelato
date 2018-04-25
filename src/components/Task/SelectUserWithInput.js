@@ -71,6 +71,7 @@ function EditableCell({ placeholder, onChangeText, value, onCancel }) {
 				autoCorrect={false}
 				underlineColorAndroid="transparent"
 				returnKeyType="done"
+				autoFocus="true"
 				onSubmitEditing={onCancel}
 				placeholder={placeholder}
 				onChangeText={onChangeText}
