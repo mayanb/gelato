@@ -22,6 +22,7 @@ class SelectUserWithInput extends Component {
 		}
 
 		this.handleChangeText = this.handleChangeText.bind(this)
+		this.handleKeyboardSubmit = this.handleKeyboardSubmit.bind(this)
 	}
 
 	componentDidMount() {
@@ -35,6 +36,15 @@ class SelectUserWithInput extends Component {
 		})
 	}
 
+	handleKeyboardSubmit() {
+		const { filtered_results } = this.state
+		if (filtered_results.length > 0) {
+			const username = filtered_results[0].username
+			this.props.onSelectUser(username)
+		}
+		this.props.onCancel()
+	}
+
 	render() {
 		const { onCancel, onSelectUser } = this.props
 		const { searchText } = this.state
@@ -42,7 +52,7 @@ class SelectUserWithInput extends Component {
 			<View style={styles.container}>
 				<EditableCell
 					placeholder="search a user"
-					onCancel={onCancel}
+					onKeyboardSubmit={this.handleKeyboardSubmit}
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
@@ -62,7 +72,7 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-function EditableCell({ placeholder, onChangeText, value, onCancel }) {
+function EditableCell({ placeholder, onChangeText, value, onKeyboardSubmit }) {
 	return (
 		<View style={styles.cell_container}>
 			<TextInput
@@ -72,7 +82,7 @@ function EditableCell({ placeholder, onChangeText, value, onCancel }) {
 				underlineColorAndroid="transparent"
 				returnKeyType="done"
 				autoFocus="true"
-				onSubmitEditing={onCancel}
+				onSubmitEditing={onKeyboardSubmit}
 				placeholder={placeholder}
 				onChangeText={onChangeText}
 				value={value}
@@ -119,8 +129,8 @@ const styles = StyleSheet.create({
 		paddingBottom: 8,
 		paddingLeft: 8,
 		paddingRight: inputMarginRight,
-    width: (width - inputMarginRight) / 2,
-    borderBottomWidth: 1,
+		width: (width - inputMarginRight) / 2,
+		borderBottomWidth: 1,
 		borderColor: 'rgba(0, 0, 0, 0.08)',
 	},
 	input: {
