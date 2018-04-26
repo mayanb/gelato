@@ -91,11 +91,12 @@ function EditableCell({ placeholder, onChangeText, value, onKeyboardSubmit }) {
 	)
 }
 
-function NonEditableCell({ onPress, username_display }) {
+function NonEditableCell({ onPress, first_name, last_name, username_display }) {
+	const last_initial = !!last_name ? `${last_name.charAt(0)}.` : ''
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.cell_container}>
-				<Text style={styles.display}>{username_display}</Text>
+				<Text style={styles.display}>{first_name} {last_initial} ({username_display})</Text>
 			</View>
 		</TouchableWithoutFeedback>
 	)
