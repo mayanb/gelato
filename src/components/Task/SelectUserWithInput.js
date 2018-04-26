@@ -52,6 +52,7 @@ class SelectUserWithInput extends Component {
 			<View style={styles.container}>
 				<EditableCell
 					placeholder="search a user"
+					onBlur={onCancel}
 					onKeyboardSubmit={this.handleKeyboardSubmit}
 					onChangeText={this.handleChangeText}
 					value={searchText}
@@ -72,7 +73,7 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-function EditableCell({ placeholder, onChangeText, value, onKeyboardSubmit }) {
+function EditableCell({ placeholder, onBlur, onKeyboardSubmit, onChangeText, value }) {
 	return (
 		<View style={styles.cell_container}>
 			<TextInput
@@ -82,8 +83,9 @@ function EditableCell({ placeholder, onChangeText, value, onKeyboardSubmit }) {
 				underlineColorAndroid="transparent"
 				returnKeyType="done"
 				autoFocus="true"
-				onSubmitEditing={onKeyboardSubmit}
 				placeholder={placeholder}
+				onBlur={onBlur}
+				onSubmitEditing={onKeyboardSubmit}
 				onChangeText={onChangeText}
 				value={value}
 			/>
@@ -96,7 +98,9 @@ function NonEditableCell({ onPress, first_name, last_name, username_display }) {
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.cell_container}>
-				<Text style={styles.display}>{first_name} {last_initial} ({username_display})</Text>
+				<Text style={styles.display}>
+					{first_name} {last_initial} ({username_display})
+				</Text>
 			</View>
 		</TouchableWithoutFeedback>
 	)
@@ -107,10 +111,6 @@ const styles = StyleSheet.create({
 	container: {
 		paddingTop: 4,
 		backgroundColor: 'white',
-		// borderStyle: 'solid',
-		// borderRadius: 4,
-		// borderWidth: 1,
-		// borderColor: 'rgba(0, 0, 0, 0.08)',
 		overflow: 'hidden',
 	},
 	scroll: {
