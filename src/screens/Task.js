@@ -16,6 +16,7 @@ import NavHeader from 'react-navigation-header-buttons'
 
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
+import Print from '../resources/PrintFormat'
 import * as actions from '../actions/TaskActions'
 import { AttributeHeaderCell } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
@@ -25,6 +26,8 @@ import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
+import { DangerZone } from 'expo'
+import QRCode from 'qrcode'
 import RecipeInstructions from "../components/Task/RecipeInstructions"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
@@ -51,7 +54,7 @@ class Task extends Component {
 
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet } = params
+		const { showActionSheet, printHTML } = params
 
 		return {
 			title: params.name,
@@ -63,9 +66,7 @@ class Task extends Component {
 					<NavHeader.Item
 						iconName="md-print"
 						label="Print"
-						onPress={() =>
-							navigation.navigate('Print', { selectedTask: params.task })
-						}
+						onPress={printHTML}
 					/>
 					<NavHeader.Item
 						iconName="md-more"
@@ -81,6 +82,7 @@ class Task extends Component {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
 			name: this.props.task ? this.props.task.display : '',
+			printHTML: () => this.printHTML(),
 		})
 	}
 
@@ -124,6 +126,21 @@ class Task extends Component {
 		return (
 			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package') && !hasRecipe
 		)
+	}
+
+	printHTML() {
+		let task = this.props.task
+		let qrtext = task.items[0].item_qr
+
+		QRCode.toString(qrtext, (err, string) => {
+			if (err) {
+				console.error('Error converting QR Code to string', err)
+			} else {
+				let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(4)}`
+				let updatedHTML = Print.generateHTML(updatedSVG, task)
+				Expo.DangerZone.Print.printAsync({ html: updatedHTML })
+			}
+		})
 	}
 
 	render() {
