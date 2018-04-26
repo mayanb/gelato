@@ -15,14 +15,13 @@ export default class QRCamera extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			searchText: '',
 			typeSearch: false,
 		}
 	}
 
 	render() {
-		let {searchText, typeSearch } = this.state
-		let { onBarCodeRead, onSelectFromDropdown, searchable, searchData, isLoading } = this.props
+		let { typeSearch } = this.state
+		let { onBarCodeRead, onSelectFromDropdown, onChangeText, searchable, searchData, searchText, isLoading } = this.props
 		return (
 			<View style={styles.container}>
 				<Camera
@@ -52,19 +51,19 @@ export default class QRCamera extends Component {
 					</View>
 				</SafeAreaView>
 
-				{ searchable && 
+				{searchable && (
 					<SafeAreaView
 						style={styles.searchContainer}
 						forceInset={{ top: 'always' }}>
 						<SearchBox
-							onChangeText={this.handleChangeText.bind(this)}
+							onChangeText={onChangeText}
 							searchText={searchText}
 							typeSearch={typeSearch}
 							onFocus={this.handleFocus.bind(this)}
 							clearText={this.handleBlur.bind(this)}
 						/>
 					</SafeAreaView>
-				}
+				)}
 				{typeSearch && (
 					<SearchDropdown
 						onSelect={onSelectFromDropdown}
@@ -77,20 +76,13 @@ export default class QRCamera extends Component {
 	}
 
 	handleFocus() {
-		this.setState({ searchText: '', typeSearch: true })
-		//  TO DO: clear prop searchData
+		this.setState({ typeSearch: true })
+		this.props.onChangeText('')
 	}
 
 	handleBlur() {
-		this.setState({ searchText: '', typeSearch: false })
-		//  TO DO: clear prop searchData
-	}
-
-	handleChangeText(text) {
-		this.setState({ searchText: text })
-		if (text.length < 2) return
-
-		this.props.onChangeText(text)
+		this.setState({ typeSearch: false })
+		this.props.onChangeText('')
 	}
 }
 
