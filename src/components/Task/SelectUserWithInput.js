@@ -103,21 +103,14 @@ function NonEditableCell({ onPress, first_name, last_name, username_display }) {
 }
 
 const width = Dimensions.get('window').width
-const inputMarginRight = 24
 const styles = StyleSheet.create({
 	container: {
+		paddingTop: 4,
 		backgroundColor: 'white',
-		shadowColor: 'rgba(0, 0, 0, 0.07)',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowRadius: 4,
-		shadowOpacity: 1,
-		borderStyle: 'solid',
-		borderRadius: 4,
-		borderWidth: 1,
-		borderColor: 'rgba(0, 0, 0, 0.08)',
+		// borderStyle: 'solid',
+		// borderRadius: 4,
+		// borderWidth: 1,
+		// borderColor: 'rgba(0, 0, 0, 0.08)',
 		overflow: 'hidden',
 	},
 	scroll: {
@@ -129,10 +122,7 @@ const styles = StyleSheet.create({
 		paddingTop: 8,
 		paddingBottom: 8,
 		paddingLeft: 8,
-		paddingRight: inputMarginRight,
-		width: (width - inputMarginRight) / 2,
-		borderBottomWidth: 1,
-		borderColor: 'rgba(0, 0, 0, 0.08)',
+		width: width / 2,
 	},
 	input: {
 		height: 40,
