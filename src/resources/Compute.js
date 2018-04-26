@@ -181,7 +181,7 @@ export default class Compute {
 	}
 
 	static getDisplayFromUsername(username) {
-		return username.split('_')[0]
+		return !!username ? username.split('_')[0] : ''
 	}
 
 	static postAttributeUpdate(taskID, attributeID, value) {

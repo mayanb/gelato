@@ -37,7 +37,7 @@ export default class UserCell extends React.Component {
 			<View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
 				{editing ? (
 					<SelectUserWithInput
-						initialValue={value}
+						usernameDisplay={Compute.getDisplayFromUsername(value)}
 						onCancel={this.toggleEditing}
 						onSelectUser={this.handleSelectUser}
 					/>

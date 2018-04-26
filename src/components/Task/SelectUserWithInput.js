@@ -17,7 +17,7 @@ class SelectUserWithInput extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			searchText: props.initialVaue,
+			searchText: props.usernameDisplay,
 			filtered_results: [],
 		}
 
