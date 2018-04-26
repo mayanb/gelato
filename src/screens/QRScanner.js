@@ -409,8 +409,10 @@ class QRScanner extends Component {
 
 	formatProductType(qr) {
 		if(qr) {
-			let pid = qr.creating_task.product_type
-			qr.creating_task.product_type = { id: pid }
+			if (typeof qr.creating_task.product_type !== 'object') {
+				let pid = qr.creating_task.product_type
+				qr.creating_task.product_type = { id: pid }
+			}
 		}
 	}
 
@@ -422,7 +424,7 @@ class QRScanner extends Component {
 	 * flow fo what happens when you read a barcode.
 	 */
 	testBarCodeRead() {
-		let barcode = 'dande.li/ics/3996ca3c-9696-4cf3-ad34-e9d711aa9b30'
+		let barcode = 'dande.li/ics/bbd3ba7c-af18-4caf-98ce-8f5d42c32a52'
 		setTimeout(() => this.handleBarCodeRead({ data: barcode }), 200)
 	}
 }
