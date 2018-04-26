@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Switch } from 'react-native'
+import { View, Text, Switch, StyleSheet } from "react-native";
 
 export default class BooleanCell extends React.Component {
 	constructor(props) {
@@ -20,10 +20,19 @@ export default class BooleanCell extends React.Component {
 
 		return (
 			<View
-				style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+				style={styles.container}>
 				<Text style={{ marginRight: 20 }}>{label}</Text>
 				<Switch value={booleanValue} onValueChange={this.handleChange} />
 			</View>
 		)
+	}
+}
+
+const styles = {
+	container: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		minHeight: 60,
 	}
 }

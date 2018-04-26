@@ -3,7 +3,7 @@ import Compute from '../../resources/Compute'
 import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
-import { Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import Colors from '../../resources/Colors'
 
 export default class UserCell extends React.Component {
@@ -29,16 +29,22 @@ export default class UserCell extends React.Component {
 	render() {
 		const { isLoadingTask, value } = this.props
 		const { editing } = this.state
-		if (isLoadingTask) return null
+		if (isLoadingTask) {
+			return null
+		}
 
-		return editing ? (
-			<SelectUserWithInput
-				initialValue={value}
-				onCancel={this.toggleEditing}
-				onSelectUser={this.handleSelectUser}
-			/>
-		) : (
-			<NonEditingDisplay onEdit={this.toggleEditing} value={value} />
+		return (
+			<View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
+				{editing ? (
+					<SelectUserWithInput
+						initialValue={value}
+						onCancel={this.toggleEditing}
+						onSelectUser={this.handleSelectUser}
+					/>
+				) : (
+					<NonEditingDisplay onEdit={this.toggleEditing} value={value} />
+				)}
+			</View>
 		)
 	}
 }
@@ -51,7 +57,9 @@ function NonEditingDisplay({ onEdit, value }) {
 			<TouchableOpacity
 				onPress={onEdit}
 				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-				<Text style={styles.display}>{Compute.getDisplayFromUsername(value)}</Text>
+				<Text style={styles.display}>
+					{Compute.getDisplayFromUsername(value)}
+				</Text>
 			</TouchableOpacity>
 		)
 	}

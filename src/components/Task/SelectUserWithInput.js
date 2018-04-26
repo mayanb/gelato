@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
 	scroll: {
 		paddingTop: 20,
 		paddingBottom: 40,
-		flex: 1,
 		backgroundColor: 'blue',
 	},
 	cell_container: {
@@ -120,9 +119,11 @@ const styles = StyleSheet.create({
 		paddingBottom: 8,
 		paddingLeft: 8,
 		paddingRight: inputMarginRight,
+    width: (width - inputMarginRight) / 2,
+    borderBottomWidth: 1,
+		borderColor: 'rgba(0, 0, 0, 0.08)',
 	},
 	input: {
-		width: width - inputMarginRight,
 		height: 40,
 		fontSize: 17,
 		textAlign: 'right',
@@ -131,7 +132,6 @@ const styles = StyleSheet.create({
 	display: {
 		fontSize: 17,
 		color: Colors.textBlack,
-		flex: 1,
 		textAlign: 'right',
 	},
 })

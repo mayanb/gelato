@@ -17,52 +17,25 @@ export default class AttributeCell extends React.Component {
 		this.state = {
 			loading: false,
 		}
+		this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
 	render() {
-		let { name } = this.props
-		name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+		const { value, isLoadingTask, type } = this.props
+		const { loading } = this.state
+		let name = this.props.name
+		const formattedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
 		return (
 			<View style={styles.container}>
-				<View style={styles.nameContainer}>
-					<Text style={styles.name}>{name}</Text>
-					{this.state.loading && (
-						<ActivityIndicator size="small" color={Colors.base} />
-					)}
-				</View>
-				{this.renderValue()}
+				<AttributeName name={formattedName} loading={loading} />
+				<AttributeValue
+					value={value}
+					handleSubmit={this.handleSubmit}
+					isLoadingTask={isLoadingTask}
+					type={type}
+				/>
 			</View>
 		)
-	}
-
-	renderValue() {
-		switch (this.props.type) {
-			case 'BOOL':
-				return (
-					<BooleanCell
-						value={this.props.value}
-						onSubmit={this.handleSubmit.bind(this)}
-						isLoadingTask={this.props.isLoadingTask}
-					/>
-				)
-			case 'USER':
-				return (
-					<UserCell
-						value={this.props.value}
-						onSubmit={this.handleSubmit.bind(this)}
-						isLoadingTask={this.props.isLoadingTask}
-					/>
-				)
-			default:
-				return (
-					<TextNumberCell
-						value={this.props.value}
-						onSubmit={this.handleSubmit.bind(this)}
-						type={this.props.type}
-						isLoadingTask={this.props.isLoadingTask}
-					/>
-				)
-		}
 	}
 
 	handleSubmit(value) {
@@ -75,6 +48,45 @@ export default class AttributeCell extends React.Component {
 	}
 }
 
+function AttributeName({ name, loading }) {
+	return (
+		<View style={styles.nameContainer}>
+			<Text style={styles.name}>{name}</Text>
+			{loading && <ActivityIndicator size="small" color={Colors.base} />}
+		</View>
+	)
+}
+
+function AttributeValue({ value, handleSubmit, isLoadingTask, type }) {
+	switch (type) {
+		case 'BOOL':
+			return (
+				<BooleanCell
+					value={value}
+					onSubmit={handleSubmit}
+					isLoadingTask={isLoadingTask}
+				/>
+			)
+		case 'USER':
+			return (
+				<UserCell
+					value={value}
+					onSubmit={handleSubmit}
+					isLoadingTask={isLoadingTask}
+				/>
+			)
+		default:
+			return (
+				<TextNumberCell
+					value={value}
+					onSubmit={handleSubmit}
+					type={type}
+					isLoadingTask={isLoadingTask}
+				/>
+			)
+	}
+}
+
 const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
 		minHeight: 60,
 		borderBottomWidth: 1,
 		borderBottomColor: Colors.ultraLightGray,
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		justifyContent: 'center',
 		paddingLeft: 16,
 		paddingRight: 16,
@@ -96,10 +108,12 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
+    minHeight: 60,
 	},
 	name: {
 		color: Colors.lightGray,
 		fontSize: 17,
 		marginRight: 20,
+		textAlignVertical: 'top',
 	},
 })

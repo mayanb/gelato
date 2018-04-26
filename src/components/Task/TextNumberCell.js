@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextInput } from 'react-native'
+import { TextInput, View } from 'react-native'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
@@ -51,17 +51,19 @@ export default class TextNumberCell extends React.Component {
 				textAlign: 'right',
 			}
 			return (
-				<TextInput
-					style={style}
-					onChangeText={this.handleChangeText}
-					onSubmitEditing={this.handleSubmitText}
-					onBlur={this.handleSubmitText}
-					returnKeyType="done"
-					value={this.state.draftValue}
-					keyboardType={keyboardType}
-					autoCorrent={false}
-					ref={input => (this.input = input)}
-				/>
+				<View style={{flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
+					<TextInput
+						style={style}
+						onChangeText={this.handleChangeText}
+						onSubmitEditing={this.handleSubmitText}
+						onBlur={this.handleSubmitText}
+						returnKeyType="done"
+						value={this.state.draftValue}
+						keyboardType={keyboardType}
+						autoCorrent={false}
+						ref={input => (this.input = input)}
+					/>
+				</View>
 			)
 		}
 	}
