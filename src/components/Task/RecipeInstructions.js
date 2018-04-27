@@ -43,11 +43,6 @@ export default class RecipeInstructions extends Component {
 			title: {
 				color: Colors.lightGray,
 			},
-			hideContainer: {
-				flexDirection: 'row',
-				justifyContent: 'center',
-				padding: 8,
-			},
 		})
 		const { instructions } = this.props
 		const { expanded } = this.state
@@ -55,14 +50,11 @@ export default class RecipeInstructions extends Component {
 			<View style={styles.container}>
 				<View style={styles.headerRow}>
 					<Text style={styles.title}>Instructions</Text>
-					{!expanded && <Toggle expanded={this.state.expanded} onPress={this.handleToggle} />}
+					<Toggle expanded={this.state.expanded} onPress={this.handleToggle} />
 				</View>
 				{expanded && (
 					<View>
 						<Content content={instructions} />
-						<View style={styles.hideContainer}>
-							<Toggle expanded={this.state.expanded} onPress={this.handleToggle} />
-						</View>
 					</View>
 				)}
 			</View>
@@ -98,7 +90,6 @@ function Content({ content }) {
 	const styles = StyleSheet.create({
 		content: {
 			marginTop: 16,
-			height: 100,
 		},
 	})
 	return (
