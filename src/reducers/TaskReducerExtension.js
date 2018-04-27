@@ -258,6 +258,7 @@ function removeInputSuccess(state, action, key) {
 	const task = state.dataByID[action.taskID]
 	const inputs = task.inputs.filter(input => input.id !== action.inputID)
 	const taskIngredients = addInputsToTaskIngredients(task.task_ingredients, inputs)
+		.filter(ta => ta.inputs.length || ta.ingredient.recipe_id)
 	return update(state, {
 		dataByID: {
 			[action.taskID]: {
