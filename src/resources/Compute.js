@@ -203,11 +203,11 @@ export default class Compute {
 		return r
 	}
 
-	static markExistingInputsInSearchResults(taskToAddInputsTo, searchResults) {
+	static annotateWithExistingInputs(results, taskToAddInputsTo) {
 		const existingInputItemIDs = new Set(
 			taskToAddInputsTo.inputs.map(input => parseInt(input.input_item))
 		)
-		return searchResults.filter(task => {
+		return results.filter(task => {
 			task.containsAlreadyAddedInput = task.items.some(item =>
 				existingInputItemIDs.has(item.id)
 			)
@@ -215,14 +215,13 @@ export default class Compute {
 		})
 	}
 
-	static updateAllSearchVectors(list) {
+	static annotateWithMissingOutputs(results) {
+		return results.filter(task => task.items && task.items.length)
+	}
+
+	static annotateWithSearchVector(list) {
 		list.forEach(e => {
 			e.search = `${e.search} ${e.name.toLowerCase()} ${e.code.toLowerCase()}`
 		})
-	}
-
-	static createCompletedSearchVector(item) {
-		let s = `${item.search} ${item.name.toLowerCase()} ${item.code.toLowerCase()}`
-		return s
 	}
 }
