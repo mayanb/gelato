@@ -105,7 +105,7 @@ function DisabledCell({ name }) {
 export function SearchBox(props) {
 	return (
 		<TouchableWithoutFeedback onPress={() => this.input.focus() } >
-			<View  style={styles.searchTextTouchable} >
+			<View style={styles.searchTextTouchable} >
 				<View style={styles.searchTextContainer}>
 					<TextInput
 						style={styles.searchText}
@@ -115,7 +115,7 @@ export function SearchBox(props) {
 						onChangeText={props.onChangeText}
 						onFocus={props.onFocus}
 						autoCorrect={false}
-						//onBlur={props.onBlur}
+						onBlur={props.onBlur}
 						ref={input => (this.input = input)}
 					/>
 					<View style={styles.button}>

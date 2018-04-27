@@ -137,9 +137,9 @@ class Ingredients extends Component {
 		const r = Compute.getSearchResults(text, teamID)
 		r
 			.then(res => {
-				const searchResults = res.body.results
-				const updatedSearchResults = Compute.markExistingInputsInSearchResults(this.props.task, searchResults)
-				this.setState({ searchData: updatedSearchResults })
+				let results = Compute.annotateWithMissingOutputs(res.body.results)
+				results = Compute.annotateWithExistingInputs(results, this.props.task)
+				this.setState({ searchData: results })
 			})
 			.catch(err => console.error('Error retrieving search results', err))
 			.finally(() => this.setState({ isFetchingSearch: false }))

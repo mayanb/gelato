@@ -35,7 +35,7 @@ function fetch(name) {
 			 return Networking.get(`/ics/${endpoint}/`)
 				.query({ team_created_by: team })
 				.then(res => {
-					Compute.updateAllSearchVectors(res.body)
+					Compute.annotateWithSearchVector(res.body)
 					dispatch(requestSuccess(name, res.body))
 				})
 				.catch(e => {
