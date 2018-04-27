@@ -357,7 +357,7 @@ export function removeInput(inputID, taskID) {
 	return dispatch => {
 		return Networking.del(`/ics/inputs/${inputID}/`)
 			.then((res) => {
-				dispatch(removeInputSuccess(inputID, taskID))
+				dispatch(removeInputSuccess(inputID, taskID, res.body))
 			})
 			.catch(e => {
 				//dispatch(removeFailure(e))
@@ -366,12 +366,13 @@ export function removeInput(inputID, taskID) {
 	}
 }
 
-function removeInputSuccess(inputID, taskID) {
+function removeInputSuccess(inputID, taskID, input) {
 	return {
 		type: REMOVE_INPUT_SUCCESS,
 		name: TASKS,
 		taskID: taskID,
 		inputID: inputID,
+		taskIngredients: input.input_task_ingredients,
 	}
 }
 
