@@ -1,7 +1,7 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { SectionList, StyleSheet, View, Text } from 'react-native'
+import { FlatList, StyleSheet, View, Text } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -10,12 +10,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TaskRow, TaskRowHeader } from '../components/Cells'
 import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
-import { DateFormatter } from '../resources/Utility'
-import * as actions from '../actions/TaskListActions'
+import * as actions from '../actions/TaskActions'
 import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
-import moment from 'moment'
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -65,23 +63,13 @@ class Main extends Component {
 	}
 
 	componentDidMount() {
-		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		this.fetchRecentTasks()
 		this.fetchProcesses()
 	}
 
-	fetchOpenTasks() {
-		let { dispatch } = this.props
-		dispatch(actions.fetchOpenTasks()).catch(e => {
-			dispatch(errorActions.handleError(Compute.errorText(e)))
-		})
-	}
-
-	fetchCompletedTasks() {
-		let { dispatch } = this.props
-		dispatch(actions.fetchCompletedTasks()).catch(e => {
-			dispatch(errorActions.handleError(Compute.errorText(e)))
-		})
+	fetchRecentTasks() {
+		this.props.dispatch(actions.fetchRecentTasks())
+			.finally(() => this.setState({ refreshing: false }))
 	}
 
 	fetchProcesses() {
@@ -93,8 +81,7 @@ class Main extends Component {
 
 	refreshTasks() {
 		this.setState({ refreshing: true })
-		this.fetchOpenTasks()
-		this.fetchCompletedTasks()
+		this.fetchRecentTasks()
 	}
 
 	handlePress(i) {
@@ -108,7 +95,6 @@ class Main extends Component {
 		if (ACTION_OPTIONS[i] === 'Move Items') {
 			this.props.navigation.navigate('Move', {
 				name: 'Scan Items',
-				mode: 'move',
 			})
 		}
 	}
@@ -117,25 +103,22 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	renderSectionFooter = ({ section }) => {
-		if (!section.isLoading && section.data.length === 0) {
-			const text =
-				section.key === 'open'
-					? `No open tasks. Tap the + button to create a new task.`
-					: `That's all your recently completed tasks.`
+	renderFooter = (data, isRefreshing)  => {
+		if (!isRefreshing && data.length === 0) {
+			const text = `No recent tasks. Tap the + button to create a new task.`
 			return (
 				<View style={styles.emptyFooterContainer}>
 					<Text style={styles.emptyFooterText}>{text}</Text>
 				</View>
 			)
+		} else {
+			return <TaskRowHeader />
 		}
 	}
 
 	render() {
-		let sections = this.loadData()
-		let openRefreshing = this.props.openTasks.ui.isFetchingData
-		let completedRefreshing = this.props.completedTasks.ui.isFetchingData
-		let isRefreshing = openRefreshing || completedRefreshing || false
+		let data = this.props.recentTasks
+		let isRefreshing = this.props.loading || false
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -145,14 +128,13 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<SectionList
+				<FlatList
+					data={data}
 					style={styles.table}
 					renderItem={this.renderRow}
-					renderSectionHeader={this.renderSectionHeader}
-					renderSectionFooter={this.renderSectionFooter}
-					sections={sections}
+					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
-					ListFooterComponent={<TaskRowHeader />}
+					ListFooterComponent={() => this.renderFooter(data, isRefreshing)}
 					onRefresh={this.refreshTasks}
 					refreshing={isRefreshing}
 				/>
@@ -169,34 +151,6 @@ class Main extends Component {
 		this.props.navigation.navigate('CreateTask')
 	}
 
-	loadData() {
-		// // Make the request
-		// const teamData = await Compute.classifyTasks(this.props.teamID); // Gets all of the task data
-		// // Send the data into our state
-		// await this.setState({tasks: teamData});
-		let open = this.props.openTasks.data
-		let completed = this.props.completedTasks.data
-
-		return [
-			{
-				data: open,
-				key: 'open',
-				title: 'OPEN TASKS',
-				isLoading: this.props.openTasks.ui.isFetchingData,
-			},
-			{
-				data: completed,
-				key: 'completed',
-				title: 'RECENTLY COMPLETED',
-				isLoading: this.props.completedTasks.ui.isFetchingData,
-			},
-			{
-				data: [],
-				key: 'space',
-			},
-		]
-	}
-
 	// Helper function to render individual task cells
 	renderRow = ({ item }) => {
 		return (
@@ -209,30 +163,23 @@ class Main extends Component {
 				name={item.process_type.name}
 				is_flagged={item.is_flagged}
 				is_ancestor_flagged={item.num_flagged_ancestors > 0}
-				date={moment(item.updated_at).fromNow()}
+				date={item.updated_at}
 				onPress={this.openTask.bind(this)}
 			/>
 		)
 	}
 
 	// Helper function to render headers
-	renderSectionHeader = ({ section }) => (
-		<TaskRowHeader title={section.title} isLoading={section.isLoading} />
+	renderHeader = () => (
+		<TaskRowHeader title='RECENT TASKS' />
 	)
 
 	// Extracts keys - required for indexing
-	keyExtractor = (item, index) => item.id
+	keyExtractor = (item, index) => String(item.id)
 
 	// Event for navigating to task detail page
 	openTask(id, name, open, imgpath, title, date) {
-		this.props.navigation.navigate('Task', {
-			id: id,
-			name: name,
-			open: open,
-			imgpath: imgpath,
-			title: title,
-			date: date,
-		})
+		this.props.navigation.navigate('Task', { id: id })
 	}
 }
 
@@ -259,9 +206,10 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
+	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
 	return {
-		openTasks: state.openTasks,
-		completedTasks: state.completedTasks,
+		recentTasks: recentTasks,
+		loading: state.tasks.ui.isFetchingTasksData,
 	}
 }
 

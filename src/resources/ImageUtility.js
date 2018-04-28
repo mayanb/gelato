@@ -88,6 +88,16 @@ export function requireIcon(process_icon) {
     case 'temper.png':
       img = require('../resources/assets/processicons/temper.png')
       break
+	  case 'uparrow.png':
+		  img = require('../resources/assets/uparrow.png')
+		  break
+	  case 'uparrowwhite.png':
+		  img = require('../resources/assets/uparrowwhite.png')
+		  break
+	  case 'uparrowblue.png':
+		  img = require('../resources/assets/uparrowblue.png')
+		  break
+	  case 'rotaryconche.png':
     case 'winnow.png':
       img = require('../resources/assets/processicons/winnow.png')
       break

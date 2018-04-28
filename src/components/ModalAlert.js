@@ -1,6 +1,6 @@
 import Colors from '../resources/Colors'
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, View, Button } from 'react-native'
 import Modal from './Modal'
 
 export default class ModalAlert extends Component {

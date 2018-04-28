@@ -3,10 +3,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	TouchableOpacity,
 	Image,
-	TextInput,
-	Button,
 } from 'react-native'
 import * as ImageUtility from '../resources/ImageUtility'
 import { AddButton, CancelButton } from './Buttons'
@@ -28,7 +25,7 @@ export default class QRDisplay extends Component {
 			amount
 		} = this.props
 		const warning = Compute.isWarning(semantic)
-		const shouldShowAmount = Compute.isOkay(semantic)
+		const shouldShowAmount = this.props.shouldShowAmount && Compute.isOkay(semantic)
 		const text = Compute.getTextFromSemantic(semantic)
 		return (
 			<View style={styles.container}>
@@ -47,7 +44,7 @@ export default class QRDisplay extends Component {
 						</View>
 					) : null}
 				</View>
-				{renderButtons(semantic, onPress, onCancel, amount)}
+				{renderButtons(semantic, onPress, onCancel, amount, shouldShowAmount)}
 			</View>
 		)
 	}
@@ -122,15 +119,14 @@ const styles = StyleSheet.create({
 	flagText: {
 		color: 'white',
 		textAlign: 'center',
-	}, 
+	},
 	warning: {
 		backgroundColor: 'orange',
-		color: 'white',
 	},
 	warningButtonsContainer: {
 		display: 'flex',
 		flexDirection: 'row',
-	}, 
+	},
 	warningAddButton: {
 		flex: 1,
 		borderTopWidth: 1,
@@ -143,28 +139,28 @@ const styles = StyleSheet.create({
 	}
 })
 
-function renderButtons(semantic, onPress, onCancel, amount) {
+function renderButtons(semantic, onPress, onCancel, amount, shouldShowAmount) {
 	if(Compute.isWarning(semantic)) {
 		return (
 			<View style={styles.warningButtonsContainer}>
-				<AddButton 
-					title="Add input" 
-					backgroundColor="white" 
-					color={Colors.red} 
-					style={styles.warningAddButton} 
-					onAdd={onPress} 
-					disabled={!amount} 
+				<AddButton
+					title="Add input"
+					backgroundColor="white"
+					color={Colors.red}
+					style={styles.warningAddButton}
+					onAdd={onPress}
+					disabled={shouldShowAmount && !amount}
 				/>
-				<CancelButton 
-					title="Cancel" 
+				<CancelButton
+					title="Cancel"
 					style={styles.warningCancelButton}
-					onCancel={onCancel} 
+					onCancel={onCancel}
 					backgroundColor="white"
 				/>
 			</View>
 		)
 	} else if (Compute.isOkay(semantic)) {
-		return <AddButton onAdd={onPress} disabled={!amount} />
+		return <AddButton onAdd={onPress} disabled={shouldShowAmount && !amount} />
 	} else {
 		return <CancelButton onCancel={onCancel} />
 	}

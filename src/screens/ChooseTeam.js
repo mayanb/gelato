@@ -10,7 +10,6 @@ import * as errorActions from '../actions/ErrorActions'
 import * as inventoryActions from '../actions/InventoryActions'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
-import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
 import pluralize from 'pluralize'
 
@@ -108,15 +107,7 @@ class ChooseTeam extends Component {
 	openCreatedTask(task) {
 		this.props.navigation.goBack()
 
-		this.props.navigation.navigate('Task', {
-			id: task.id,
-			name: task.display,
-			open: true,
-			task: task,
-			date: DateFormatter.shorten(task.created_at),
-			taskSearch: false,
-			title: task.display,
-		})
+		this.props.navigation.navigate('Task', { id: task.id })
 	}
 
 	handleSelect(item) {
@@ -164,7 +155,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state /*, props */) => {
 	return {
 		teams: state.teams.data,
-		hasJustCreatedItem: state.move.ui.hasJustCreatedItem,
 		isCreatingItem: state.move.ui.isCreatingItem,
 	}
 }

@@ -1,3 +1,5 @@
+import pluralize from 'pluralize'
+
 export class DateFormatter {
   // yyyy-MM-dd-THH:mm:ss.SSSSSSZ
   static pad(value) {
@@ -93,3 +95,12 @@ export class DateFormatter {
     }
   }
 }
+
+export function formatNumber(amount) {
+	return Number(amount).toLocaleString()
+}
+
+export function formatAmount(amount, unit) {
+	return `${formatNumber(amount)} ${pluralize(unit, Number(amount))}`
+}
+
