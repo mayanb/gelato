@@ -1,4 +1,3 @@
-// Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
@@ -9,8 +8,6 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
-	Button,
-	Text,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -20,19 +17,19 @@ import NavHeader from 'react-navigation-header-buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import Print from '../resources/PrintFormat'
-import * as actions from '../actions/TaskListActions'
-import { AttributeHeaderCell, BottomTablePadding } from '../components/Cells'
+import * as actions from '../actions/TaskActions'
+import { AttributeHeaderCell } from '../components/Cells'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
-import { DateFormatter } from '../resources/Utility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import AttributeList from '../components/Task/AttributeList'
-import Networking from '../resources/Networking-superagent'
 import update from 'immutability-helper'
 import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
+import RecipeInstructions from "../components/Task/RecipeInstructions"
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
@@ -50,7 +47,7 @@ class Task extends Component {
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
 
 		this.state = {
-			organized_attributes: props.task && props.task.process_type.attributes,
+			organized_attributes: props.task && props.task.process_type && props.task.process_type.attributes,
 			action_options: ACTION_OPTIONS,
 		}
 	}
@@ -84,37 +81,34 @@ class Task extends Component {
 	componentWillMount() {
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
+			name: this.props.task ? this.props.task.display : '',
 			printHTML: () => this.printHTML(),
 		})
 	}
 
 	componentWillReceiveProps(np) {
 		if (!np.task) return
-		if (!this.props.task || (np.task.is_flagged !== this.props.task.is_flagged)) {
+		if (!this.props.task || !this.props.task.task_ingredients || (np.task.is_flagged !== this.props.task.is_flagged)) {
 			this.updateActionSheet(np.task)
 		}
 	}
 
 	componentDidMount() {
-		this.setState({isDandelion: Compute.isDandelion(this.props.screenProps.team)})
-		this.props.dispatch(actions.resetJustCreated())
-		if (this.props.taskSearch) {
-			this.dispatchWithError(actions.fetchTask(this.props.id))
-		}
+		this.setState({ isDandelion: Compute.isDandelion(this.props.screenProps.team) })
 		this.setState({ isLoadingTask: true })
-		Networking.get(`/ics/tasks/${this.props.id}`)
+		this.props.dispatch(actions.fetchTask(this.props.id))
 			.then(res => {
-				this.props.navigation.setParams({ task: res.body })
-				let organized = Compute.organizeAttributes(res.body)
+				this.props.navigation.setParams({ task: res.data })
+				let organized = Compute.organizeAttributes(res.data)
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
 			})
-			.catch(e => console.log(e))
+			.catch(e => console.error('Error fetching task', e))
 
 		this.updateActionSheet(this.props.task)
 	}
 
 	updateActionSheet(task) {
-		if (!task) return 
+		if (!task) return
 		let action_options = task.is_flagged
 			? ACTION_OPTIONS.filter(o => o !== 'Flag')
 			: ACTION_OPTIONS
@@ -128,15 +122,16 @@ class Task extends Component {
 
 	allowEditBatchSize(task) {
 		let proc = task.process_type.name.toLowerCase()
+		const hasRecipe = task.task_ingredients && task.task_ingredients.length && task.task_ingredients[0].ingredient.recipe_id
 		return (
-			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package')
+			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package') && !hasRecipe
 		)
 	}
 
 	printHTML() {
 		let task = this.props.task
 		let qrtext = task.items[0].item_qr
-		
+
 		QRCode.toString(qrtext, (err, string) => {
 			if (err) {
 				console.error('Error converting QR Code to string', err)
@@ -151,7 +146,8 @@ class Task extends Component {
 	render() {
 		let { organized_attributes, action_options } = this.state
 		let { task } = this.props
-		if (!task) {
+		//Check that full task object is loaded
+		if (!task || task.items === undefined) {
 			return null
 		}
 		const isLabel = task.process_type.name.toLowerCase() === 'label'
@@ -168,11 +164,14 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
-					<AttributeList
-						data={organized_attributes}
-						onSubmitEditing={this.handleSubmitEditing.bind(this)}
-						isLoadingTask={this.state.isLoadingTask}
-					/>
+					<KeyboardAwareScrollView>
+						{task.recipe_instructions && <RecipeInstructions instructions={task.recipe_instructions} />}
+						<AttributeList
+							data={organized_attributes}
+							onSubmitEditing={this.handleSubmitEditing.bind(this)}
+							isLoadingTask={this.state.isLoadingTask}
+						/>
+					</KeyboardAwareScrollView>
 					<ActionSheet
 						ref={o => (this.ActionSheet = o)}
 						title={ACTION_TITLE}
@@ -203,14 +202,6 @@ class Task extends Component {
 		)
 	}
 
-	showHelpAlert() {
-		AlertIOS.alert(
-			'Where do I see already scanned QR codes for this task?',
-			`** Tap the blue input button on the bottom right
-			\n ** Then tap the button with the # of scanned codes on the bottom left of the camera screen`
-		)
-	}
-
 	showConfirmDeleteAlert() {
 		let { task } = this.props
 		// Works on both iOS and Android
@@ -220,7 +211,8 @@ class Task extends Component {
 			[
 				{
 					text: 'Cancel',
-					onPress: () => {},
+					onPress: () => {
+					},
 					style: 'cancel',
 				},
 				{
@@ -237,7 +229,7 @@ class Task extends Component {
 		let { task } = this.props
 		let item = task.items[0]
 		AlertIOS.prompt(
-			'Enter a new batch sie',
+			'Enter a new batch size',
 			null,
 			this.handleEditBatchSize,
 			'plain-text',
@@ -258,7 +250,7 @@ class Task extends Component {
 			this.showCustomNameAlert()
 		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(
-				actions.requestFlagTask(this.props.task, this.props.taskSearch)
+				actions.requestFlagTask(this.props.task)
 			)
 		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
@@ -269,7 +261,7 @@ class Task extends Component {
 
 	handleRenameTask(text) {
 		this.dispatchWithError(
-			actions.requestRenameTask(this.props.task, text, this.props.taskSearch)
+			actions.requestRenameTask(this.props.task, text)
 		)
 		this.props.navigation.setParams({ name: text })
 	}
@@ -279,47 +271,15 @@ class Task extends Component {
 			this.props.navigation.goBack()
 		}
 		this.dispatchWithError(
-			actions.requestDeleteTask(this.props.task, this.props.taskSearch, success)
+			actions.requestDeleteTask(this.props.task, success)
 		)
 	}
 
-	// addInputs() {
-	// 	this.props.navigation.navigate('QRScanner', {
-	// 		task_id: this.props.task.id,
-	// 		open: this.props.open,
-	// 		taskSearch: this.props.taskSearch,
-	// 		processUnit: this.props.task.process_type.unit,
-	// 		onOpenTask: this.handleOpenTask.bind(this),
-	// 	})
-	// }
-
 	showCamera(mode) {
-		this.props.navigation.navigate('QRScanner', {
-			task_id: this.props.task.id,
-			open: this.props.open,
-			taskSearch: this.props.taskSearch,
-			mode: mode,
-			processUnit: this.props.task.process_type.unit,
-			onOpenTask: this.handleOpenTask.bind(this),
+		this.props.navigation.navigate('Ingredients', {
+			taskID: this.props.task.id,
 			isDandelion: this.state.isDandelion,
-		})
-	}
-
-	handleOpenTask(task) {
-		//let x = 'hi'
-		this.props.navigation.navigate({
-			screen: 'gelato.Task',
-			title: task.display,
-			animated: true,
-			passProps: {
-				task: task,
-				taskSearch: true,
-				id: task.id,
-				open: task.is_open,
-				title: task.display,
-				date: task.created_at,
-				imgpath: null,
-			},
+			mode: mode,
 		})
 	}
 
@@ -352,18 +312,13 @@ class Task extends Component {
 	}
 
 	renderHeader = task => {
-		let imgpath = this.props.imgpath
-			? this.props.imgpath
-			: task.process_type.icon
-		let date = this.props.taskSearch
-			? DateFormatter.shorten(this.props.date)
-			: this.props.date
+		let imgpath = task.process_type.icon
 		let outputAmount = parseFloat(task.total_amount || 0)
 		return (
 			<AttributeHeaderCell
 				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
-				date={date}
+				date={task.created_at}
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
@@ -372,7 +327,7 @@ class Task extends Component {
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if(this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
+		if (this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}
@@ -431,16 +386,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, props) => {
-	let { taskSearch, open } = props
-	let arr = state.searchedTasks.data
-	if (!taskSearch && open) {
-		arr = state.openTasks.data
-	} else if (!taskSearch) {
-		arr = state.completedTasks.data
-	}
-
 	return {
-		task: arr.find(e => Compute.equate(e.id, props.id)),
+		task: state.tasks.dataByID[props.id],
 	}
 }
 

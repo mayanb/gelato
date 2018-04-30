@@ -51,6 +51,10 @@ const styles = StyleSheet.create({
 	},
 
 	modal: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		zIndex: 999,
 		flexDirection: 'column',
 		flex: 1,
 		height: height,

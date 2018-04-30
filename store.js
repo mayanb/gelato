@@ -1,21 +1,25 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { BasicReducer } from './src/reducers/BasicReducer'
-import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
+import { _task } from './src/reducers/TaskReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
-const OPEN_TASKS = 'OPEN_TASKS'
-const COMPLETED_TASKS = 'COMPLETED_TASKS'
-const SEARCHED_TASKS = 'SEARCHED_TASKS'
+const TASKS = 'TASKS'
 const PROCESSES = 'PROCESSES'
 const PRODUCTS = 'PRODUCTS'
 const TEAMS = 'TEAMS'
-const TASK = 'TASK'
 const ERROR = 'ERROR'
 const MOVE = 'MOVE'
 
 let defaultState = {
 	data: [],
+	ui: {},
+}
+
+let tasksDefaultState = {
+	dataByID: {},
+	recentIDs: [],
+	searchedIDs: [],
 	ui: {},
 }
 
@@ -36,21 +40,11 @@ function createFilteredReducer(
 }
 
 var reducer = combineReducers({
-  openTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === OPEN_TASKS,
-    defaultState
-  ),
-  completedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === COMPLETED_TASKS,
-    defaultState
-  ),
-  searchedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === SEARCHED_TASKS,
-    defaultState
-  ),
+	tasks: createFilteredReducer(
+		_task,
+		action => action.name === TASKS,
+		tasksDefaultState,
+	),
   processes: createFilteredReducer(
     BasicReducer,
     action => action.name === PROCESSES,

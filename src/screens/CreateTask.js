@@ -3,9 +3,8 @@ import { connect } from 'react-redux'
 
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
-import * as taskActions from '../actions/TaskListActions'
+import * as taskActions from '../actions/TaskActions'
 import paramsToProps from '../resources/paramsToProps'
-import { DateFormatter } from '../resources/Utility'
 import Compute from '../resources/Compute'
 import Networking from '../resources/Networking-superagent'
 
@@ -74,14 +73,10 @@ class CreateTask extends Component {
 		let taskData = {
 			processType: processType,
 			productType: productType,
-			amount: batchSize,
+			batch_size: batchSize,
 		}
 		this.setState({ isCreatingTask: true })
-		Promise.all([
-			dispatch(taskActions.requestCreateTask(taskData)),
-			Networking.get('/qr/codes/?count=1'),
-		])
-			.then(([task, qrcodeRes]) => dispatch(taskActions.addOutput(task, qrcodeRes.text, batchSize)))
+		dispatch(taskActions.requestCreateTask(taskData))
 			.then(task => this.setState({ currentStep: 1, newTask: task }))
 			.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 			.finally(() => this.setState({ isCreatingTask: false }))
@@ -96,11 +91,11 @@ class CreateTask extends Component {
 			let taskData = {
 				processType: processType,
 				productType: productType,
-				amount: 0,
+				batch_size: 0,
 			}
 			this.setState({ isCreatingTask: true })
 			Promise.all([
-				dispatch(taskActions.requestCreateTask(taskData)),
+				dispatch(taskActions.requestCreatePackageTask(taskData)),
 			])
 				.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
 				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
@@ -118,15 +113,7 @@ class CreateTask extends Component {
 		let { newTask } = this.state
 		this.props.navigation.goBack()
 
-		this.props.navigation.navigate('Task', {
-			id: newTask.id,
-			name: newTask.display,
-			open: true,
-			task: newTask,
-			date: DateFormatter.shorten(newTask.created_at),
-			taskSearch: false,
-			title: newTask.display,
-		})
+		this.props.navigation.navigate('Task', { id: newTask.id })
 	}
 }
 
@@ -134,7 +121,6 @@ const mapStateToProps = (state /*, props */) => {
 	return {
 		processes: state.processes.data,
 		products: state.products.data,
-		hasJustCreatedItem: state.openTasks.ui.hasJustCreatedItem,
 	}
 }
 

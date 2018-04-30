@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 export function FlagPill(props) {
   const styles = StyleSheet.create({
     container: {
-      height: 10,
+      height: 20,
     }, 
     text: {
       color: 'white',
@@ -65,8 +65,8 @@ export function FlagPill(props) {
 export function AncestorFlagPill(props) {
   const styles = StyleSheet.create({
     container: {
-      height: 10,
-    }, 
+	    height: 20,
+    },
     text: {
       color: 'white',
       fontSize: 10,

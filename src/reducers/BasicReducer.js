@@ -141,7 +141,6 @@ function requestCreateSuccess(state, action) {
 		ui: {
 			$merge: {
 				isCreatingItem: false,
-				hasJustCreatedItem: action.item,
 			},
 		},
 		data: {
@@ -151,6 +150,7 @@ function requestCreateSuccess(state, action) {
 }
 
 function requestCreateFailure(state, action) {
+	console.error('API Error', action)
 	alert('Oh no! Something went wrong!\n' + JSON.stringify(action.error))
 	return update(state, {
 		ui: {
