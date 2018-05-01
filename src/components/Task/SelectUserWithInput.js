@@ -47,7 +47,7 @@ class SelectUserWithInput extends Component {
 
 	render() {
 		const { onCancel, onSelectUser } = this.props
-		const { searchText } = this.state
+		const { searchText, filtered_results } = this.state
 		return (
 			<View style={styles.container}>
 				<EditableCell
@@ -57,19 +57,23 @@ class SelectUserWithInput extends Component {
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				<View style={styles.dropdown_wrapper}>
-					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
-						{this.state.filtered_results.map(user => {
-							return (
-								<NonEditableCell
-									key={'user-' + user.id}
-									user={user}
-									onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
-								/>
-							)
-						})}
-					</KeyboardAwareScrollView>
-				</View>
+				{filtered_results.length && (
+					<View style={styles.dropdown_wrapper}>
+						<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+							{filtered_results.map(user => {
+								return (
+									<NonEditableCell
+										key={'user-' + user.id}
+										user={user}
+										onPress={() =>
+											onSelectUser(Compute.getUsernameDisplay(user))
+										}
+									/>
+								)
+							})}
+						</KeyboardAwareScrollView>
+					</View>
+				)}
 			</View>
 		)
 	}
