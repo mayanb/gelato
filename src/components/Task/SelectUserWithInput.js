@@ -52,23 +52,25 @@ class SelectUserWithInput extends Component {
 		return (
 			<View style={styles.container}>
 				<EditableCell
-					placeholder="search a user"
+					placeholder="Search for a user"
 					onBlur={onCancel}
 					onKeyboardSubmit={this.handleKeyboardSubmit}
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
-					{this.state.filtered_results.map(user => {
-						return (
-							<NonEditableCell
-								key={'user-' + user.id}
-								user={user}
-								onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
-							/>
-						)
-					})}
-				</KeyboardAwareScrollView>
+				<View style={styles.dropdown_wrapper}>
+					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+						{this.state.filtered_results.map(user => {
+							return (
+								<NonEditableCell
+									key={'user-' + user.id}
+									user={user}
+									onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
+								/>
+							)
+						})}
+					</KeyboardAwareScrollView>
+				</View>
 			</View>
 		)
 	}
@@ -101,7 +103,6 @@ function EditableCell({
 }
 
 function NonEditableCell({ onPress, user }) {
-
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.non_editable_cell_container}>
@@ -131,13 +132,17 @@ const styles = StyleSheet.create({
 		paddingLeft: 8,
 		width: width / 2,
 	},
+	dropdown_wrapper: {
+		borderWidth: 1,
+		borderBottomWidth: 0,
+		borderColor: 'rgba(0, 0, 0, 0.08)',
+	},
 	non_editable_cell_container: {
 		paddingTop: 8,
 		paddingBottom: 8,
 		paddingLeft: 8,
 		width: width / 2,
-		borderWidth: 1,
-		borderBottomWidth: 0,
+		borderBottomWidth: 1,
 		borderColor: 'rgba(0, 0, 0, 0.08)',
 	},
 	input: {
