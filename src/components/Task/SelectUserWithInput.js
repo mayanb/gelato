@@ -30,7 +30,6 @@ class SelectUserWithInput extends Component {
 	}
 
 	handleChangeText(text) {
-		console.log(Compute.searchItems(text, this.props.users).slice(0, 3))
 		this.setState({
 			searchText: text,
 			filtered_results: Compute.searchItems(text, this.props.users).slice(0, 3),

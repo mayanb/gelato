@@ -241,7 +241,7 @@ export default class Compute {
 	}
 
 	static searchItems(text, arr) {
-		return arr.filter(e => e.search.indexOf(text) !== -1)
+		return arr.filter(e => e.search.indexOf(text.toLowerCase()) !== -1)
 	}
 
 	static sortAlphabeticallyUsing(property) {
