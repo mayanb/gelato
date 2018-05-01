@@ -84,7 +84,6 @@ export default class Compute {
 		return semantic === IS_ANCESTOR_FLAGGED_INPUT
 	}
 
-	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
 	static getQRSemantic(mode, foundQR, currentTask) {
 		const isDandelion = currentTask && Compute.isDandelion(currentTask.process_type.team_created_by_name)
 		if (mode === 'inputs') {
