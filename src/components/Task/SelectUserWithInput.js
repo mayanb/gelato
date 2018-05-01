@@ -7,8 +7,8 @@ import {
 	Text,
 	TextInput,
 	Dimensions,
+	ScrollView,
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import Compute from '../../resources/Compute'
 import * as actions from '../../actions/UserListActions'
@@ -59,7 +59,7 @@ class SelectUserWithInput extends Component {
 				/>
 				{filtered_results.length && (
 					<View style={styles.dropdown_wrapper}>
-						<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+						<ScrollView>
 							{filtered_results.map(user => {
 								return (
 									<NonEditableCell
@@ -71,7 +71,7 @@ class SelectUserWithInput extends Component {
 									/>
 								)
 							})}
-						</KeyboardAwareScrollView>
+						</ScrollView>
 					</View>
 				)}
 			</View>
