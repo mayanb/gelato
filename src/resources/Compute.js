@@ -9,6 +9,8 @@ import {
 	INVALID_QR,
 	ALREADY_ADDED_MOVE_ITEM,
 	IS_FLAGGED_INPUT,
+	NO_OUTPUT_ITEMS,
+	SCAN_ERROR,
 	IS_ANCESTOR_FLAGGED_INPUT,
 	UNLIKELY_INPUT,
 } from './QRSemantics'
@@ -63,6 +65,7 @@ export default class Compute {
 		let task = {
 			process_type: data.processType.id,
 			product_type: data.productType.id,
+			batch_size: data.batch_size,
 			label: label,
 			is_open: true,
 			is_flagged: false,
@@ -82,6 +85,8 @@ export default class Compute {
 	}
 
 	static getQRSemantic(mode, foundQR, currentTask, isDandelion) {
+	static getQRSemantic(mode, foundQR, currentTask) {
+		const isDandelion = currentTask && Compute.isDandelion(currentTask.process_type.team_created_by_name)
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
@@ -98,8 +103,6 @@ export default class Compute {
 				return IS_ANCESTOR_FLAGGED_INPUT
 			}
 
-			console.log(input_task.product_type.id)
-			console.log(currentTask.product_type.id)
 			// if the product types don't match
 			if (input_task.product_type.id !== currentTask.product_type.id) {
 				if (isDandelion) {
@@ -128,7 +131,8 @@ export default class Compute {
 
 	// VALIDATE THE QR CODE SEQ
 	static validateQR(data) {
-		if (data.startsWith('dande.li/ics')) {
+		// if (data.startsWith('dande.li/ics')) {
+		if (data.startsWith('dande')) {
 			return true
 		} else {
 			return false
@@ -159,8 +163,12 @@ export default class Compute {
 				return 'This task has a flagged ancestor. Please ask an admin before using it.'
 			case UNLIKELY_INPUT:
 				return "This origin doesn't match. Are you sure you want to add it?"
+			case NO_OUTPUT_ITEMS:
+				return "This task doesn't have any output items."
+			case SCAN_ERROR:
+				return "There was an error scanning this QR code."
 			default:
-				return null
+				return ''
 		}
 	}
 
@@ -207,18 +215,18 @@ export default class Compute {
 	}
 
 	static getSearchResults(text, teamID) {
-		const r = Networking.get('/ics/tasks/search/').query({
+		const r = Networking.get('/ics/tasks/simple/').query({
 			label: text,
 			team: teamID,
 		})
 		return r
 	}
 
-	static markExistingInputsInSearchResults(taskToAddInputsTo, searchResults) {
+	static annotateWithExistingInputs(results, taskToAddInputsTo) {
 		const existingInputItemIDs = new Set(
 			taskToAddInputsTo.inputs.map(input => parseInt(input.input_item))
 		)
-		return searchResults.filter(task => {
+		return results.filter(task => {
 			task.containsAlreadyAddedInput = task.items.some(item =>
 				existingInputItemIDs.has(item.id)
 			)
@@ -226,7 +234,11 @@ export default class Compute {
 		})
 	}
 
-	static updateAllSearchVectors(list) {
+	static annotateWithMissingOutputs(results) {
+		return results.filter(task => task.items && task.items.length)
+	}
+
+	static annotateWithSearchVector(list) {
 		list.forEach(e => {
 			e.search = `${e.search} ${e.name.toLowerCase()} ${e.code.toLowerCase()}`
 		})

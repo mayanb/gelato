@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { BasicReducer } from './src/reducers/BasicReducer'
-import { _taskAttribute } from './src/reducers/TaskAttributeReducerExtension'
+import { _task } from './src/reducers/TaskReducerExtension'
 import { ErrorReducer } from './src/reducers/ErrorReducer'
 
 export const OPEN_TASKS = 'OPEN_TASKS'
@@ -17,6 +17,13 @@ export const USERS = 'USERS'
 
 let defaultState = {
 	data: [],
+	ui: {},
+}
+
+let tasksDefaultState = {
+	dataByID: {},
+	recentIDs: [],
+	searchedIDs: [],
 	ui: {},
 }
 
@@ -37,21 +44,11 @@ function createFilteredReducer(
 }
 
 var reducer = combineReducers({
-  openTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === OPEN_TASKS,
-    defaultState
-  ),
-  completedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === COMPLETED_TASKS,
-    defaultState
-  ),
-  searchedTasks: createFilteredReducer(
-    _taskAttribute,
-    action => action.name === SEARCHED_TASKS,
-    defaultState
-  ),
+	tasks: createFilteredReducer(
+		_task,
+		action => action.name === TASKS,
+		tasksDefaultState,
+	),
   processes: createFilteredReducer(
     BasicReducer,
     action => action.name === PROCESSES,

@@ -5,19 +5,14 @@ import {
 	ActivityIndicator,
 	Dimensions,
 	Image,
-	Platform,
 	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	FlatList,
-	ScrollView,
 	View,
 } from 'react-native'
-import { CreateTaskSelect } from './Cells'
-import Collapsible from 'react-native-collapsible'
-import Networking from '../resources/Networking-superagent'
 
 export class SearchDropdown extends Component {
 	render() {
@@ -79,7 +74,7 @@ export class SearchDropdown extends Component {
 	}
 
 	keyExtractor = (item, index) => {
-		item.id
+		return item.id
 	}
 }
 
@@ -110,7 +105,7 @@ function DisabledCell({ name }) {
 export function SearchBox(props) {
 	return (
 		<TouchableWithoutFeedback onPress={() => this.input.focus() } >
-			<View  style={styles.searchTextTouchable} >
+			<View style={styles.searchTextTouchable} >
 				<View style={styles.searchTextContainer}>
 					<TextInput
 						style={styles.searchText}
@@ -120,7 +115,7 @@ export function SearchBox(props) {
 						onChangeText={props.onChangeText}
 						onFocus={props.onFocus}
 						autoCorrect={false}
-						//onBlur={props.onBlur}
+						onBlur={props.onBlur}
 						ref={input => (this.input = input)}
 					/>
 					<View style={styles.button}>

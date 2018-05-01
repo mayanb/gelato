@@ -143,16 +143,7 @@ class Search extends Component {
 
 	navigateToFoundTask(foundTask) {
 		this.props.navigation.goBack()
-		this.props.navigation.navigate('Task', {
-			id: foundTask.id,
-			name: foundTask.display,
-			open: foundTask.open,
-			task: foundTask,
-			date: foundTask.created_at,
-			taskSearch: true,
-			title: foundTask.display,
-			imgpath: foundTask.process_type.icon,
-		})
+		this.props.navigation.navigate('Task', { id: foundTask.id })
 	}
 
 	keyExtractor = item => item.id

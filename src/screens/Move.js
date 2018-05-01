@@ -7,7 +7,6 @@ import {
 	View,
 	Image,
 	TouchableOpacity,
-	Button,
 } from 'react-native'
 import { Camera } from 'expo'
 import ActionButton from 'react-native-action-button'
@@ -93,6 +92,7 @@ class Move extends Component {
 				activeOpacity={active ? 0.5 : 1}
 				buttonText={String(items.length)}
 				position="left"
+				key="itemList"
 				onPress={active && this.handleToggleItemList.bind(this)}
 			/>
 		)
@@ -109,6 +109,7 @@ class Move extends Component {
 				icon={<Image source={ImageUtility.requireIcon('rightarrow.png')} />}
 				onPress={active && this.navigateToNext}
 				position="right"
+				key="next"
 			/>
 		)
 	}
@@ -243,9 +244,8 @@ class Move extends Component {
 	}
 
 	fetchBarcodeData(code) {
-		let { mode } = this.props
-		let success = (data, semantic) => {
-			this.setState({ foundQR: data, semantic: semantic, isFetching: false })
+		let success = (data) => {
+			this.setState({ foundQR: data, isFetching: false })
 		}
 		let failure = () =>
 			this.setState({ foundQR: null, semantic: INVALID_QR, isFetching: false })
@@ -258,8 +258,7 @@ class Move extends Component {
 				} else {
 					let found = res.body.length ? res.body[0] : null
 					if (found) {
-						let semantic = Compute.getQRSemantic(mode, found)
-						success(found, semantic)
+						success(found)
 					} else {
 						failure()
 					}

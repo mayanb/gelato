@@ -2,6 +2,7 @@ import React from 'react'
 import {
 	Text,
 	StyleSheet,
+	View,
 } from 'react-native'
 import Colors from '../../resources/Colors'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -24,9 +25,10 @@ export default class AttributeList extends React.Component {
 							isLoadingTask={this.props.isLoadingTask}
 						/>
 					)
-				})}
+				})
+				}
 				<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
-			</KeyboardAwareScrollView>
+			</View>
 		)
 	}
 }
