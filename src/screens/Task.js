@@ -164,7 +164,7 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
-					<KeyboardAwareScrollView>
+					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
 						{task.recipe_instructions && <RecipeInstructions instructions={task.recipe_instructions} />}
 						<AttributeList
 							data={organized_attributes}
