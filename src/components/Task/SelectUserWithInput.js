@@ -40,8 +40,8 @@ class SelectUserWithInput extends Component {
 	handleKeyboardSubmit() {
 		const { filtered_results } = this.state
 		if (filtered_results.length > 0) {
-			const username = filtered_results[0].username
-			this.props.onSelectUser(username)
+			const usernameDisplay = Compute.getUsernameDisplay(filtered_results[0])
+			this.props.onSelectUser(usernameDisplay)
 		}
 		this.props.onCancel()
 	}
@@ -63,8 +63,8 @@ class SelectUserWithInput extends Component {
 						return (
 							<NonEditableCell
 								key={'user-' + user.id}
-								{...user}
-								onPress={() => onSelectUser(user.username)}
+								user={user}
+								onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
 							/>
 						)
 					})}
@@ -89,7 +89,7 @@ function EditableCell({
 				autoCorrect={false}
 				underlineColorAndroid="transparent"
 				returnKeyType="done"
-				autoFocus="true"
+				autoFocus={true}
 				placeholder={placeholder}
 				onBlur={onBlur}
 				onSubmitEditing={onKeyboardSubmit}
@@ -100,14 +100,13 @@ function EditableCell({
 	)
 }
 
-function NonEditableCell({ onPress, first_name, last_name, username_display }) {
-	const firstWithLastInitial = Compute.getFirstNameWithLastNameInitial(last_name, first_name)
+function NonEditableCell({ onPress, user }) {
 
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.non_editable_cell_container}>
 				<Text style={styles.user_display_text}>
-					{`${firstWithLastInitial} (@${username_display})`}
+					{Compute.getUsernameDisplay(user)}
 				</Text>
 			</View>
 		</TouchableWithoutFeedback>

@@ -37,7 +37,7 @@ export default class UserCell extends React.Component {
 			<View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
 				{editing ? (
 					<SelectUserWithInput
-						usernameDisplay={Compute.getDisplayFromUsername(value)}
+						usernameDisplay={value}
 						onCancel={this.toggleEditing}
 						onSelectUser={this.handleSelectUser}
 					/>
@@ -58,7 +58,7 @@ function NonEditingDisplay({ onEdit, value }) {
 				onPress={onEdit}
 				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
 				<Text style={styles.display}>
-					{Compute.getDisplayFromUsername(value)}
+					{value}
 				</Text>
 			</TouchableOpacity>
 		)

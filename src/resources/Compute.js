@@ -180,18 +180,21 @@ export default class Compute {
 		return task.process_type.name + ' ' + task.product_type.name
 	}
 
-	static getDisplayFromUsername(username) {
+	static parseUsername(username) {
 		return !!username ? username.split('_')[0] : ''
 	}
 
-	static getFirstNameWithLastNameInitial(last_name, first_name = '') {
-		if (last_name) {
-			return `${last_name.charAt(0)}.`
-		} else {
-			const firstName = first_name.split(' ')[0]
-      const lastName = first_name.split(' ')[1]
-			return lastName ? `${firstName} ${lastName.charAt(0)}.` : `${firstName}`
-		}
+	static getFirstNameWithLastNameInitial(first_name, last_name) {
+		const firstName = first_name.split(' ')[0]
+		const lastName = last_name || first_name.split(' ')[1]
+		return lastName ? `${firstName} ${lastName.charAt(0)}.` : `${firstName}`
+	}
+
+	static getUsernameDisplay({ first_name, last_name, username_display }) {
+		return `${this.getFirstNameWithLastNameInitial(
+			first_name,
+			last_name
+		)} (@${this.parseUsername(username_display)})`
 	}
 
 	static postAttributeUpdate(taskID, attributeID, value) {
