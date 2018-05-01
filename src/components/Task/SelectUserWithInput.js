@@ -30,6 +30,7 @@ class SelectUserWithInput extends Component {
 	}
 
 	handleChangeText(text) {
+		console.log(Compute.searchItems(text, this.props.users).slice(0, 3))
 		this.setState({
 			searchText: text,
 			filtered_results: Compute.searchItems(text, this.props.users).slice(0, 3),
@@ -100,12 +101,13 @@ function EditableCell({
 }
 
 function NonEditableCell({ onPress, first_name, last_name, username_display }) {
-	const last_initial = !!last_name ? `${last_name.charAt(0)}.` : ''
+	const firstWithLastInitial = Compute.getFirstNameWithLastNameInitial(last_name, first_name)
+
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.non_editable_cell_container}>
 				<Text style={styles.user_display_text}>
-					{first_name} {last_initial} ({username_display})
+					{`${firstWithLastInitial} (@${username_display})`}
 				</Text>
 			</View>
 		</TouchableWithoutFeedback>

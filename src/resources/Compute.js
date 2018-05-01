@@ -184,6 +184,16 @@ export default class Compute {
 		return !!username ? username.split('_')[0] : ''
 	}
 
+	static getFirstNameWithLastNameInitial(last_name, first_name = '') {
+		if (last_name) {
+			return `${last_name.charAt(0)}.`
+		} else {
+			const firstName = first_name.split(' ')[0]
+      const lastName = first_name.split(' ')[1]
+			return lastName ? `${firstName} ${lastName.charAt(0)}.` : `${firstName}`
+		}
+	}
+
 	static postAttributeUpdate(taskID, attributeID, value) {
 		let payload = {
 			task: taskID,
