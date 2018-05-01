@@ -85,7 +85,9 @@ export default class Compute {
 	}
 
 	static getQRSemantic(mode, foundQR, currentTask) {
-		const isDandelion = currentTask && Compute.isDandelion(currentTask.process_type.team_created_by_name)
+		const isDandelion =
+			currentTask &&
+			Compute.isDandelion(currentTask.process_type.team_created_by_name)
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
@@ -165,7 +167,7 @@ export default class Compute {
 			case NO_OUTPUT_ITEMS:
 				return "This task doesn't have any output items."
 			case SCAN_ERROR:
-				return "There was an error scanning this QR code."
+				return 'There was an error scanning this QR code.'
 			default:
 				return ''
 		}
@@ -253,6 +255,27 @@ export default class Compute {
 
 	static searchItems(text, arr) {
 		return arr.filter(e => e.search.indexOf(text.toLowerCase()) !== -1)
+	}
+
+	static searchUsers(text, arr) {
+		const isNotUUID = str => {
+			const arr = str.split('-')
+			if (arr) console.log(str)
+			return (
+				!arr ||
+				(arr.length !== 5 ||
+					(arr[0].length !== 8 &&
+						arr[1].length !== 4 &&
+						arr[2].length !== 4 &&
+						arr[3].length !== 4 &&
+						arr[4].length !== 12))
+			)
+		}
+		return arr.filter(
+			e =>
+				e.search.indexOf(text.toLowerCase()) !== -1 &&
+				isNotUUID(this.parseUsername(e.username_display))
+		)
 	}
 
 	static sortAlphabeticallyUsing(property) {

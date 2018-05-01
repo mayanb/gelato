@@ -32,7 +32,7 @@ class SelectUserWithInput extends Component {
 	handleChangeText(text) {
 		this.setState({
 			searchText: text,
-			filtered_results: Compute.searchItems(text, this.props.users).slice(0, 3),
+			filtered_results: Compute.searchUsers(text, this.props.users).slice(0, 3),
 		})
 	}
 
