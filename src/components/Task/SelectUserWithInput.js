@@ -73,7 +73,13 @@ class SelectUserWithInput extends Component {
 	}
 }
 
-function EditableCell({ placeholder, onBlur, onKeyboardSubmit, onChangeText, value }) {
+function EditableCell({
+	placeholder,
+	onBlur,
+	onKeyboardSubmit,
+	onChangeText,
+	value,
+}) {
 	return (
 		<View style={styles.cell_container}>
 			<TextInput
@@ -97,8 +103,8 @@ function NonEditableCell({ onPress, first_name, last_name, username_display }) {
 	const last_initial = !!last_name ? `${last_name.charAt(0)}.` : ''
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
-			<View style={styles.cell_container}>
-				<Text style={styles.display}>
+			<View style={styles.non_editable_cell_container}>
+				<Text style={styles.user_display_text}>
 					{first_name} {last_initial} ({username_display})
 				</Text>
 			</View>
@@ -124,16 +130,27 @@ const styles = StyleSheet.create({
 		paddingLeft: 8,
 		width: width / 2,
 	},
+	non_editable_cell_container: {
+		paddingTop: 8,
+		paddingBottom: 8,
+		paddingLeft: 8,
+		width: width / 2,
+		borderWidth: 1,
+		borderBottomWidth: 0,
+		borderColor: 'rgba(0, 0, 0, 0.08)',
+	},
 	input: {
 		height: 40,
 		fontSize: 17,
 		textAlign: 'right',
 		color: Colors.textBlack,
 	},
-	display: {
+	user_display_text: {
 		fontSize: 17,
 		color: Colors.textBlack,
 		textAlign: 'right',
+		paddingLeft: 4,
+		paddingRight: 4,
 	},
 })
 
