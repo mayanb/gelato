@@ -121,11 +121,6 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		overflow: 'hidden',
 	},
-	scroll: {
-		paddingTop: 20,
-		paddingBottom: 40,
-		backgroundColor: 'blue',
-	},
 	cell_container: {
 		paddingTop: 8,
 		paddingBottom: 8,
