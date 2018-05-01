@@ -60,7 +60,7 @@ export default class TextNumberCell extends React.Component {
 						returnKeyType="done"
 						value={this.state.draftValue}
 						keyboardType={keyboardType}
-						autoCorrent={false}
+						autoCorrect={false}
 						ref={input => (this.input = input)}
 					/>
 				</View>
