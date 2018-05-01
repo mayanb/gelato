@@ -241,8 +241,7 @@ export default class Compute {
 	}
 
 	static searchItems(text, arr) {
-		let r = new RegExp(`\\b${text.toLowerCase()}`)
-		return arr.filter(e => e.search.search(r) !== -1)
+		return arr.filter(e => e.search.indexOf(text) !== -1)
 	}
 
 	static sortAlphabeticallyUsing(property) {
