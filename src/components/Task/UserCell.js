@@ -3,7 +3,7 @@ import Compute from '../../resources/Compute'
 import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import Colors from '../../resources/Colors'
 
 export default class UserCell extends React.Component {
@@ -57,7 +57,7 @@ function NonEditingDisplay({ onEdit, value }) {
 			<TouchableOpacity
 				onPress={onEdit}
 				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-				<Text style={styles.display}>
+				<Text style={styles.display} numberOfLines={1}>
 					{value}
 				</Text>
 			</TouchableOpacity>
@@ -65,9 +65,11 @@ function NonEditingDisplay({ onEdit, value }) {
 	}
 }
 
+const width = Dimensions.get('window').width
 const styles = {
 	display: {
 		fontSize: 17,
 		color: Colors.textBlack,
+		maxWidth: width / 2,
 	},
 }

@@ -103,7 +103,7 @@ function NonEditableCell({ onPress, user }) {
 	return (
 		<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
 			<View style={styles.non_editable_cell_container}>
-				<Text style={styles.user_display_text}>
+				<Text style={styles.user_display_text} numberOfLines={1}>
 					{Compute.getUsernameDisplay(user)}
 				</Text>
 			</View>
