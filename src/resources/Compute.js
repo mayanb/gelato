@@ -260,7 +260,6 @@ export default class Compute {
 	static searchUsers(text, arr) {
 		const isNotUUID = str => {
 			const arr = str.split('-')
-			if (arr) console.log(str)
 			return (
 				!arr ||
 				(arr.length !== 5 ||

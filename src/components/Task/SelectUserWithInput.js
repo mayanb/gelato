@@ -57,17 +57,21 @@ class SelectUserWithInput extends Component {
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				<ScrollView keyboardShouldPersistTaps="handled">
-					{filtered_results.map(user => {
-						return (
-							<NonEditableCell
-								key={'user-' + user.id}
-								user={user}
-								onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
-							/>
-						)
-					})}
-				</ScrollView>
+				{filtered_results.length && (
+					<ScrollView
+						keyboardShouldPersistTaps="handled"
+						style={styles.dropdown_wrapper}>
+						{filtered_results.map(user => {
+							return (
+								<NonEditableCell
+									key={'user-' + user.id}
+									user={user}
+									onPress={() => onSelectUser(Compute.getUsernameDisplay(user))}
+								/>
+							)
+						})}
+					</ScrollView>
+				)}
 			</View>
 		)
 	}
@@ -90,7 +94,7 @@ function EditableCell({
 				returnKeyType="done"
 				autoFocus={true}
 				placeholder={placeholder}
-				// onBlur={onBlur}
+				onBlur={onBlur}
 				onSubmitEditing={onKeyboardSubmit}
 				onChangeText={onChangeText}
 				value={value}
