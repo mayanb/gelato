@@ -53,7 +53,9 @@ export default class Compute {
 			})
 			attributes.push(filled_attribute)
 		})
-		attributes.sort(function(obj1, obj2) {return obj1.rank - obj2.rank})
+		attributes.sort(function(obj1, obj2) {
+			return obj1.rank - obj2.rank
+		})
 		return attributes
 	}
 
@@ -82,9 +84,10 @@ export default class Compute {
 		return semantic === IS_ANCESTOR_FLAGGED_INPUT
 	}
 
-
 	static getQRSemantic(mode, foundQR, currentTask) {
-		const isDandelion = currentTask && Compute.isDandelion(currentTask.process_type.team_created_by_name)
+		const isDandelion =
+			currentTask &&
+			Compute.isDandelion(currentTask.process_type.team_created_by_name)
 		if (mode === 'inputs') {
 			// if this QR code wasn't from any task
 			if (!foundQR) {
@@ -156,15 +159,15 @@ export default class Compute {
 			case ALREADY_ADDED_MOVE_ITEM:
 				return "Hooray! You've already chosen this item to be moved."
 			case IS_FLAGGED_INPUT:
-				return "This task is flagged. Please ask an admin before using it."
+				return 'This task is flagged. Please ask an admin before using it.'
 			case IS_ANCESTOR_FLAGGED_INPUT:
-				return "This task has a flagged ancestor. Please ask an admin before using it."
+				return 'This task has a flagged ancestor. Please ask an admin before using it.'
 			case UNLIKELY_INPUT:
 				return "This origin doesn't match. Are you sure you want to add it?"
 			case NO_OUTPUT_ITEMS:
 				return "This task doesn't have any output items."
 			case SCAN_ERROR:
-				return "There was an error scanning this QR code."
+				return 'There was an error scanning this QR code.'
 			default:
 				return ''
 		}
@@ -184,6 +187,23 @@ export default class Compute {
 
 	static getReadableTaskDescriptor(task) {
 		return task.process_type.name + ' ' + task.product_type.name
+	}
+
+	static parseUsername(username) {
+		return !!username ? username.split('_')[0] : ''
+	}
+
+	static getFirstNameWithLastNameInitial(first_name, last_name) {
+		const firstName = first_name.split(' ')[0]
+		const lastName = last_name || first_name.split(' ')[1]
+		return lastName ? `${firstName} ${lastName.charAt(0)}.` : `${firstName}`
+	}
+
+	static getUsernameDisplay({ first_name, last_name, username_display }) {
+		return `${this.getFirstNameWithLastNameInitial(
+			first_name,
+			last_name
+		)} (@${this.parseUsername(username_display)})`
 	}
 
 	static postAttributeUpdate(taskID, attributeID, value) {
@@ -223,5 +243,51 @@ export default class Compute {
 		list.forEach(e => {
 			e.search = `${e.search} ${e.name.toLowerCase()} ${e.code.toLowerCase()}`
 		})
+	}
+
+	static updateAllUserSearchVectors(list) {
+		list.forEach(u => {
+			u.search = `${
+				u.search
+			} ${u.first_name.toLowerCase()} ${u.last_name.toLowerCase()} ${u.username.toLowerCase()} ${u.username_display.toLowerCase()}`
+		})
+	}
+
+	static searchItems(text, arr) {
+		return arr.filter(e => e.search.indexOf(text.toLowerCase()) !== -1)
+	}
+
+	static searchUsers(text, arr) {
+		const isNotUUID = str => {
+			const arr = str.split('-')
+			return (
+				!arr ||
+				(arr.length !== 5 ||
+					(arr[0].length !== 8 &&
+						arr[1].length !== 4 &&
+						arr[2].length !== 4 &&
+						arr[3].length !== 4 &&
+						arr[4].length !== 12))
+			)
+		}
+		return arr.filter(
+			e =>
+				e.search.indexOf(text.toLowerCase()) !== -1 &&
+				isNotUUID(this.parseUsername(e.username_display))
+		)
+	}
+
+	static sortAlphabeticallyUsing(property) {
+		return function(a, b) {
+			const A = a[property].toLowerCase()
+			const B = b[property].toLowerCase()
+			if (A < B) {
+				return -1
+			} else if (A > B) {
+				return 1
+			} else {
+				return 0
+			}
+		}
 	}
 }

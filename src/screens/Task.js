@@ -155,7 +155,7 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
-
+		const heightOfUserAttributeDropdown = 150
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
@@ -164,7 +164,7 @@ class Task extends Component {
 					{task.is_flagged && <Flag />}
 					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
-					<KeyboardAwareScrollView>
+					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled" extraScrollHeight={heightOfUserAttributeDropdown}>
 						{task.recipe_instructions && <RecipeInstructions instructions={task.recipe_instructions} />}
 						<AttributeList
 							data={organized_attributes}
