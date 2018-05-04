@@ -190,14 +190,14 @@ export class AttributeHeaderCell extends Component {
 			  <View>
 				  <Image source={ImageUtility.requireIcon(this.props.imgpath)} style={styles.process_icon} />
 			  </View>
-			  <View style={styles.text_container}>
+			  <TouchableOpacity style={styles.text_container} onPress={this.props.onPress}>
 				  <Text style={styles.display}>{this.props.name}</Text>
 				  <View style={{ flexDirection: 'row' }}>
 					  <Text style={styles.output}>
               {`${this.props.outputAmount} ${pluralize(this.props.outputUnit, this.props.outputAmount)} `}</Text>
             <Text style={styles.date}>started {DateFormatter.shorten(this.props.date)}</Text>
 				  </View>
-			  </View>
+			  </TouchableOpacity>
 		  </View>
 	  )
   }

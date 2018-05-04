@@ -44,6 +44,7 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.showEditBatchSizeAlert = this.showEditBatchSizeAlert.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
 
 		this.state = {
@@ -227,13 +228,12 @@ class Task extends Component {
 
 	showEditBatchSizeAlert() {
 		let { task } = this.props
-		let item = task.items[0]
 		AlertIOS.prompt(
 			'Enter a new batch size',
 			null,
 			this.handleEditBatchSize,
 			'plain-text',
-			String(parseFloat(item.amount)),
+			String(parseFloat(task.total_amount)),
 			'numeric'
 		)
 	}
@@ -322,6 +322,7 @@ class Task extends Component {
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
+				onPress={this.showEditBatchSizeAlert}
 			/>
 		)
 	}
