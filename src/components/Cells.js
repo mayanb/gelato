@@ -2,21 +2,15 @@ import Colors from '../resources/Colors'
 import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react'
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
-  Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
-import pluralize from 'pluralize'
 import moment from 'moment'
 import { FlagPill, AncestorFlagPill } from './Flag'
-import { DateFormatter } from '../resources/Utility'
-import EditButton from './Task/EditButton'
 
 export class TaskRow extends Component {
   constructor(props) {
