@@ -18,7 +18,7 @@ import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import Print from '../resources/PrintFormat'
 import * as actions from '../actions/TaskActions'
-import { AttributeHeaderCell } from '../components/Cells'
+import TaskHeader from '../components/Task/TaskHeader'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
@@ -315,7 +315,7 @@ class Task extends Component {
 		let imgpath = task.process_type.icon
 		let outputAmount = parseFloat(task.total_amount || 0)
 		return (
-			<AttributeHeaderCell
+			<TaskHeader
 				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
 				date={task.created_at}
