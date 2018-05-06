@@ -80,7 +80,7 @@ export class NonEditableCell extends Component {
 	render() {
 		let { onPress, imgpath, name, code } = this.props
 		return (
-			<TouchableWithoutFeedback activeOpacity={0.5} onPress={onPress}>
+			<TouchableWithoutFeedback onPress={onPress}>
 				<View style={styles.cell_container}>
 					<Image
 						source={ImageUtility.requireIcon(imgpath)}
