@@ -24,7 +24,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
-import { fieldIsBlank, validTaskNameLength } from "../resources/Utility";
+import { fieldIsBlank, validTaskNameLength } from '../resources/Utility'
 import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
 import QRCode from 'qrcode'
@@ -64,7 +64,9 @@ class Task extends Component {
 
 		return {
 			// React-Native guide: use "headerTitle" in place of "title" for non-text content
-			headerTitle: <NavbarEditableTaskName name={name} onPress={handleEditName} />,
+			headerTitle: (
+				<NavbarEditableTaskName name={name} onPress={handleEditName} />
+			),
 			headerRight: (
 				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
 					<NavHeader.Item
@@ -264,9 +266,10 @@ class Task extends Component {
 
 	handleEditBatchSize(text) {
 		if (fieldIsBlank(text)) {
-			alert('Batch size cannot be blank.')
+			Alert.alert('Invalid batch size', 'Batch size cannot be blank.')
 			return
 		}
+
 		this.dispatchWithError(
 			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
 		)
@@ -287,10 +290,10 @@ class Task extends Component {
 
 	handleRenameTask(text) {
 		if (validTaskNameLength(text)) {
-      this.dispatchWithError(actions.requestRenameTask(this.props.task, text))
-      this.props.navigation.setParams({ name: text })
-    } else {
-			alert('The task name should be between 1 and 50 characters.')
+			this.dispatchWithError(actions.requestRenameTask(this.props.task, text))
+			this.props.navigation.setParams({ name: text })
+		} else {
+			Alert.alert('Invalid name','The task name should be between 1 and 50 characters.')
 		}
 	}
 
