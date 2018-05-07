@@ -24,6 +24,7 @@ import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
+import { fieldIsBlank, validTaskNameLength } from "../resources/Utility";
 import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
 import QRCode from 'qrcode'
@@ -262,6 +263,10 @@ class Task extends Component {
 	}
 
 	handleEditBatchSize(text) {
+		if (fieldIsBlank(text)) {
+			alert('Batch size cannot be blank.')
+			return
+		}
 		this.dispatchWithError(
 			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
 		)
@@ -281,8 +286,12 @@ class Task extends Component {
 	}
 
 	handleRenameTask(text) {
-		this.dispatchWithError(actions.requestRenameTask(this.props.task, text))
-		this.props.navigation.setParams({ name: text })
+		if (validTaskNameLength(text)) {
+      this.dispatchWithError(actions.requestRenameTask(this.props.task, text))
+      this.props.navigation.setParams({ name: text })
+    } else {
+			alert('The task name should be between 1 and 50 characters.')
+		}
 	}
 
 	handleDeleteTask() {
