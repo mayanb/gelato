@@ -455,14 +455,14 @@ function requestEditItemSuccess(task, key, value) {
 	}
 }
 
-export function requestRenameTask(task, custom_display) {
-	let payload = { custom_display: custom_display }
+export function requestRenameTask(task, taskName) {
+	let payload = { custom_display: taskName }
 	return dispatch => {
 		return Networking.put(`/ics/tasks/edit/${task.id}/`)
 			.send(payload)
 			.then(() => {
-				let key = custom_display.length ? 'display' : 'custom_display'
-				dispatch(requestEditItemSuccess(task, key, custom_display))
+				let key = taskName.length ? 'display' : 'custom_display'
+				dispatch(requestEditItemSuccess(task, key, taskName))
 			})
 			.catch(e => {
 				dispatch(requestEditItemFailure(e))

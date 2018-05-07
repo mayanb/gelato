@@ -1,24 +1,39 @@
 import React, { Component } from 'react'
-import { View, Image, ScrollView, StyleSheet, Text } from 'react-native'
+import {
+	View,
+	Image,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	TextInput,
+} from 'react-native'
 import ActionButton from 'react-native-action-button'
 import * as ImageUtility from '../../resources/ImageUtility'
 import Heading from './Heading'
-
 import Colors from '../../resources/Colors'
 
 export default class TaskName extends Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			editingName: this.props.name,
+		}
+
+		this.handleChangeText = this.handleChangeText.bind(this)
+		this.handleSubmitEditing = this.handleSubmitEditing.bind(this)
+	}
 
 	render() {
-		let { onNext, name } = this.props
 		return (
 			<View style={styles.container}>
 				<ScrollView>
 					<Heading>Your task name</Heading>
-					<View style={styles.nameContainer}>
-						<Text style={styles.name}>
-							{name}
-						</Text>
-					</View>
+					<EditableName
+						onChangeText={this.handleChangeText}
+						onSubmitName={this.handleSubmitEditing}
+						{...this.state}
+					/>
 					<Text style={styles.instructions}>
 						Write this on the container(s) that hold the output.
 					</Text>
@@ -26,11 +41,44 @@ export default class TaskName extends Component {
 				<ActionButton
 					buttonColor={Colors.base}
 					activeOpacity={0.5}
-					onPress={() => onNext()}
+					onPress={() => this.handleSubmitEditing()}
 					buttonText=">"
-					renderIcon={() => (<Image source={ImageUtility.requireIcon('rightarrow.png')} />)}
+					renderIcon={() => (
+						<Image source={ImageUtility.requireIcon('rightarrow.png')} />
+					)}
 				/>
 			</View>
+		)
+	}
+
+	handleChangeText(name) {
+		this.setState({ editingName: name })
+	}
+
+	handleSubmitEditing() {
+		// TO DO: VALIDATION
+		this.props.onSubmitName(this.state.editingName)
+	}
+}
+
+function EditableName({ editingName, onChangeText }) {
+	if (true) {
+		return (
+			<TextInput
+				style={{}}
+				placeholder="Enter a task name"
+				autoCapitalize="none"
+				returnKeyType="done"
+				autoCorrect={false}
+				value={editingName}
+				onChangeText={onChangeText}
+			/>
+		)
+	} else {
+		return (
+			<TouchableOpacity style={styles.nameContainer} onPress={onToggle}>
+				<Text style={styles.name}>{name}</Text>
+			</TouchableOpacity>
 		)
 	}
 }

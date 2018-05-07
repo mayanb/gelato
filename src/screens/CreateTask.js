@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskActions'
@@ -23,6 +22,7 @@ class CreateTask extends Component {
 		this.handleCreateTask = this.handleCreateTask.bind(this)
 		this.handleCreateTaskDandelion = this.handleCreateTaskDandelion.bind(this)
 		this.handleOpenTask = this.handleOpenTask.bind(this)
+		this.handleSubmitName = this.handleSubmitName.bind(this)
 	}
 
 	componentDidMount() {
@@ -36,7 +36,7 @@ class CreateTask extends Component {
 	}
 
 	render() {
-		switch(this.state.currentStep) {
+		switch (this.state.currentStep) {
 			case 0:
 				return this.renderTaskInputs()
 			case 1:
@@ -45,24 +45,53 @@ class CreateTask extends Component {
 	}
 
 	renderTaskInputs() {
-		if(Compute.isDandelion(this.props.screenProps.team)) {
+		if (Compute.isDandelion(this.props.screenProps.team)) {
 			return (
-				<TaskInputs onNext={this.handleCreateTaskDandelion} isDandelion={true}/>
+				<TaskInputs
+					onNext={this.handleCreateTaskDandelion}
+					isDandelion={true}
+				/>
 			)
 		}
-		return (
-			<TaskInputs onNext={this.handleCreateTask} isDandelion={false}/>
-		)
+		return <TaskInputs onNext={this.handleCreateTask} isDandelion={false} />
 	}
 
 	renderTaskName() {
 		return (
 			<TaskName
-				onNext={this.handleOpenTask}
+				newTask={this.state.newTask}
 				name={this.state.newTask.label}
+				onSubmitName={this.handleSubmitName}
 			/>
 		)
 	}
+
+	handleSubmitName(editingName) {
+		console.log('UPDATE NAME SUBMIT:', editingName, this.state.newTask.label)
+		if (editingName !== this.state.newTask.label) { // task name changed
+			console.log(
+				'NEW NAME: time to update name',
+				editingName,
+				this.state.newTask
+			)
+			this.props
+				.dispatch(
+					taskActions.requestRenameTask(this.state.newTask, editingName)
+				)
+				.then(() => this.handleOpenTask())
+				.catch(e => console.error('Error updating task name', e))
+		} else { // task name un-changed
+			console.log('No change to name!')
+			this.handleOpenTask()
+		}
+	}
+  
+  handleOpenTask() {
+    let { newTask } = this.state
+    this.props.navigation.goBack()
+    
+    this.props.navigation.navigate('Task', { id: newTask.id })
+  }
 
 	handleCreateTask(processType, productType, batchSize) {
 		if (this.state.isCreatingTask) {
@@ -84,9 +113,9 @@ class CreateTask extends Component {
 
 	handleCreateTaskDandelion(processType, productType, batchSize) {
 		if (this.state.isCreatingTask) {
-			return 
+			return
 		}
-		if(processType.name.toLowerCase() === "package") {
+		if (processType.name.toLowerCase() === 'package') {
 			let { dispatch } = this.props
 			let taskData = {
 				processType: processType,
@@ -94,33 +123,26 @@ class CreateTask extends Component {
 				batch_size: 0,
 			}
 			this.setState({ isCreatingTask: true })
-			Promise.all([
-				dispatch(taskActions.requestCreatePackageTask(taskData)),
-			])
+			Promise.all([dispatch(taskActions.requestCreatePackageTask(taskData))])
 				.then(([task]) => this.setState({ currentStep: 1, newTask: task }))
 				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 				.finally(() => this.setState({ isCreatingTask: false }))
 		} else {
 			this.handleCreateTask(processType, productType, batchSize)
 		}
-
-		
-	}
-
-
-
-	handleOpenTask() {
-		let { newTask } = this.state
-		this.props.navigation.goBack()
-
-		this.props.navigation.navigate('Task', { id: newTask.id })
 	}
 }
 
-const mapStateToProps = (state /*, props */) => {
+const mapStateToProps = (state, props) => {
+	console.log('state.tasks.dataByID', state.tasks.dataByID, state.newTask)
+	console.log(
+		'task in mapstatetoprops: ',
+		props.newTask ? state.tasks.dataByID[props.newTask.id] : null
+	)
 	return {
 		processes: state.processes.data,
 		products: state.products.data,
+		task: props.newTask ? state.tasks.dataByID[props.newTask.id] : null,
 	}
 }
 
