@@ -5,7 +5,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TouchableOpacity,
 	TextInput,
 } from 'react-native'
 import ActionButton from 'react-native-action-button'
@@ -18,7 +17,7 @@ export default class TaskName extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			editingName: this.props.name,
+			newName: this.props.name,
 		}
 
 		this.handleChangeText = this.handleChangeText.bind(this)
@@ -26,7 +25,7 @@ export default class TaskName extends Component {
 	}
 
 	render() {
-		const nameIsValid = validTaskNameLength(this.state.editingName)
+		const nameIsValid = validTaskNameLength(this.state.newName)
 		return (
 			<View style={styles.container}>
 				<ScrollView>
@@ -63,34 +62,28 @@ export default class TaskName extends Component {
 	}
 
 	handleChangeText(name) {
-		this.setState({ editingName: name })
+		this.setState({ newName: name })
 	}
 
 	handleSubmitName() {
-		this.props.onSubmitName(this.state.editingName)
+		this.props.onSubmitName(this.state.newName)
 	}
 }
 
-function EditableName({ editingName, onChangeText }) {
-	if (true) {
-		return (
-			<TextInput
-				style={{}}
-				placeholder="Enter a task name"
-				autoCapitalize="none"
-				returnKeyType="done"
-				autoCorrect={false}
-				value={editingName}
-				onChangeText={onChangeText}
-			/>
-		)
-	} else {
-		return (
-			<TouchableOpacity style={styles.nameContainer} onPress={onToggle}>
-				<Text style={styles.name}>{name}</Text>
-			</TouchableOpacity>
-		)
-	}
+function EditableName({ newName, onChangeText }) {
+  return (
+    <View style={styles.nameContainer}>
+      <TextInput
+        style={styles.name}
+        placeholder="Enter a task name"
+        autoCapitalize="none"
+        returnKeyType="done"
+        autoCorrect={false}
+        value={newName}
+        onChangeText={onChangeText}
+      />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
