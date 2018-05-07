@@ -71,19 +71,19 @@ export default class TaskName extends Component {
 }
 
 function EditableName({ newName, onChangeText }) {
-  return (
-    <View style={styles.nameContainer}>
-      <TextInput
-        style={styles.name}
-        placeholder="Enter a task name"
-        autoCapitalize="none"
-        returnKeyType="done"
-        autoCorrect={false}
-        value={newName}
-        onChangeText={onChangeText}
-      />
-    </View>
-  )
+	return (
+		<View style={styles.nameContainer}>
+			<TextInput
+				style={styles.name}
+				placeholder="Enter a task name"
+				autoCapitalize="none"
+				returnKeyType="done"
+				autoCorrect={false}
+				value={newName}
+				onChangeText={onChangeText}
+			/>
+		</View>
+	)
 }
 
 const styles = StyleSheet.create({

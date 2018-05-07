@@ -5,8 +5,6 @@ import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskActions'
 import paramsToProps from '../resources/paramsToProps'
 import Compute from '../resources/Compute'
-import Networking from '../resources/Networking-superagent'
-
 import TaskInputs from '../components/CreateTask/TaskInputs'
 import TaskName from '../components/CreateTask/TaskName'
 
@@ -67,24 +65,26 @@ class CreateTask extends Component {
 	}
 
 	handleSubmitName(editingName) {
-		if (editingName !== this.state.newTask.label) { // task name changed
+		if (editingName !== this.state.newTask.label) {
+			// task name changed
 			this.props
 				.dispatch(
 					taskActions.requestRenameTask(this.state.newTask, editingName)
 				)
 				.then(() => this.handleOpenTask())
 				.catch(e => console.error('Error updating task name', e))
-		} else { // task name un-changed
+		} else {
+			// task name un-changed
 			this.handleOpenTask()
 		}
 	}
-  
-  handleOpenTask() {
-    let { newTask } = this.state
-    this.props.navigation.goBack()
-    
-    this.props.navigation.navigate('Task', { id: newTask.id })
-  }
+
+	handleOpenTask() {
+		let { newTask } = this.state
+		this.props.navigation.goBack()
+
+		this.props.navigation.navigate('Task', { id: newTask.id })
+	}
 
 	handleCreateTask(processType, productType, batchSize) {
 		if (this.state.isCreatingTask) {
@@ -126,7 +126,7 @@ class CreateTask extends Component {
 	}
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		processes: state.processes.data,
 		products: state.products.data,
