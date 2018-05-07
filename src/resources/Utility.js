@@ -107,3 +107,7 @@ export function formatNumber(amount) {
 export function formatAmount(amount, unit) {
 	return `${formatNumber(amount)} ${pluralize(unit, Number(amount))}`
 }
+
+export function validTaskNameLength(taskName) {
+  return taskName.length >= 1 && taskName.length <= 50
+}

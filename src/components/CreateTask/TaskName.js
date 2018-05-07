@@ -12,6 +12,7 @@ import ActionButton from 'react-native-action-button'
 import * as ImageUtility from '../../resources/ImageUtility'
 import Heading from './Heading'
 import Colors from '../../resources/Colors'
+import { validTaskNameLength } from '../../resources/Utility'
 
 export default class TaskName extends Component {
 	constructor(props) {
@@ -21,32 +22,42 @@ export default class TaskName extends Component {
 		}
 
 		this.handleChangeText = this.handleChangeText.bind(this)
-		this.handleSubmitEditing = this.handleSubmitEditing.bind(this)
+		this.handleSubmitName = this.handleSubmitName.bind(this)
 	}
 
 	render() {
+		const nameIsValid = validTaskNameLength(this.state.editingName)
 		return (
 			<View style={styles.container}>
 				<ScrollView>
 					<Heading>Your task name</Heading>
 					<EditableName
 						onChangeText={this.handleChangeText}
-						onSubmitName={this.handleSubmitEditing}
+						onSubmitName={this.handleSubmitName}
 						{...this.state}
 					/>
 					<Text style={styles.instructions}>
 						Write this on the container(s) that hold the output.
 					</Text>
-				</ScrollView>
-				<ActionButton
-					buttonColor={Colors.base}
-					activeOpacity={0.5}
-					onPress={() => this.handleSubmitEditing()}
-					buttonText=">"
-					renderIcon={() => (
-						<Image source={ImageUtility.requireIcon('rightarrow.png')} />
+					{!nameIsValid && (
+						<View>
+							<Text style={styles.invalidName}>
+								The task name should be between 1 and 50 characters.
+							</Text>
+						</View>
 					)}
-				/>
+				</ScrollView>
+				{nameIsValid && (
+					<ActionButton
+						buttonColor={Colors.base}
+						activeOpacity={0.5}
+						onPress={() => this.handleSubmitName()}
+						buttonText=">"
+						renderIcon={() => (
+							<Image source={ImageUtility.requireIcon('rightarrow.png')} />
+						)}
+					/>
+				)}
 			</View>
 		)
 	}
@@ -55,8 +66,7 @@ export default class TaskName extends Component {
 		this.setState({ editingName: name })
 	}
 
-	handleSubmitEditing() {
-		// TO DO: VALIDATION
+	handleSubmitName() {
 		this.props.onSubmitName(this.state.editingName)
 	}
 }
@@ -120,6 +130,12 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		textAlign: 'center',
 		color: Colors.lightGray,
+		fontSize: 17,
+	},
+	invalidName: {
+		margin: 16,
+		textAlign: 'center',
+		color: Colors.red,
 		fontSize: 17,
 	},
 })

@@ -67,13 +67,7 @@ class CreateTask extends Component {
 	}
 
 	handleSubmitName(editingName) {
-		console.log('UPDATE NAME SUBMIT:', editingName, this.state.newTask.label)
 		if (editingName !== this.state.newTask.label) { // task name changed
-			console.log(
-				'NEW NAME: time to update name',
-				editingName,
-				this.state.newTask
-			)
 			this.props
 				.dispatch(
 					taskActions.requestRenameTask(this.state.newTask, editingName)
@@ -81,7 +75,6 @@ class CreateTask extends Component {
 				.then(() => this.handleOpenTask())
 				.catch(e => console.error('Error updating task name', e))
 		} else { // task name un-changed
-			console.log('No change to name!')
 			this.handleOpenTask()
 		}
 	}
@@ -133,16 +126,10 @@ class CreateTask extends Component {
 	}
 }
 
-const mapStateToProps = (state, props) => {
-	console.log('state.tasks.dataByID', state.tasks.dataByID, state.newTask)
-	console.log(
-		'task in mapstatetoprops: ',
-		props.newTask ? state.tasks.dataByID[props.newTask.id] : null
-	)
+const mapStateToProps = (state) => {
 	return {
 		processes: state.processes.data,
 		products: state.products.data,
-		task: props.newTask ? state.tasks.dataByID[props.newTask.id] : null,
 	}
 }
 
