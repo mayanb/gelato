@@ -18,12 +18,13 @@ import Compute from '../resources/Compute'
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
 const CANCEL_INDEX = 0
+const TASK_REFRESH_INTERVAL_SECONDS = 30
+const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
 
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
 		const params = navigation.state.params || {}
 		const { showActionSheet, showSearch } = params
-
 		return {
 			title: screenProps.team,
 			headerLeft: (
@@ -51,8 +52,18 @@ class Main extends Component {
 		this.refreshTasks = this.refreshTasks.bind(this)
 		this.state = {
 			refreshing: false,
+			timeOfLastTaskRefresh: Date.now(),
 		}
 		// Storage.clear()
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		const timeSinceLastTaskRefresh =
+			Date.now() - this.state.timeOfLastTaskRefresh
+		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
+			this.refreshTasks()
+		}
+		return true
 	}
 
 	componentWillMount() {
@@ -68,8 +79,17 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		this.props.dispatch(actions.fetchRecentTasks())
-			.finally(() => this.setState({ refreshing: false }))
+		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+			this.setState({ refreshing: false, timeOfLastTaskRefresh: Date.now() })
+		})
+	}
+
+	refreshTasks() {
+		if (this.state.refreshing) {
+			return
+		}
+		this.setState({ refreshing: true })
+		this.fetchRecentTasks()
 	}
 
 	fetchProcesses() {
@@ -77,11 +97,6 @@ class Main extends Component {
 		dispatch(processActions.fetchProcesses()).catch(e => {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
-	}
-
-	refreshTasks() {
-		this.setState({ refreshing: true })
-		this.fetchRecentTasks()
 	}
 
 	handlePress(i) {
@@ -103,7 +118,7 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	renderFooter = (data, isRefreshing)  => {
+	renderFooter = (data, isRefreshing) => {
 		if (!isRefreshing && data.length === 0) {
 			const text = `No recent tasks. Tap the + button to create a new task.`
 			return (
@@ -170,9 +185,7 @@ class Main extends Component {
 	}
 
 	// Helper function to render headers
-	renderHeader = () => (
-		<TaskRowHeader title='RECENT TASKS' />
-	)
+	renderHeader = () => <TaskRowHeader title="RECENT TASKS" />
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => String(item.id)
