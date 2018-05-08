@@ -24,7 +24,7 @@ export default function TaskHeader({ name, onPress }) {
 			<TouchableOpacity
 				style={styles.text_container}
 				onPress={onPress}
-				hitSlop={{ top: 10, left: 20, bottom: 20 }}>
+			>
 				<Text style={styles.name} numberOfLines={1}>
 					{name}
 				</Text>

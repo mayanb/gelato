@@ -71,7 +71,7 @@ export default function TaskHeader({
 			<TouchableOpacity
 				style={styles.text_container}
 				onPress={onPress}
-				hitSlop={{ top: 10, left: 20, bottom: 20 }}>
+			>
 				<Text style={styles.display}>{name}</Text>
 				<View style={{ flexDirection: 'row' }}>
 					<EditButton />
