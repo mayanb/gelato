@@ -39,6 +39,7 @@ class Ingredients extends Component {
 			// search stuff
 			isFetchingSearch: false,
 			searchData: [],
+			typeSearch: false,
 			request: null,
 
 			outputAmount: 0,
@@ -48,6 +49,7 @@ class Ingredients extends Component {
 		this.handleEditAmount = this.handleEditAmount.bind(this)
 		this.handleRemoveInput = this.handleRemoveInput.bind(this)
 		this.handleOpenTask = this.handleOpenTask.bind(this)
+		this.handleTypeSearchChange = this.handleTypeSearchChange.bind(this)
 	}
 
 	componentDidMount() {
@@ -70,6 +72,7 @@ class Ingredients extends Component {
 					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
+					typeSearch={this.state.typeSearch}
 				/>
 			</View>
 		)
@@ -78,10 +81,11 @@ class Ingredients extends Component {
 	renderCamera() {
 		return (
 			<QRCamera
-				searchable={true}
 				onBarCodeRead={this.handleBarCodeRead.bind(this)}
 				onClose={this.handleClose.bind(this)}
 				searchData={this.state.searchData}
+				typeSearch={this.state.typeSearch}
+				onTypeSearchChange={this.handleTypeSearchChange}
 				onChangeText={this.handleChangeText.bind(this)}
 				onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 			/>
@@ -90,6 +94,9 @@ class Ingredients extends Component {
 
 	renderContent() {
 		let { task } = this.props
+		if (!task.task_ingredients)
+			return null
+
 		if (this.props.mode === 'items') {
 			return (
 				<OutputItemList
@@ -100,7 +107,7 @@ class Ingredients extends Component {
 					items={task.items}
 				/>
 			)
-		} else if(task.task_ingredients && task.task_ingredients.length === 0) {
+		} else if(task.task_ingredients.length === 0) {
 			return <ZeroIngredientsState />
 		}
 
@@ -161,6 +168,10 @@ class Ingredients extends Component {
 		} else {
 			this.setState({ semantic: NO_OUTPUT_ITEMS })
 		}
+	}
+
+	handleTypeSearchChange(newVal) {
+		this.setState({ typeSearch: newVal, searchData: [] })
 	}
 
 	handleSetAmount(text) {

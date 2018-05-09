@@ -16,13 +16,14 @@ export default class QRCamera extends Component {
 		super(props)
 		this.state = {
 			searchText: '',
-			typeSearch: false,
 		}
+
+		this.handleClearText = this.handleClearText.bind(this)
 	}
 
 	render() {
-		let {searchText, typeSearch } = this.state
-		let { onBarCodeRead, searchable, searchData, isLoading } = this.props
+		let {searchText } = this.state
+		let { onBarCodeRead, searchData, isLoading, typeSearch } = this.props
 		return (
 			<View style={styles.container}>
 				<Camera
@@ -52,19 +53,18 @@ export default class QRCamera extends Component {
 					</View>
 				</SafeAreaView>
 
-				{ searchable && 
-					<SafeAreaView
-						style={styles.searchContainer}
-						forceInset={{ top: 'always' }}>
-						<SearchBox
-							onChangeText={this.handleChangeText.bind(this)}
-							searchText={searchText}
-							typeSearch={typeSearch}
-							onFocus={this.handleFocus.bind(this)}
-							clearText={this.handleClearText.bind(this)}
-						/>
-					</SafeAreaView>
-				}
+				<SafeAreaView
+					style={styles.searchContainer}
+					forceInset={{ top: 'always' }}>
+					<SearchBox
+						onChangeText={this.handleChangeText.bind(this)}
+						searchText={searchText}
+						typeSearch={typeSearch}
+						onFocus={this.handleFocus.bind(this)}
+						clearText={this.handleClearText}
+						onBlur={this.handleClearText}
+					/>
+				</SafeAreaView>
 				{typeSearch && (
 					<SearchDropdown
 						onSelect={this.handleSelectFromDropdown.bind(this)}
@@ -77,13 +77,13 @@ export default class QRCamera extends Component {
 	}
 
 	handleFocus() {
-		this.setState({ searchText: '', typeSearch: true })
-		//  TO DO: clear prop searchData
+		this.setState({ searchText: '' })
+		this.props.onTypeSearchChange(true)
 	}
 
 	handleClearText() {
-		this.setState({ searchText: '', typeSearch: false })
-		//  TO DO: clear prop searchData
+		this.setState({ searchText: '' })
+		this.props.onTypeSearchChange(false)
 	}
 
 	handleChangeText(text) {
@@ -94,7 +94,8 @@ export default class QRCamera extends Component {
 	}
 
 	handleSelectFromDropdown(item) {
-		this.setState({ searchText: '', typeSearch: false })
+		this.setState({ searchText: '' })
+		this.props.onTypeSearchChange(false)
 		this.props.onSelectFromDropdown(item)
 	}
 }

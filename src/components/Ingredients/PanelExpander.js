@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Animated, Image, Dimensions } from 'react-native'
+import { StyleSheet, View, TouchableWithoutFeedback, Animated, Dimensions } from 'react-native'
+import GestureRecognizer from 'react-native-swipe-gestures';
 import * as ImageUtility from '../../resources/ImageUtility'
 
 import Colors from '../../resources/Colors'
@@ -7,6 +8,7 @@ import Colors from '../../resources/Colors'
 const CLOSED_PERCENTAGE = 0.2
 const OPEN_PERCENTAGE = 0.8
 const WINDOW_HEIGHT = Dimensions.get('window').height
+const WINDOW_WIDTH = Dimensions.get('window').width
 
 export default class PanelExpander extends Component {
 
@@ -21,14 +23,17 @@ export default class PanelExpander extends Component {
 	}
 
 	componentWillReceiveProps(np) {
-		if(np.expanded && !this.props.expanded)
+		if (np.expanded && !this.props.expanded)
 			this.handleOpen()
 
-		if(!np.expanded && this.props.expanded)
+		if (!np.expanded && this.props.expanded)
 			this.handleClose()
 	}
 
 	handleOpen() {
+		if (this.props.typeSearch || this.expanded)
+			return
+
 		this.props.setExpanded(true)
 		Animated.timing(this.state.panelHeight, {
 			toValue: 1,
@@ -58,8 +63,7 @@ export default class PanelExpander extends Component {
 		})
 
 		return (
-			<View style={styles.container}>
-				{this.props.expanded && <Overlay onClose={this.handleClose} />}
+			<GestureRecognizer style={styles.container} onSwipeUp={this.handleOpen}>
 				{camera}
 				<Animated.View style={{
 					flex: flex,
@@ -68,22 +72,31 @@ export default class PanelExpander extends Component {
 					<ArrowOverlay expanded={this.props.expanded} onOpen={this.handleOpen} onClose={this.handleClose}
 					              animateOpen={this.state.panelHeight} />
 					<IngredientsContainer onOpen={this.handleOpen} content={ingredientsContent} />
+					{!this.props.expanded && <IngredientsOverlay onOpen={this.handleOpen} />}
 				</Animated.View>
-			</View>
+				{this.props.expanded && <CloseOverlay onClose={this.handleClose} />}
+			</GestureRecognizer>
 		)
 	}
 }
 
-function Overlay({ onClose }) {
+function CloseOverlay({ onClose }) {
 	return (
-		<TouchableWithoutFeedback onPress={onClose}>
-			<View
-				style={{
-					flex: CLOSED_PERCENTAGE,
-					zIndex: 10,
-				}}
-			/>
-		</TouchableWithoutFeedback>
+		<GestureRecognizer
+			onSwipeDown={onClose}
+			style={{
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				width: WINDOW_WIDTH,
+				height: CLOSED_PERCENTAGE * WINDOW_HEIGHT,
+				zIndex: 10,
+			}}
+		>
+			<TouchableWithoutFeedback onPress={onClose}>
+				<View style={{ flex: 1 }} />
+			</TouchableWithoutFeedback>
+		</GestureRecognizer>
 	)
 }
 
@@ -107,8 +120,7 @@ function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
 	})
 	return (
 		<TouchableWithoutFeedback onPress={expanded ? onClose : onOpen}>
-			<Animated.View
-				style={styles.container}>
+			<Animated.View style={styles.container}>
 				<Animated.Image source={ImageUtility.requireIcon('uparrowwhite.png')} style={styles.image} />
 			</Animated.View>
 		</TouchableWithoutFeedback>
@@ -117,10 +129,26 @@ function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
 
 function IngredientsContainer({ onOpen, content }) {
 	return (
-		<TouchableWithoutFeedback onPress={onOpen}>
-			<View style={{ flex: 1, backgroundColor: Colors.white }}>
-				{content}
-			</View>
-		</TouchableWithoutFeedback>
+		<View style={{ flex: 1 }}>
+			<View style={{ flex: 1, backgroundColor: Colors.white }}>{content}</View>
+		</View>
 	)
 }
+
+function IngredientsOverlay({ onOpen }) {
+	return (
+		<View style={{
+			position: 'absolute',
+			bottom: 0,
+			left: 0,
+			width: WINDOW_WIDTH,
+			height: CLOSED_PERCENTAGE * WINDOW_HEIGHT,
+		}}>
+			<TouchableWithoutFeedback onPress={onOpen}>
+				<View style={{ flex: 1 }} />
+			</TouchableWithoutFeedback>
+		</View>
+	)
+}
+
+
