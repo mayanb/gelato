@@ -222,7 +222,7 @@ class Task extends Component {
 
 	showCustomNameAlert() {
 		AlertIOS.prompt(
-			'Enter a value',
+			'Enter a new task name',
 			null,
 			this.handleRenameTask,
 			'plain-text',
@@ -255,7 +255,7 @@ class Task extends Component {
 	showEditBatchSizeAlert() {
 		let { task } = this.props
 		AlertIOS.prompt(
-			'Enter a new batch size',
+			`Enter a new batch size (${task.process_type.unit})`,
 			null,
 			this.handleEditBatchSize,
 			'plain-text',
