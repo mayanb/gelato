@@ -49,7 +49,7 @@ class Main extends Component {
 		console.disableYellowBox = true
 		this.handlePress = this.handlePress.bind(this)
 		this.handleSearch = this.handleSearch.bind(this)
-		this.refreshTasks = this.refreshTasks.bind(this)
+		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.state = {
 			refreshing: false,
 			timeOfLastTaskRefresh: Date.now(),
@@ -61,7 +61,7 @@ class Main extends Component {
 		const timeSinceLastTaskRefresh =
 			Date.now() - this.state.timeOfLastTaskRefresh
 		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
-			this.refreshTasks()
+			this.fetchRecentTasks
 		}
 		return true
 	}
@@ -79,17 +79,13 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
-			this.setState({ refreshing: false, timeOfLastTaskRefresh: Date.now() })
-		})
-	}
-
-	refreshTasks() {
 		if (this.state.refreshing) {
 			return
 		}
 		this.setState({ refreshing: true })
-		this.fetchRecentTasks()
+		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+			this.setState({ refreshing: false, timeOfLastTaskRefresh: Date.now() })
+		})
 	}
 
 	fetchProcesses() {
@@ -150,7 +146,7 @@ class Main extends Component {
 					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
 					ListFooterComponent={() => this.renderFooter(data, isRefreshing)}
-					onRefresh={this.refreshTasks}
+					onRefresh={this.fetchRecentTasks}
 					refreshing={isRefreshing}
 				/>
 				<ActionButton
