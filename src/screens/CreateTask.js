@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Alert } from 'react-native'
 import * as actions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import * as taskActions from '../actions/TaskActions'
@@ -64,19 +65,31 @@ class CreateTask extends Component {
 		)
 	}
 
-	handleSubmitName(editingName) {
-		if (editingName !== this.state.newTask.label) {
+	handleSubmitName(newTaskName) {
+		if (newTaskName !== this.state.newTask.label) {
 			// task name changed
 			this.props
 				.dispatch(
-					taskActions.requestRenameTask(this.state.newTask, editingName)
+					taskActions.requestRenameTask(this.state.newTask, newTaskName)
 				)
-				.then(() => this.handleOpenTask())
+				.then(name_already_exists => {
+					if (name_already_exists) {
+						this.handleInvalidNameSubmit(newTaskName)
+					} else {
+						this.handleOpenTask()
+					}
+				})
 				.catch(e => console.error('Error updating task name', e))
 		} else {
 			// task name un-changed
 			this.handleOpenTask()
 		}
+	}
+
+	handleInvalidNameSubmit(newTaskName) {
+		Alert.alert(
+			`Whoops! Look like another task already exists named ${newTaskName}. Please try another name.`
+		)
 	}
 
 	handleOpenTask() {
