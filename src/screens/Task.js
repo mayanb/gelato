@@ -291,6 +291,11 @@ class Task extends Component {
 	handleRenameTask(_newTaskName) {
 		const { task, dispatch } = this.props
 		let newTaskName = _newTaskName.trim()
+
+		if (fieldIsBlank(newTaskName)) {
+			Alert.alert('Invalid task name', 'Task name cannot be blank.')
+			return
+		}
 		if (newTaskName === task.label || newTaskName === task.custom_display) {
 			return
 		}
