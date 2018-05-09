@@ -116,6 +116,7 @@ class Task extends Component {
 				this.props.navigation.setParams({ task: res.data })
 				let organized = Compute.organizeAttributes(res.data)
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
+				this.props.navigation.setParams({ name: res.data.display })
 			})
 			.catch(e => console.error('Error fetching task', e))
 
@@ -296,7 +297,7 @@ class Task extends Component {
 			Alert.alert('Invalid task name', 'Task name cannot be blank.')
 			return
 		}
-		if (newTaskName === task.label || newTaskName === task.custom_display) {
+		if (newTaskName === task.display || newTaskName === task.custom_display) {
 			return
 		}
 		if (validTaskNameLength(newTaskName)) {
