@@ -473,7 +473,6 @@ export function requestRenameTask(task, taskName) {
 				team_created_by: task.process_type.team_created_by,
 			})
 			.then(res => {
-				console.log(res)
 				const name_already_exists = res.body.name_already_exists
 				if (name_already_exists) {
 					dispatch(requestEditItemFailure('Name already exists'))
