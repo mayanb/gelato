@@ -65,13 +65,13 @@ class CreateTask extends Component {
 		)
 	}
 
-	handleSubmitName(newTaskName) {
-		if (newTaskName !== this.state.newTask.label) {
+	handleSubmitName(_newTaskName) {
+		const { newTask } = this.state
+		let newTaskName = _newTaskName.trim()
+		if (newTaskName !== newTask.label) {
 			// task name changed
 			this.props
-				.dispatch(
-					taskActions.requestRenameTask(this.state.newTask, newTaskName)
-				)
+				.dispatch(taskActions.requestRenameTask(newTask, newTaskName))
 				.then(name_already_exists => {
 					if (name_already_exists) {
 						this.handleInvalidNameSubmit(newTaskName)

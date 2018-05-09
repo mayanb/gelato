@@ -288,13 +288,35 @@ class Task extends Component {
 		}
 	}
 
-	handleRenameTask(text) {
-		if (validTaskNameLength(text)) {
-			this.dispatchWithError(actions.requestRenameTask(this.props.task, text))
-			this.props.navigation.setParams({ name: text })
-		} else {
-			Alert.alert('Invalid name','The task name should be between 1 and 50 characters.')
+	handleRenameTask(_newTaskName) {
+		const { task, dispatch } = this.props
+		let newTaskName = _newTaskName.trim()
+		if (newTaskName === task.label || newTaskName === task.custom_display) {
+			return
 		}
+		if (validTaskNameLength(newTaskName)) {
+			dispatch(actions.requestRenameTask(task, newTaskName))
+				.then(name_already_exists => {
+					if (name_already_exists) {
+						this.handleInvalidNameSubmit(newTaskName)
+					} else {
+						// successfully updated name!
+						this.props.navigation.setParams({ name: newTaskName })
+					}
+				})
+				.catch(e => console.error('Error updating task name', e))
+		} else {
+			Alert.alert(
+				'Invalid name',
+				'The task name should be between 1 and 50 characters.'
+			)
+		}
+	}
+
+	handleInvalidNameSubmit(newTaskName) {
+		Alert.alert(
+			`Whoops! Look like another task already exists named ${newTaskName}. Please try another name.`
+		)
 	}
 
 	handleDeleteTask() {
