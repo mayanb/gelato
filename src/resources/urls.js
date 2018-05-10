@@ -2,7 +2,7 @@ const PRODUCTION_URL =
 	'https://41aty886e1.execute-api.us-west-1.amazonaws.com/production'
 const STAGING_URL =
 	'https://eszlr18ifi.execute-api.us-west-1.amazonaws.com/staging'
-const LOCAL_URL = 'http://localhost:8000'
+const LOCAL_URL = 'http://10.0.0.5:8000'
 
 export function getBackend() {
 	let { releaseChannel } = Expo.Constants.manifest

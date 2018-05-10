@@ -10,6 +10,7 @@ import Colors from '../../resources/Colors'
 import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
+import DateTimeCell from './DateTimeCell'
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -24,7 +25,8 @@ export default class AttributeCell extends React.Component {
 		const { value, isLoadingTask, type } = this.props
 		const { loading } = this.state
 		let name = this.props.name
-		const formattedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+		const formattedName =
+			name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
 		return (
 			<View style={styles.container}>
 				<AttributeName name={formattedName} loading={loading} />
@@ -75,6 +77,14 @@ function AttributeValue({ value, handleSubmit, isLoadingTask, type }) {
 					isLoadingTask={isLoadingTask}
 				/>
 			)
+		case 'TIME':
+			return (
+				<DateTimeCell
+					value={value}
+					onSubmit={handleSubmit}
+					isLoadingTask={isLoadingTask}
+				/>
+			)
 		default:
 			return (
 				<TextNumberCell
@@ -108,7 +118,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
-    minHeight: 60,
+		minHeight: 60,
 	},
 	name: {
 		color: Colors.lightGray,
