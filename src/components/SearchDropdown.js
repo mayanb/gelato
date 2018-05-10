@@ -12,9 +12,15 @@ import {
 	TouchableWithoutFeedback,
 	FlatList,
 	View,
+	Keyboard,
 } from 'react-native'
 
 export class SearchDropdown extends Component {
+	constructor(props) {
+		super(props)
+		this.handleSelect = this.handleSelect.bind(this)
+	}
+
 	render() {
 		let containerStyle = StyleSheet.create({
 			container: {
@@ -22,7 +28,7 @@ export class SearchDropdown extends Component {
 				top: 100,
 				left: 16,
 				width: width - 32,
-				height: height - 100,
+				maxHeight: 228,
 				backgroundColor: 'rgba(0,0,0,0.5)',
 				borderTopRightRadius: 4,
 				borderTopLeftRadius: 4,
@@ -39,6 +45,7 @@ export class SearchDropdown extends Component {
 						keyExtractor={this.keyExtractor}
 						style={styles.choices}
 						ListHeaderComponent={this.renderLoader()}
+						keyboardShouldPersistTaps="handled"
 					/>
 				</View>
 			</View>
@@ -70,11 +77,12 @@ export class SearchDropdown extends Component {
 	}
 
 	handleSelect(item) {
+		Keyboard.dismiss()
 		this.props.onSelect(item)
 	}
 
 	keyExtractor = (item, index) => {
-		return item.id
+		return String(item.id)
 	}
 }
 
@@ -115,7 +123,9 @@ export function SearchBox(props) {
 						onChangeText={props.onChangeText}
 						onFocus={props.onFocus}
 						autoCorrect={false}
-						onBlur={props.onBlur}
+						onSubmitEditing={props.onBlur}
+						blurOnSubmit={true}
+						returnKeyType="done"
 						ref={input => (this.input = input)}
 					/>
 					<View style={styles.button}>
