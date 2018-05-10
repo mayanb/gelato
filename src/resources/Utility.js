@@ -96,13 +96,10 @@ export class DateFormatter {
 	}
 
 	static mmddyyWithTime(date) {
-		function pad(s) {
-			return s //s < 10 ? '0' + s : s
-		}
 		const d = new Date(date)
 		const mmddyy = [
-			pad(d.getMonth() + 1),
-			pad(d.getDate()),
+			d.getMonth() + 1,
+			d.getDate(),
 			String(d.getFullYear()).slice(-2),
 		].join('/')
 		const time = d.toLocaleString('en-US', {
