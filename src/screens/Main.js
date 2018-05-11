@@ -1,7 +1,7 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { FlatList, StyleSheet, View, Text } from 'react-native'
+import { FlatList, StyleSheet, View, Text, ActivityIndicator } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -48,9 +48,12 @@ class Main extends Component {
 		console.disableYellowBox = true
 		this.handlePress = this.handlePress.bind(this)
 		this.handleSearch = this.handleSearch.bind(this)
-		this.refreshTasks = this.refreshTasks.bind(this)
+		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
+		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
-			refreshing: false,
+			loadingNewTasks: false,
+			loadingMoreTasks: false,
+			page: 1,
 		}
 		// Storage.clear()
 	}
@@ -68,8 +71,9 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
+		this.setState({ loadingNewTasks: true, page: 1 })
 		this.props.dispatch(actions.fetchRecentTasks())
-			.finally(() => this.setState({ refreshing: false }))
+			.finally(() => this.setState({ loadingNewTasks: false }))
 	}
 
 	fetchProcesses() {
@@ -79,9 +83,13 @@ class Main extends Component {
 		})
 	}
 
-	refreshTasks() {
-		this.setState({ refreshing: true })
-		this.fetchRecentTasks()
+	handleLoadMore() {
+		if (!this.state.loadingMoreTasks && !this.state.loadingNewTasks) {
+			const newPage = this.state.page + 1
+			this.setState({ loadingMoreTasks: true })
+			this.props.dispatch(actions.fetchRecentTasks(newPage))
+				.then(() => this.setState({ page: newPage, loadingMoreTasks: false }))
+		}
 	}
 
 	handlePress(i) {
@@ -103,13 +111,21 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	renderFooter = (data, isRefreshing)  => {
-		if (!isRefreshing && data.length === 0) {
+	renderFooter = (data, loadingNewTasks, loadingMoreTasks) => {
+		if (!loadingNewTasks && data.length === 0) {
 			const text = `No recent tasks. Tap the + button to create a new task.`
 			return (
 				<View style={styles.emptyFooterContainer}>
 					<Text style={styles.emptyFooterText}>{text}</Text>
 				</View>
+			)
+		} else if (loadingMoreTasks) {
+			return (
+				<ActivityIndicator
+					size="large"
+					color={Colors.base}
+					style={styles.indicator}
+				/>
 			)
 		} else {
 			return <TaskRowHeader />
@@ -118,7 +134,7 @@ class Main extends Component {
 
 	render() {
 		let data = this.props.recentTasks
-		let isRefreshing = this.props.loading || false
+		const { loadingNewTasks, loadingMoreTasks } = this.state
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -134,9 +150,11 @@ class Main extends Component {
 					renderItem={this.renderRow}
 					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
-					ListFooterComponent={() => this.renderFooter(data, isRefreshing)}
-					onRefresh={this.refreshTasks}
-					refreshing={isRefreshing}
+					ListFooterComponent={() => this.renderFooter(data, loadingNewTasks, loadingMoreTasks)}
+					onRefresh={this.fetchRecentTasks}
+					refreshing={loadingNewTasks}
+					onEndReached={this.handleLoadMore}
+					onEndReachedThreshold={2}
 				/>
 				<ActionButton
 					buttonColor={Colors.base}
@@ -203,13 +221,17 @@ const styles = StyleSheet.create({
 		color: Colors.lightGray,
 		textAlign: 'center',
 	},
+	indicator: {
+		alignSelf: 'center',
+		marginTop: 20,
+		marginBottom: 20,
+	},
 })
 
 const mapStateToProps = (state, props) => {
 	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
 	return {
 		recentTasks: recentTasks,
-		loading: state.tasks.ui.isFetchingTasksData,
 	}
 }
 
