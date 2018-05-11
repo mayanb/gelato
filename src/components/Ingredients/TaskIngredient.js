@@ -55,6 +55,7 @@ export default class TaskIngredient extends Component {
 							actual={actual_amount}
 							expected={scaled_amount}
 							unit={process_type.unit}
+							onEdit={this.handleEdit}
 						/>
 					</View>
 					<EditButton onEdit={this.handleEdit} />
@@ -104,7 +105,7 @@ function TitleRow({ ingredient, hasRecipe }) {
 	)
 }
 
-function AmountRow({ actual, expected, unit }) {
+function AmountRow({ actual, expected, unit, onEdit }) {
 	const styles = StyleSheet.create({
 		container: {
 			flexDirection: 'row',
@@ -122,7 +123,9 @@ function AmountRow({ actual, expected, unit }) {
 	const expectedText = actual !== expected ? ` (expected ${formatNumber(expected)})` : ''
 	return (
 		<View style={styles.container}>
-			<Text style={styles.actualAmount}>{formatAmount(actual, unit)}</Text>
+			<TouchableOpacity onPress={onEdit}>
+				<Text style={styles.actualAmount}>{formatAmount(actual, unit)}</Text>
+			</TouchableOpacity>
 			<Text style={styles.expectedAmount}>{expectedText}</Text>
 		</View>
 	)
