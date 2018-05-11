@@ -5,6 +5,7 @@ import {
 	Dimensions,
 	StyleSheet,
 	ActivityIndicator,
+	TouchableWithoutFeedback,
 } from 'react-native'
 import Colors from '../../resources/Colors'
 import TextNumberCell from './TextNumberCell'
@@ -16,26 +17,49 @@ export default class AttributeCell extends React.Component {
 		super(props)
 		this.state = {
 			loading: false,
+			focus: false,
 		}
 		this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
 	render() {
-		const { value, isLoadingTask, type } = this.props
-		const { loading } = this.state
-		let name = this.props.name
-		const formattedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
 		return (
 			<View style={styles.container}>
-				<AttributeName name={formattedName} loading={loading} />
-				<AttributeValue
-					value={value}
-					handleSubmit={this.handleSubmit}
-					isLoadingTask={isLoadingTask}
-					type={type}
-				/>
+				{this.renderCell()}
 			</View>
 		)
+	}
+
+	renderCell() {
+		const { value, isLoadingTask, type, name } = this.props
+		const { loading } = this.state
+		switch (type) {
+			case 'BOOL':
+				return <BooleanCell
+					name={name}
+					loading={loading}
+					value={value}
+					onSubmit={this.handleSubmit}
+					isLoadingTask={isLoadingTask}
+				/>
+			case 'USER':
+				return <UserCell
+					name={name}
+					loading={loading}
+					value={value}
+					onSubmit={this.handleSubmit}
+					isLoadingTask={isLoadingTask}
+				/>
+			default:
+				return <TextNumberCell
+					name={name}
+					loading={loading}
+					value={value}
+					onSubmit={this.handleSubmit}
+					type={type}
+					isLoadingTask={isLoadingTask}
+				/>
+		}
 	}
 
 	handleSubmit(value) {
@@ -48,43 +72,30 @@ export default class AttributeCell extends React.Component {
 	}
 }
 
-function AttributeName({ name, loading }) {
+export function AttributeName({ name, loading }) {
+	const styles = StyleSheet.create({
+		nameContainer: {
+			flex: 1,
+			display: 'flex',
+			alignItems: 'center',
+			flexDirection: 'row',
+			justifyContent: 'flex-start',
+			minHeight: 60,
+		},
+		name: {
+			color: Colors.lightGray,
+			fontSize: 17,
+			marginRight: 20,
+			textAlignVertical: 'top',
+		},
+	})
+	const formattedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
 	return (
 		<View style={styles.nameContainer}>
-			<Text style={styles.name}>{name}</Text>
+			<Text style={styles.name}>{formattedName}</Text>
 			{loading && <ActivityIndicator size="small" color={Colors.base} />}
 		</View>
 	)
-}
-
-function AttributeValue({ value, handleSubmit, isLoadingTask, type }) {
-	switch (type) {
-		case 'BOOL':
-			return (
-				<BooleanCell
-					value={value}
-					onSubmit={handleSubmit}
-					isLoadingTask={isLoadingTask}
-				/>
-			)
-		case 'USER':
-			return (
-				<UserCell
-					value={value}
-					onSubmit={handleSubmit}
-					isLoadingTask={isLoadingTask}
-				/>
-			)
-		default:
-			return (
-				<TextNumberCell
-					value={value}
-					onSubmit={handleSubmit}
-					type={type}
-					isLoadingTask={isLoadingTask}
-				/>
-			)
-	}
 }
 
 const width = Dimensions.get('window').width
@@ -101,19 +112,5 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		backgroundColor: Colors.white,
-	},
-	nameContainer: {
-		flex: 1,
-		display: 'flex',
-		alignItems: 'center',
-		flexDirection: 'row',
-		justifyContent: 'flex-start',
-    minHeight: 60,
-	},
-	name: {
-		color: Colors.lightGray,
-		fontSize: 17,
-		marginRight: 20,
-		textAlignVertical: 'top',
 	},
 })

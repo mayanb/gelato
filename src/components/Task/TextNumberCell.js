@@ -1,8 +1,14 @@
 import React from 'react'
-import { TextInput, View } from 'react-native'
+import {
+	TextInput,
+	View,
+	TouchableOpacity,
+	StyleSheet,
+} from 'react-native'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
+import { AttributeName } from './AttributeCell'
 
 export default class TextNumberCell extends React.Component {
 	constructor(props) {
@@ -39,21 +45,28 @@ export default class TextNumberCell extends React.Component {
 	render() {
 		if (this.props.isLoadingTask) return null
 
+		const { name, loading } = this.props
+		return (
+			<TouchableOpacity onPress={this.handleEdit} style={styles.container}>
+				<AttributeName name={name} loading={loading} />
+				{this.renderRightSide()}
+			</TouchableOpacity>
+		)
+	}
+
+	renderRightSide() {
 		const { value } = this.props
-		if (!this.state.editing && fieldIsBlank(value)) {
-			return <EditButton onEdit={this.handleEdit} />
-		} else {
-			const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
-			const style = {
-				fontSize: 17,
-				color: Colors.textBlack,
-				flex: 1,
-				textAlign: 'right',
-			}
-			return (
-				<View style={{flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
+		const showEdit = !this.state.editing && fieldIsBlank(value)
+		const keyboardType = this.props.type === 'NUMB' ? 'numeric' : 'default'
+		return (
+			<View>
+				<View style={showEdit ? {} : styles.hidden}>
+					<EditButton />
+				</View>
+				<View style={showEdit ? styles.hidden : {}}>
 					<TextInput
-						style={style}
+						ref={input => this.input = input}
+						style={styles.input}
 						onChangeText={this.handleChangeText}
 						onSubmitEditing={this.handleSubmitText}
 						onBlur={this.handleSubmitText}
@@ -61,10 +74,29 @@ export default class TextNumberCell extends React.Component {
 						value={this.state.draftValue}
 						keyboardType={keyboardType}
 						autoCorrect={false}
-						ref={input => (this.input = input)}
 					/>
 				</View>
-			)
-		}
+			</View>
+		)
 	}
 }
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	input: {
+		fontSize: 17,
+		color: Colors.textBlack,
+		flex: 1,
+		textAlign: 'right',
+	},
+	hidden: {
+		height: 0,
+		width: 0,
+		opacity: 0,
+	},
+})
+

@@ -1,10 +1,10 @@
 import React from 'react'
-import Compute from '../../resources/Compute'
 import { fieldIsBlank } from '../../resources/Utility'
 import EditButton from './EditButton'
 import SelectUserWithInput from './SelectUserWithInput'
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import Colors from '../../resources/Colors'
+import { AttributeName } from './AttributeCell'
 
 export default class UserCell extends React.Component {
 	constructor(props) {
@@ -27,14 +27,18 @@ export default class UserCell extends React.Component {
 	}
 
 	render() {
-		const { isLoadingTask, value } = this.props
+		const { isLoadingTask, value, name, loading } = this.props
 		const { editing } = this.state
 		if (isLoadingTask) {
 			return null
 		}
 
 		return (
-			<View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: 60 }}>
+			<TouchableOpacity
+				style={styles.container}
+				onPress={this.toggleEditing}
+			>
+				<AttributeName name={name} loading={loading} />
 				{editing ? (
 					<SelectUserWithInput
 						usernameDisplay={value}
@@ -44,32 +48,33 @@ export default class UserCell extends React.Component {
 				) : (
 					<NonEditingDisplay onEdit={this.toggleEditing} value={value} />
 				)}
-			</View>
-		)
-	}
-}
-
-function NonEditingDisplay({ onEdit, value }) {
-	if (fieldIsBlank(value)) {
-		return <EditButton onEdit={onEdit} />
-	} else {
-		return (
-			<TouchableOpacity
-				onPress={onEdit}
-				hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-				<Text style={styles.display} numberOfLines={1}>
-					{value}
-				</Text>
 			</TouchableOpacity>
 		)
 	}
 }
 
+function NonEditingDisplay({ value }) {
+	if (fieldIsBlank(value)) {
+		return <EditButton />
+	} else {
+		return (
+			<Text style={styles.display} numberOfLines={1}>
+				{value}
+			</Text>
+		)
+	}
+}
+
 const width = Dimensions.get('window').width
-const styles = {
+const styles = StyleSheet.create({
+	container: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
 	display: {
 		fontSize: 17,
 		color: Colors.textBlack,
 		maxWidth: width / 2,
 	},
-}
+})
