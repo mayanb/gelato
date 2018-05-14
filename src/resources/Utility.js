@@ -95,22 +95,47 @@ export class DateFormatter {
 		}
 	}
 
-	static mmddyyWithTime(date) {
+	static monthDayYearWithTime(date) {
+		console.log('date:', date)
+		const monthAbbreviations = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'June',
+			'July',
+			'Aug',
+			'Sept',
+			'Oct',
+			'Nov',
+			'Dec',
+		]
 		const d = new Date(date)
-		const mmddyy = [
-			d.getMonth() + 1,
-			d.getDate(),
-			String(d.getFullYear()).slice(-2),
-		].join('/')
-		const time = d.toLocaleString('en-US', {
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: true,
-		})
+		if (!this.isValidDate(d)) {
+			return null
+		}
+		const monthDayYear = `${
+			monthAbbreviations[d.getMonth()]
+		} ${d.getDate()}, '${String(d.getFullYear()).slice(-2)}`
 
-		const result = `${mmddyy}, ${time}`
-		const failed = mmddyy.includes('NaN') || time.includes('Invalid Date')
-		return failed ? '' : result
+		const time = d
+			.toLocaleString('en-US', {
+				hour: 'numeric',
+				minute: 'numeric',
+				hour12: true,
+			})
+			.replace('M', '')
+			.replace(' ', '')
+
+		return `${monthDayYear} ${time}`
+	}
+	
+	static isValidDate(date) {
+		if (Object.prototype.toString.call(date) === '[object Date]') {
+			return !isNaN(date.getTime()) // is the date valid?
+		}
+		return false // not a date at all!
 	}
 }
 

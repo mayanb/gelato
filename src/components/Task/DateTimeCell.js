@@ -55,7 +55,7 @@ export default class DateTimeCell extends React.Component {
 	}
 
 	getDateDisplay(value) {
-		const displayDate = DateFormatter.mmddyyWithTime(value) // returns '' on fail
+		const displayDate = DateFormatter.monthDayYearWithTime(value) // returns null on fail
 		// Handle special special case: date input manually before DatePicker existed
 		return displayDate ? displayDate : value
 	}
