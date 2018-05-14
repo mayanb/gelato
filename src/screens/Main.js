@@ -1,7 +1,13 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { FlatList, StyleSheet, View, Text, ActivityIndicator } from 'react-native'
+import {
+	FlatList,
+	StyleSheet,
+	View,
+	Text,
+	ActivityIndicator,
+} from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -55,9 +61,9 @@ class Main extends Component {
 		this.state = {
 			refreshing: false,
 			timeOfLastTaskRefresh: Date.now(),
-      loadingNewTasks: false,
-      loadingMoreTasks: false,
-      page: 1,
+			loadingNewTasks: false,
+			loadingMoreTasks: false,
+			page: 1,
 		}
 		// Storage.clear()
 	}
@@ -66,7 +72,7 @@ class Main extends Component {
 		const timeSinceLastTaskRefresh =
 			Date.now() - this.state.timeOfLastTaskRefresh
 		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
-			this.fetchRecentTasks
+			this.fetchRecentTasks()
 		}
 		return true
 	}
@@ -88,14 +94,13 @@ class Main extends Component {
 			return
 		}
 		this.setState({ loadingNewTasks: true, page: 1, refreshing: true })
-		this.props.dispatch(actions.fetchRecentTasks())
-			.finally(() => {
-			  this.setState({
-          loadingNewTasks: false,
-          refreshing: false,
-          timeOfLastTaskRefresh: Date.now()
-			  })
+		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+			this.setState({
+				loadingNewTasks: false,
+				refreshing: false,
+				timeOfLastTaskRefresh: Date.now(),
 			})
+		})
 	}
 
 	fetchProcesses() {
@@ -104,12 +109,13 @@ class Main extends Component {
 			dispatch(errorActions.handleError(Compute.errorText(e)))
 		})
 	}
-	
+
 	handleLoadMore() {
 		if (!this.state.loadingMoreTasks && !this.state.loadingNewTasks) {
 			const newPage = this.state.page + 1
 			this.setState({ loadingMoreTasks: true })
-			this.props.dispatch(actions.fetchRecentTasks(newPage))
+			this.props
+				.dispatch(actions.fetchRecentTasks(newPage))
 				.then(() => this.setState({ page: newPage, loadingMoreTasks: false }))
 		}
 	}
@@ -172,7 +178,9 @@ class Main extends Component {
 					renderItem={this.renderRow}
 					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
-					ListFooterComponent={() => this.renderFooter(data, loadingNewTasks, loadingMoreTasks)}
+					ListFooterComponent={() =>
+						this.renderFooter(data, loadingNewTasks, loadingMoreTasks)
+					}
 					onRefresh={this.fetchRecentTasks}
 					refreshing={loadingNewTasks}
 					onEndReached={this.handleLoadMore}
