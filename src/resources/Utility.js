@@ -108,7 +108,9 @@ export class DateFormatter {
 			hour12: true,
 		})
 
-		return `${mmddyy}, ${time}`
+		const result = `${mmddyy}, ${time}`
+		const failed = mmddyy.includes('NaN') || time.includes('Invalid Date')
+		return failed ? '' : result
 	}
 }
 

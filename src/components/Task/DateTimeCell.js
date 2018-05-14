@@ -40,7 +40,7 @@ export default class DateTimeCell extends React.Component {
 					<EditButton onEdit={this.toggleEdit} />
 				) : (
 					<Text style={styles.display}>
-						{value && DateFormatter.mmddyyWithTime(value)}
+						{value && this.getDateDisplay(value)}
 					</Text>
 				)}
 				{editing && (
@@ -52,6 +52,12 @@ export default class DateTimeCell extends React.Component {
 				)}
 			</TouchableOpacity>
 		)
+	}
+
+	getDateDisplay(value) {
+		const displayDate = DateFormatter.mmddyyWithTime(value) // returns '' on fail
+		// Handle special special case: date input manually before DatePicker existed
+		return displayDate ? displayDate : value
 	}
 }
 
