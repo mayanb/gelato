@@ -32,7 +32,7 @@ import {
 
 const TASKS = 'TASKS'
 
-export function fetchRecentTasks() {
+export function fetchRecentTasks(page) {
 	return dispatch => {
 		dispatch(requestTasks(TASKS))
 
@@ -40,6 +40,7 @@ export function fetchRecentTasks() {
 		let payload = {
 			team: 1,
 			ordering: '-updated_at',
+			page: page,
 		}
 
 		return Storage.multiGet(['teamID', 'userID']).then(values => {
@@ -53,7 +54,7 @@ export function fetchRecentTasks() {
 			return Networking.get('/ics/tasks/simple/')
 				.query(payload)
 				.then(res => {
-					dispatch(requestTasksSuccess(TASKS, res.body.results))
+					return dispatch(requestTasksSuccess(TASKS, res.body.results, !!page))
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(TASKS, e))
