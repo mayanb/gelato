@@ -26,6 +26,7 @@ let tasksDefaultState = {
 	recentIDs: [],
 	searchedIDs: [],
 	ui: {},
+	lastPage: 0,
 }
 
 function createFilteredReducer(
