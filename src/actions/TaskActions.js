@@ -246,7 +246,12 @@ export function addInput(task, item) {
 }
 
 export function addOutput(task, qr, amount) {
-	const payload = { creating_task: task.id, item_qr: qr, amount: amount, is_generic: true }
+	const payload = {
+		creating_task: task.id,
+		item_qr: qr,
+		amount: amount,
+		is_generic: true,
+	}
 	const total_amount = parseFloat(task.total_amount || 0) + parseFloat(amount)
 	return dispatch => {
 		dispatch(startAdding())
@@ -264,7 +269,6 @@ export function addOutput(task, qr, amount) {
 	}
 }
 
-
 export function updateTaskIngredientAmount(taskIngredientID, amount) {
 	let payload = { actual_amount: amount }
 	return dispatch => {
@@ -272,7 +276,13 @@ export function updateTaskIngredientAmount(taskIngredientID, amount) {
 		return Networking.patch(`/ics/taskIngredients/${taskIngredientID}/`)
 			.send(payload)
 			.then(res => {
-				dispatch(requestEditTaskIngredientSuccess(res.body.id, res.body.task, res.body.actual_amount))
+				dispatch(
+					requestEditTaskIngredientSuccess(
+						res.body.id,
+						res.body.task,
+						res.body.actual_amount
+					)
+				)
 			})
 			.catch(e => {
 				console.error(e)
@@ -357,7 +367,7 @@ function addFailure(err) {
 export function removeInput(inputID, taskID) {
 	return dispatch => {
 		return Networking.del(`/ics/inputs/${inputID}/`)
-			.then((res) => {
+			.then(res => {
 				dispatch(removeInputSuccess(inputID, taskID, res.body))
 			})
 			.catch(e => {
@@ -428,7 +438,7 @@ export function editBatchSize(task, amount, isSearched) {
 	return dispatch => {
 		return Networking.put(`/ics/items/${id}/`)
 			.send({ amount: amount })
-			.then((res) => {
+			.then(res => {
 				dispatch(requestEditItemSuccess(task, 'total_amount', amount))
 			})
 			.catch(e => {
@@ -456,14 +466,22 @@ function requestEditItemSuccess(task, key, value) {
 	}
 }
 
-export function requestRenameTask(task, custom_display) {
-	let payload = { custom_display: custom_display }
+export function requestRenameTask(task, taskName) {
 	return dispatch => {
-		return Networking.put(`/ics/tasks/edit/${task.id}/`)
-			.send(payload)
-			.then(() => {
-				let key = custom_display.length ? 'display' : 'custom_display'
-				dispatch(requestEditItemSuccess(task, key, custom_display))
+		return Networking.patch(`/ics/tasks/edit/${task.id}/`)
+			.query({
+				custom_display: taskName,
+				team_created_by: task.process_type.team_created_by,
+			})
+			.then(res => {
+				const name_already_exists = res.body.name_already_exists
+				if (name_already_exists) {
+					dispatch(requestEditItemFailure('Name already exists'))
+				} else {
+					let key = taskName.length ? 'display' : 'custom_display'
+					dispatch(requestEditItemSuccess(task, key, taskName))
+				}
+				return name_already_exists
 			})
 			.catch(e => {
 				dispatch(requestEditItemFailure(e))
