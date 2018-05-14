@@ -30,7 +30,6 @@ import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
 import RecipeInstructions from '../components/Task/RecipeInstructions'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import DateTimePickerTester from '../components/Task/DateTimePickerComp'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
