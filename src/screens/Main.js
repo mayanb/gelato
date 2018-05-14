@@ -1,7 +1,13 @@
 // Copyright 2018 Addison Leong for Polymerize, Inc.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { FlatList, StyleSheet, View, Text, ActivityIndicator } from 'react-native'
+import {
+	FlatList,
+	StyleSheet,
+	View,
+	Text,
+	ActivityIndicator,
+} from 'react-native'
 import ActionButton from 'react-native-action-button'
 import ActionSheet from 'react-native-actionsheet'
 import NavHeader from 'react-navigation-header-buttons'
@@ -18,6 +24,8 @@ import Compute from '../resources/Compute'
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
 const CANCEL_INDEX = 0
+const TASK_REFRESH_INTERVAL_SECONDS = 30
+const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
 
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
@@ -51,11 +59,22 @@ class Main extends Component {
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
+			refreshing: false,
+			timeOfLastTaskRefresh: Date.now(),
 			loadingNewTasks: false,
 			loadingMoreTasks: false,
 			page: 1,
 		}
 		// Storage.clear()
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		const timeSinceLastTaskRefresh =
+			Date.now() - this.state.timeOfLastTaskRefresh
+		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
+			this.fetchRecentTasks()
+		}
+		return true
 	}
 
 	componentWillMount() {
@@ -71,9 +90,17 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		this.setState({ loadingNewTasks: true, page: 1 })
-		this.props.dispatch(actions.fetchRecentTasks())
-			.finally(() => this.setState({ loadingNewTasks: false }))
+		if (this.state.refreshing) {
+			return
+		}
+		this.setState({ loadingNewTasks: true, page: 1, refreshing: true })
+		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+			this.setState({
+				loadingNewTasks: false,
+				refreshing: false,
+				timeOfLastTaskRefresh: Date.now(),
+			})
+		})
 	}
 
 	fetchProcesses() {
@@ -87,7 +114,8 @@ class Main extends Component {
 		if (!this.state.loadingMoreTasks && !this.state.loadingNewTasks) {
 			const newPage = this.state.page + 1
 			this.setState({ loadingMoreTasks: true })
-			this.props.dispatch(actions.fetchRecentTasks(newPage))
+			this.props
+				.dispatch(actions.fetchRecentTasks(newPage))
 				.then(() => this.setState({ page: newPage, loadingMoreTasks: false }))
 		}
 	}
@@ -150,7 +178,9 @@ class Main extends Component {
 					renderItem={this.renderRow}
 					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
-					ListFooterComponent={() => this.renderFooter(data, loadingNewTasks, loadingMoreTasks)}
+					ListFooterComponent={() =>
+						this.renderFooter(data, loadingNewTasks, loadingMoreTasks)
+					}
 					onRefresh={this.fetchRecentTasks}
 					refreshing={loadingNewTasks}
 					onEndReached={this.handleLoadMore}
@@ -188,9 +218,7 @@ class Main extends Component {
 	}
 
 	// Helper function to render headers
-	renderHeader = () => (
-		<TaskRowHeader title='RECENT TASKS' />
-	)
+	renderHeader = () => <TaskRowHeader title="RECENT TASKS" />
 
 	// Extracts keys - required for indexing
 	keyExtractor = (item, index) => String(item.id)
