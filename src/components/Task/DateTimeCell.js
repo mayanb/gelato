@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank, DateFormatter } from '../../resources/Utility'
 import EditButton from './EditButton'
@@ -45,6 +45,7 @@ export default class DateTimeCell extends React.Component {
 				)}
 				{editing && (
 					<DateTimePickerComp
+						title={`Pick a time for '${name}'`}
 						onDatePicked={this.handleDatePicked}
 						onCancel={this.toggleEdit}
 					/>
