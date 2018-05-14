@@ -52,16 +52,16 @@ export default class InputsContainer extends Component {
 		const taskCount = `${inputs.length} ${pluralize('task', inputs.length)}`
 		return (
 			<View style={styles.container}>
-				<View style={styles.firstRowContainer}>
+				<TouchableOpacity onPress={this.handleToggleExpanded} style={styles.firstRowContainer}>
 					<View style={styles.taskCountContainer}>
 						<Text style={styles.taskCount}>{taskCount}</Text>
 					</View>
 					{inputs.length && (
-						<TouchableOpacity onPress={this.handleToggleExpanded} style={styles.expandButton}>
+						<View onPress={this.handleToggleExpanded} style={styles.expandButton}>
 							<Image source={ImageUtility.requireIcon('downarrow.png')} style={styles.arrowIcon} />
-						</TouchableOpacity>
+						</View>
 					)}
-				</View>
+				</TouchableOpacity>
 				<View>
 					{this.state.expanded && inputs.map(input => <InputRow
 						key={input.id}

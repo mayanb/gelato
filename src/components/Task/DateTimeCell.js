@@ -1,9 +1,10 @@
 import React from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank, DateFormatter } from '../../resources/Utility'
 import EditButton from './EditButton'
 import DateTimePickerComp from './DateTimePickerComp'
+import { AttributeName } from './AttributeCell'
 
 export default class DateTimeCell extends React.Component {
 	constructor(props) {
@@ -30,23 +31,26 @@ export default class DateTimeCell extends React.Component {
 		if (isLoadingTask) {
 			return null
 		}
-		if (!this.state.editing && fieldIsBlank(value)) {
-			return <EditButton onEdit={this.toggleEdit} />
-		} else {
-			return (
-				<TouchableOpacity onPress={this.toggleEdit} style={styles.container}>
+		const { name, loading } = this.props
+		const showEditButton = !this.state.editing && fieldIsBlank(value)
+		return (
+			<TouchableOpacity onPress={this.toggleEdit} style={styles.container}>
+				<AttributeName name={name} loading={loading} />
+				{showEditButton ? (
+					<EditButton onEdit={this.toggleEdit} />
+				) : (
 					<Text style={styles.display}>
 						{value && DateFormatter.mmddyyWithTime(value)}
 					</Text>
-					{editing && (
-						<DateTimePickerComp
-							onDatePicked={this.handleDatePicked}
-							onCancel={this.toggleEdit}
-						/>
-					)}
-				</TouchableOpacity>
-			)
-		}
+				)}
+				{editing && (
+					<DateTimePickerComp
+						onDatePicked={this.handleDatePicked}
+						onCancel={this.toggleEdit}
+					/>
+				)}
+			</TouchableOpacity>
+		)
 	}
 }
 
@@ -56,7 +60,6 @@ const styles = {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		minHeight: 60,
 	},
 	display: {
 		fontSize: 17,

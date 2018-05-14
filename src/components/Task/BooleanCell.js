@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Text, Switch, StyleSheet } from "react-native";
+import { View, TouchableWithoutFeedback, Text, Switch } from "react-native";
+import { AttributeName } from './AttributeCell'
 
 export default class BooleanCell extends React.Component {
 	constructor(props) {
@@ -13,26 +14,30 @@ export default class BooleanCell extends React.Component {
 	}
 
 	render() {
-		if (this.props.isLoadingTask) return null
+		const { isLoadingTask, value, name, loading } = this.props
+		if (isLoadingTask) return null
 
-		const booleanValue = this.props.value === 'true'
+		const booleanValue = value === 'true'
 		const label = booleanValue ? 'Yes' : 'No'
 
+		//Using TouchableWithoutFeedback to allow scrolling (not sure why we need this)
 		return (
-			<View
-				style={styles.container}>
-				<Text style={{ marginRight: 20 }}>{label}</Text>
-				<Switch value={booleanValue} onValueChange={this.handleChange} />
-			</View>
+			<TouchableWithoutFeedback style={{
+				display: 'flex',
+				flexDirection: 'row',
+				alignItems: 'center',
+			}}>
+				<View style={{
+					display: 'flex',
+					flexDirection: 'row',
+					alignItems: 'center',
+				}}>
+					<AttributeName name={name} loading={loading} />
+					<Text style={{ marginRight: 20 }}>{label}</Text>
+					<Switch value={booleanValue} onValueChange={this.handleChange} />
+				</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 }
 
-const styles = {
-	container: {
-		display: 'flex',
-		flexDirection: 'row',
-		alignItems: 'center',
-		minHeight: 60,
-	}
-}

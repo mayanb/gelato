@@ -126,6 +126,7 @@ const MainStack = StackNavigator(
 	},
 	{
 		initialRouteName: 'Main',
+		//initialRouteParams: { id: 14408 },
 		navigationOptions: {
 			headerStyle: {
 				backgroundColor: Colors.base,

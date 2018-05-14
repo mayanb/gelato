@@ -110,7 +110,8 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 }
 
 function requestTasksSuccess(state, action) {
-	const recentTaskIDs = action.data.map(task => task.id)
+	const baseList = action.append ? state.recentIDs : []
+	const recentTaskIDs = baseList.concat(action.data.map(task => task.id))
 	const taskHash = {}
 	action.data.forEach(task => {
 		taskHash[task.id] = task
