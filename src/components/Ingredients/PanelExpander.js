@@ -6,7 +6,7 @@ import {
 	Animated,
 	Dimensions,
 	PanResponder,
-	Text,
+	Image,
 } from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
 
@@ -28,13 +28,14 @@ export default class PanelExpander extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			expanded: true,
+			expanded: false,
 			pan: new Animated.Value(0),
 			move: null,
 		}
 
 		this.handleOpen = this.handleOpen.bind(this)
 		this.handleClose = this.handleClose.bind(this)
+		this.handleToggle = this.handleToggle.bind(this)
 
 		this._panResponder = PanResponder.create({
 			onStartShouldSetPanResponder: () => true,
@@ -76,6 +77,10 @@ export default class PanelExpander extends Component {
 		}).start()
 	}
 
+	handleToggle() {
+		this.state.expanded ? this.handleClose() : this.handleOpen()
+	}
+
 	render() {
 		const { camera, ingredientsContent } = this.props
 		const { expanded } = this.state
@@ -93,19 +98,11 @@ export default class PanelExpander extends Component {
 					transform: [{ translateY: translateY }],
 				}}
 				>
-					<View
-						style={{
-							height: DRAGGABLE_HEIGHT,
-							width: WINDOW_WIDTH,
-							backgroundColor: Colors.red,
-							flex: 1,
-							justifyContent: 'center',
-							alignItems: 'center',
-						}}
-						{...this._panResponder.panHandlers}
-					>
-						<Text>Drag Me</Text>
-					</View>
+					<DraggableBar
+						panHandlers={this._panResponder.panHandlers}
+						expanded={expanded}
+						onToggle={this.handleToggle}
+					/>
 					<View style={{
 						height: OPEN_HEIGHT - DRAGGABLE_HEIGHT,
 						width: WINDOW_WIDTH,
@@ -138,17 +135,20 @@ function CloseOverlay({ onClose }) {
 	)
 }
 
-function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
-	const spin = animateOpen.interpolate({
-		inputRange: [0, 1],
-		outputRange: ['0deg', '180deg']
-	})
-
+function DraggableBar({ panHandlers, expanded, onToggle }) {
+	const spin = expanded ? '180deg' : '0deg'
 	const styles = StyleSheet.create({
 		container: {
-			height: 36,
+			height: DRAGGABLE_HEIGHT,
+			width: WINDOW_WIDTH,
 			display: 'flex',
+			justifyContent: 'center',
 			alignItems: 'center',
+			backgroundColor: 'white',
+			borderBottomColor: Colors.ultraLightGray,
+			borderBottomWidth: 1,
+			borderTopLeftRadius: 4,
+			borderTopRightRadius: 4,
 		},
 		image: {
 			height: 36,
@@ -157,11 +157,13 @@ function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
 		},
 	})
 	return (
-		<TouchableWithoutFeedback onPress={expanded ? onClose : onOpen}>
-			<Animated.View style={styles.container}>
-				<Animated.Image source={ImageUtility.requireIcon('uparrowwhite.png')} style={styles.image} />
-			</Animated.View>
-		</TouchableWithoutFeedback>
+		<View {...panHandlers}>
+			<TouchableWithoutFeedback onPress={onToggle}>
+				<View style={{ flex: 1 }} style={styles.container}>
+					<Image source={ImageUtility.requireIcon('uparrow.png')} style={styles.image} />
+				</View>
+			</TouchableWithoutFeedback>
+		</View>
 	)
 }
 
