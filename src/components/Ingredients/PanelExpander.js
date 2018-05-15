@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Animated, Image, Dimensions } from 'react-native'
+import {
+	StyleSheet,
+	View,
+	TouchableWithoutFeedback,
+	Animated,
+	Dimensions,
+	PanResponder,
+	Image,
+} from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
 
 import Colors from '../../resources/Colors'
@@ -7,97 +15,140 @@ import Colors from '../../resources/Colors'
 const CLOSED_PERCENTAGE = 0.2
 const OPEN_PERCENTAGE = 0.8
 const WINDOW_HEIGHT = Dimensions.get('window').height
+const WINDOW_WIDTH = Dimensions.get('window').width
+const CLOSED_HEIGHT = WINDOW_HEIGHT * CLOSED_PERCENTAGE
+const OPEN_HEIGHT = WINDOW_HEIGHT * OPEN_PERCENTAGE
+const OPEN_TOP = (1 - OPEN_PERCENTAGE) * WINDOW_HEIGHT
+const CLOSED_TOP = OPEN_PERCENTAGE * WINDOW_HEIGHT
+const OPEN_DIFF = OPEN_TOP - CLOSED_TOP
+const DRAGGABLE_HEIGHT = 50
 
 export default class PanelExpander extends Component {
 
 	constructor(props) {
 		super(props)
 		this.state = {
-			panelHeight: new Animated.Value(0),
+			expanded: false,
+			pan: new Animated.Value(0),
+			move: null,
 		}
 
 		this.handleOpen = this.handleOpen.bind(this)
 		this.handleClose = this.handleClose.bind(this)
-	}
+		this.handleToggle = this.handleToggle.bind(this)
 
-	componentWillReceiveProps(np) {
-		if(np.expanded && !this.props.expanded)
-			this.handleOpen()
-
-		if(!np.expanded && this.props.expanded)
-			this.handleClose()
+		this._panResponder = PanResponder.create({
+			onStartShouldSetPanResponder: () => true,
+			onMoveShouldSetPanResponder: (e, gs) => true,
+			onMoveShouldSetPanResponderCapture: (e, gs) => true,
+			onPanResponderGrant: (event, gesture) => {
+				this.state.pan.setOffset(this.state.pan._value);
+				this.state.pan.setValue(0);
+			},
+			onPanResponderMove: Animated.event([null, {
+				dy: this.state.pan
+			}]),
+			onPanResponderRelease: (e, gesture) => {
+				this.state.pan.flattenOffset()
+				const { expanded } = this.state
+				const diff = gesture.dy
+				if (Math.abs(diff) < 50) {
+					expanded ? this.handleOpen() : this.handleClose()
+				} else {
+					diff < 0 ? this.handleOpen() : this.handleClose()
+				}
+			}
+		});
 	}
 
 	handleOpen() {
-		this.props.setExpanded(true)
-		Animated.timing(this.state.panelHeight, {
-			toValue: 1,
+		this.setState({ expanded: true })
+		Animated.timing(this.state.pan, {
+			toValue: OPEN_DIFF,
 			duration: 400,
 		}).start()
 	}
 
 	handleClose() {
-		this.props.setExpanded(false)
-		Animated.timing(this.state.panelHeight, {
+		this.setState({ expanded: false })
+		Animated.timing(this.state.pan, {
 			toValue: 0,
 			duration: 400,
 		}).start()
 	}
 
+	handleToggle() {
+		this.state.expanded ? this.handleClose() : this.handleOpen()
+	}
+
 	render() {
 		const { camera, ingredientsContent } = this.props
-		const styles = StyleSheet.create({
-			container: {
-				flex: 1,
-				justifyContent: 'flex-end',
-			},
-		})
-		const flex = this.state.panelHeight.interpolate({
-			inputRange: [0, 1],
-			outputRange: [CLOSED_PERCENTAGE, OPEN_PERCENTAGE]
-		})
+		const { expanded } = this.state
 
+		const translateY = Animated.diffClamp(this.state.pan, OPEN_DIFF, 0)
 		return (
-			<View style={styles.container}>
-				{this.props.expanded && <Overlay onClose={this.handleClose} />}
+			<View>
 				{camera}
+				{expanded && <CloseOverlay onClose={this.handleClose} />}
 				<Animated.View style={{
-					flex: flex,
-					maxHeight: OPEN_PERCENTAGE * WINDOW_HEIGHT,
-				}}>
-					<ArrowOverlay expanded={this.props.expanded} onOpen={this.handleOpen} onClose={this.handleClose}
-					              animateOpen={this.state.panelHeight} />
-					<IngredientsContainer onOpen={this.handleOpen} content={ingredientsContent} />
+					height: OPEN_HEIGHT,
+					width: WINDOW_WIDTH,
+					top: CLOSED_TOP,
+					position: 'absolute',
+					transform: [{ translateY: translateY }],
+				}}
+				>
+					<DraggableBar
+						panHandlers={this._panResponder.panHandlers}
+						expanded={expanded}
+						onToggle={this.handleToggle}
+					/>
+					<View style={{
+						height: OPEN_HEIGHT - DRAGGABLE_HEIGHT,
+						width: WINDOW_WIDTH,
+						backgroundColor: Colors.ultraLightGray,
+					}}>
+						{ingredientsContent}
+					</View>
 				</Animated.View>
+				{!expanded && <IngredientsOverlay onOpen={this.handleOpen} />}
 			</View>
 		)
 	}
 }
 
-function Overlay({ onClose }) {
+function CloseOverlay({ onClose }) {
 	return (
-		<TouchableWithoutFeedback onPress={onClose}>
-			<View
-				style={{
-					flex: CLOSED_PERCENTAGE,
-					zIndex: 10,
-				}}
-			/>
-		</TouchableWithoutFeedback>
+		<View
+			style={{
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				width: WINDOW_WIDTH,
+				height: OPEN_TOP,
+			}}
+		>
+			<TouchableWithoutFeedback onPress={onClose}>
+				<View style={{ flex: 1 }} />
+			</TouchableWithoutFeedback>
+		</View>
 	)
 }
 
-function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
-	const spin = animateOpen.interpolate({
-		inputRange: [0, 1],
-		outputRange: ['0deg', '180deg']
-	})
-
+function DraggableBar({ panHandlers, expanded, onToggle }) {
+	const spin = expanded ? '180deg' : '0deg'
 	const styles = StyleSheet.create({
 		container: {
-			height: 36,
+			height: DRAGGABLE_HEIGHT,
+			width: WINDOW_WIDTH,
 			display: 'flex',
+			justifyContent: 'center',
 			alignItems: 'center',
+			backgroundColor: 'white',
+			borderBottomColor: Colors.ultraLightGray,
+			borderBottomWidth: 1,
+			borderTopLeftRadius: 4,
+			borderTopRightRadius: 4,
 		},
 		image: {
 			height: 36,
@@ -106,21 +157,30 @@ function ArrowOverlay({ expanded, onOpen, onClose, animateOpen }) {
 		},
 	})
 	return (
-		<TouchableWithoutFeedback onPress={expanded ? onClose : onOpen}>
-			<Animated.View
-				style={styles.container}>
-				<Animated.Image source={ImageUtility.requireIcon('uparrowwhite.png')} style={styles.image} />
-			</Animated.View>
-		</TouchableWithoutFeedback>
+		<View {...panHandlers}>
+			<TouchableWithoutFeedback onPress={onToggle}>
+				<View style={{ flex: 1 }} style={styles.container}>
+					<Image source={ImageUtility.requireIcon('uparrow.png')} style={styles.image} />
+				</View>
+			</TouchableWithoutFeedback>
+		</View>
 	)
 }
 
-function IngredientsContainer({ onOpen, content }) {
+function IngredientsOverlay({ onOpen }) {
 	return (
-		<TouchableWithoutFeedback onPress={onOpen}>
-			<View style={{ flex: 1, backgroundColor: Colors.white }}>
-				{content}
-			</View>
-		</TouchableWithoutFeedback>
+		<View style={{
+			position: 'absolute',
+			top: CLOSED_TOP + DRAGGABLE_HEIGHT,
+			left: 0,
+			width: WINDOW_WIDTH,
+			height: CLOSED_HEIGHT - DRAGGABLE_HEIGHT,
+		}}>
+			<TouchableWithoutFeedback onPress={onOpen}>
+				<View style={{ flex: 1 }} />
+			</TouchableWithoutFeedback>
+		</View>
 	)
 }
+
+
