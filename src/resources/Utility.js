@@ -1,4 +1,5 @@
 import pluralize from 'pluralize'
+import moment from 'moment'
 
 export class DateFormatter {
 	// yyyy-MM-dd-THH:mm:ss.SSSSSSZ
@@ -95,47 +96,16 @@ export class DateFormatter {
 		}
 	}
 
-	static monthDayYearWithTime(date) {
-		console.log('date:', date)
-		const monthAbbreviations = [
-			'Jan',
-			'Feb',
-			'Mar',
-			'Apr',
-			'May',
-			'June',
-			'July',
-			'Aug',
-			'Sept',
-			'Oct',
-			'Nov',
-			'Dec',
-		]
-		const d = new Date(date)
-		if (!this.isValidDate(d)) {
+	static monthDayYearWithTime(dateString) {
+		console.log('dateString:', dateString)
+		if (!this.isValidISODate(dateString)) {
 			return null
 		}
-		const monthDayYear = `${
-			monthAbbreviations[d.getMonth()]
-		} ${d.getDate()}, '${String(d.getFullYear()).slice(-2)}`
-
-		const time = d
-			.toLocaleString('en-US', {
-				hour: 'numeric',
-				minute: 'numeric',
-				hour12: true,
-			})
-			.replace('M', '')
-			.replace(' ', '')
-
-		return `${monthDayYear} ${time}`
+		return moment(dateString).format('LLL') // e.g. May 15, 2018 9:11 AM
 	}
 	
-	static isValidDate(date) {
-		if (Object.prototype.toString.call(date) === '[object Date]') {
-			return !isNaN(date.getTime()) // is the date valid?
-		}
-		return false // not a date at all!
+	static isValidISODate(dateString) {
+		return moment(dateString, moment.ISO_8601, true).isValid()
 	}
 }
 

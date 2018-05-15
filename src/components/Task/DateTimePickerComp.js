@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import moment from 'moment'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import Colors from '../../resources/Colors'
 
@@ -13,9 +14,10 @@ export default class DateTimePickerComp extends Component {
 		this.props.onCancel()
 	}
 
-	handleDatePicked = date => {
+	handleDatePicked = jsDateString => {
 		this.hideDateTimePicker()
-		this.props.onDatePicked(date)
+		const ISODateString = moment(new Date(jsDateString)).toISOString()
+		this.props.onDatePicked(ISODateString)
 	}
 
 	render() {
