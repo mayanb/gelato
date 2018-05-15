@@ -81,7 +81,6 @@ function requestTasksSuccess(name, data, append = false) {
 }
 
 function requestTasksFailure(name, err) {
-	console.error(err)
 	return {
 		type: REQUEST_TASKS_FAILURE,
 		name: name,

@@ -63,6 +63,7 @@ class Main extends Component {
 			timeOfLastTaskRefresh: Date.now(),
 			loadingNewTasks: false,
 			loadingMoreTasks: false,
+			noMoreTasks: false,
 			page: 1,
 		}
 		// Storage.clear()
@@ -98,6 +99,7 @@ class Main extends Component {
 			this.setState({
 				loadingNewTasks: false,
 				refreshing: false,
+				noMoreTasks: false,
 				timeOfLastTaskRefresh: Date.now(),
 			})
 		})
@@ -111,13 +113,22 @@ class Main extends Component {
 	}
 
 	handleLoadMore() {
-		if (!this.state.loadingMoreTasks && !this.state.loadingNewTasks) {
-			const newPage = this.state.page + 1
-			this.setState({ loadingMoreTasks: true })
-			this.props
-				.dispatch(actions.fetchRecentTasks(newPage))
-				.then(() => this.setState({ page: newPage, loadingMoreTasks: false }))
+		const { loadingNewTasks, loadingMoreTasks, noMoreTasks } = this.state
+		if (loadingNewTasks || loadingMoreTasks || noMoreTasks) {
+			return
 		}
+		const newPage = this.state.page + 1
+		this.setState({ loadingMoreTasks: true })
+		this.props
+			.dispatch(actions.fetchRecentTasks(newPage))
+			.then(() => this.setState({ page: newPage, loadingMoreTasks: false }))
+			.catch(e => {
+				if (e.status === 404) {
+					this.setState({ noMoreTasks: true, loadingMoreTasks: false })
+				} else {
+					throw e
+				}
+			})
 	}
 
 	handlePress(i) {
