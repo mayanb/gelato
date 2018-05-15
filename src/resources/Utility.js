@@ -100,11 +100,7 @@ export class DateFormatter {
 		if (!this.isValidISODate(dateString)) {
 			return null
 		}
-		let displayDate = moment(dateString).format('LLL') // e.g. May 15, 2018 9:11 AM
-		const AorP = displayDate[displayDate.length-2].toLowerCase()
-		displayDate = displayDate.slice(0, -3)
-		displayDate = displayDate + AorP
-		return displayDate // e.g. May 15, 2018 9:11a
+		return moment(dateString).format("MMM D 'YY, h:mma").slice(0,-1)
 	}
 	
 	static isValidISODate(dateString) {
