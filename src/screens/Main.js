@@ -57,7 +57,6 @@ class Main extends Component {
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
-			refreshing: false,
 			loadingNewTasks: false,
 			loadingMoreTasks: false,
 			noMoreTasks: false,
@@ -79,14 +78,14 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		if (this.state.refreshing) {
+		if (this.props.isFetchingTasksData) {
+			console.log('REJECTED!')
 			return
 		}
-		this.setState({ loadingNewTasks: true, page: 1, refreshing: true })
+		this.setState({ loadingNewTasks: true, page: 1 })
 		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
 			this.setState({
 				loadingNewTasks: false,
-				refreshing: false,
 				noMoreTasks: false,
 			})
 		})
@@ -258,7 +257,8 @@ const mapStateToProps = (state, props) => {
 	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
 	return {
 		recentTasks: recentTasks,
-	}
+		isFetchingTasksData: state.tasks.ui.isFetchingTasksData,
+}
 }
 
 export default connect(mapStateToProps)(Main)
