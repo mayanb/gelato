@@ -24,8 +24,6 @@ import Compute from '../resources/Compute'
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
 const CANCEL_INDEX = 0
-const TASK_REFRESH_INTERVAL_SECONDS = 30
-const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
 
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
@@ -60,22 +58,12 @@ class Main extends Component {
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
 			refreshing: false,
-			timeOfLastTaskRefresh: Date.now(),
 			loadingNewTasks: false,
 			loadingMoreTasks: false,
 			noMoreTasks: false,
 			page: 1,
 		}
 		// Storage.clear()
-	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		const timeSinceLastTaskRefresh =
-			Date.now() - this.state.timeOfLastTaskRefresh
-		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
-			this.fetchRecentTasks()
-		}
-		return true
 	}
 
 	componentWillMount() {
@@ -100,7 +88,6 @@ class Main extends Component {
 				loadingNewTasks: false,
 				refreshing: false,
 				noMoreTasks: false,
-				timeOfLastTaskRefresh: Date.now(),
 			})
 		})
 	}
