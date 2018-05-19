@@ -57,7 +57,6 @@ class Main extends Component {
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
-			loadingNewTasks: false,
 			loadingMoreTasks: false,
 			noMoreTasks: false,
 			page: 1,
@@ -78,14 +77,15 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		if (this.props.isFetchingTasksData) {
+		const { isFetchingTasksData } = this.props
+		console.log('isFetchingTasksData in fetchRecentTasks', isFetchingTasksData)
+		if (isFetchingTasksData) {
 			console.log('REJECTED!')
 			return
 		}
-		this.setState({ loadingNewTasks: true, page: 1 })
-		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+		const page = 1
+		this.props.dispatch(actions.fetchRecentTasks(page)).finally(() => {
 			this.setState({
-				loadingNewTasks: false,
 				noMoreTasks: false,
 			})
 		})
@@ -99,8 +99,9 @@ class Main extends Component {
 	}
 
 	handleLoadMore() {
-		const { loadingNewTasks, loadingMoreTasks, noMoreTasks } = this.state
-		if (loadingNewTasks || loadingMoreTasks || noMoreTasks) {
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks, noMoreTasks } = this.state
+		if (isFetchingTasksData || loadingMoreTasks || noMoreTasks) {
 			return
 		}
 		const newPage = this.state.page + 1
@@ -136,8 +137,8 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	renderFooter = (data, loadingNewTasks, loadingMoreTasks) => {
-		if (!loadingNewTasks && data.length === 0) {
+	renderFooter = (data, isFetchingTasksData, loadingMoreTasks) => {
+		if (!isFetchingTasksData && data.length === 0) {
 			const text = `No recent tasks. Tap the + button to create a new task.`
 			return (
 				<View style={styles.emptyFooterContainer}>
@@ -159,7 +160,8 @@ class Main extends Component {
 
 	render() {
 		let data = this.props.recentTasks
-		const { loadingNewTasks, loadingMoreTasks } = this.state
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks } = this.state
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -176,10 +178,10 @@ class Main extends Component {
 					ListHeaderComponent={this.renderHeader}
 					keyExtractor={this.keyExtractor}
 					ListFooterComponent={() =>
-						this.renderFooter(data, loadingNewTasks, loadingMoreTasks)
+						this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
 					}
 					onRefresh={this.fetchRecentTasks}
-					refreshing={loadingNewTasks}
+					refreshing={isFetchingTasksData}
 					onEndReached={this.handleLoadMore}
 					onEndReachedThreshold={2}
 				/>
@@ -255,9 +257,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
+	const fetchingData = state.tasks.ui.isFetchingTasksData
 	return {
 		recentTasks: recentTasks,
-		isFetchingTasksData: state.tasks.ui.isFetchingTasksData,
+		isFetchingTasksData: fetchingData === undefined ? false : fetchingData,
 }
 }
 
