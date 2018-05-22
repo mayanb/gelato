@@ -260,8 +260,8 @@ const mapStateToProps = (state, props) => {
 	const fetchingData = state.tasks.ui.isFetchingTasksData
 	return {
 		recentTasks: recentTasks,
-		isFetchingTasksData: fetchingData === undefined ? false : fetchingData,
-}
+		isFetchingTasksData: !!fetchingData,
+	}
 }
 
 export default connect(mapStateToProps)(Main)

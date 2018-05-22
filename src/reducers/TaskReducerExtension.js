@@ -120,6 +120,7 @@ function requestTasksSuccess(state, action) {
 		ui: {
 			$merge: {
 				isFetchingTasksData: false,
+				timeOfLastTaskRefresh: Date.now(),
 			},
 		},
 		recentIDs: { $set: recentTaskIDs },

@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import NavHeader from 'react-navigation-header-buttons'
 import * as taskActions from '../actions/TaskActions'
-import Colors from "../resources/Colors";
+import Colors from '../resources/Colors'
 
 /*
  * Imitates React Navigation default back button but additionally
@@ -33,17 +33,31 @@ class BackButton extends React.Component {
 		})
 		const { onPress, title } = this.props
 		return (
-			<TouchableOpacity onPress={() => this.handlePress(onPress)} style={styles.container}>
+			<TouchableOpacity
+				onPress={() => this.handlePress(onPress)}
+				style={styles.container}>
 				{this.backArrow()}
 				<View style={styles.textContainer}>
-					<Text style={styles.text} numberOfLines={1}>{title}</Text>
+					<Text style={styles.text} numberOfLines={1}>
+						{title}
+					</Text>
 				</View>
 			</TouchableOpacity>
 		)
 	}
 
 	handlePress() {
-		this.props.dispatch(taskActions.fetchRecentTasks())
+		const TASK_REFRESH_INTERVAL_SECONDS = 30 // Refresh every 30 seconds
+		const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
+
+		const { timeOfLastTaskRefresh } = this.props
+		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
+		if (
+			!timeSinceLastTaskRefresh ||
+			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
+		) {
+			this.props.dispatch(taskActions.fetchRecentTasks())
+		}
 		this.props.onPress() // Navigate back
 	}
 
@@ -66,4 +80,10 @@ class BackButton extends React.Component {
 	}
 }
 
-export default connect()(BackButton)
+const mapStateToProps = (state, props) => {
+	return {
+		timeOfLastTaskRefresh: state.tasks.ui.timeOfLastTaskRefresh,
+	}
+}
+
+export default connect(mapStateToProps)(BackButton)
