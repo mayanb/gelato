@@ -185,7 +185,7 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				{data.length !== 0 && (
+				{data.length && (
 					<FlatList
 						data={data}
 						style={styles.table}
@@ -199,7 +199,7 @@ class Main extends Component {
 						onRefresh={this.fetchRecentTasks}
 						refreshing={isFetchingTasksData}
 						onEndReached={this.handleLoadMore}
-						onEndReachedThreshold={2}
+						onEndReachedThreshold={0.5 /* ie "load more at half a screen height from curr list end" */}
 					/>
 				)}
 				<ActionButton
