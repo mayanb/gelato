@@ -94,9 +94,11 @@ class Main extends Component {
 
 	refreshTasksOnBack() {
 		const { timeOfLastTaskRefresh } = this.props
-		console.log(timeOfLastTaskRefresh)
 		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
-		if (!timeSinceLastTaskRefresh || timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
+		if (
+			!timeSinceLastTaskRefresh ||
+			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
+		) {
 			this.props.dispatch(actions.fetchRecentTasks())
 		}
 	}
@@ -181,20 +183,22 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<FlatList
-					data={data}
-					style={styles.table}
-					renderItem={this.renderRow}
-					ListHeaderComponent={this.renderHeader}
-					keyExtractor={this.keyExtractor}
-					ListFooterComponent={() =>
-						this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
-					}
-					onRefresh={this.fetchRecentTasks}
-					refreshing={isFetchingTasksData}
-					onEndReached={this.handleLoadMore}
-					onEndReachedThreshold={2}
-				/>
+				{data.length !== 0 && (
+					<FlatList
+						data={data}
+						style={styles.table}
+						renderItem={this.renderRow}
+						ListHeaderComponent={this.renderHeader}
+						keyExtractor={this.keyExtractor}
+						ListFooterComponent={() =>
+							this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
+						}
+						onRefresh={this.fetchRecentTasks}
+						refreshing={isFetchingTasksData}
+						onEndReached={this.handleLoadMore}
+						onEndReachedThreshold={2}
+					/>
+				)}
 				<ActionButton
 					buttonColor={Colors.base}
 					activeOpacity={0.5}
@@ -236,7 +240,7 @@ class Main extends Component {
 	openTask(id, name, open, imgpath, title, date) {
 		this.props.navigation.navigate('Task', {
 			id: id,
-			backFn: this.refreshTasksOnBack.bind(this)
+			backFn: this.refreshTasksOnBack.bind(this),
 		})
 	}
 }
@@ -274,7 +278,7 @@ const mapStateToProps = (state, props) => {
 	return {
 		recentTasks: recentTasks,
 		isFetchingTasksData: !!fetchingData,
-		timeOfLastTaskRefresh: state.tasks.ui.timeOfLastTaskRefresh
+		timeOfLastTaskRefresh: state.tasks.ui.timeOfLastTaskRefresh,
 	}
 }
 
