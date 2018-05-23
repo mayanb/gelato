@@ -61,10 +61,10 @@ class Task extends Component {
 
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet, printHTML, name, handleEditName, backButton } = params
+		const { showActionSheet, printHTML, name, handleEditName, handleGoBack } = params
 
 		return {
-			headerLeft: backButton,
+			headerLeft: <BackButton onPress={handleGoBack} />,
 			// React-Native guide: use "headerTitle" in place of "title" for non-text content
 			headerTitle: (
 				<NavbarEditableTaskName name={name} onPress={handleEditName} />
@@ -86,6 +86,11 @@ class Task extends Component {
 		}
 	}
 
+	handleGoBack() {
+		this.props.backFn && this.props.backFn()
+		this.props.navigation.goBack()
+	}
+
 	componentWillMount() {
 		const name = this.props.task ? this.props.task.display : ''
 		this.props.navigation.setParams({
@@ -93,7 +98,7 @@ class Task extends Component {
 			name: name,
 			printHTML: () => this.printHTML(),
 			handleEditName: this.showCustomNameAlert,
-			backButton: BackButton,
+			handleGoBack: this.handleGoBack.bind(this)
 		})
 	}
 

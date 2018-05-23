@@ -21,6 +21,9 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
+const TASK_REFRESH_INTERVAL_SECONDS = 30 // Refresh every 30 seconds
+const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
+
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
 const CANCEL_INDEX = 0
@@ -78,9 +81,7 @@ class Main extends Component {
 
 	fetchRecentTasks() {
 		const { isFetchingTasksData } = this.props
-		console.log('isFetchingTasksData in fetchRecentTasks', isFetchingTasksData)
 		if (isFetchingTasksData) {
-			console.log('REJECTED!')
 			return
 		}
 		const page = 1
@@ -89,6 +90,15 @@ class Main extends Component {
 				noMoreTasks: false,
 			})
 		})
+	}
+
+	refreshTasksOnBack() {
+		const { timeOfLastTaskRefresh } = this.props
+		console.log(timeOfLastTaskRefresh)
+		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
+		if (!timeSinceLastTaskRefresh || timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
+			this.props.dispatch(actions.fetchRecentTasks())
+		}
 	}
 
 	fetchProcesses() {
@@ -224,7 +234,10 @@ class Main extends Component {
 
 	// Event for navigating to task detail page
 	openTask(id, name, open, imgpath, title, date) {
-		this.props.navigation.navigate('Task', { id: id })
+		this.props.navigation.navigate('Task', {
+			id: id,
+			backFn: this.refreshTasksOnBack.bind(this)
+		})
 	}
 }
 
@@ -261,6 +274,7 @@ const mapStateToProps = (state, props) => {
 	return {
 		recentTasks: recentTasks,
 		isFetchingTasksData: !!fetchingData,
+		timeOfLastTaskRefresh: state.tasks.ui.timeOfLastTaskRefresh
 	}
 }
 
