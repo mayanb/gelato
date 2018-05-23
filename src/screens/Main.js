@@ -21,8 +21,8 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
-const TASK_REFRESH_INTERVAL_SECONDS = 30 // Refresh every 30 seconds
-const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
+const TASK_REFRESH_INTERVAL_MINUTES = 30 // minutes
+const TASK_REFRESH_INTERVAL_MILLI = 60 * 1000 * TASK_REFRESH_INTERVAL_MINUTES // milli
 
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
@@ -63,8 +63,8 @@ class Main extends Component {
 			loadingMoreTasks: false,
 			noMoreTasks: false,
 			page: 1,
+			flatListRef: null,
 		}
-		// Storage.clear()
 	}
 
 	componentWillMount() {
@@ -100,6 +100,8 @@ class Main extends Component {
 			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
 		) {
 			this.props.dispatch(actions.fetchRecentTasks())
+			// scroll to top of list
+			this.flatListRef.scrollToIndex({ animated: true, index: '0' })
 		}
 	}
 
@@ -187,6 +189,7 @@ class Main extends Component {
 					<FlatList
 						data={data}
 						style={styles.table}
+						ref={ref => this.flatListRef = ref}
 						renderItem={this.renderRow}
 						ListHeaderComponent={this.renderHeader}
 						keyExtractor={this.keyExtractor}
