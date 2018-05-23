@@ -54,7 +54,6 @@ export function fetchRecentTasks(page) {
 			return Networking.get('/ics/tasks/simple/')
 				.query(payload)
 				.then(res => {
-					console.log('TASKS, OH YEAH!', res.body.results)
 					return dispatch(requestTasksSuccess(TASKS, res.body.results, !!page))
 				})
 				.catch(e => {

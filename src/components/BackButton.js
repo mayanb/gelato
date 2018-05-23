@@ -3,12 +3,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import NavHeader from 'react-navigation-header-buttons'
 import Colors from '../resources/Colors'
 
-/*
- * Imitates React Navigation default back button but additionally
- * refreshes the task list onPress. This keeps the Main page up to date.
- */
-
-// Props received from React Navigation
 export default function BackButton({ onPress }) {
 	return (
 		<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
