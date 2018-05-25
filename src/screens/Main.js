@@ -21,7 +21,7 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
-const TASK_REFRESH_INTERVAL_MINUTES = 30 // minutes
+const TASK_REFRESH_INTERVAL_MINUTES = 10 // minutes
 const TASK_REFRESH_INTERVAL_MILLI = 60 * 1000 * TASK_REFRESH_INTERVAL_MINUTES // milli
 
 const ACTION_TITLE = 'Settings'
