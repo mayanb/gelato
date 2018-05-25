@@ -13,8 +13,6 @@ import Ingredients from './screens/Ingredients'
 import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
 import Search from './screens/Search'
-import Move from './screens/Move'
-import ChooseTeam from './screens/ChooseTeam'
 import Snackbar from './components/Snackbar'
 import ShouldUpdateModal from './components/Main/ShouldUpdateModal'
 import { connect } from 'react-redux'
@@ -102,22 +100,6 @@ class App extends React.Component {
 	}
 }
 
-const MoveStack = StackNavigator(
-	{
-		Move: { screen: Move },
-		ChooseTeam: { screen: ChooseTeam },
-	},
-	{
-		navigationOptions: {
-			headerStyle: {
-				backgroundColor: Colors.base,
-				borderBottomWidth: 0,
-			},
-			headerTintColor: Colors.white,
-		},
-	}
-)
-
 const MainStack = StackNavigator(
 	{
 		Main: { screen: Main },
@@ -140,7 +122,6 @@ const MainStack = StackNavigator(
 const Navigation = StackNavigator(
 	{
 		MainStack: { screen: MainStack },
-		MoveStack: { screen: MoveStack },
 		Ingredients: { screen: Ingredients },
 		Search: { screen: Search },
 	},

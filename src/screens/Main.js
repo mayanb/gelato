@@ -22,7 +22,7 @@ import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
 const ACTION_TITLE = 'Settings'
-const ACTION_OPTIONS = ['Close', 'Logout', 'Move Items']
+const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
 const TASK_REFRESH_INTERVAL_SECONDS = 30
 const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
@@ -135,14 +135,6 @@ class Main extends Component {
 		if (ACTION_OPTIONS[i] === 'Logout') {
 			Storage.clear()
 			clearUser()
-		}
-		if (ACTION_OPTIONS[i] === 'Search') {
-			this.props.navigation.navigate('Search')
-		}
-		if (ACTION_OPTIONS[i] === 'Move Items') {
-			this.props.navigation.navigate('Move', {
-				name: 'Scan Items',
-			})
 		}
 	}
 
