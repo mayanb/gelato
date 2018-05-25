@@ -27,6 +27,8 @@ import OutputItemList from '../components/Ingredients/OutputItemList'
 class Ingredients extends Component {
 	constructor(props) {
 		super(props)
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
+
 
 		this.state = {
 			expanded: false,
@@ -42,7 +44,7 @@ class Ingredients extends Component {
 			typeSearch: false,
 			request: null,
 
-			outputAmount: 0,
+			outputAmount: default_amount,
 		}
 
 		this.handleAddInput = this.handleAddInput.bind(this)
@@ -219,6 +221,7 @@ class Ingredients extends Component {
 
 	renderOutputQR(creatingTask) {
 		let { barcode, semantic } = this.state
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
 
 		return (
 			<QRDisplay
@@ -226,8 +229,7 @@ class Ingredients extends Component {
 				barcode={barcode}
 				creating_task_display={''}
 				semantic={semantic}
-				amount={this.state.outputAmount}
-				default_amount={0}
+				amount={default_amount}
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddOutput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
@@ -251,12 +253,13 @@ class Ingredients extends Component {
 	}
 
 	handleCloseModal() {
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
 		this.setState({
 			barcode: null,
 			foundItem: null,
 			semantic: '',
 			expanded: false,
-			outputAmount: 0,
+			outputAmount: default_amount,
 		})
 	}
 
@@ -341,6 +344,18 @@ class Ingredients extends Component {
 				this.setState({ semantic: SCAN_ERROR, barcode: barcode })
 			})
 			.finally(() => this.setState({ isFetchingItem: false }))
+	}
+
+	getDefaultOutputAmount(task, mode) {
+		let default_amount = 0
+		if (task && mode === 'items') {
+			if (task.process_type) {
+				if (task.process_type.default_amount) {
+					default_amount = task.process_type.default_amount
+				}
+			}
+		}
+		return default_amount
 	}
 
 	// MARK: - DEBUG
