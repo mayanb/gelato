@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
 import NavHeader from 'react-navigation-header-buttons'
 
+import BackButton from '../components/BackButton'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import Print from '../resources/PrintFormat'
@@ -60,9 +61,10 @@ class Task extends Component {
 
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet, printHTML, name, handleEditName } = params
+		const { showActionSheet, printHTML, name, handleEditName, handleGoBack } = params
 
 		return {
+			headerLeft: <BackButton onPress={handleGoBack} />,
 			// React-Native guide: use "headerTitle" in place of "title" for non-text content
 			headerTitle: (
 				<NavbarEditableTaskName name={name} onPress={handleEditName} />
@@ -84,6 +86,11 @@ class Task extends Component {
 		}
 	}
 
+	handleGoBack() {
+		this.props.backFn && this.props.backFn()
+		this.props.navigation.goBack()
+	}
+
 	componentWillMount() {
 		const name = this.props.task ? this.props.task.display : ''
 		this.props.navigation.setParams({
@@ -91,6 +98,7 @@ class Task extends Component {
 			name: name,
 			printHTML: () => this.printHTML(),
 			handleEditName: this.showCustomNameAlert,
+			handleGoBack: this.handleGoBack.bind(this)
 		})
 	}
 

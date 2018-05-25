@@ -21,11 +21,12 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
+const TASK_REFRESH_INTERVAL_MINUTES = 10 // minutes
+const TASK_REFRESH_INTERVAL_MILLI = 60 * 1000 * TASK_REFRESH_INTERVAL_MINUTES // milli
+
 const ACTION_TITLE = 'Settings'
 const ACTION_OPTIONS = ['Close', 'Logout']
 const CANCEL_INDEX = 0
-const TASK_REFRESH_INTERVAL_SECONDS = 30
-const TASK_REFRESH_INTERVAL_MILLI = 1000 * TASK_REFRESH_INTERVAL_SECONDS
 
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
@@ -59,23 +60,11 @@ class Main extends Component {
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.state = {
-			refreshing: false,
-			timeOfLastTaskRefresh: Date.now(),
-			loadingNewTasks: false,
 			loadingMoreTasks: false,
 			noMoreTasks: false,
 			page: 1,
+			flatListRef: null,
 		}
-		// Storage.clear()
-	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		const timeSinceLastTaskRefresh =
-			Date.now() - this.state.timeOfLastTaskRefresh
-		if (timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI) {
-			this.fetchRecentTasks()
-		}
-		return true
 	}
 
 	componentWillMount() {
@@ -91,18 +80,29 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		if (this.state.refreshing) {
+		const { isFetchingTasksData } = this.props
+		if (isFetchingTasksData) {
 			return
 		}
-		this.setState({ loadingNewTasks: true, page: 1, refreshing: true })
-		this.props.dispatch(actions.fetchRecentTasks()).finally(() => {
+		const page = 1
+		this.props.dispatch(actions.fetchRecentTasks(page)).finally(() => {
 			this.setState({
-				loadingNewTasks: false,
-				refreshing: false,
 				noMoreTasks: false,
-				timeOfLastTaskRefresh: Date.now(),
 			})
 		})
+	}
+
+	refreshTasksOnBack() {
+		const { timeOfLastTaskRefresh } = this.props
+		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
+		if (
+			!timeSinceLastTaskRefresh ||
+			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
+		) {
+			this.props.dispatch(actions.fetchRecentTasks())
+			// scroll to top of list
+			this.flatListRef.scrollToIndex({ animated: true, index: '0' })
+		}
 	}
 
 	fetchProcesses() {
@@ -113,8 +113,9 @@ class Main extends Component {
 	}
 
 	handleLoadMore() {
-		const { loadingNewTasks, loadingMoreTasks, noMoreTasks } = this.state
-		if (loadingNewTasks || loadingMoreTasks || noMoreTasks) {
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks, noMoreTasks } = this.state
+		if (isFetchingTasksData || loadingMoreTasks || noMoreTasks) {
 			return
 		}
 		const newPage = this.state.page + 1
@@ -142,8 +143,8 @@ class Main extends Component {
 		this.props.navigation.navigate('Search')
 	}
 
-	renderFooter = (data, loadingNewTasks, loadingMoreTasks) => {
-		if (!loadingNewTasks && data.length === 0) {
+	renderFooter = (data, isFetchingTasksData, loadingMoreTasks) => {
+		if (!isFetchingTasksData && data.length === 0) {
 			const text = `No recent tasks. Tap the + button to create a new task.`
 			return (
 				<View style={styles.emptyFooterContainer}>
@@ -165,7 +166,8 @@ class Main extends Component {
 
 	render() {
 		let data = this.props.recentTasks
-		const { loadingNewTasks, loadingMoreTasks } = this.state
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks } = this.state
 		return (
 			<View style={styles.container}>
 				<ActionSheet
@@ -175,20 +177,23 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				<FlatList
-					data={data}
-					style={styles.table}
-					renderItem={this.renderRow}
-					ListHeaderComponent={this.renderHeader}
-					keyExtractor={this.keyExtractor}
-					ListFooterComponent={() =>
-						this.renderFooter(data, loadingNewTasks, loadingMoreTasks)
-					}
-					onRefresh={this.fetchRecentTasks}
-					refreshing={loadingNewTasks}
-					onEndReached={this.handleLoadMore}
-					onEndReachedThreshold={2}
-				/>
+				{data.length && (
+					<FlatList
+						data={data}
+						style={styles.table}
+						ref={ref => this.flatListRef = ref}
+						renderItem={this.renderRow}
+						ListHeaderComponent={this.renderHeader}
+						keyExtractor={this.keyExtractor}
+						ListFooterComponent={() =>
+							this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
+						}
+						onRefresh={this.fetchRecentTasks}
+						refreshing={isFetchingTasksData}
+						onEndReached={this.handleLoadMore}
+						onEndReachedThreshold={0.5 /* ie "load more at half a screen height from curr list end" */}
+					/>
+				)}
 				<ActionButton
 					buttonColor={Colors.base}
 					activeOpacity={0.5}
@@ -228,7 +233,10 @@ class Main extends Component {
 
 	// Event for navigating to task detail page
 	openTask(id, name, open, imgpath, title, date) {
-		this.props.navigation.navigate('Task', { id: id })
+		this.props.navigation.navigate('Task', {
+			id: id,
+			backFn: this.refreshTasksOnBack.bind(this),
+		})
 	}
 }
 
@@ -261,8 +269,11 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, props) => {
 	const recentTasks = state.tasks.recentIDs.map(id => state.tasks.dataByID[id])
+	const fetchingData = state.tasks.ui.isFetchingTasksData
 	return {
 		recentTasks: recentTasks,
+		isFetchingTasksData: !!fetchingData,
+		timeOfLastTaskRefresh: state.tasks.ui.timeOfLastTaskRefresh,
 	}
 }
 
