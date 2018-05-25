@@ -10,6 +10,51 @@ export function requireIcon(process_icon) {
     case 'add_outputs_text.png':
       img = require('../resources/assets/system_icons/add_outputs_text.png')
       break
+    case 'box.png':
+      img = require('../resources/assets/processicons/box.png')
+      break
+    case 'cut.png':
+      img = require('../resources/assets/processicons/cut.png')
+      break
+    case 'freeze.png':
+      img = require('../resources/assets/processicons/freeze.png')
+      break
+    case 'hocho.png':
+      img = require('../resources/assets/processicons/hocho.png')
+      break
+    case 'ingredient.png':
+      img = require('../resources/assets/processicons/ingredient.png')
+      break
+    case 'jar.png':
+      img = require('../resources/assets/processicons/jar.png')
+      break
+    case 'lab.png':
+      img = require('../resources/assets/processicons/lab.png')
+      break
+    case 'lid.png':
+      img = require('../resources/assets/processicons/lid.png')
+      break
+    case 'pasteurize.png':
+      img = require('../resources/assets/processicons/pasteurize.png')
+      break
+    case 'qualitycheck.png':
+      img = require('../resources/assets/processicons/qualitycheck.png')
+      break
+    case 'tank.png':
+      img = require('../resources/assets/processicons/tank.png')
+      break
+    case 'temp.png':
+      img = require('../resources/assets/processicons/temp.png')
+      break
+    case 'time.png':
+      img = require('../resources/assets/processicons/time.png')
+      break
+    case 'trash.png':
+      img = require('../resources/assets/processicons/trash.png')
+      break
+    case 'weigh.png':
+      img = require('../resources/assets/processicons/weigh.png')
+      break
     case 'move_items_text.png':
       img = require('../resources/assets/system_icons/move_items_text.png')
       break
@@ -98,6 +143,8 @@ export function requireIcon(process_icon) {
 		  img = require('../resources/assets/uparrowblue.png')
 		  break
 	  case 'rotaryconche.png':
+      img = require('../resources/assets/processicons/rotaryconche.png')
+      break
     case 'winnow.png':
       img = require('../resources/assets/processicons/winnow.png')
       break
