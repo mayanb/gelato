@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import {
 	View,
+	ScrollView,
 	StyleSheet,
 	TouchableWithoutFeedback,
 	Image,
 	Text,
 	TextInput,
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import * as ImageUtility from '../../resources/ImageUtility'
 
@@ -34,7 +34,7 @@ export default class SelectTypeWithInput extends Component {
 					returnKeyType="done"
 				/>
 				{this.props.dropdown_open && (
-					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
+					<ScrollView keyboardShouldPersistTaps="handled">
 						{this.props.data.map(e => {
 							return (
 								<NonEditableCell
@@ -45,7 +45,7 @@ export default class SelectTypeWithInput extends Component {
 								/>
 							)
 						})}
-					</KeyboardAwareScrollView>
+					</ScrollView>
 				)}
 			</View>
 		)

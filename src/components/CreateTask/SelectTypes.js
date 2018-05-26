@@ -48,8 +48,8 @@ class SelectTypes extends Component {
 				<Heading>What are you working on?</Heading>
 				<SelectTypeWithInput
 					heading=""
-					placeholder="Select process"
-					data={this.state.processes_filtered}
+					placeholder="Type to find a process"
+					data={this.state.processes_filtered.slice(0, 4)}
 					text={this.state.processes_text}
 					dropdown_open={this.state.processes_dropdown_open}
 					selected={selectedProcess}
@@ -60,8 +60,8 @@ class SelectTypes extends Component {
 			/>
 				<SelectTypeWithInput
 					heading=""
-					placeholder="Select product"
-					data={this.state.products_filtered}
+					placeholder="Type to find a product"
+					data={this.state.products_filtered.slice(0, 4)}
 					text={this.state.products_text}
 					dropdown_open={this.state.products_dropdown_open}
 					selected={selectedProduct}
