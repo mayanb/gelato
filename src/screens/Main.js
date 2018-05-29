@@ -21,7 +21,7 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
-const TASK_REFRESH_INTERVAL_MINUTES = 10 // minutes
+const TASK_REFRESH_INTERVAL_MINUTES = 0.005 // minutes
 const TASK_REFRESH_INTERVAL_MILLI = 60 * 1000 * TASK_REFRESH_INTERVAL_MINUTES // milli
 
 const ACTION_TITLE = 'Settings'
@@ -84,8 +84,8 @@ class Main extends Component {
 		if (isFetchingTasksData) {
 			return
 		}
-		const page = 1
-		this.props.dispatch(actions.fetchRecentTasks(page)).finally(() => {
+		const pageOne = 1
+		this.props.dispatch(actions.fetchRecentTasks(pageOne)).finally(() => {
 			this.setState({
 				noMoreTasks: false,
 			})
@@ -99,9 +99,10 @@ class Main extends Component {
 			!timeSinceLastTaskRefresh ||
 			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
 		) {
-			this.props.dispatch(actions.fetchRecentTasks())
+			const page = 1
+			this.props.dispatch(actions.fetchRecentTasks(page))
 			// scroll to top of list
-			this.flatListRef.scrollToIndex({ animated: true, index: '0' })
+			this.flatListRef.scrollToIndex({ animated: false, index: '0' })
 		}
 	}
 
