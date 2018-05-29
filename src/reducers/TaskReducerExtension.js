@@ -111,6 +111,9 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 
 function requestTasksSuccess(state, action) {
 	const baseList = action.append ? state.recentIDs : []
+	// If you're not appending to a stale list, then you're doing a full refresh,
+	// and should update timeOfLastTaskRefresh
+	const newTimeOfLastRefresh = action.append ? state.ui.timeOfLastTaskRefresh : Date.now()
 	const recentTaskIDs = baseList.concat(action.data.map(task => task.id))
 	const taskHash = {}
 	action.data.forEach(task => {
@@ -120,7 +123,7 @@ function requestTasksSuccess(state, action) {
 		ui: {
 			$merge: {
 				isFetchingTasksData: false,
-				timeOfLastTaskRefresh: Date.now(),
+				timeOfLastTaskRefresh: newTimeOfLastRefresh,
 			},
 		},
 		recentIDs: { $set: recentTaskIDs },

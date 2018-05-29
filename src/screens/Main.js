@@ -193,6 +193,7 @@ class Main extends Component {
 						refreshing={isFetchingTasksData}
 						onEndReached={this.handleLoadMore}
 						onEndReachedThreshold={0.5 /* ie "load more at half a screen height from curr list end" */}
+						initialNumToRender={10}
 					/>
 				)}
 				<ActionButton
