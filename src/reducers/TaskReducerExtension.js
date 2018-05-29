@@ -114,7 +114,7 @@ function requestTasksSuccess(state, action) {
 	// If you're not appending to a stale list, then you're doing a full refresh,
 	// and should update timeOfLastTaskRefresh
 	const newTimeOfLastRefresh = action.append ? state.ui.timeOfLastTaskRefresh : Date.now()
-	const recentTaskIDs = baseList.concat(action.data.map(task => task.id))
+	const recentTaskIDs = Array.from(new Set(baseList.concat(action.data.map(task => task.id))))
 	const taskHash = {}
 	action.data.forEach(task => {
 		taskHash[task.id] = task
