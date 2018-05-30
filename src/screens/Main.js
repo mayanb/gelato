@@ -65,6 +65,7 @@ class Main extends Component {
 			noMoreTasks: false,
 			page: 1,
 			flatListRef: null,
+			isFetching: false,
 		}
 	}
 
@@ -85,9 +86,11 @@ class Main extends Component {
 			return
 		}
 		const pageOne = 1
+		this.setState({ isFetching: true })
 		this.props.dispatch(actions.fetchRecentTasks(pageOne)).finally(() => {
 			this.setState({
 				noMoreTasks: false,
+				isFetching: false,
 			})
 		})
 	}
@@ -201,7 +204,7 @@ class Main extends Component {
 							this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
 						}
 						onRefresh={this.fetchRecentTasks}
-						refreshing={isFetchingTasksData}
+						refreshing={this.state.isFetching}
 						onEndReached={this.handleLoadMore}
 						onEndReachedThreshold={0.5 /* ie "load more at half a screen height from curr list end" */}
 						initialNumToRender={10}
