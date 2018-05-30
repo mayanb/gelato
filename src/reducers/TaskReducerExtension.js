@@ -19,8 +19,10 @@ export const REQUEST_CREATE_TASK_SUCCESS = 'REQUEST_CREATE_TASK_SUCCESS'
 export const REQUEST_EDIT_TASK_SUCCESS = 'REQUEST_EDIT_TASK_SUCCESS'
 export const REQUEST_DELETE_TASK_SUCCESS = 'REQUEST_DELETE_TASK_SUCCESS'
 export const REQUEST_EDIT_TASK_INGREDIENT = 'REQUEST_EDIT_TASK_INGREDIENT'
-export const REQUEST_EDIT_TASK_INGREDIENT_SUCCESS = 'REQUEST_EDIT_TASK_INGREDIENT_SUCCESS'
-export const REQUEST_EDIT_TASK_INGREDIENT_FAILURE = 'REQUEST_EDIT_TASK_INGREDIENT_FAILURE'
+export const REQUEST_EDIT_TASK_INGREDIENT_SUCCESS =
+	'REQUEST_EDIT_TASK_INGREDIENT_SUCCESS'
+export const REQUEST_EDIT_TASK_INGREDIENT_FAILURE =
+	'REQUEST_EDIT_TASK_INGREDIENT_FAILURE'
 
 export const REMOVE_OUTPUT_SUCCESS = 'REMOVE_OUTPUT_SUCCESS'
 
@@ -102,8 +104,10 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 	return taskIngredients.map(ta => {
 		const { ingredient } = ta
 		ta.inputs = inputs.filter(input => {
-			return ingredient.process_type.id === input.input_task_n.process_type &&
+			return (
+				ingredient.process_type.id === input.input_task_n.process_type &&
 				ingredient.product_type.id === input.input_task_n.product_type
+			)
 		})
 		return ta
 	})
@@ -112,13 +116,18 @@ function addInputsToTaskIngredients(taskIngredients, inputs) {
 function requestTasksSuccess(state, action) {
 	const baseList = action.append ? state.recentIDs : []
 	// If you're not appending to a stale list, then you're doing a full refresh,
-	// and should update timeOfLastTaskRefresh
-	const newTimeOfLastRefresh = action.append ? state.ui.timeOfLastTaskRefresh : Date.now()
-	const recentTaskIDs = Array.from(new Set(baseList.concat(action.data.map(task => task.id))))
+	// and should update timeOfLastTaskRefresh. When just fetching a new page, don't.
+	const newTimeOfLastRefresh = action.append
+		? state.ui.timeOfLastTaskRefresh
+		: Date.now()
+
+	const sortedRecentTaskIDsUnique = Compute.mergeNewTasks(baseList, action.data, state.dataByID)
+
 	const taskHash = {}
 	action.data.forEach(task => {
 		taskHash[task.id] = task
 	})
+
 	return update(state, {
 		ui: {
 			$merge: {
@@ -126,7 +135,7 @@ function requestTasksSuccess(state, action) {
 				timeOfLastTaskRefresh: newTimeOfLastRefresh,
 			},
 		},
-		recentIDs: { $set: recentTaskIDs },
+		recentIDs: { $set: sortedRecentTaskIDsUnique },
 		dataByID: { $merge: taskHash },
 	})
 }
@@ -142,7 +151,9 @@ function requestDeleteTaskSuccess(state, action) {
 			$unset: [action.task.id],
 		},
 		recentIDs: { $set: state.recentIDs.filter(id => id !== action.task.id) },
-		searchedIDs: { $set: state.searchedIDs.filter(id => id !== action.task.id) },
+		searchedIDs: {
+			$set: state.searchedIDs.filter(id => id !== action.task.id),
+		},
 	})
 }
 
@@ -180,7 +191,10 @@ function requestEditTaskSuccess(state, action) {
 
 function requestTaskDetailSuccess(state, action) {
 	const task = action.data
-	task.task_ingredients = addInputsToTaskIngredients(task.task_ingredients, task.inputs)
+	task.task_ingredients = addInputsToTaskIngredients(
+		task.task_ingredients,
+		task.inputs
+	)
 
 	return update(state, {
 		ui: {
@@ -189,7 +203,7 @@ function requestTaskDetailSuccess(state, action) {
 			},
 		},
 		dataByID: {
-			[action.data.id]: { $set: task }
+			[action.data.id]: { $set: task },
 		},
 	})
 }
@@ -201,7 +215,6 @@ function updateAttributeSuccess(state, action) {
 	let attributeIndex = state.data[taskIndex].organized_attributes.findIndex(e =>
 		Compute.equate(e.id, action.data.attribute)
 	)
-
 
 	return update(state, {
 		data: {
@@ -223,7 +236,10 @@ function updateAttributeFailure(state, action) {
 function addInputSuccess(state, action) {
 	const task = state.dataByID[action.taskID]
 	task.inputs.push(action.input)
-	task.task_ingredients = addInputsToTaskIngredients(action.taskIngredients, task.inputs)
+	task.task_ingredients = addInputsToTaskIngredients(
+		action.taskIngredients,
+		task.inputs
+	)
 	return update(state, {
 		dataByID: {
 			[task.id]: {
@@ -262,7 +278,10 @@ function addFailure(state, action) {
 function removeInputSuccess(state, action, key) {
 	const task = state.dataByID[action.taskID]
 	const inputs = task.inputs.filter(input => input.id !== action.inputID)
-	const taskIngredients = addInputsToTaskIngredients(action.taskIngredients, inputs)
+	const taskIngredients = addInputsToTaskIngredients(
+		action.taskIngredients,
+		inputs
+	)
 	return update(state, {
 		dataByID: {
 			[action.taskID]: {
@@ -275,7 +294,9 @@ function removeInputSuccess(state, action, key) {
 
 function requestEditTaskIngredientSuccess(state, action) {
 	const task = state.dataByID[action.taskID]
-	let taskIngredientIndex = task.task_ingredients.findIndex(ta => ta.id === action.id)
+	let taskIngredientIndex = task.task_ingredients.findIndex(
+		ta => ta.id === action.id
+	)
 	return update(state, {
 		dataByID: {
 			[action.taskID]: {

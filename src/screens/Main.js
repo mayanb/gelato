@@ -21,7 +21,7 @@ import * as processActions from '../actions/ProcessesAndProductsActions'
 import * as errorActions from '../actions/ErrorActions'
 import Compute from '../resources/Compute'
 
-const TASK_REFRESH_INTERVAL_MINUTES = 10 // minutes
+const TASK_REFRESH_INTERVAL_MINUTES = 0.0001 // minutes
 const TASK_REFRESH_INTERVAL_MILLI = 60 * 1000 * TASK_REFRESH_INTERVAL_MINUTES // milli
 
 const ACTION_TITLE = 'Settings'
@@ -103,6 +103,8 @@ class Main extends Component {
 			this.props.dispatch(actions.fetchRecentTasks(page))
 			// scroll to top of list
 			this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			// full refresh drops previously loaded pages and starts afresh
+			this.setState({ page: 1, noMoreTasks: false })
 		}
 	}
 
