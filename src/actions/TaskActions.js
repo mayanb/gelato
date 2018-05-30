@@ -54,7 +54,10 @@ export function fetchRecentTasks(page) {
 			return Networking.get('/ics/tasks/simple/')
 				.query(payload)
 				.then(res => {
-					return dispatch(requestTasksSuccess(TASKS, res.body.results, !!page))
+					// If we're loading the first page, we don't want to append to the existing, outdated recentTaskIds list
+					// because we're refreshing all tasks (in contrast to loading the next page during infinite scroll)
+					const shouldAppendTasks = page !== 1
+					return dispatch(requestTasksSuccess(TASKS, res.body.results, shouldAppendTasks))
 				})
 				.catch(e => {
 					dispatch(requestTasksFailure(TASKS, e))

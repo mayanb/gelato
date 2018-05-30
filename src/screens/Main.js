@@ -59,11 +59,13 @@ class Main extends Component {
 		this.handleSearch = this.handleSearch.bind(this)
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
+		this.currentlyLoadingTasks = this.currentlyLoadingTasks.bind(this)
 		this.state = {
 			loadingMoreTasks: false,
 			noMoreTasks: false,
 			page: 1,
 			flatListRef: null,
+			isFetching: false,
 		}
 	}
 
@@ -80,29 +82,42 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		const { isFetchingTasksData } = this.props
-		if (isFetchingTasksData) {
+		if (this.currentlyLoadingTasks()) {
 			return
 		}
-		const page = 1
-		this.props.dispatch(actions.fetchRecentTasks(page)).finally(() => {
+		const pageOne = 1
+		this.setState({ isFetching: true })
+		this.props.dispatch(actions.fetchRecentTasks(pageOne)).finally(() => {
 			this.setState({
 				noMoreTasks: false,
+				isFetching: false,
 			})
 		})
 	}
 
 	refreshTasksOnBack() {
+		if (this.currentlyLoadingTasks()) {
+			return
+		}
 		const { timeOfLastTaskRefresh } = this.props
 		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
 		if (
 			!timeSinceLastTaskRefresh ||
 			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
 		) {
-			this.props.dispatch(actions.fetchRecentTasks())
+			const page = 1
+			this.props.dispatch(actions.fetchRecentTasks(page))
 			// scroll to top of list
-			this.flatListRef.scrollToIndex({ animated: true, index: '0' })
+			this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			// full refresh drops previously loaded pages and starts afresh
+			this.setState({ page: 1, noMoreTasks: false })
 		}
+	}
+
+	currentlyLoadingTasks() {
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks } = this.state
+		return isFetchingTasksData || loadingMoreTasks
 	}
 
 	fetchProcesses() {
@@ -189,9 +204,10 @@ class Main extends Component {
 							this.renderFooter(data, isFetchingTasksData, loadingMoreTasks)
 						}
 						onRefresh={this.fetchRecentTasks}
-						refreshing={isFetchingTasksData}
+						refreshing={this.state.isFetching}
 						onEndReached={this.handleLoadMore}
 						onEndReachedThreshold={0.5 /* ie "load more at half a screen height from curr list end" */}
+						initialNumToRender={10}
 					/>
 				)}
 				<ActionButton
