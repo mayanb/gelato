@@ -59,6 +59,7 @@ class Main extends Component {
 		this.handleSearch = this.handleSearch.bind(this)
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
+		this.currentlyLoadingTasks = this.currentlyLoadingTasks.bind(this)
 		this.state = {
 			loadingMoreTasks: false,
 			noMoreTasks: false,
@@ -80,8 +81,7 @@ class Main extends Component {
 	}
 
 	fetchRecentTasks() {
-		const { isFetchingTasksData } = this.props
-		if (isFetchingTasksData) {
+		if (this.currentlyLoadingTasks()) {
 			return
 		}
 		const pageOne = 1
@@ -93,6 +93,9 @@ class Main extends Component {
 	}
 
 	refreshTasksOnBack() {
+		if (this.currentlyLoadingTasks()) {
+			return
+		}
 		const { timeOfLastTaskRefresh } = this.props
 		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
 		if (
@@ -106,6 +109,12 @@ class Main extends Component {
 			// full refresh drops previously loaded pages and starts afresh
 			this.setState({ page: 1, noMoreTasks: false })
 		}
+	}
+
+	currentlyLoadingTasks() {
+		const { isFetchingTasksData } = this.props
+		const { loadingMoreTasks } = this.state
+		return isFetchingTasksData || loadingMoreTasks
 	}
 
 	fetchProcesses() {
