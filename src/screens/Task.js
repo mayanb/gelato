@@ -14,22 +14,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
 import NavHeader from 'react-navigation-header-buttons'
 
+import BackButton from '../components/BackButton'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import Print from '../resources/PrintFormat'
 import * as actions from '../actions/TaskActions'
-import { AttributeHeaderCell } from '../components/Cells'
+import TaskHeader from '../components/Task/TaskHeader'
 import { Flag, AncestorFlag } from '../components/Flag'
 import * as ImageUtility from '../resources/ImageUtility'
 import paramsToProps from '../resources/paramsToProps'
 import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
+import { fieldIsBlank, validTaskNameLength } from '../resources/Utility'
 import AttributeList from '../components/Task/AttributeList'
 import update from 'immutability-helper'
-import { DangerZone } from 'expo'
 import QRCode from 'qrcode'
-import RecipeInstructions from "../components/Task/RecipeInstructions"
+import RecipeInstructions from '../components/Task/RecipeInstructions'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import NavbarEditableTaskName from '../components/Task/NavbarEditableTaskName'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
@@ -39,30 +41,36 @@ class Task extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			isLoadingTask: false
+			isLoadingTask: false,
 		}
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
+		this.showEditBatchSizeAlert = this.showEditBatchSizeAlert.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
+		this.showCustomNameAlert = this.showCustomNameAlert.bind(this)
 
 		this.state = {
-			organized_attributes: props.task && props.task.process_type && props.task.process_type.attributes,
+			organized_attributes:
+				props.task &&
+				props.task.process_type &&
+				props.task.process_type.attributes,
 			action_options: ACTION_OPTIONS,
 		}
 	}
 
 	static navigationOptions = ({ navigation }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet, printHTML } = params
+		const { showActionSheet, printHTML, name, handleEditName, handleGoBack } = params
 
 		return {
-			title: params.name,
+			headerLeft: <BackButton onPress={handleGoBack} />,
+			// React-Native guide: use "headerTitle" in place of "title" for non-text content
+			headerTitle: (
+				<NavbarEditableTaskName name={name} onPress={handleEditName} />
+			),
 			headerRight: (
-				<NavHeader
-					IconComponent={Ionicons}
-					size={25}
-					color={Colors.white}>
+				<NavHeader IconComponent={Ionicons} size={25} color={Colors.white}>
 					<NavHeader.Item
 						iconName="md-print"
 						label="Print"
@@ -78,29 +86,45 @@ class Task extends Component {
 		}
 	}
 
+	handleGoBack() {
+		this.props.backFn && this.props.backFn()
+		this.props.navigation.goBack()
+	}
+
 	componentWillMount() {
+		const name = this.props.task ? this.props.task.display : ''
 		this.props.navigation.setParams({
 			showActionSheet: () => this.ActionSheet.show(),
-			name: this.props.task ? this.props.task.display : '',
+			name: name,
 			printHTML: () => this.printHTML(),
+			handleEditName: this.showCustomNameAlert,
+			handleGoBack: this.handleGoBack.bind(this)
 		})
 	}
 
 	componentWillReceiveProps(np) {
 		if (!np.task) return
-		if (!this.props.task || !this.props.task.task_ingredients || (np.task.is_flagged !== this.props.task.is_flagged)) {
+		if (
+			!this.props.task ||
+			!this.props.task.task_ingredients ||
+			np.task.is_flagged !== this.props.task.is_flagged
+		) {
 			this.updateActionSheet(np.task)
 		}
 	}
 
 	componentDidMount() {
-		this.setState({ isDandelion: Compute.isDandelion(this.props.screenProps.team) })
+		this.setState({
+			isDandelion: Compute.isDandelion(this.props.screenProps.team),
+		})
 		this.setState({ isLoadingTask: true })
-		this.props.dispatch(actions.fetchTask(this.props.id))
+		this.props
+			.dispatch(actions.fetchTask(this.props.id))
 			.then(res => {
 				this.props.navigation.setParams({ task: res.data })
 				let organized = Compute.organizeAttributes(res.data)
 				this.setState({ organized_attributes: organized, isLoadingTask: false })
+				this.props.navigation.setParams({ name: res.data.display })
 			})
 			.catch(e => console.error('Error fetching task', e))
 
@@ -122,9 +146,15 @@ class Task extends Component {
 
 	allowEditBatchSize(task) {
 		let proc = task.process_type.name.toLowerCase()
-		const hasRecipe = task.task_ingredients && task.task_ingredients.length && task.task_ingredients[0].ingredient.recipe_id
+		const hasRecipe =
+			task.task_ingredients &&
+			task.task_ingredients.length &&
+			task.task_ingredients[0].ingredient.recipe_id
 		return (
-			task.items && task.items.length === 1 && !(this.state.isDandelion && proc === 'package') && !hasRecipe
+			task.items &&
+			task.items.length === 1 &&
+			!(this.state.isDandelion && proc === 'package') &&
+			!hasRecipe
 		)
 	}
 
@@ -136,7 +166,9 @@ class Task extends Component {
 			if (err) {
 				console.error('Error converting QR Code to string', err)
 			} else {
-				let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(4)}`
+				let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(
+					4
+				)}`
 				let updatedHTML = Print.generateHTML(updatedSVG, task)
 				Expo.DangerZone.Print.printAsync({ html: updatedHTML })
 			}
@@ -162,10 +194,15 @@ class Task extends Component {
 				accessible={false}>
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
-					{!task.is_flagged && task.num_flagged_ancestors > 0 && <AncestorFlag />}
+					{!task.is_flagged &&
+						task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
-					<KeyboardAwareScrollView keyboardShouldPersistTaps="handled" extraScrollHeight={heightOfUserAttributeDropdown}>
-						{task.recipe_instructions && <RecipeInstructions instructions={task.recipe_instructions} />}
+					<KeyboardAwareScrollView
+						keyboardShouldPersistTaps="handled"
+						extraScrollHeight={heightOfUserAttributeDropdown}>
+						{task.recipe_instructions && (
+							<RecipeInstructions instructions={task.recipe_instructions} />
+						)}
 						<AttributeList
 							data={organized_attributes}
 							onSubmitEditing={this.handleSubmitEditing.bind(this)}
@@ -194,7 +231,7 @@ class Task extends Component {
 
 	showCustomNameAlert() {
 		AlertIOS.prompt(
-			'Enter a value',
+			'Enter a new task name',
 			null,
 			this.handleRenameTask,
 			'plain-text',
@@ -211,8 +248,7 @@ class Task extends Component {
 			[
 				{
 					text: 'Cancel',
-					onPress: () => {
-					},
+					onPress: () => {},
 					style: 'cancel',
 				},
 				{
@@ -227,18 +263,22 @@ class Task extends Component {
 
 	showEditBatchSizeAlert() {
 		let { task } = this.props
-		let item = task.items[0]
 		AlertIOS.prompt(
-			'Enter a new batch size',
+			`Enter a new batch size (${task.process_type.unit})`,
 			null,
 			this.handleEditBatchSize,
 			'plain-text',
-			String(parseFloat(item.amount)),
+			String(parseFloat(task.total_amount)),
 			'numeric'
 		)
 	}
 
 	handleEditBatchSize(text) {
+		if (fieldIsBlank(text)) {
+			Alert.alert('Invalid batch size', 'Batch size cannot be blank.')
+			return
+		}
+
 		this.dispatchWithError(
 			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
 		)
@@ -249,9 +289,7 @@ class Task extends Component {
 		if (action_options[i] === 'Rename') {
 			this.showCustomNameAlert()
 		} else if (action_options[i] === 'Flag') {
-			this.dispatchWithError(
-				actions.requestFlagTask(this.props.task)
-			)
+			this.dispatchWithError(actions.requestFlagTask(this.props.task))
 		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
 		} else if (action_options[i] === 'Edit batch size') {
@@ -259,20 +297,47 @@ class Task extends Component {
 		}
 	}
 
-	handleRenameTask(text) {
-		this.dispatchWithError(
-			actions.requestRenameTask(this.props.task, text)
+	handleRenameTask(_newTaskName) {
+		const { task, dispatch } = this.props
+		let newTaskName = _newTaskName.trim()
+
+		if (fieldIsBlank(newTaskName)) {
+			Alert.alert('Invalid task name', 'Task name cannot be blank.')
+			return
+		}
+		if (newTaskName === task.display || newTaskName === task.custom_display) {
+			return
+		}
+		if (validTaskNameLength(newTaskName)) {
+			dispatch(actions.requestRenameTask(task, newTaskName))
+				.then(name_already_exists => {
+					if (name_already_exists) {
+						this.handleInvalidNameSubmit(newTaskName)
+					} else {
+						// successfully updated name!
+						this.props.navigation.setParams({ name: newTaskName })
+					}
+				})
+				.catch(e => console.error('Error updating task name', e))
+		} else {
+			Alert.alert(
+				'Invalid name',
+				'The task name should be between 1 and 50 characters.'
+			)
+		}
+	}
+
+	handleInvalidNameSubmit(newTaskName) {
+		Alert.alert(
+			`Whoops! Look like another task already exists named ${newTaskName}. Please try another name.`
 		)
-		this.props.navigation.setParams({ name: text })
 	}
 
 	handleDeleteTask() {
 		let success = () => {
 			this.props.navigation.goBack()
 		}
-		this.dispatchWithError(
-			actions.requestDeleteTask(this.props.task, success)
-		)
+		this.dispatchWithError(actions.requestDeleteTask(this.props.task, success))
 	}
 
 	showCamera(mode) {
@@ -315,26 +380,28 @@ class Task extends Component {
 		let imgpath = task.process_type.icon
 		let outputAmount = parseFloat(task.total_amount || 0)
 		return (
-			<AttributeHeaderCell
+			<TaskHeader
 				name={Compute.getReadableTaskDescriptor(task)}
 				imgpath={imgpath}
 				date={task.created_at}
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
+				onPress={this.showEditBatchSizeAlert}
 			/>
 		)
 	}
 
 	renderActionButton(isLabel, outputButtonName) {
-		if (this.state.isDandelion && this.props.task.process_type.name.toLowerCase() === "package") {
+		if (
+			this.state.isDandelion &&
+			this.props.task.process_type.name.toLowerCase() === 'package'
+		) {
 			return (
 				<ActionButton
 					buttonColor={Colors.base}
 					activeOpacity={0.5}
-					icon={
-						<FAIcon name="qrcode" size={24} color="white" />
-					}>
+					icon={<FAIcon name="qrcode" size={24} color="white" />}>
 					{!isLabel && (
 						<ActionButton.Item
 							buttonColor={'green'}
@@ -358,7 +425,9 @@ class Task extends Component {
 					buttonColor={Colors.base}
 					title="Inputs"
 					onPress={() => this.showCamera('inputs')}
-					renderIcon={() => <Image source={ImageUtility.requireIcon('inputs.png')} />}
+					renderIcon={() => (
+						<Image source={ImageUtility.requireIcon('inputs.png')} />
+					)}
 				/>
 			)
 		}

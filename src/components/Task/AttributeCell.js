@@ -11,6 +11,7 @@ import Colors from '../../resources/Colors'
 import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
+import DateTimeCell from './DateTimeCell'
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -50,6 +51,14 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
+      case 'TIME':
+          return <DateTimeCell
+            name={name}
+            loading={loading}
+            value={value}
+            onSubmit={this.handleSubmit}
+            isLoadingTask={isLoadingTask}
+          />
 			default:
 				return <TextNumberCell
 					name={name}

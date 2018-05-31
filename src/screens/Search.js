@@ -17,7 +17,6 @@ class Search extends Component {
 			barcode: false,
 			foundQR: null,
 			semantic: '', // semantic is a string that indicates what to display out of the various options
-			searchText: '',
 			typeSearch: false,
 			showNotFoundModal: false,
 			isLoading: false,
@@ -25,18 +24,21 @@ class Search extends Component {
 			request: null,
 		}
 		this.closeModal = this.closeModal.bind(this)
+
+		this.handleTypeSearchChange = this.handleTypeSearchChange.bind(this)
 	}
 
 	render() {
-		let { typeSearch, searchText, searchData, showNotFoundModal } = this.state
+		let { typeSearch, searchData, showNotFoundModal } = this.state
 
 		return (
 			<View style={styles.container}>
 				<QRCamera
-					searchable={true}
 					onBarCodeRead={this.handleBarCodeRead.bind(this)}
 					onClose={this.handleClose.bind(this)}
-					searchData={this.state.searchData}
+					searchData={searchData}
+					typeSearch={typeSearch}
+					onTypeSearchChange={this.handleTypeSearchChange}
 					onChangeText={this.handleChangeText.bind(this)}
 					onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 				/>
@@ -67,8 +69,8 @@ class Search extends Component {
 		this.setState({ request: r, isLoading: true })
 	}
 
-	toggleTypeSearch() {
-		this.setState({ typeSearch: !this.state.typeSearch })
+	handleTypeSearchChange(newVal) {
+		this.setState({ typeSearch: newVal, searchData: [] })
 	}
 
 	handleSelectTaskFromDropdown(task) {
@@ -136,7 +138,6 @@ class Search extends Component {
 			barcode: false,
 			foundQR: null,
 			semantic: '',
-			searchText: '',
 			isFetching: false,
 		})
 	}

@@ -27,6 +27,8 @@ import OutputItemList from '../components/Ingredients/OutputItemList'
 class Ingredients extends Component {
 	constructor(props) {
 		super(props)
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
+
 
 		this.state = {
 			expanded: false,
@@ -39,19 +41,21 @@ class Ingredients extends Component {
 			// search stuff
 			isFetchingSearch: false,
 			searchData: [],
+			typeSearch: false,
 			request: null,
 
-			outputAmount: 0,
+			outputAmount: default_amount,
 		}
 
 		this.handleAddInput = this.handleAddInput.bind(this)
 		this.handleEditAmount = this.handleEditAmount.bind(this)
 		this.handleRemoveInput = this.handleRemoveInput.bind(this)
 		this.handleOpenTask = this.handleOpenTask.bind(this)
+		this.handleTypeSearchChange = this.handleTypeSearchChange.bind(this)
 	}
 
 	componentDidMount() {
-		//this.props.dispatch(actions.fetchTask(14406))
+		this.props.dispatch(actions.fetchTask(this.props.taskID))
 		//this.testBarCodeRead()
 	}
 
@@ -70,6 +74,7 @@ class Ingredients extends Component {
 					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
+					typeSearch={this.state.typeSearch}
 				/>
 			</View>
 		)
@@ -78,10 +83,11 @@ class Ingredients extends Component {
 	renderCamera() {
 		return (
 			<QRCamera
-				searchable={true}
 				onBarCodeRead={this.handleBarCodeRead.bind(this)}
 				onClose={this.handleClose.bind(this)}
 				searchData={this.state.searchData}
+				typeSearch={this.state.typeSearch}
+				onTypeSearchChange={this.handleTypeSearchChange}
 				onChangeText={this.handleChangeText.bind(this)}
 				onSelectFromDropdown={this.handleSelectTaskFromDropdown.bind(this)}
 			/>
@@ -90,6 +96,9 @@ class Ingredients extends Component {
 
 	renderContent() {
 		let { task } = this.props
+		if (!task.task_ingredients)
+			return null
+
 		if (this.props.mode === 'items') {
 			return (
 				<OutputItemList
@@ -100,7 +109,7 @@ class Ingredients extends Component {
 					items={task.items}
 				/>
 			)
-		} else if(task.task_ingredients && task.task_ingredients.length === 0) {
+		} else if(task.task_ingredients.length === 0) {
 			return <ZeroIngredientsState />
 		}
 
@@ -163,6 +172,10 @@ class Ingredients extends Component {
 		}
 	}
 
+	handleTypeSearchChange(newVal) {
+		this.setState({ typeSearch: newVal, searchData: [] })
+	}
+
 	handleSetAmount(text) {
 		this.setState({ outputAmount: text })
 	}
@@ -208,6 +221,7 @@ class Ingredients extends Component {
 
 	renderOutputQR(creatingTask) {
 		let { barcode, semantic } = this.state
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
 
 		return (
 			<QRDisplay
@@ -215,8 +229,7 @@ class Ingredients extends Component {
 				barcode={barcode}
 				creating_task_display={''}
 				semantic={semantic}
-				amount={this.state.outputAmount}
-				default_amount={0}
+				amount={default_amount}
 				onChange={this.handleSetAmount.bind(this)}
 				onPress={this.handleAddOutput.bind(this)}
 				onCancel={this.handleCloseModal.bind(this)}
@@ -240,12 +253,13 @@ class Ingredients extends Component {
 	}
 
 	handleCloseModal() {
+		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
 		this.setState({
 			barcode: null,
 			foundItem: null,
 			semantic: '',
 			expanded: false,
-			outputAmount: 0,
+			outputAmount: default_amount,
 		})
 	}
 
@@ -330,6 +344,18 @@ class Ingredients extends Component {
 				this.setState({ semantic: SCAN_ERROR, barcode: barcode })
 			})
 			.finally(() => this.setState({ isFetchingItem: false }))
+	}
+
+	getDefaultOutputAmount(task, mode) {
+		let default_amount = 0
+		if (task && mode === 'items') {
+			if (task.process_type) {
+				if (task.process_type.default_amount) {
+					default_amount = task.process_type.default_amount
+				}
+			}
+		}
+		return default_amount
 	}
 
 	// MARK: - DEBUG

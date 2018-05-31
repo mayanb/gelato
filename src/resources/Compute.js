@@ -290,4 +290,35 @@ export default class Compute {
 			}
 		}
 	}
+
+	/*
+	 * Takes in 1) an array of task ids and 2) an array of tasks (both sorted recent to oldest)
+	 * also 3) tasksHash, which is a hash of taskId -> task for the array of task ids.
+	 * Returns an array of UNIQUE task ids sorted newest to oldest.
+	 */
+	static mergeNewTasks(idArr, tasksArr, tasksHash) {
+		let merged = []
+		let indexIdArr = 0
+		let indexTasksArr = 0
+		let current = 0
+
+		while (current < idArr.length + tasksArr.length) {
+			const isIdArrDepleted = indexIdArr >= idArr.length
+			const isArr2Depleted = indexTasksArr >= tasksArr.length
+
+			const idArrVal = !isIdArrDepleted && tasksHash[idArr[indexIdArr]].updated_at
+			const tasksArrVal = tasksArr[indexTasksArr] && tasksArr[indexTasksArr].updated_at
+			const AMoreRecentThanB = moment(idArrVal).isAfter(moment(tasksArrVal))
+
+			if (!isIdArrDepleted && (isArr2Depleted || AMoreRecentThanB)) {
+				merged[current] = idArr[indexIdArr]
+				indexIdArr++
+			} else {
+				merged[current] = tasksArr[indexTasksArr].id
+				indexTasksArr++
+			}
+			current++
+		}
+		return Array.from(new Set(merged))
+	}
 }

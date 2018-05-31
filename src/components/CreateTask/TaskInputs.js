@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Image, StyleSheet } from 'react-native'
 import ActionButton from 'react-native-action-button'
 import * as ImageUtility from '../../resources/ImageUtility'
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../../resources/Colors'
 import SelectTypes from './SelectTypes'
 import SelectBatchSize from './SelectBatchSize'
@@ -27,6 +27,9 @@ export default class TaskInputs extends Component {
 		let { selectedProduct, selectedProcess } = this.state
 		return (
 			<View style={styles.container}>
+				<KeyboardAwareScrollView
+					keyboardShouldPersistTaps="handled"
+					showsVerticalScrollIndicator={false}>
 					<SelectTypes
 						selectedProcess={selectedProcess}
 						selectedProduct={selectedProduct}
@@ -39,6 +42,7 @@ export default class TaskInputs extends Component {
 							batchSize={this.state.batchSize}
 						/>
 					)}
+				</KeyboardAwareScrollView>
 				{this.shouldShowNext() && (
 					<ActionButton
 						buttonColor={Colors.base}
@@ -71,7 +75,7 @@ export default class TaskInputs extends Component {
 				!isCreatingTask
 			)
 		}
-		
+
 	}
 
 	shouldShowNext() {
