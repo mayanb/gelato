@@ -70,6 +70,7 @@ class Ingredients extends Component {
 			<View style={{ flex: 1 }}>
 				{(this.state.barcode || this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
+					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
 					typeSearch={this.state.typeSearch}
@@ -298,8 +299,8 @@ class Ingredients extends Component {
 
 	handleBarCodeRead(e) {
 		const barcode = e.data.trim() // for some reason the qr code printed has some spaces sometimes
-		const { expanded, foundItem, semantic, isFetchingItem, isAddingInput } = this.state
-		if (expanded || foundItem || semantic || isFetchingItem || isAddingInput) {
+		const { expanded, foundItem, semantic, isFetchingItem, isAddingInput, typeSearch } = this.state
+		if (expanded || foundItem || semantic || isFetchingItem || isAddingInput || typeSearch) {
 			return
 		}
 

@@ -63,6 +63,7 @@ export default class PanelExpander extends Component {
 
 	handleOpen() {
 		this.setState({ expanded: true })
+		this.props.setExpanded(true)
 		Animated.timing(this.state.pan, {
 			toValue: OPEN_DIFF,
 			duration: 400,
@@ -71,6 +72,7 @@ export default class PanelExpander extends Component {
 
 	handleClose() {
 		this.setState({ expanded: false })
+		this.props.setExpanded(false)
 		Animated.timing(this.state.pan, {
 			toValue: 0,
 			duration: 400,
