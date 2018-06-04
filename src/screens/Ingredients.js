@@ -70,6 +70,8 @@ class Ingredients extends Component {
 			<View style={{ flex: 1 }}>
 				{(this.state.barcode || this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
+					expanded={this.state.expanded}
+					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
 					typeSearch={this.state.typeSearch}
