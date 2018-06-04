@@ -70,8 +70,6 @@ class Ingredients extends Component {
 			<View style={{ flex: 1 }}>
 				{(this.state.barcode || this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
-					expanded={this.state.expanded}
-					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
 					ingredientsContent={this.renderContent()}
 					typeSearch={this.state.typeSearch}
@@ -269,7 +267,7 @@ class Ingredients extends Component {
 			.then(() => this.handleCloseModal())
 			.then(() => this.setState({ expanded: true }))
 			.catch(err => console.error('Error adding input', err))
-			.finally(() => this.setState({ isAddingInput: false, foundItem: null, barcode: null }))
+			.finally(() => this.setState({ expanded: false, isAddingInput: false, foundItem: null, barcode: null }))
 	}
 
 	handleRemoveInput(inputID) {
