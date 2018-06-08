@@ -53,16 +53,17 @@ class App extends React.Component {
 		const loggedIn = !!token
 
 		if (loggedIn) {
-			const [username, team, teamID] = await Promise.all([
+			const [username, team, teamID, task_label_type] = await Promise.all([
 				Storage.get('username'),
 				Storage.get('teamName'),
 				Storage.get('teamID'),
+				Storage.get('task_label_type'),
 			])
 
 			// NOTE(brent): one could move all data that is currently stored in
 			// Storage into the user via react-native-authentication-helpers and
 			// delete a lot of code
-			setUser({ username, team, teamID, token })
+			setUser({ username, team, teamID, token, task_label_type })
 		}
 	}
 

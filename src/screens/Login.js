@@ -128,7 +128,8 @@ class Login extends Component {
 
   loginSuccess(res) {
     dispatch(actions.requestSuccess('LOGIN', res.body))
-    data = res.body
+    const data = res.body
+		const task_label_type = String(data.user.task_label_type)
     Storage.save('token', data.token)
     Storage.save('token', data.token)
     Storage.save('username', data.user.username_display)
@@ -137,12 +138,14 @@ class Login extends Component {
     Storage.save('userAccountID', data.user.user_id)
     Storage.save('accountType', data.user.account_type)
     Storage.save('teamName', data.user.team_name)
+		Storage.save('task_label_type', task_label_type)
 
     setUser({
       token: data.token,
       username: data.user.username_display,
       team: data.user.team_name,
       teamID: data.user.team,
+			task_label_type: task_label_type,
     })
   }
 
