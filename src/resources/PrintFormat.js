@@ -8,9 +8,6 @@ export default class Print {
 		let { process_type, product_type, display, created_at } = task
 		let m = 1.2 // adjust m for scaling, adjust .containerouter height and width for label size
 		const { task_label_type } = getUser()
-		const labelTypeClass = `info-extended task-label-type-${task_label_type}`
-		console.log('in print:', task_label_type)
-		console.log(labelTypeClass)
 
 		let labelTypeStyling = '' // task_label_type === '0' gets default styling
 		if (task_label_type === '1') {
@@ -83,7 +80,7 @@ export default class Print {
 						<div class='svg-container'>
 							${svg}
 						 </div>
-						 <div class=${labelTypeClass}>
+						 <div class=${'info-extended'}>
 							 <span id="process">${process_type.code}</span>
 							 <span id="product">${product_type.code}</span>
 							 <span id="date">${moment(created_at).format('MMM DD YYYY')}</span>
@@ -101,6 +98,4 @@ export default class Print {
 				</div>
 		</div>`
 	}
-
-
 }
