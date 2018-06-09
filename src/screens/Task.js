@@ -159,20 +159,23 @@ class Task extends Component {
 	}
 
 	printHTML() {
-		let task = this.props.task
-		let qrtext = task.items[0].item_qr
-
-		QRCode.toString(qrtext, (err, string) => {
-			if (err) {
-				console.error('Error converting QR Code to string', err)
-			} else {
-				let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(
-					4
-				)}`
-				let updatedHTML = Print.generateHTML(updatedSVG, task)
-				Expo.DangerZone.Print.printAsync({ html: updatedHTML })
-			}
-		})
+		const { task } = this.props
+		const qrtext = task.items[0] && task.items[0].item_qr
+		if (qrtext) {
+			QRCode.toString(qrtext, (err, string) => {
+				if (err) {
+					console.error('Error converting QR Code to string', err)
+				} else {
+					let updatedSVG = `${string.slice(0, 4)} height="204px" ${string.slice(
+						4
+					)}`
+					let updatedHTML = Print.generateHTML(updatedSVG, task)
+					Expo.DangerZone.Print.printAsync({ html: updatedHTML })
+				}
+			})
+		} else {
+			Alert.alert('There are no outputs for this task', '')
+		}
 	}
 
 	render() {
