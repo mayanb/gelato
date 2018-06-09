@@ -11,9 +11,9 @@ export default class Print {
 
 		let labelTypeStyling = '' // task_label_type === '0' gets default styling
 		if (task_label_type === '1') {
-			labelTypeStyling = `#product {margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
+			labelTypeStyling = `#product {white-space: nowrap; margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
 		} else if (task_label_type === '2') {
-			labelTypeStyling = `#process {margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
+			labelTypeStyling = `#process {white-space: nowrap; margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
 		}
 		let styles = `<style>
 		.containerouter {
@@ -64,6 +64,7 @@ export default class Print {
 		margin-top: ${m*4}px;
 	}
 	.lot-code {
+		white-space: nowrap;
 		font-size: ${m*32}px;
 		font-weight: bold;
 	}
