@@ -16,6 +16,7 @@ import Search from './screens/Search'
 import Snackbar from './components/Snackbar'
 import ShouldUpdateModal from './components/Main/ShouldUpdateModal'
 import { connect } from 'react-redux'
+import Networking from './resources/Networking-superagent'
 
 let { releaseChannel, publishedTime} = Expo.Constants.manifest
 const LATEST_MANIFEST_URL = `https://expo.io/@polymer/polymer/index.exp?release-channel=${releaseChannel || 'staging'}&sdkVersion=26.0.0`
@@ -49,20 +50,27 @@ class App extends React.Component {
 	}
 
 	_loadUserInformation = async () => {
-		const token = await Storage.get('token')
+		const [token, userID] = await Promise.all([
+			Storage.get('token'),
+			Storage.get('userID'),
+		])
 		const loggedIn = !!token
 
 		if (loggedIn) {
-			const [username, team, teamID] = await Promise.all([
+			const [username, team, teamID, userProfileRes] = await Promise.all([
 				Storage.get('username'),
 				Storage.get('teamName'),
 				Storage.get('teamID'),
+				Networking.get(`/ics/userprofiles/${userID}/`),
 			])
 
 			// NOTE(brent): one could move all data that is currently stored in
 			// Storage into the user via react-native-authentication-helpers and
 			// delete a lot of code
-			setUser({ username, team, teamID, token })
+
+			// On error, just return zero, the first option
+			const task_label_type = userProfileRes.body ? String(userProfileRes.body.task_label_type) : '0'
+			setUser({ username, team, teamID, token, task_label_type })
 		}
 	}
 
