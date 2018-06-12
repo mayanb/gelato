@@ -8,6 +8,7 @@ import {
 	Alert,
 	AlertIOS,
 	Image,
+	Platform,
 } from 'react-native'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -190,7 +191,9 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
+		const isIOS = Platform.OS === 'ios'
 		const heightOfUserAttributeDropdown = 150
+		const extraScrollHeight = isIOS ? heightOfUserAttributeDropdown : 0
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
@@ -201,8 +204,10 @@ class Task extends Component {
 						task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
 					<KeyboardAwareScrollView
+						enableOnAndroid={true}
+						enableAutoAutomaticScroll={isIOS}
 						keyboardShouldPersistTaps="handled"
-						extraScrollHeight={heightOfUserAttributeDropdown}>
+						extraScrollHeight={extraScrollHeight}>
 						{task.recipe_instructions && (
 							<RecipeInstructions instructions={task.recipe_instructions} />
 						)}
