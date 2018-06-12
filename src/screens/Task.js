@@ -9,6 +9,7 @@ import {
 	AlertIOS,
 	Image,
 } from 'react-native'
+import Prompt from 'rn-prompt'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
@@ -48,7 +49,7 @@ class Task extends Component {
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.showEditBatchSizeAlert = this.showEditBatchSizeAlert.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
-		this.showCustomNameAlert = this.showCustomNameAlert.bind(this)
+		this.showRenamePrompt = this.showRenamePrompt.bind(this)
 
 		this.state = {
 			organized_attributes:
@@ -56,6 +57,7 @@ class Task extends Component {
 				props.task.process_type &&
 				props.task.process_type.attributes,
 			action_options: ACTION_OPTIONS,
+			showRenamePrompt: false,
 		}
 	}
 
@@ -97,7 +99,7 @@ class Task extends Component {
 			showActionSheet: () => this.ActionSheet.show(),
 			name: name,
 			printHTML: () => this.printHTML(),
-			handleEditName: this.showCustomNameAlert,
+			handleEditName: this.showRenamePrompt,
 			handleGoBack: this.handleGoBack.bind(this)
 		})
 	}
@@ -220,6 +222,14 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					{this.renderActionButton(isLabel, outputButtonName)}
+					<Prompt
+						title="Enter a new task name"
+						placeholder="Type new task name"
+						defaultValue={task.display}
+						visible={this.state.showRenamePrompt}
+						onCancel={() => this.setState({ showRenamePrompt: false })}
+						onSubmit={this.handleRenameTask}
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -232,14 +242,8 @@ class Task extends Component {
 		})
 	}
 
-	showCustomNameAlert() {
-		AlertIOS.prompt(
-			'Enter a new task name',
-			null,
-			this.handleRenameTask,
-			'plain-text',
-			this.props.task.display
-		)
+	showRenamePrompt() {
+		this.setState({ showRenamePrompt: true })
 	}
 
 	showConfirmDeleteAlert() {
@@ -290,7 +294,7 @@ class Task extends Component {
 	handlePress(i) {
 		let { action_options } = this.state
 		if (action_options[i] === 'Rename') {
-			this.showCustomNameAlert()
+			this.showRenamePrompt()
 		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(actions.requestFlagTask(this.props.task))
 		} else if (action_options[i] === 'Delete') {
@@ -308,6 +312,7 @@ class Task extends Component {
 			Alert.alert('Invalid task name', 'Task name cannot be blank.')
 			return
 		}
+		this.setState({ showRenamePrompt: false })
 		if (newTaskName === task.display || newTaskName === task.custom_display) {
 			return
 		}
