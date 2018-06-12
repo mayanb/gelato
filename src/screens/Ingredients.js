@@ -187,7 +187,6 @@ class Ingredients extends Component {
 
 		let creatingTask =
 			!!foundItem && !!foundItem.creating_task ? foundItem.creating_task : {}
-		console.log(creatingTask)
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.props.mode === 'inputs'
