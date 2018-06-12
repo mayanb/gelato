@@ -86,7 +86,7 @@ class App extends React.Component {
 			)
 		}
 
-		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate 
+		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate
 		return (
 			<View style={{ flex: 1 }}>
 				{this.state.loggedIn ? <Navigation screenProps={user} /> : <Login />}

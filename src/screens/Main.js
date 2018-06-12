@@ -192,7 +192,7 @@ class Main extends Component {
 					cancelButtonIndex={CANCEL_INDEX}
 					onPress={this.handlePress}
 				/>
-				{data.length && (
+				{!!data.length && (
 					<FlatList
 						data={data}
 						style={styles.table}
