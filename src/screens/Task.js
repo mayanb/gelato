@@ -193,7 +193,7 @@ class Task extends Component {
 		}
 		const isIOS = Platform.OS === 'ios'
 		const heightOfUserAttributeDropdown = 150
-		const extraScrollHeight = isIOS ? heightOfUserAttributeDropdown : 0
+		const extraScrollHeight = isIOS ? heightOfUserAttributeDropdown : 15
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
