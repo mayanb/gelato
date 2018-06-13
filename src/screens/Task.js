@@ -6,7 +6,6 @@ import {
 	StyleSheet,
 	TouchableWithoutFeedback,
 	Alert,
-	AlertIOS,
 	Image,
 } from 'react-native'
 import Prompt from 'rn-prompt'
