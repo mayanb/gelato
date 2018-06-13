@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Colors from '../../resources/Colors'
-import { StyleSheet, Text, View, Image, TouchableOpacity, AlertIOS } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native'
 import pluralize from 'pluralize'
 import * as ImageUtility from '../../resources/ImageUtility'
 import { FlagPill, AncestorFlagPill } from '../Flag'
@@ -87,7 +87,7 @@ class InputRow extends Component {
 	}
 
 	handleRemove() {
-		AlertIOS.alert(
+		Alert.alert(
 			'Are you sure you want to remove this item?',
 			'',
 			[
