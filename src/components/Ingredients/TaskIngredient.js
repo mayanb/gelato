@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity, AlertIOS } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import Prompt from 'rn-prompt'
 import * as ImageUtility from '../../resources/ImageUtility'
 import Colors from '../../resources/Colors'
 import { formatNumber, formatAmount } from '../../resources/Utility'
@@ -10,21 +11,32 @@ export default class TaskIngredient extends Component {
 	constructor(props) {
 		super(props)
 
-		this.handleEdit = this.handleEdit.bind(this)
+		this.state = { showEditPrompt: false }
+
+		this.showEditPrompt = this.showEditPrompt.bind(this)
 	}
 
+	showEditPrompt() {
+		this.setState({ showEditPrompt: true })
+	}
 
-	handleEdit() {
-		const ingredient = this.props.taskIngredient.ingredient
-		const formattedAmount = String(Number(this.props.taskIngredient.actual_amount))
-		const subtitle = `${pluralize(ingredient.process_type.unit)} of ${ingredientName(ingredient)}`
-		AlertIOS.prompt(
-			'Enter amount used',
-			subtitle,
-			(amount) => this.props.onEditAmount(this.props.taskIngredient.id, amount),
-			'plain-text',
-			formattedAmount,
-			'numeric',
+	renderEditPrompt() {
+		const { taskIngredient } = this.props
+		const ingredient = taskIngredient.ingredient
+		const formattedAmount = String(Number(taskIngredient.actual_amount))
+		const units = `${pluralize(ingredient.process_type.unit)} of ${ingredientName(ingredient)}`
+		return (
+			<Prompt
+				title={`Enter amount used (${units})`}
+				placeholder="Amount used"
+				defaultValue={formattedAmount}
+				visible={this.state.showEditPrompt}
+				onCancel={() => this.setState({ showEditPrompt: false })}
+				onSubmit={amount => {
+					this.setState({ showEditPrompt: false })
+					this.props.onEditAmount(taskIngredient.id, amount)
+				}}
+			/>
 		)
 	}
 
@@ -55,12 +67,13 @@ export default class TaskIngredient extends Component {
 							actual={actual_amount}
 							expected={scaled_amount}
 							unit={process_type.unit}
-							onEdit={this.handleEdit}
+							onEdit={this.showEditPrompt}
 						/>
 					</View>
-					<EditButton onEdit={this.handleEdit} />
+					<EditButton onEdit={this.showEditPrompt} />
 				</View>
 				<InputsContainer inputs={inputs} onRemove={onRemoveInput} onOpenTask={onOpenTask} />
+				{this.renderEditPrompt()}
 			</View>
 		)
 	}
