@@ -47,7 +47,7 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
-		this.showEditBatchSizeAlert = this.showEditBatchSizeAlert.bind(this)
+		this.showEditBatchSizePrompt = this.showEditBatchSizePrompt.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
 		this.showRenamePrompt = this.showRenamePrompt.bind(this)
 
@@ -222,14 +222,8 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					{this.renderActionButton(isLabel, outputButtonName)}
-					<Prompt
-						title="Enter a new task name"
-						placeholder="Type new task name"
-						defaultValue={task.display}
-						visible={this.state.showRenamePrompt}
-						onCancel={() => this.setState({ showRenamePrompt: false })}
-						onSubmit={this.handleRenameTask}
-					/>
+					{this.renderRenamePrompt(task)}
+					{this.renderEditBatchSizePrompt(task)}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -244,6 +238,19 @@ class Task extends Component {
 
 	showRenamePrompt() {
 		this.setState({ showRenamePrompt: true })
+	}
+
+	renderRenamePrompt(task) {
+		return (
+			<Prompt
+				title="Enter a new task name"
+				placeholder="Type new task name"
+				defaultValue={task.display}
+				visible={this.state.showRenamePrompt}
+				onCancel={() => this.setState({ showRenamePrompt: false })}
+				onSubmit={this.handleRenameTask}
+			/>
+		)
 	}
 
 	showConfirmDeleteAlert() {
@@ -268,15 +275,20 @@ class Task extends Component {
 		)
 	}
 
-	showEditBatchSizeAlert() {
-		let { task } = this.props
-		AlertIOS.prompt(
-			`Enter a new batch size (${task.process_type.unit})`,
-			null,
-			this.handleEditBatchSize,
-			'plain-text',
-			String(parseFloat(task.total_amount)),
-			'numeric'
+	showEditBatchSizePrompt() {
+		this.setState({ showEditBatchSizePrompt: true })
+	}
+
+	renderEditBatchSizePrompt(task) {
+		return (
+			<Prompt
+				title={`Enter a new batch size (${task.process_type.unit})`}
+				placeholder="Type new batch size"
+				defaultValue={String(parseFloat(task.total_amount))}
+				visible={this.state.showEditBatchSizePrompt}
+				onCancel={() => this.setState({ showEditBatchSizePrompt: false })}
+				onSubmit={this.handleEditBatchSize}
+			/>
 		)
 	}
 
@@ -285,7 +297,7 @@ class Task extends Component {
 			Alert.alert('Invalid batch size', 'Batch size cannot be blank.')
 			return
 		}
-
+		this.setState({ showEditBatchSizePrompt: false })
 		this.dispatchWithError(
 			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
 		)
@@ -300,7 +312,7 @@ class Task extends Component {
 		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
 		} else if (action_options[i] === 'Edit batch size') {
-			this.showEditBatchSizeAlert()
+			this.showEditBatchSizePrompt()
 		}
 	}
 
@@ -395,7 +407,7 @@ class Task extends Component {
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
-				onPress={this.showEditBatchSizeAlert}
+				onPress={this.showEditBatchSizePrompt}
 			/>
 		)
 	}
