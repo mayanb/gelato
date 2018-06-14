@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-	AlertIOS,
+	Alert,
 	Text,
 	TouchableOpacity,
 	View,
@@ -143,7 +143,7 @@ class QRItemListRow extends Component {
 	}
 
 	confirmRemove() {
-		AlertIOS.alert(
+		Alert.alert(
 			'Are you sure you want to remove this item?',
 			'',
 			[

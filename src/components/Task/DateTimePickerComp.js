@@ -32,6 +32,7 @@ export default class DateTimePickerComp extends Component {
 					color: Colors.textBlack,
 				}}
 				titleIOS={title}
+				datePickerModeAndroid="spinner"
 				isVisible={this.state.isDateTimePickerVisible}
 				onConfirm={this.handleDatePicked}
 				onCancel={this.hideDateTimePicker}
