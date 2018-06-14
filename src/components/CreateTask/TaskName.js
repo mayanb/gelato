@@ -74,6 +74,7 @@ function EditableName({ newName, onChangeText }) {
 	return (
 		<View style={styles.nameContainer}>
 			<TextInput
+				underlineColorAndroid="transparent"
 				style={styles.name}
 				placeholder="Enter a task name"
 				autoCapitalize="none"

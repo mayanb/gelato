@@ -68,7 +68,7 @@ class Ingredients extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				{(this.state.barcode || this.state.semantic) && this.renderQRModal()}
+				{(!!this.state.barcode || !!this.state.semantic) && this.renderQRModal()}
 				<PanelExpander
 					setExpanded={expanded => this.setState({ expanded: expanded })}
 					camera={this.renderCamera()}
@@ -186,8 +186,7 @@ class Ingredients extends Component {
 		}
 
 		let creatingTask =
-			foundItem && foundItem.creating_task ? foundItem.creating_task : {}
-
+			!!foundItem && !!foundItem.creating_task ? foundItem.creating_task : {}
 		return (
 			<Modal onPress={this.handleCloseModal.bind(this)}>
 				{this.props.mode === 'inputs'
@@ -238,7 +237,11 @@ class Ingredients extends Component {
 	}
 
 	renderQRLoading() {
-		return <Text>Loading...</Text>
+		return (
+			<View>
+				<Text>Loading...</Text>
+			</View>
+		)
 	}
 
 	// MARK: - EVENT HANDLERS
