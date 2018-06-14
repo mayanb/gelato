@@ -49,7 +49,6 @@ class Task extends Component {
 		this.handleRenameTask = this.handleRenameTask.bind(this)
 		this.showEditBatchSizePrompt = this.showEditBatchSizePrompt.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
-		this.showCustomNameAlert = this.showCustomNameAlert.bind(this)
 		this.showRenamePrompt = this.showRenamePrompt.bind(this)
 		this.keyboardDidShow = this.keyboardDidShow.bind(this)
 		this.keyboardDidHide = this.keyboardDidHide.bind(this)
