@@ -244,6 +244,7 @@ class Task extends Component {
 	renderRenamePrompt(task) {
 		return (
 			<Prompt
+				textInputProps={{ autoCorrect: false, autoComplete: false }}
 				title="Enter a new task name"
 				placeholder="Type new task name"
 				defaultValue={task.display}
