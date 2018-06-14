@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, View, StyleSheet } from 'react-native'
+import { Button, View, StyleSheet, Platform } from 'react-native'
 import Colors from '../resources/Colors'
 
 export function CancelButton({ onCancel, style, ...rest }) {
@@ -40,7 +40,7 @@ export class AddButton extends Component {
 			<ModalButton
 				onPress={this.handlePress}
 				backgroundColor={backgroundColor}
-				color="white"
+				color={Platform.OS === 'ios' ? 'white' : undefined}
 				title="Add"
 				disabled={this.state.isAdding || disabled}
 				{...rest}

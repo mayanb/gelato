@@ -10,6 +10,7 @@ import { AddButton, CancelButton } from './Buttons'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
 import NumericInputWithUnits from './NumericInputWithUnits'
+import { fieldIsBlank } from '../resources/Utility'
 
 
 export default class QRDisplay extends Component {
@@ -33,7 +34,7 @@ export default class QRDisplay extends Component {
 				{Compute.isFlagged(semantic) && <Flag />}
 				{!Compute.isFlagged(semantic) && Compute.isAncestorFlagged(semantic) && <AncestorFlag />}
 				<View style={styles.main}>
-					{text && <Text style={styles.semantic}>{text}</Text>}
+					{!fieldIsBlank(text) && <Text style={styles.semantic}>{text}</Text>}
 					{shouldShowAmount ? (
 						<View>
 							<NumericInputWithUnits

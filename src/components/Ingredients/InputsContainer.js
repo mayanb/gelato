@@ -56,7 +56,7 @@ export default class InputsContainer extends Component {
 					<View style={styles.taskCountContainer}>
 						<Text style={styles.taskCount}>{taskCount}</Text>
 					</View>
-					{inputs.length && (
+					{!!inputs.length && (
 						<View onPress={this.handleToggleExpanded} style={styles.expandButton}>
 							<Image source={ImageUtility.requireIcon('downarrow.png')} style={styles.arrowIcon} />
 						</View>
