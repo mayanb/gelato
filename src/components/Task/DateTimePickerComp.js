@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Keyboard } from 'react-native'
 import moment from 'moment'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import Colors from '../../resources/Colors'
@@ -7,6 +8,10 @@ export default class DateTimePickerComp extends Component {
 	constructor(props) {
 		super(props)
 		this.state = { isDateTimePickerVisible: true }
+	}
+
+	componentDidMount() {
+		Keyboard.dismiss()
 	}
 
 	hideDateTimePicker = () => {
