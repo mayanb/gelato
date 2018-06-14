@@ -236,7 +236,9 @@ class Task extends Component {
 	}
 
 	showRenamePrompt() {
-		this.setState({ showRenamePrompt: true })
+		if (!this.state.showRenamePrompt) {
+			this.setState({ showRenamePrompt: true })
+		}
 	}
 
 	renderRenamePrompt(task) {
@@ -275,12 +277,15 @@ class Task extends Component {
 	}
 
 	showEditBatchSizePrompt() {
-		this.setState({ showEditBatchSizePrompt: true })
+		if (!this.state.showEditBatchSizePrompt) {
+			this.setState({ showEditBatchSizePrompt: true })
+		}
 	}
 
 	renderEditBatchSizePrompt(task) {
 		return (
 			<Prompt
+				textInputProps={{ keyboardType: 'numeric' }}
 				title={`Enter a new batch size (${task.process_type.unit})`}
 				placeholder="Type new batch size"
 				defaultValue={String(parseFloat(task.total_amount))}

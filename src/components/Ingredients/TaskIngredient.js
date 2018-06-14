@@ -30,6 +30,7 @@ export default class TaskIngredient extends Component {
 		const units = `${pluralize(ingredient.process_type.unit)} of ${ingredientName(ingredient)}`
 		return (
 			<Prompt
+				textInputProps={{ keyboardType: 'numeric' }}
 				title={`Enter amount used (${units})`}
 				placeholder="Amount used"
 				defaultValue={formattedAmount}
