@@ -6,9 +6,9 @@ import {
 	StyleSheet,
 	TouchableWithoutFeedback,
 	Alert,
-	AlertIOS,
 	Image,
 } from 'react-native'
+import Prompt from 'rn-prompt'
 import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
@@ -46,9 +46,9 @@ class Task extends Component {
 		this.handlePress = this.handlePress.bind(this)
 		this.showCamera = this.showCamera.bind(this)
 		this.handleRenameTask = this.handleRenameTask.bind(this)
-		this.showEditBatchSizeAlert = this.showEditBatchSizeAlert.bind(this)
+		this.showEditBatchSizePrompt = this.showEditBatchSizePrompt.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
-		this.showCustomNameAlert = this.showCustomNameAlert.bind(this)
+		this.showRenamePrompt = this.showRenamePrompt.bind(this)
 
 		this.state = {
 			organized_attributes:
@@ -56,6 +56,7 @@ class Task extends Component {
 				props.task.process_type &&
 				props.task.process_type.attributes,
 			action_options: ACTION_OPTIONS,
+			showRenamePrompt: false,
 		}
 	}
 
@@ -97,7 +98,7 @@ class Task extends Component {
 			showActionSheet: () => this.ActionSheet.show(),
 			name: name,
 			printHTML: () => this.printHTML(),
-			handleEditName: this.showCustomNameAlert,
+			handleEditName: this.showRenamePrompt,
 			handleGoBack: this.handleGoBack.bind(this)
 		})
 	}
@@ -220,6 +221,8 @@ class Task extends Component {
 						onPress={this.handlePress}
 					/>
 					{this.renderActionButton(isLabel, outputButtonName)}
+					{this.renderRenamePrompt(task)}
+					{this.renderEditBatchSizePrompt(task)}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -232,13 +235,23 @@ class Task extends Component {
 		})
 	}
 
-	showCustomNameAlert() {
-		AlertIOS.prompt(
-			'Enter a new task name',
-			null,
-			this.handleRenameTask,
-			'plain-text',
-			this.props.task.display
+	showRenamePrompt() {
+		if (!this.state.showRenamePrompt) {
+			this.setState({ showRenamePrompt: true })
+		}
+	}
+
+	renderRenamePrompt(task) {
+		return (
+			<Prompt
+				textInputProps={{ autoCorrect: false, autoComplete: false }}
+				title="Enter a new task name"
+				placeholder="Type new task name"
+				defaultValue={task.display}
+				visible={this.state.showRenamePrompt}
+				onCancel={() => this.setState({ showRenamePrompt: false })}
+				onSubmit={this.handleRenameTask}
+			/>
 		)
 	}
 
@@ -264,15 +277,23 @@ class Task extends Component {
 		)
 	}
 
-	showEditBatchSizeAlert() {
-		let { task } = this.props
-		AlertIOS.prompt(
-			`Enter a new batch size (${task.process_type.unit})`,
-			null,
-			this.handleEditBatchSize,
-			'plain-text',
-			String(parseFloat(task.total_amount)),
-			'numeric'
+	showEditBatchSizePrompt() {
+		if (!this.state.showEditBatchSizePrompt) {
+			this.setState({ showEditBatchSizePrompt: true })
+		}
+	}
+
+	renderEditBatchSizePrompt(task) {
+		return (
+			<Prompt
+				textInputProps={{ keyboardType: 'numeric' }}
+				title={`Enter a new batch size (${task.process_type.unit})`}
+				placeholder="Type new batch size"
+				defaultValue={String(parseFloat(task.total_amount))}
+				visible={this.state.showEditBatchSizePrompt}
+				onCancel={() => this.setState({ showEditBatchSizePrompt: false })}
+				onSubmit={this.handleEditBatchSize}
+			/>
 		)
 	}
 
@@ -281,7 +302,7 @@ class Task extends Component {
 			Alert.alert('Invalid batch size', 'Batch size cannot be blank.')
 			return
 		}
-
+		this.setState({ showEditBatchSizePrompt: false })
 		this.dispatchWithError(
 			actions.editBatchSize(this.props.task, text, this.props.taskSearch)
 		)
@@ -290,13 +311,13 @@ class Task extends Component {
 	handlePress(i) {
 		let { action_options } = this.state
 		if (action_options[i] === 'Rename') {
-			this.showCustomNameAlert()
+			this.showRenamePrompt()
 		} else if (action_options[i] === 'Flag') {
 			this.dispatchWithError(actions.requestFlagTask(this.props.task))
 		} else if (action_options[i] === 'Delete') {
 			this.showConfirmDeleteAlert()
 		} else if (action_options[i] === 'Edit batch size') {
-			this.showEditBatchSizeAlert()
+			this.showEditBatchSizePrompt()
 		}
 	}
 
@@ -308,6 +329,7 @@ class Task extends Component {
 			Alert.alert('Invalid task name', 'Task name cannot be blank.')
 			return
 		}
+		this.setState({ showRenamePrompt: false })
 		if (newTaskName === task.display || newTaskName === task.custom_display) {
 			return
 		}
@@ -390,7 +412,7 @@ class Task extends Component {
 				type="Top"
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
-				onPress={this.showEditBatchSizeAlert}
+				onPress={this.showEditBatchSizePrompt}
 			/>
 		)
 	}
