@@ -17,7 +17,10 @@ export default class TaskIngredient extends Component {
 	}
 
 	showEditPrompt() {
-		this.setState({ showEditPrompt: true })
+		// Prevent re-render if presses happen in rapid succession (which can hide keyboard)
+		if (!this.state.showEditPrompt) {
+			this.setState({ showEditPrompt: true })
+		}
 	}
 
 	renderEditPrompt() {
