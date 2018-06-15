@@ -22,7 +22,9 @@ export default class AttributeList extends React.Component {
 					)
 				})}
 				<TouchableWithoutFeedback>
-					<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
+					<View>
+						<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
+					</View>
 				</TouchableWithoutFeedback>
 			</View>
 		)
