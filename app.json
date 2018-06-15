@@ -28,6 +28,9 @@
       "src/resources/assets/**",
       "node_modules/react-navigation/src/**/*.png",
       "node_modules/@expo/vector-icons/fonts/Ionicons.ttf"
-    ]
+    ],
+    "androidStatusBar": {
+      "backgroundColor": "#eeeeee",
+    }
   }
 }

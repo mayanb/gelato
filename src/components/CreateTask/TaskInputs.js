@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Image, StyleSheet } from 'react-native'
+import { View, Image, StyleSheet, Platform } from "react-native";
 import ActionButton from 'react-native-action-button'
 import * as ImageUtility from '../../resources/ImageUtility'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -25,9 +25,15 @@ export default class TaskInputs extends Component {
 
 	render() {
 		let { selectedProduct, selectedProcess } = this.state
+		const isIOS = Platform.OS === 'ios'
+		const heightOfDropdown = 130
+		const extraScrollHeight = isIOS ? 0 : heightOfDropdown
 		return (
 			<View style={styles.container}>
 				<KeyboardAwareScrollView
+					enableOnAndroid={true}
+					enableAutoAutomaticScroll={isIOS}
+					extraScrollHeight={extraScrollHeight}
 					keyboardShouldPersistTaps="handled"
 					showsVerticalScrollIndicator={false}>
 					<SelectTypes

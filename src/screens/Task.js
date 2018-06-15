@@ -7,6 +7,7 @@ import {
 	TouchableWithoutFeedback,
 	Alert,
 	Image,
+	Platform,
 } from 'react-native'
 import Prompt from 'rn-prompt'
 import ActionSheet from 'react-native-actionsheet'
@@ -49,8 +50,11 @@ class Task extends Component {
 		this.showEditBatchSizePrompt = this.showEditBatchSizePrompt.bind(this)
 		this.handleEditBatchSize = this.handleEditBatchSize.bind(this)
 		this.showRenamePrompt = this.showRenamePrompt.bind(this)
+		this.keyboardDidShow = this.keyboardDidShow.bind(this)
+		this.keyboardDidHide = this.keyboardDidHide.bind(this)
 
 		this.state = {
+			actionButtonVisible: true,
 			organized_attributes:
 				props.task &&
 				props.task.process_type &&
@@ -130,6 +134,23 @@ class Task extends Component {
 			.catch(e => console.error('Error fetching task', e))
 
 		this.updateActionSheet(this.props.task)
+
+		this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow)
+		this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide)
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove()
+		this.keyboardDidHideListener.remove()
+	}
+
+	// On Android, the keyboard pushes the action button up, rather than covering it. So hide it when keyboard open.
+	keyboardDidShow() {
+		this.setState({ actionButtonVisible: false })
+	}
+
+	keyboardDidHide() {
+		this.setState({ actionButtonVisible: true })
 	}
 
 	updateActionSheet(task) {
@@ -180,7 +201,7 @@ class Task extends Component {
 	}
 
 	render() {
-		let { organized_attributes, action_options } = this.state
+		let { organized_attributes, action_options, actionButtonVisible } = this.state
 		let { task } = this.props
 		//Check that full task object is loaded
 		if (!task || task.items === undefined) {
@@ -191,7 +212,9 @@ class Task extends Component {
 		if (isLabel) {
 			outputButtonName = 'Label Items'
 		}
+		const isIOS = Platform.OS === 'ios'
 		const heightOfUserAttributeDropdown = 150
+		const extraScrollHeight = isIOS ? heightOfUserAttributeDropdown : 15
 		return (
 			<TouchableWithoutFeedback
 				onPress={() => Keyboard.dismiss()}
@@ -202,8 +225,10 @@ class Task extends Component {
 						task.num_flagged_ancestors > 0 && <AncestorFlag />}
 					{this.renderHeader(task)}
 					<KeyboardAwareScrollView
+						enableOnAndroid={true}
+						enableAutoAutomaticScroll={isIOS}
 						keyboardShouldPersistTaps="handled"
-						extraScrollHeight={heightOfUserAttributeDropdown}>
+						extraScrollHeight={extraScrollHeight}>
 						{task.recipe_instructions && (
 							<RecipeInstructions instructions={task.recipe_instructions} />
 						)}
@@ -220,7 +245,7 @@ class Task extends Component {
 						cancelButtonIndex={CANCEL_INDEX}
 						onPress={this.handlePress}
 					/>
-					{this.renderActionButton(isLabel, outputButtonName)}
+					{actionButtonVisible && this.renderActionButton(isLabel, outputButtonName)}
 					{this.renderRenamePrompt(task)}
 					{this.renderEditBatchSizePrompt(task)}
 				</View>
