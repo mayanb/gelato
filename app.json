@@ -22,7 +22,14 @@
       "bundleIdentifier": "com.usepolymer.polymer",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
-      },
+      }
+    },
+    "android": {
+      "package": "com.usepolymer.polymer",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
