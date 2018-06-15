@@ -69,32 +69,6 @@ export class DateFormatter {
 			'000+0000'
 		return result
 	}
-	// Create a short date of the format Day, Time - i.e. Tuesday, 5:30 AM
-	static shorten(date) {
-		try {
-			date = new Date(date)
-			const days = [
-				'Sunday',
-				'Monday',
-				'Tuesday',
-				'Wednesday',
-				'Thursday',
-				'Friday',
-				'Saturday',
-			]
-			let result =
-				days[date.getDay()] +
-				', ' +
-				date.toLocaleString('en-US', {
-					hour: 'numeric',
-					minute: 'numeric',
-					hour12: true,
-				})
-			return result
-		} catch (e) {
-			return ''
-		}
-	}
 
 	static monthDayYearWithTime(dateString) {
 		if (!this.isValidISODate(dateString)) {
