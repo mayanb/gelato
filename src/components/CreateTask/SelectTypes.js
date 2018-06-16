@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, KeyboardAvoidingView, Keyboard } from 'react-native'
 import { connect } from 'react-redux'
 import * as actions from '../../actions/ProcessesAndProductsActions'
 import * as errorActions from '../../actions/ErrorActions'
@@ -57,19 +57,21 @@ class SelectTypes extends Component {
 					onSelect={item => this.onSelect('processes', item)}
 					onFocus={() => this.onFocus('processes')}
 					registerInput={this.registerInputFunction('processes')}
-			/>
-				<SelectTypeWithInput
-					heading=""
-					placeholder="Type to find a product"
-					data={this.state.products_filtered.slice(0, 4)}
-					text={this.state.products_text}
-					dropdown_open={this.state.products_dropdown_open}
-					selected={selectedProduct}
-					onChangeText={t => this.handleChangeText('products', t)}
-					onSelect={item => this.onSelect('products', item)}
-					onFocus={() => this.onFocus('products')}
-					registerInput={this.registerInputFunction('products')}
 				/>
+				<KeyboardAvoidingView enabled>
+					<SelectTypeWithInput
+						heading=""
+						placeholder="Type to find a product"
+						data={this.state.products_filtered.slice(0, 4)}
+						text={this.state.products_text}
+						dropdown_open={this.state.products_dropdown_open}
+						selected={selectedProduct}
+						onChangeText={t => this.handleChangeText('products', t)}
+						onSelect={item => this.onSelect('products', item)}
+						onFocus={() => this.onFocus('products')}
+						registerInput={this.registerInputFunction('products')}
+					/>
+				</KeyboardAvoidingView>
 			</View>
 		)
 	}
@@ -104,7 +106,10 @@ class SelectTypes extends Component {
 		this.props.onSelect(type, item)
 
 		if (type === 'processes') {
-			this.inputs['products'].focus()
+			// HACK: use setTimeout to force Android to activate <KeyboardAvoidView>
+			// and push Products input and its drop down above the keyboard
+			Keyboard.dismiss()
+			setTimeout(this.inputs['products'].focus, 10)
 		} else {
 			this.inputs['products'].blur()
 		}

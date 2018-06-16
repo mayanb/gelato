@@ -57,7 +57,7 @@ class SelectUserWithInput extends Component {
 					onChangeText={this.handleChangeText}
 					value={searchText}
 				/>
-				{filtered_results.length && (
+				{!!filtered_results.length && (
 					<ScrollView
 						keyboardShouldPersistTaps="handled"
 						style={styles.dropdown_wrapper}>

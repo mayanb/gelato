@@ -10,7 +10,7 @@ import {
 	View,
 } from 'react-native'
 import pluralize from 'pluralize'
-import { DateFormatter } from '../../resources/Utility'
+import moment from 'moment'
 
 export default function TaskHeader({
 	imgpath,
@@ -78,7 +78,9 @@ export default function TaskHeader({
 					<Text style={styles.output}>
 						{`${outputAmount} ${pluralize(outputUnit, outputAmount)} `}
 					</Text>
-					<Text style={styles.date}>started {DateFormatter.shorten(date)}</Text>
+					<Text style={styles.date}>
+						started {moment(date).format('ddd MMM D, hh:mma')}
+					</Text>
 				</View>
 			</TouchableOpacity>
 		</View>

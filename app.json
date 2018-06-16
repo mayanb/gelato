@@ -5,7 +5,7 @@
     "slug": "polymer",
     "privacy": "unlisted",
     "sdkVersion": "26.0.0",
-    "platforms": ["ios"],
+    "platforms": ["ios", "android"],
     "version": "4.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,12 +22,22 @@
       "bundleIdentifier": "com.usepolymer.polymer",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
-      },
+      }
+    },
+    "android": {
+      "package": "com.usepolymer.polymer",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "assetBundlePatterns": [
       "src/resources/assets/**",
       "node_modules/react-navigation/src/**/*.png",
       "node_modules/@expo/vector-icons/fonts/Ionicons.ttf"
-    ]
+    ],
+    "androidStatusBar": {
+      "backgroundColor": "#eeeeee",
+    }
   }
 }

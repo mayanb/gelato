@@ -65,6 +65,7 @@ export default class TextNumberCell extends React.Component {
 				</View>
 				<View style={showEdit ? styles.hidden : {}}>
 					<TextInput
+						underlineColorAndroid="transparent"
 						ref={input => this.input = input}
 						style={styles.input}
 						onChangeText={this.handleChangeText}
