@@ -116,6 +116,7 @@ export function SearchBox(props) {
 			<View style={styles.searchTextTouchable} >
 				<View style={styles.searchTextContainer}>
 					<TextInput
+						underlineColorAndroid="transparent"
 						style={styles.searchText}
 						placeholderTextColor="white"
 						placeholder="Search"

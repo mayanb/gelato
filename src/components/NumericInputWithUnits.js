@@ -20,6 +20,7 @@ export default class NumericInputWithUnits extends Component {
 		return (
 			<View>
 				<TextInput
+					underlineColorAndroid="transparent"
 					style={styles.textInput}
 					onChangeText={onChangeText}
 					value={value === '' ? '' : parseFloat(value).toString(10)}

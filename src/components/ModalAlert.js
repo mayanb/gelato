@@ -1,6 +1,6 @@
 import Colors from '../resources/Colors'
 import React, { Component } from 'react'
-import { StyleSheet, View, Button } from 'react-native'
+import { StyleSheet, View, Button, Platform } from 'react-native'
 import Modal from './Modal'
 
 export default class ModalAlert extends Component {
@@ -19,7 +19,7 @@ export default class ModalAlert extends Component {
 						<Button
 							onPress={this.props.onPress}
 							title={this.props.buttonText}
-							color="white"
+							color={Platform.OS === 'ios' ? 'white' : undefined}
 						/>
 					</View>
 				)}

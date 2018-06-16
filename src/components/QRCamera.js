@@ -5,24 +5,30 @@ import {
 	View,
 	Image,
 	TouchableOpacity,
+	Platform,
 } from 'react-native'
 import { Camera } from 'expo'
 import { SafeAreaView } from 'react-navigation'
 import * as ImageUtility from '../resources/ImageUtility'
 import { SearchDropdown, SearchBox } from '../components/SearchDropdown'
 
+const DESIRED_CAMERA_RATIO = '16:9'
+
 export default class QRCamera extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			searchText: '',
+			camera: null,
+			cameraRatio: undefined,
 		}
 
 		this.handleClearText = this.handleClearText.bind(this)
+		this.getCameraRatio = this.getCameraRatio.bind(this)
 	}
 
 	render() {
-		let {searchText } = this.state
+		let { searchText, cameraRatio } = this.state
 		let { onBarCodeRead, searchData, isLoading, typeSearch } = this.props
 		return (
 			<View style={styles.container}>
@@ -30,6 +36,8 @@ export default class QRCamera extends Component {
 					ref={cam => {
 						this.camera = cam
 					}}
+					ratio={cameraRatio}
+					onCameraReady={this.getCameraRatio}
 					onBarCodeRead={onBarCodeRead}
 					style={styles.preview}
 				/>
@@ -74,6 +82,16 @@ export default class QRCamera extends Component {
 				)}
 			</View>
 		)
+	}
+
+	getCameraRatio = async () => {
+		if (Platform.OS === 'android' && this.camera) {
+			const ratios = await this.camera.getSupportedRatiosAsync()
+			// See if the current device has your desired ratio, otherwise get the maximum supported one
+			// Usually the last element of "ratios" is the maximum supported ratio
+			const cameraRatio = ratios.find((ratio) => ratio === DESIRED_CAMERA_RATIO) || ratios[ratios.length - 1]
+			this.setState({ cameraRatio })
+		}
 	}
 
 	handleFocus() {

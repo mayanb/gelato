@@ -94,12 +94,12 @@ class App extends React.Component {
 			)
 		}
 
-		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate 
+		let shouldUpdate = !this.state.hasLatestUpdates && this.state.requiredUpdate
 		return (
 			<View style={{ flex: 1 }}>
 				{this.state.loggedIn ? <Navigation screenProps={user} /> : <Login />}
-				{shouldUpdate && <ShouldUpdateModal />}
-				{errors.data.length && (
+				{!!shouldUpdate && <ShouldUpdateModal />}
+				{!!errors.data.length && (
 					<Snackbar>{errors.data[errors.data.length - 1].errorType}</Snackbar>
 				)}
 				<StatusBar barStyle="light-content" />
