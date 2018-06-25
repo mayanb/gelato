@@ -37,7 +37,7 @@ export default class RecurrentAttribute extends React.Component {
 						{this.addNewEntryButton()}
 					</View>
 					{logs.map(log => <Log key={log.id} log={log} />)}
-					{this.moreButton()}
+					{this.showMoreLogs()}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -54,7 +54,7 @@ export default class RecurrentAttribute extends React.Component {
 		)
 	}
 
-	moreButton() {
+	showMoreLogs() {
 		const { values } = this.props
 		const { displayAll } = this.state
 		const numHidden = values.length - COLLAPSED_LOG_COUNT
@@ -65,8 +65,8 @@ export default class RecurrentAttribute extends React.Component {
 		return (
 			<TouchableOpacity
 				onPress={() => this.setState({ displayAll: !displayAll })}>
-				<View style={styles.moreButton}>
-					<Text style={styles.moreButtonText}>{msg}</Text>
+				<View style={styles.showMoreLogsContainer}>
+					<Text style={styles.showMoreLogsText}>{msg}</Text>
 					<UpOrDownArrow upArrow={displayAll} />
 				</View>
 			</TouchableOpacity>
@@ -136,11 +136,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		display: 'flex',
 		flexDirection: 'row',
-		alignItems: 'baseline',
-		paddingBottom: 8,
+		justifyContent: 'space-between',
+		alignItems: 'center',
 		borderBottomWidth: 1,
 		borderColor: Colors.ultraLightGray,
-		marginBottom: 10,
+		height: 48,
+		marginRight: 20,
 	},
 	value: {
 		fontSize: 17,
@@ -149,13 +150,16 @@ const styles = StyleSheet.create({
 	date: {
 		fontSize: 14,
 		color: Colors.lightGray,
+		textAlign: 'right',
 	},
-	moreButton: {
+	showMoreLogsContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',
+		alignItems: 'center',
+		height: 38,
 	},
-	moreButtonText: {
+	showMoreLogsText: {
 		flex: 0,
 		fontSize: 14,
 		color: Colors.lightGray,
