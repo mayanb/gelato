@@ -41,22 +41,28 @@ export default class Compute {
 	static organizeAttributes(task) {
 		var attributes = []
 		let allAttributes = task.process_type.attributes
-		allAttributes.forEach((attr, i) => {
-			let attribute_value = task.attribute_values.find(e =>
-				Compute.equate(e.attribute, attr.id)
-			)
-			if (!attribute_value) {
-				attribute_value = ''
-			}
-			let filled_attribute = update(attr, {
-				$merge: { value: attribute_value.value },
-			})
-			attributes.push(filled_attribute)
+		const attributeValues = task.attribute_values
+		const _ = this.attributesWithValues(allAttributes, attributeValues)
+		console.log(_)
+		return _
+	}
+
+	// Match each ProcessType.Attribute with its TaskAttributeValue (if they've been filled in)
+	// attribute.values = [...n] will contain n = 0 or 1 for non-recurring Attributes, n >= 0 for recurring Attributes
+	static attributesWithValues(attributes, attributeValues) {
+		// Hash Attributes by id
+		const attrByID = {}
+		attributes.forEach(attr => {
+			attr.values = []
+			attrByID[attr.id] = attr
 		})
-		attributes.sort(function(obj1, obj2) {
-			return obj1.rank - obj2.rank
-		})
-		return attributes
+		// Cluster recurring TaskAttributes into their respective Attributes
+		attributeValues.forEach(attrValue => attrByID[attrValue.attribute].values.push(attrValue))
+		// Sort Attributes in user-specified order (rank)
+		const _attributesWithValues = Object.values(attrByID).sort((a, b) => a.rank - b.rank)
+		// (In place) sort each attribute's values newest to oldest -- lets us display them properly, and predictably append new values to the end
+		_attributesWithValues.forEach(taskAttribute => taskAttribute.values.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)))
+		return _attributesWithValues
 	}
 
 	static generateNewTask(data) {
@@ -212,7 +218,7 @@ export default class Compute {
 			attribute: attributeID,
 			value: value,
 		}
-		return Networking.post('/ics/taskAttributes/create/').send(payload)
+		return Networking.post('/ics/taskAttributes/').send(payload)
 	}
 
 	static getSearchResults(text, teamID) {

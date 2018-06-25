@@ -12,6 +12,7 @@ import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
 import DateTimeCell from './DateTimeCell'
+import RecurrentAttribute from './RecurrentAttribute'
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -24,6 +25,20 @@ export default class AttributeCell extends React.Component {
 	}
 
 	render() {
+		const { values, isLoadingTask, type, name, is_recurrent } = this.props
+		const { loading } = this.state
+		if (is_recurrent) {
+			return <RecurrentAttribute
+				name={name}
+				loading={loading}
+				onSubmit={this.handleSubmit}
+				isLoadingTask={isLoadingTask}
+
+				values={values}
+				onSave={this.handleSubmit}
+				type={type}
+			/>
+		}
 		return (
 			<View style={styles.container}>
 				{this.renderCell()}
@@ -32,8 +47,9 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderCell() {
-		const { value, isLoadingTask, type, name } = this.props
+		const { values, isLoadingTask, type, name } = this.props
 		const { loading } = this.state
+		const value = values.length === 0 ? '' : values[values.length - 1].value
 		switch (type) {
 			case 'BOOL':
 				return <BooleanCell

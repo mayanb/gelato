@@ -8,14 +8,15 @@ export default class AttributeList extends React.Component {
 		let data = this.props.data || []
 		return (
 			<View>
-				{data.map(item => {
+				{data.map(attribute => {
 					return (
 						<AttributeCell
-							key={item.id}
-							id={item.id}
-							name={item.name}
-							value={item.value}
-							type={item.datatype}
+							is_recurrent={attribute.is_recurrent}
+							values={attribute.values}
+							key={attribute.id}
+							id={attribute.id}
+							name={attribute.name}
+							type={attribute.datatype}
 							onSubmitEditing={this.props.onSubmitEditing}
 							isLoadingTask={this.props.isLoadingTask}
 						/>

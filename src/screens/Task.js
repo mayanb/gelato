@@ -418,9 +418,15 @@ class Task extends Component {
 	}
 
 	updateAttributeValue(index, newValue) {
+		// Set PATCHED newValue as value of most recent taskAttribute
+		const valuesArrayFinalIndex = this.state.organized_attributes[index].values.length - 1
 		let ns = update(this.state.organized_attributes, {
 			[index]: {
-				$merge: { value: newValue },
+				values: {
+					[valuesArrayFinalIndex]: {
+						$merge: { value: newValue }
+					}
+				}
 			},
 		})
 		this.setState({ organized_attributes: ns })
