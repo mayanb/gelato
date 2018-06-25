@@ -110,8 +110,9 @@ export function AttributeName({ name, loading }) {
 			minHeight: 60,
 		},
 		name: {
-			color: Colors.lightGray,
+			fontWeight: 'bold',
 			fontSize: 17,
+			color: Colors.textBlack,
 			marginRight: 20,
 			textAlignVertical: 'top',
 		},
