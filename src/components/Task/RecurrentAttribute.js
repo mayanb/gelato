@@ -18,8 +18,6 @@ export default class RecurrentAttribute extends React.Component {
 		this.state = {
 			displayAll: false,
 		}
-
-		this.handleSubmitText = this.handleSubmitText.bind(this)
 	}
 
 	render() {
@@ -31,10 +29,24 @@ export default class RecurrentAttribute extends React.Component {
 		const { displayAll } = this.state
 		const logs = displayAll ? values : values.slice(0, COLLAPSED_LOG_COUNT)
 		return (
-			<TouchableOpacity onPress={this.handleEdit} style={styles.container}>
-				<Text style={styles.name}>{name}</Text>
+			<View style={styles.container}>
+				<View style={styles.headerContainer}>
+					<Text style={styles.name}>{name}</Text>
+					{this.addNewEntryButton()}
+				</View>
 				{logs.map(log => <Log key={log.id} log={log} />)}
 				{this.moreButton()}
+			</View>
+		)
+	}
+
+	addNewEntryButton() {
+		return (
+			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => console.log('Pressed add new entry button!')}>
+				<Image
+					source={ImageUtility.uxIcon('addentrybutton')}
+					style={styles.addNewEntryButton}
+				/>
 			</TouchableOpacity>
 		)
 	}
@@ -90,11 +102,32 @@ const styles = StyleSheet.create({
 		paddingBottom: 10,
 		backgroundColor: Colors.white,
 	},
+	headerContainer: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
 	name: {
+		flex: 1,
 		fontWeight: 'bold',
 		fontSize: 17,
 		color: Colors.textBlack,
 		marginBottom: 12,
+	},
+	addNewEntryButtonContainer: {
+		flex: 0,
+		marginRight: 20,
+		shadowOffset: { width: 1, height: 2 },
+		shadowColor: 'black',
+		shadowOpacity: 0.3,
+	},
+	addNewEntryButton: {
+		flex: 1,
+		borderRadius: 13,
+		height: 26,
+		width: 26,
+		maxHeight: 26,
+		maxWidth: 26,
 	},
 	log: {
 		flex: 1,
@@ -127,6 +160,7 @@ const styles = StyleSheet.create({
 	},
 	upOrDownArrowContainer: {
 		flex: 0,
+		marginTop: -4,
 	},
 	arrow: {
 		height: 26,
