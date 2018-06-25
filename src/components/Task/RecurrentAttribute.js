@@ -36,7 +36,11 @@ export default class RecurrentAttribute extends React.Component {
 						<Text style={styles.name}>{name}</Text>
 						{this.addNewEntryButton()}
 					</View>
-					{logs.map(log => <Log key={log.id} log={log} />)}
+					{logs.map((log, i) => {
+						// Hide bottom log border if showMoreLogs button not present
+						const hideBottomBorder = (i === logs.length - 1) && (values.length <= COLLAPSED_LOG_COUNT)
+						return <Log key={log.id} log={log} hideBottomBorder={hideBottomBorder} />
+					})}
 					{this.showMoreLogs()}
 				</View>
 			</TouchableWithoutFeedback>
@@ -85,10 +89,10 @@ function UpOrDownArrow({ upArrow }) {
 	)
 }
 
-function Log({ log }) {
+function Log({ log, hideBottomBorder }) {
 	const displayDate = moment(log.updated_at).fromNow()
 	return (
-		<View style={styles.log}>
+		<View style={[styles.log, hideBottomBorder ? {} : styles.logBottomBorder]}>
 			<Text style={styles.value}>{log.value}</Text>
 			<Text style={styles.date}>{displayDate}</Text>
 		</View>
@@ -103,7 +107,10 @@ const styles = StyleSheet.create({
 		paddingLeft: 16,
 		paddingTop: 10,
 		paddingBottom: 4,
+		borderColor: Colors.ultraLightGray,
+		borderBottomWidth: 1,
 		backgroundColor: Colors.white,
+		marginBottom: 8,
 	},
 	headerContainer: {
 		display: 'flex',
@@ -138,10 +145,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		borderBottomWidth: 1,
-		borderColor: Colors.ultraLightGray,
 		height: 48,
 		marginRight: 20,
+	},
+	logBottomBorder: {
+		borderBottomWidth: 1,
+		borderColor: Colors.ultraLightGray,
 	},
 	value: {
 		fontSize: 17,
