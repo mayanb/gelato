@@ -3,6 +3,7 @@ import {
 	Text,
 	View,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	StyleSheet,
 	Image,
 } from 'react-native'
@@ -29,20 +30,22 @@ export default class RecurrentAttribute extends React.Component {
 		const { displayAll } = this.state
 		const logs = displayAll ? values : values.slice(0, COLLAPSED_LOG_COUNT)
 		return (
-			<View style={styles.container}>
-				<View style={styles.headerContainer}>
-					<Text style={styles.name}>{name}</Text>
-					{this.addNewEntryButton()}
+			<TouchableWithoutFeedback>
+				<View style={styles.container}>
+					<View style={styles.headerContainer}>
+						<Text style={styles.name}>{name}</Text>
+						{this.addNewEntryButton()}
+					</View>
+					{logs.map(log => <Log key={log.id} log={log} />)}
+					{this.moreButton()}
 				</View>
-				{logs.map(log => <Log key={log.id} log={log} />)}
-				{this.moreButton()}
-			</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 
 	addNewEntryButton() {
 		return (
-			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => console.log('Pressed add new entry button!')}>
+			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => console.log('Pressed add entry button!')}>
 				<Image
 					source={ImageUtility.uxIcon('addentrybutton')}
 					style={styles.addNewEntryButton}
