@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
 		minHeight: 60,
 		borderBottomWidth: 1,
 		borderBottomColor: Colors.ultraLightGray,
+		marginBottom: 8,
 		alignItems: 'flex-start',
 		justifyContent: 'center',
 		paddingLeft: 16,
