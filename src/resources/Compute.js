@@ -225,7 +225,7 @@ export default class Compute {
 		let payload = {
 			value: value,
 		}
-		return Networking.patch(`/ics/taskAttributes/${taskAttributeID}`).send(payload)
+		return Networking.patch(`/ics/taskAttributes/${taskAttributeID}/`).send(payload)
 	}
 
 	static getSearchResults(text, teamID) {
