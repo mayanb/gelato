@@ -1,7 +1,6 @@
 import React from 'react'
 import {
 	Text,
-	TextInput,
 	View,
 	TouchableOpacity,
 	StyleSheet,
@@ -9,55 +8,32 @@ import {
 } from 'react-native'
 import moment from 'moment'
 import Colors from '../../resources/Colors'
-import { fieldIsBlank } from '../../resources/Utility'
-import EditButton from './EditButton'
 import * as ImageUtility from '../../resources/ImageUtility'
 
-const MIN_LOG_COUNT = 2
+const COLLAPSED_LOG_COUNT = 2
 
 export default class RecurrentAttribute extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			draftValue: this.props.value,
-			editing: false,
 			displayAll: false,
 		}
 
-		this.handleChangeText = this.handleChangeText.bind(this)
 		this.handleSubmitText = this.handleSubmitText.bind(this)
-		this.handleEdit = this.handleEdit.bind(this)
-	}
-
-	componentWillReceiveProps(np) {
-		this.setState({ draftValue: np.value })
-	}
-
-	handleChangeText(text) {
-		this.setState({ draftValue: text })
-	}
-
-	handleSubmitText() {
-		this.setState({ editing: false })
-		this.props.onSubmit(this.state.draftValue)
-	}
-
-	handleEdit() {
-		this.setState({ editing: true }, () => {
-			if (this.input) this.input.focus()
-		})
 	}
 
 	render() {
-		if (this.props.isLoadingTask) return null
+		if (this.props.isLoadingTask) {
+			return null
+		}
 
-		const { name, loading, values } = this.props
+		const { name, values } = this.props
 		const { displayAll } = this.state
-		const valuesToDisplay = displayAll ? values : values.slice(0, MIN_LOG_COUNT)
+		const logs = displayAll ? values : values.slice(0, COLLAPSED_LOG_COUNT)
 		return (
 			<TouchableOpacity onPress={this.handleEdit} style={styles.container}>
 				<Text style={styles.name}>{name}</Text>
-				{valuesToDisplay.map(log => <Log key={log.id} log={log} />)}
+				{logs.map(log => <Log key={log.id} log={log} />)}
 				{this.moreButton()}
 			</TouchableOpacity>
 		)
@@ -66,7 +42,7 @@ export default class RecurrentAttribute extends React.Component {
 	moreButton() {
 		const { values } = this.props
 		const { displayAll } = this.state
-		const numHidden = values.length - MIN_LOG_COUNT
+		const numHidden = values.length - COLLAPSED_LOG_COUNT
 		if (numHidden < 1) {
 			return
 		}
@@ -95,7 +71,7 @@ function UpOrDownArrow({ upArrow }) {
 }
 
 function Log({ log }) {
-	const displayDate = `${moment(log.updated_at).fromNow()}`
+	const displayDate = moment(log.updated_at).fromNow()
 	return (
 		<View style={styles.log}>
 			<Text style={styles.value}>{log.value}</Text>
