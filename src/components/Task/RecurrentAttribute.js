@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		paddingLeft: 16,
 		paddingTop: 10,
-		paddingBottom: 10,
+		paddingBottom: 4,
 		backgroundColor: Colors.white,
 	},
 	headerContainer: {
@@ -159,7 +159,6 @@ const styles = StyleSheet.create({
 		flex: 0,
 		fontSize: 14,
 		color: Colors.lightGray,
-		marginBottom: 8,
 	},
 	upOrDownArrowContainer: {
 		flex: 0,
