@@ -5,9 +5,9 @@ import {
 	Dimensions,
 	StyleSheet,
 	ActivityIndicator,
-	TouchableWithoutFeedback,
 } from 'react-native'
 import Colors from '../../resources/Colors'
+import { fieldIsBlank } from '../../resources/Utility'
 import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
@@ -88,15 +88,21 @@ export default class AttributeCell extends React.Component {
 	}
 
 	handleSubmit(value) {
-		if (this.state.loading) {
+		const { attribute } = this.props
+		const newestTaskAttribute = attribute.values[0]
+		if (this.state.loading || valueUnchanged(newestTaskAttribute, value, attribute.is_recurrent === 'True')) {
 			return
 		}
 		this.setState({ loading: true })
-		const mostRecentTaskAttribute = this.props.attribute.values[0]
 		this.props
-			.onSubmitEditing(this.props.id, value, mostRecentTaskAttribute)
+			.onSubmitEditing(this.props.id, value, newestTaskAttribute)
 			.finally(() => this.setState({ loading: false }))
 	}
+}
+
+function valueUnchanged(taskAttribute, value, is_recurrent) {
+	const stillBlank = taskAttribute && fieldIsBlank(taskAttribute.value) && fieldIsBlank(value)
+	return stillBlank || (taskAttribute && taskAttribute.value === value && !is_recurrent)
 }
 
 export function AttributeName({ name, loading }) {
