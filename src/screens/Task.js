@@ -398,35 +398,46 @@ class Task extends Component {
 		})
 	}
 
-	handleSubmitEditing(id, newValue) {
+	handleSubmitEditing(id, newValue, taskAttribute) {
 		let { organized_attributes } = this.state
 		let attributeIndex = organized_attributes.findIndex(e =>
 			Compute.equate(e.id, id)
 		)
-
-		// if there's no change, return
-		let currValue = organized_attributes[attributeIndex].value
-		if (newValue === currValue) {
-			return
+		let apiPromise
+		// POST new taskAttribute if taskAttribute is blank or recurrent
+		if (!taskAttribute || taskAttribute.is_recurrent === 'True') { // Future: if we can EDIT existing recurrent attrs, this is too simple
+			apiPromise = Compute.postAttributeUpdate(this.props.id, id, newValue)
+				.then(res => this.storeNewTaskAttribute(attributeIndex, res.body))
+		} else {
+			// PATCH EXISTING taskAttribute
+			this.updateAttributeValue(attributeIndex, newValue) // optimistic update
+			apiPromise = Compute.patchAttributeUpdate(taskAttribute.id, newValue)
+				.catch(e => this.updateAttributeValue(attributeIndex, currValue))
 		}
-
-		// else, do optimistic update
-		this.updateAttributeValue(attributeIndex, newValue)
-		return Compute.postAttributeUpdate(this.props.id, id, newValue).catch(e =>
-			this.updateAttributeValue(attributeIndex, currValue)
-		)
+		return apiPromise
 	}
 
 	updateAttributeValue(index, newValue) {
-		// Set PATCHED newValue as value of most recent taskAttribute
-		const valuesArrayFinalIndex = this.state.organized_attributes[index].values.length - 1
+		// Optimistically set PATCHED newValue as value of most recent taskAttribute
 		let ns = update(this.state.organized_attributes, {
 			[index]: {
 				values: {
-					[valuesArrayFinalIndex]: {
-						$merge: { value: newValue }
-					}
-				}
+					[0]: {
+						$merge: { value: newValue },
+					},
+				},
+			},
+		})
+		this.setState({ organized_attributes: ns })
+	}
+
+	storeNewTaskAttribute(index, newTaskAttribute) {
+		// Set created newTaskAttribute as the first (most recent) taskAttribute in values
+		let ns = update(this.state.organized_attributes, {
+			[index]: {
+				values: {
+					$unshift: [newTaskAttribute],
+				},
 			},
 		})
 		this.setState({ organized_attributes: ns })

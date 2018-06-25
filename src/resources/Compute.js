@@ -221,6 +221,13 @@ export default class Compute {
 		return Networking.post('/ics/taskAttributes/').send(payload)
 	}
 
+	static patchAttributeUpdate(taskAttributeID, value) {
+		let payload = {
+			value: value,
+		}
+		return Networking.patch(`/ics/taskAttributes/${taskAttributeID}`).send(payload)
+	}
+
 	static getSearchResults(text, teamID) {
 		const r = Networking.get('/ics/tasks/simple/').query({
 			label: text,

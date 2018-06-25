@@ -11,6 +11,7 @@ export default class AttributeList extends React.Component {
 				{data.map(attribute => {
 					return (
 						<AttributeCell
+							attribute={attribute}
 							is_recurrent={attribute.is_recurrent}
 							values={attribute.values}
 							key={attribute.id}

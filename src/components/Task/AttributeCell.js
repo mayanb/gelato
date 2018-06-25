@@ -49,7 +49,7 @@ export default class AttributeCell extends React.Component {
 	renderCell() {
 		const { values, isLoadingTask, type, name } = this.props
 		const { loading } = this.state
-		const value = values.length === 0 ? '' : values[values.length - 1].value
+		const value = values.length === 0 ? '' : values[0].value
 		switch (type) {
 			case 'BOOL':
 				return <BooleanCell
@@ -88,12 +88,14 @@ export default class AttributeCell extends React.Component {
 	}
 
 	handleSubmit(value) {
-		if (value !== this.props.value) {
-			this.setState({ loading: true })
-			this.props
-				.onSubmitEditing(this.props.id, value)
-				.finally(() => this.setState({ loading: false }))
+		if (this.state.loading) {
+			return
 		}
+		this.setState({ loading: true })
+		const mostRecentTaskAttribute = this.props.attribute.values[0]
+		this.props
+			.onSubmitEditing(this.props.id, value, mostRecentTaskAttribute)
+			.finally(() => this.setState({ loading: false }))
 	}
 }
 
