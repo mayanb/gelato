@@ -6,6 +6,7 @@ import {
 	TouchableWithoutFeedback,
 	StyleSheet,
 	Image,
+	Dimensions,
 } from 'react-native'
 import {
 	TEXT,
@@ -135,6 +136,7 @@ function Log({ log, hideBottomBorder }) {
 	)
 }
 
+const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -189,6 +191,7 @@ const styles = StyleSheet.create({
 		borderColor: Colors.ultraLightGray,
 	},
 	value: {
+		maxWidth: 0.4 * width,
 		fontSize: 17,
 		paddingRight: 6,
 	},
