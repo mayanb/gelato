@@ -6,6 +6,13 @@ import {
 	StyleSheet,
 	ActivityIndicator,
 } from 'react-native'
+import {
+	TEXT,
+	NUMB,
+	TIME,
+	BOOL,
+	USER,
+} from '../../resources/AttributeTypeConstants'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank } from '../../resources/Utility'
 import TextNumberCell from './TextNumberCell'
@@ -27,6 +34,7 @@ export default class AttributeCell extends React.Component {
 	render() {
 		const { values, isLoadingTask, type, name, is_recurrent } = this.props
 		const { loading } = this.state
+		console.log('In swithc: is_recurrent', is_recurrent)
 		if (is_recurrent) {
 			return <RecurrentAttribute
 				name={name}
@@ -51,7 +59,7 @@ export default class AttributeCell extends React.Component {
 		const { loading } = this.state
 		const value = values.length === 0 ? '' : values[0].value
 		switch (type) {
-			case 'BOOL':
+			case BOOL:
 				return <BooleanCell
 					name={name}
 					loading={loading}
@@ -59,7 +67,7 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
-			case 'USER':
+			case USER:
 				return <UserCell
 					name={name}
 					loading={loading}
@@ -67,7 +75,7 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
-      case 'TIME':
+      case TIME:
           return <DateTimeCell
             name={name}
             loading={loading}
@@ -89,8 +97,10 @@ export default class AttributeCell extends React.Component {
 
 	handleSubmit(value) {
 		const { attribute } = this.props
-		const newestTaskAttribute = attribute.values[0]
-		if (this.state.loading || valueUnchanged(newestTaskAttribute, value, attribute.is_recurrent === 'True')) {
+		const { is_recurrent } = attribute
+		// For future: if we're editing EXISTING recurring values, assume we're creating a new one (which null currently signals)
+		const newestTaskAttribute = is_recurrent ? null : attribute.values[0]
+		if (this.state.loading || valueUnchanged(newestTaskAttribute, value)) {
 			return
 		}
 		this.setState({ loading: true })
@@ -100,9 +110,9 @@ export default class AttributeCell extends React.Component {
 	}
 }
 
-function valueUnchanged(taskAttribute, value, is_recurrent) {
+function valueUnchanged(taskAttribute, value) {
 	const stillBlank = taskAttribute && fieldIsBlank(taskAttribute.value) && fieldIsBlank(value)
-	return stillBlank || (taskAttribute && taskAttribute.value === value && !is_recurrent)
+	return stillBlank || (taskAttribute && taskAttribute.value === value)
 }
 
 export function AttributeName({ name, loading }) {

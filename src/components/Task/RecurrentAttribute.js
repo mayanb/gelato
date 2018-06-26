@@ -7,6 +7,14 @@ import {
 	StyleSheet,
 	Image,
 } from 'react-native'
+import {
+	TEXT,
+	NUMB,
+	TIME,
+	BOOL,
+	USER,
+} from '../../resources/AttributeTypeConstants'
+import Prompt from 'rn-prompt'
 import moment from 'moment'
 import Colors from '../../resources/Colors'
 import * as ImageUtility from '../../resources/ImageUtility'
@@ -18,7 +26,10 @@ export default class RecurrentAttribute extends React.Component {
 		super(props)
 		this.state = {
 			displayAll: false,
+			showInputPrompt: false,
 		}
+
+		this.handleSubmitNewLog = this.handleSubmitNewLog.bind(this)
 	}
 
 	render() {
@@ -27,7 +38,7 @@ export default class RecurrentAttribute extends React.Component {
 		}
 
 		const { name, values } = this.props
-		const { displayAll } = this.state
+		const { displayAll, showInputPrompt } = this.state
 		const logs = displayAll ? values : values.slice(0, COLLAPSED_LOG_COUNT)
 		return (
 			<TouchableWithoutFeedback>
@@ -42,14 +53,39 @@ export default class RecurrentAttribute extends React.Component {
 						return <Log key={log.id} log={log} hideBottomBorder={hideBottomBorder} />
 					})}
 					{this.showMoreLogs()}
+					{showInputPrompt && this.renderInputPrompt()}
 				</View>
 			</TouchableWithoutFeedback>
 		)
 	}
 
+	renderInputPrompt() {
+		const { name, type } = this.props
+		switch (type) {
+			default: // NUMB or TEXT
+				return (
+					<Prompt
+						textInputProps={type === NUMB ? { keyboardType: 'numeric' } : {}}
+						title={`Log a new value for ${name}`}
+						placeholder="Enter value"
+						defaultValue={''}
+						visible={true}
+						onCancel={() => this.setState({ showInputPrompt: false })}
+						onSubmit={this.handleSubmitNewLog}
+					/>
+				)
+		}
+	}
+
+	handleSubmitNewLog(value) {
+		console.log('submitting:', value)
+		this.setState({ showInputPrompt: false })
+		this.props.onSave(value)
+	}
+
 	addNewEntryButton() {
 		return (
-			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => console.log('Pressed add entry button!')}>
+			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => this.setState({ showInputPrompt: true })}>
 				<Image
 					source={ImageUtility.uxIcon('addentrybutton')}
 					style={styles.addNewEntryButton}
