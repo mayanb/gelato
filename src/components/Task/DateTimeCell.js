@@ -3,7 +3,7 @@ import { Text, TouchableOpacity } from 'react-native'
 import Colors from '../../resources/Colors'
 import { fieldIsBlank, DateFormatter } from '../../resources/Utility'
 import EditButton from './EditButton'
-import DateTimePickerComp from './DateTimePickerComp'
+import DateTimePickerComp, { getDateDisplay } from './DateTimePickerComp'
 import { AttributeName } from './AttributeCell'
 
 export default class DateTimeCell extends React.Component {
@@ -40,7 +40,7 @@ export default class DateTimeCell extends React.Component {
 					<EditButton onEdit={this.toggleEdit} />
 				) : (
 					<Text style={styles.display}>
-						{value && this.getDateDisplay(value)}
+						{value && getDateDisplay(value)}
 					</Text>
 				)}
 				{editing && (
@@ -52,12 +52,6 @@ export default class DateTimeCell extends React.Component {
 				)}
 			</TouchableOpacity>
 		)
-	}
-
-	getDateDisplay(value) {
-		const displayDate = DateFormatter.monthDayYearWithTime(value) // returns null on fail
-		// Handle special special case: date input manually before DatePicker existed
-		return displayDate ? displayDate : value
 	}
 }
 

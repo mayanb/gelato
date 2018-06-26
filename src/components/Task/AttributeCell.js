@@ -43,7 +43,7 @@ export default class AttributeCell extends React.Component {
 				isLoadingTask={isLoadingTask}
 
 				values={values}
-				onSave={this.handleSubmit}
+				onSubmit={this.handleSubmit}
 				type={type}
 			/>
 		}

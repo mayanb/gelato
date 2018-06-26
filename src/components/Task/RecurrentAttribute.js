@@ -15,6 +15,7 @@ import {
 	BOOL,
 	USER,
 } from '../../resources/AttributeTypeConstants'
+import DateTimePickerComp, { getDateDisplay } from './DateTimePickerComp'
 import Prompt from 'rn-prompt'
 import moment from 'moment'
 import Colors from '../../resources/Colors'
@@ -31,6 +32,7 @@ export default class RecurrentAttribute extends React.Component {
 		}
 
 		this.handleSubmitNewLog = this.handleSubmitNewLog.bind(this)
+		this.toggleEditingState = this.toggleEditingState.bind(this)
 	}
 
 	render() {
@@ -63,6 +65,14 @@ export default class RecurrentAttribute extends React.Component {
 	renderInputPrompt() {
 		const { name, type } = this.props
 		switch (type) {
+			case TIME:
+				return (
+					<DateTimePickerComp
+						title={`Edit '${name}'`}
+						onDatePicked={this.handleSubmitNewLog}
+						onCancel={this.toggleEditingState}
+					/>
+				)
 			default: // NUMB or TEXT
 				return (
 					<Prompt
@@ -71,22 +81,26 @@ export default class RecurrentAttribute extends React.Component {
 						placeholder="Enter value"
 						defaultValue={''}
 						visible={true}
-						onCancel={() => this.setState({ showInputPrompt: false })}
+						onCancel={this.toggleEditingState}
 						onSubmit={this.handleSubmitNewLog}
 					/>
 				)
 		}
 	}
 
+	toggleEditingState() {
+		this.setState({ showInputPrompt: !this.state.showInputPrompt })
+	}
+
 	handleSubmitNewLog(value) {
 		console.log('submitting:', value)
-		this.setState({ showInputPrompt: false })
-		this.props.onSave(value)
+		this.toggleEditingState()
+		this.props.onSubmit(value)
 	}
 
 	addNewEntryButton() {
 		return (
-			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={() => this.setState({ showInputPrompt: true })}>
+			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={this.toggleEditingState}>
 				<Image
 					source={ImageUtility.uxIcon('addentrybutton')}
 					style={styles.addNewEntryButton}
@@ -128,12 +142,27 @@ function UpOrDownArrow({ upArrow }) {
 
 function Log({ log, hideBottomBorder }) {
 	const displayDate = moment(log.updated_at).fromNow()
+	const displayValue = getDisplayValue(log)
 	return (
 		<View style={[styles.log, hideBottomBorder ? {} : styles.logBottomBorder]}>
-			<Text style={styles.value}>{log.value}</Text>
+			<Text style={styles.value}>{displayValue}</Text>
 			<Text style={styles.date}>{displayDate}</Text>
 		</View>
 	)
+}
+
+function getDisplayValue(log) {
+	console.log('log.datatye:', log.datatype)
+	const { value } = log
+	if (!value) {
+		return ''
+	}
+	switch (log.datatype) {
+		case TIME:
+			return getDateDisplay(value)
+		default:
+			return value
+	}
 }
 
 const width = Dimensions.get('window').width

@@ -3,6 +3,7 @@ import { Keyboard } from 'react-native'
 import moment from 'moment'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import Colors from '../../resources/Colors'
+import { DateFormatter } from '../../resources/Utility'
 
 export default class DateTimePickerComp extends Component {
 	constructor(props) {
@@ -44,4 +45,10 @@ export default class DateTimePickerComp extends Component {
 			/>
 		)
 	}
+}
+
+export function getDateDisplay(value) {
+	const displayDate = DateFormatter.monthDayYearWithTime(value) // returns null on fail
+	// Handle special special case: date input manually before DatePicker existed
+	return displayDate ? displayDate : value
 }
