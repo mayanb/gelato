@@ -34,7 +34,6 @@ export default class AttributeCell extends React.Component {
 	render() {
 		const { values, isLoadingTask, type, name, is_recurrent } = this.props
 		const { loading } = this.state
-		console.log('In swithc: is_recurrent', is_recurrent)
 		if (is_recurrent) {
 			return <RecurrentAttribute
 				name={name}

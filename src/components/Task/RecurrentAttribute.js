@@ -15,8 +15,10 @@ import {
 	BOOL,
 	USER,
 } from '../../resources/AttributeTypeConstants'
+import BoolAndUsersDropDown from './BoolAndUsersDropDown'
 import DateTimePickerComp, { getDateDisplay } from './DateTimePickerComp'
 import Prompt from 'rn-prompt'
+import { getBoolDisplay } from './BooleanCell'
 import moment from 'moment'
 import Colors from '../../resources/Colors'
 import * as ImageUtility from '../../resources/ImageUtility'
@@ -50,13 +52,18 @@ export default class RecurrentAttribute extends React.Component {
 						<Text style={styles.name}>{name}</Text>
 						{this.addNewEntryButton()}
 					</View>
+					<View>
+						{showInputPrompt && this.renderInputPrompt()}
+					</View>
 					{logs.map((log, i) => {
 						// Hide bottom log border if showMoreLogs button not present
-						const hideBottomBorder = (i === logs.length - 1) && (values.length <= COLLAPSED_LOG_COUNT)
-						return <Log key={log.id} log={log} hideBottomBorder={hideBottomBorder} />
+						const hideBottomBorder =
+							i === logs.length - 1 && values.length <= COLLAPSED_LOG_COUNT
+						return (
+							<Log key={log.id} log={log} hideBottomBorder={hideBottomBorder} />
+						)
 					})}
 					{this.showMoreLogs()}
-					{showInputPrompt && this.renderInputPrompt()}
 				</View>
 			</TouchableWithoutFeedback>
 		)
@@ -65,6 +72,10 @@ export default class RecurrentAttribute extends React.Component {
 	renderInputPrompt() {
 		const { name, type } = this.props
 		switch (type) {
+			case BOOL:
+				return <BoolAndUsersDropDown label={name} type={BOOL} onSubmit={this.handleSubmitNewLog} />
+			case USER:
+				return <BoolAndUsersDropDown label={name} type={USER} onSubmit={this.handleSubmitNewLog} />
 			case TIME:
 				return (
 					<DateTimePickerComp
@@ -73,7 +84,8 @@ export default class RecurrentAttribute extends React.Component {
 						onCancel={this.toggleEditingState}
 					/>
 				)
-			default: // NUMB or TEXT
+			default:
+				// NUMB or TEXT
 				return (
 					<Prompt
 						textInputProps={type === NUMB ? { keyboardType: 'numeric' } : {}}
@@ -93,14 +105,15 @@ export default class RecurrentAttribute extends React.Component {
 	}
 
 	handleSubmitNewLog(value) {
-		console.log('submitting:', value)
 		this.toggleEditingState()
 		this.props.onSubmit(value)
 	}
 
 	addNewEntryButton() {
 		return (
-			<TouchableOpacity style={styles.addNewEntryButtonContainer} onPress={this.toggleEditingState}>
+			<TouchableOpacity
+				style={styles.addNewEntryButtonContainer}
+				onPress={this.toggleEditingState}>
 				<Image
 					source={ImageUtility.uxIcon('addentrybutton')}
 					style={styles.addNewEntryButton}
@@ -152,12 +165,14 @@ function Log({ log, hideBottomBorder }) {
 }
 
 function getDisplayValue(log) {
-	console.log('log.datatye:', log.datatype)
 	const { value } = log
-	if (!value) {
+	if (value === undefined) {
 		return ''
 	}
+
 	switch (log.datatype) {
+		case BOOL:
+			return getBoolDisplay(value)
 		case TIME:
 			return getDateDisplay(value)
 		default:
