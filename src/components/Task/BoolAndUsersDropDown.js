@@ -35,7 +35,8 @@ class BoolAndUsersDropDown extends React.Component {
 	}
 
 	openPopup(ref) {
-		// HACK: without a timeout, the Dropdown won't focused, preventing the list from popping up
+		// We're given ref one "tick" before the component mounts, so setTimeout delays
+		// focus()ing until the component has safely mounted. ref.focus() opens the list modal.
 		setTimeout(() => {
 			if (ref) {
 				ref.focus()
