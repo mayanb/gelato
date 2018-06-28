@@ -72,8 +72,13 @@ export default class RecurrentAttribute extends React.Component {
 		)
 	}
 
-	toggleEditingState() {
-		this.setState({ showEditOrCreatePrompt: !this.state.showEditOrCreatePrompt })
+	toggleEditingState(newEditingState) {
+		this.setState({
+			showEditOrCreatePrompt:
+				newEditingState === undefined
+					? !this.state.showEditOrCreatePrompt
+					: newEditingState,
+		})
 	}
 
 	handleSubmitNewLog(value, taskAttribute /* undefined for PUTs */) {

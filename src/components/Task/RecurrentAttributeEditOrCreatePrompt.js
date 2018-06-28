@@ -14,9 +14,9 @@ import Prompt from 'rn-prompt'
 export default function RecurrentAttributeEditOrCreatePrompt({ name, type, toggleEditingState, onSubmit, value }) {
 	switch (type) {
 		case BOOL:
-			return <BoolAndUsersDropDown label={name} type={BOOL} onSubmit={onSubmit} />
+			return <BoolAndUsersDropDown label={name} type={BOOL} onSubmit={onSubmit} toggleEditingState={toggleEditingState}/>
 		case USER:
-			return <BoolAndUsersDropDown label={name} type={USER} onSubmit={onSubmit} />
+			return <BoolAndUsersDropDown label={name} type={USER} onSubmit={onSubmit} toggleEditingState={toggleEditingState}/>
 		case TIME:
 			let date
 			if (DateFormatter.isValidISODate(value)) {

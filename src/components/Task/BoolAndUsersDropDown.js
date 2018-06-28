@@ -20,7 +20,7 @@ class BoolAndUsersDropDown extends React.Component {
 	}
 
 	render() {
-		const { userList, label } = this.props
+		const { userList, label, toggleEditingState } = this.props
 		const boolData = [{ value: 'Yes' }, { value: 'No' }]
 		const data = this.props.type === USER && userList ? userList : boolData
 
@@ -30,6 +30,7 @@ class BoolAndUsersDropDown extends React.Component {
 				label={label}
 				data={data}
 				onChangeText={this.handleChangeText}
+				onBlur={() => toggleEditingState(false)}
 			/>
 		)
 	}
