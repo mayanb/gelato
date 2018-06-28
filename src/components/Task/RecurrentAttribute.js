@@ -8,20 +8,10 @@ import {
 	Image,
 	Dimensions,
 } from 'react-native'
-import {
-	TEXT,
-	NUMB,
-	TIME,
-	BOOL,
-	USER,
-} from '../../resources/AttributeTypeConstants'
-import BoolAndUsersDropDown from './BoolAndUsersDropDown'
-import DateTimePickerComp, { getDateDisplay } from './DateTimePickerComp'
-import Prompt from 'rn-prompt'
-import { getBoolDisplay } from './BooleanCell'
-import moment from 'moment'
 import Colors from '../../resources/Colors'
 import * as ImageUtility from '../../resources/ImageUtility'
+import RecurrentAttributeEditOrCreatePrompt from './RecurrentAttributeEditOrCreatePrompt'
+import RecurrentAttributeLog from './RecurrentAttributeLog'
 
 const COLLAPSED_LOG_COUNT = 2
 
@@ -30,7 +20,7 @@ export default class RecurrentAttribute extends React.Component {
 		super(props)
 		this.state = {
 			displayAll: false,
-			showInputPrompt: false,
+			showEditOrCreatePrompt: false,
 		}
 
 		this.handleSubmitNewLog = this.handleSubmitNewLog.bind(this)
@@ -42,8 +32,8 @@ export default class RecurrentAttribute extends React.Component {
 			return null
 		}
 
-		const { name, values } = this.props
-		const { displayAll, showInputPrompt } = this.state
+		const { name, values, type, onSubmit } = this.props
+		const { displayAll, showEditOrCreatePrompt } = this.state
 		const logs = displayAll ? values : values.slice(0, COLLAPSED_LOG_COUNT)
 		return (
 			<TouchableWithoutFeedback>
@@ -53,14 +43,27 @@ export default class RecurrentAttribute extends React.Component {
 						{this.addNewEntryButton()}
 					</View>
 					<View>
-						{showInputPrompt && this.renderInputPrompt()}
+						{showEditOrCreatePrompt && (
+							<RecurrentAttributeEditOrCreatePrompt
+								name={name}
+								type={type}
+								toggleEditingState={this.toggleEditingState}
+								onSubmit={this.handleSubmitNewLog}
+							/>
+						)}
 					</View>
 					{logs.map((log, i) => {
 						// Hide bottom log border if showMoreLogs button not present
 						const hideBottomBorder =
 							i === logs.length - 1 && values.length <= COLLAPSED_LOG_COUNT
 						return (
-							<Log key={log.id} log={log} hideBottomBorder={hideBottomBorder} />
+							<RecurrentAttributeLog
+								key={log.id}
+								name={name}
+								log={log}
+								hideBottomBorder={hideBottomBorder}
+								onSubmit={onSubmit}
+							/>
 						)
 					})}
 					{this.showMoreLogs()}
@@ -69,44 +72,13 @@ export default class RecurrentAttribute extends React.Component {
 		)
 	}
 
-	renderInputPrompt() {
-		const { name, type } = this.props
-		switch (type) {
-			case BOOL:
-				return <BoolAndUsersDropDown label={name} type={BOOL} onSubmit={this.handleSubmitNewLog} />
-			case USER:
-				return <BoolAndUsersDropDown label={name} type={USER} onSubmit={this.handleSubmitNewLog} />
-			case TIME:
-				return (
-					<DateTimePickerComp
-						title={`Edit '${name}'`}
-						onDatePicked={this.handleSubmitNewLog}
-						onCancel={this.toggleEditingState}
-					/>
-				)
-			default:
-				// NUMB or TEXT
-				return (
-					<Prompt
-						textInputProps={type === NUMB ? { keyboardType: 'numeric' } : {}}
-						title={`Log a new value for ${name}`}
-						placeholder="Enter value"
-						defaultValue={''}
-						visible={true}
-						onCancel={this.toggleEditingState}
-						onSubmit={this.handleSubmitNewLog}
-					/>
-				)
-		}
-	}
-
 	toggleEditingState() {
-		this.setState({ showInputPrompt: !this.state.showInputPrompt })
+		this.setState({ showEditOrCreatePrompt: !this.state.showEditOrCreatePrompt })
 	}
 
-	handleSubmitNewLog(value) {
+	handleSubmitNewLog(value, taskAttribute /* undefined for PUTs */) {
 		this.toggleEditingState()
-		this.props.onSubmit(value)
+		this.props.onSubmit(value, taskAttribute)
 	}
 
 	addNewEntryButton() {
@@ -153,34 +125,6 @@ function UpOrDownArrow({ upArrow }) {
 	)
 }
 
-function Log({ log, hideBottomBorder }) {
-	const displayDate = moment(log.updated_at).fromNow()
-	const displayValue = getDisplayValue(log)
-	return (
-		<View style={[styles.log, hideBottomBorder ? {} : styles.logBottomBorder]}>
-			<Text style={styles.value}>{displayValue}</Text>
-			<Text style={styles.date}>{displayDate}</Text>
-		</View>
-	)
-}
-
-function getDisplayValue(log) {
-	const { value } = log
-	if (value === undefined) {
-		return ''
-	}
-
-	switch (log.datatype) {
-		case BOOL:
-			return getBoolDisplay(value)
-		case TIME:
-			return getDateDisplay(value)
-		default:
-			return value
-	}
-}
-
-const width = Dimensions.get('window').width
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -220,29 +164,6 @@ const styles = StyleSheet.create({
 		width: 26,
 		maxHeight: 26,
 		maxWidth: 26,
-	},
-	log: {
-		flex: 1,
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		minHeight: 48,
-		marginRight: 20,
-	},
-	logBottomBorder: {
-		borderBottomWidth: 1,
-		borderColor: Colors.ultraLightGray,
-	},
-	value: {
-		maxWidth: 0.4 * width,
-		fontSize: 17,
-		paddingRight: 6,
-	},
-	date: {
-		fontSize: 14,
-		color: Colors.lightGray,
-		textAlign: 'right',
 	},
 	showMoreLogsContainer: {
 		display: 'flex',

@@ -20,6 +20,7 @@ import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
 import DateTimeCell from './DateTimeCell'
 import RecurrentAttribute from './RecurrentAttribute'
+import { _task } from "../../reducers/TaskReducerExtension";
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -94,24 +95,28 @@ export default class AttributeCell extends React.Component {
 		}
 	}
 
-	handleSubmit(value) {
+	handleSubmit(value, taskAttributeToPatch /* undefined for PUTs */) {
 		const { attribute } = this.props
 		const { is_recurrent } = attribute
-		// For future: if we're editing EXISTING recurring values, assume we're creating a new one (which null currently signals)
-		const newestTaskAttribute = is_recurrent ? null : attribute.values[0]
-		if (this.state.loading || valueUnchanged(newestTaskAttribute, value)) {
+		let _taskAttributeToPatch = taskAttributeToPatch
+		// Non-recurring attributes should update the most recent (displayed) value
+		if (!is_recurrent && !taskAttributeToPatch) {
+			_taskAttributeToPatch = attribute.values[0]
+		}
+		if (this.state.loading || valueUnchanged(_taskAttributeToPatch, value)) {
 			return
 		}
 		this.setState({ loading: true })
 		this.props
-			.onSubmitEditing(this.props.id, value, newestTaskAttribute)
+			.onSubmitEditing(this.props.id, value, _taskAttributeToPatch)
 			.finally(() => this.setState({ loading: false }))
 	}
 }
 
 function valueUnchanged(taskAttribute, value) {
 	const stillBlank = taskAttribute && fieldIsBlank(taskAttribute.value) && fieldIsBlank(value)
-	return stillBlank || (taskAttribute && taskAttribute.value === value)
+	const yetToBeCreated = !taskAttribute && fieldIsBlank(value)
+	return stillBlank || yetToBeCreated
 }
 
 export function AttributeName({ name, loading }) {

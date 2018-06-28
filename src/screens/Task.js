@@ -405,24 +405,28 @@ class Task extends Component {
 		)
 		let apiPromise
 		// POST new taskAttribute if taskAttribute is blank or recurrent
-		if (!taskAttribute || taskAttribute.is_recurrent === 'True') { // Future: if we can EDIT existing recurrent attrs, this is too simple
+		if (!taskAttribute) {
 			apiPromise = Compute.postAttributeUpdate(this.props.id, id, newValue)
 				.then(res => this.storeNewTaskAttribute(attributeIndex, res.body))
 		} else {
-			// PATCH EXISTING taskAttribute
-			this.updateAttributeValue(attributeIndex, newValue) // optimistic update
+			// PATCH existing taskAttribute
+			let taskAttributeIndexInValues = organized_attributes[attributeIndex].values.findIndex(e =>
+				Compute.equate(e.id, taskAttribute.id)
+			)
+			console.log('found TA index:', taskAttributeIndexInValues)
+			this.updateAttributeValue(attributeIndex, newValue, taskAttributeIndexInValues) // optimistic update
 			apiPromise = Compute.patchAttributeUpdate(taskAttribute.id, newValue)
 				.catch(e => this.updateAttributeValue(attributeIndex, currValue))
 		}
 		return apiPromise
 	}
 
-	updateAttributeValue(index, newValue) {
+	updateAttributeValue(index, newValue, taskAttributeIndexInValues) {
 		// Optimistically set PATCHED newValue as value of most recent taskAttribute
 		let ns = update(this.state.organized_attributes, {
 			[index]: {
 				values: {
-					[0]: {
+					[taskAttributeIndexInValues]: {
 						$merge: { value: newValue },
 					},
 				},
