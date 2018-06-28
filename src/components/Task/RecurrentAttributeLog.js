@@ -36,10 +36,12 @@ export default class RecurrentAttributeLog extends React.Component {
 		const displayValue = getDisplayValue(log)
 		return (
 			<TouchableOpacity onPress={this.toggleEditingState}>
-				<View
-					style={[styles.log, hideBottomBorder ? {} : styles.logBottomBorder]}>
-					<Text style={styles.value}>{displayValue}</Text>
-					<Text style={styles.date}>{displayDate}</Text>
+				<View>
+					<View
+						style={[styles.log, hideBottomBorder ? {} : styles.logBottomBorder]}>
+						<Text style={styles.value}>{displayValue}</Text>
+						<Text style={styles.date}>{displayDate}</Text>
+					</View>
 					{showEditPrompt && (
 						<RecurrentAttributeEditOrCreatePrompt
 							name={name}
