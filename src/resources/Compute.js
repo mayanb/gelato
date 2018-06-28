@@ -64,8 +64,8 @@ export default class Compute {
 		taskAttributes.forEach(taskAttribute => attrByID[taskAttribute.attribute].values.push(taskAttribute))
 		// Sort Attributes in user-specified order (rank)
 		const _attributesWithValues = Object.values(attrByID).sort((a, b) => a.rank - b.rank)
-		// (In place) sort each attribute's values newest to oldest -- lets us display them properly, and predictably pre-pend new values to the start
-		_attributesWithValues.forEach(taskAttribute => taskAttribute.values.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)))
+		// (In place) sort each attribute's values (TaskAttributes) newest to oldest -- lets us display them properly, and predictably pre-pend new values to the start
+		_attributesWithValues.forEach(attribute => attribute.values.sort((TA1, TA2) => new Date(TA2.updated_at) - new Date(TA1.updated_at)))
 		return _attributesWithValues
 	}
 
