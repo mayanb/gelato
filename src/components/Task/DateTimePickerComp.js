@@ -27,7 +27,7 @@ export default class DateTimePickerComp extends Component {
 	}
 
 	render() {
-		const { title } = this.props
+		const { title, dateToDisplayWhenOpened /* defaults to new Date() */ } = this.props
 		return (
 			<DateTimePicker
 				confirmTextIOS="Select date"
@@ -38,6 +38,7 @@ export default class DateTimePickerComp extends Component {
 					color: Colors.textBlack,
 				}}
 				titleIOS={title}
+				date={dateToDisplayWhenOpened}
 				datePickerModeAndroid="spinner"
 				isVisible={this.state.isDateTimePickerVisible}
 				onConfirm={this.handleDatePicked}

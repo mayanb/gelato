@@ -46,6 +46,7 @@ export default class RecurrentAttributeLog extends React.Component {
 							type={log.datatype}
 							toggleEditingState={this.toggleEditingState}
 							onSubmit={this.handleSubmitNewLog}
+							value={log.value}
 						/>
 					)}
 				</View>
