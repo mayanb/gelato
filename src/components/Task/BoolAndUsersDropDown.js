@@ -20,9 +20,9 @@ class BoolAndUsersDropDown extends React.Component {
 	}
 
 	render() {
-		const { userData, label } = this.props
+		const { userList, label } = this.props
 		const boolData = [{ value: 'Yes' }, { value: 'No' }]
-		const data = this.props.type === USER && userData ? userData : boolData
+		const data = this.props.type === USER && userList ? userList : boolData
 
 		return (
 			<Dropdown
@@ -55,11 +55,13 @@ class BoolAndUsersDropDown extends React.Component {
 }
 
 const mapStateToProps = state => {
-	const userData = state.users.data.map(user => {
+	// searchUsers filters out UUIDs from usernames which are actually just auto-generated invitation strings
+	const userList = Compute.searchUsers('', state.users.data)
+	const userListFormatted = userList.map(user => {
 		return { value: Compute.getUsernameDisplay(user) }
 	})
 	return {
-		userData: userData,
+		userList: userListFormatted,
 	}
 }
 
