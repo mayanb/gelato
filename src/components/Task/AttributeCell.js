@@ -32,8 +32,10 @@ export default class AttributeCell extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
+
 	render() {
-		const { values, isLoadingTask, type, name, is_recurrent } = this.props
+		const { isLoadingTask, attribute } = this.props
+		const { is_recurrent, values, name, datatype } = attribute
 		const { loading } = this.state
 		if (is_recurrent) {
 			return <RecurrentAttribute
@@ -44,7 +46,7 @@ export default class AttributeCell extends React.Component {
 
 				values={values}
 				onSubmit={this.handleSubmit}
-				type={type}
+				type={datatype}
 			/>
 		}
 		return (
@@ -55,10 +57,11 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderCell() {
-		const { values, isLoadingTask, type, name } = this.props
+		const { isLoadingTask, attribute } = this.props
+		const { values, datatype, name } = attribute
 		const { loading } = this.state
 		const value = values.length === 0 ? '' : values[0].value
-		switch (type) {
+		switch (datatype) {
 			case BOOL:
 				return <BooleanCell
 					name={name}
@@ -89,7 +92,7 @@ export default class AttributeCell extends React.Component {
 					loading={loading}
 					value={value}
 					onSubmit={this.handleSubmit}
-					type={type}
+					type={datatype}
 					isLoadingTask={isLoadingTask}
 				/>
 		}
@@ -97,7 +100,7 @@ export default class AttributeCell extends React.Component {
 
 	handleSubmit(value, taskAttributeToPatch /* undefined for PUTs */) {
 		const { attribute } = this.props
-		const { is_recurrent } = attribute
+		const { is_recurrent, id } = attribute
 		let _taskAttributeToPatch = taskAttributeToPatch
 		// Non-recurring attributes should update the most recent (displayed) value
 		if (!is_recurrent && !taskAttributeToPatch) {
@@ -108,7 +111,7 @@ export default class AttributeCell extends React.Component {
 		}
 		this.setState({ loading: true })
 		this.props
-			.onSubmitEditing(this.props.id, value, _taskAttributeToPatch)
+			.onSubmitEditing(id, value, _taskAttributeToPatch)
 			.finally(() => this.setState({ loading: false }))
 	}
 }
