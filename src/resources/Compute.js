@@ -43,13 +43,17 @@ export default class Compute {
 		let allAttributes = task.process_type.attributes
 		const attributeValues = task.attribute_values
 		const _ = this.attributesWithValues(allAttributes, attributeValues)
-		console.log(_)
 		return _
 	}
 
-	// Match each ProcessType.Attribute with its TaskAttributeValue (if they've been filled in)
-	// attribute.values = [...n] will contain n = 0 or 1 for non-recurring Attributes, n >= 0 for recurring Attributes
-	static attributesWithValues(attributes, attributeValues) {
+	/*
+	 * Matches each attribute (ProcessType.Attribute) with its TaskAttributes.
+	 * If an Task's attribute has never been filled in, it has no taskAttributes.
+	 * Recurring tasks can have an arbitrary number of taskAttributes, though non-recurring may have multiple for legacy reasons (so we use the most recent).
+	 * attribute.values = [taskAttributeA, taskAttributeB, ... taskAttributeN]
+	 * taskAttribute.attribute is the attribute ID of the ProcessType.Attribute the taskAttribute is holding the value for.
+	*/
+	static attributesWithValues(attributes, taskAttributes) {
 		// Hash Attributes by id
 		const attrByID = {}
 		attributes.forEach(attr => {
@@ -57,10 +61,10 @@ export default class Compute {
 			attrByID[attr.id] = attr
 		})
 		// Cluster recurring TaskAttributes into their respective Attributes
-		attributeValues.forEach(attrValue => attrByID[attrValue.attribute].values.push(attrValue))
+		taskAttributes.forEach(taskAttribute => attrByID[taskAttribute.attribute].values.push(taskAttribute))
 		// Sort Attributes in user-specified order (rank)
 		const _attributesWithValues = Object.values(attrByID).sort((a, b) => a.rank - b.rank)
-		// (In place) sort each attribute's values newest to oldest -- lets us display them properly, and predictably append new values to the end
+		// (In place) sort each attribute's values newest to oldest -- lets us display them properly, and predictably pre-pend new values to the start
 		_attributesWithValues.forEach(taskAttribute => taskAttribute.values.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)))
 		return _attributesWithValues
 	}

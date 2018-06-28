@@ -413,7 +413,6 @@ class Task extends Component {
 			let taskAttributeIndexInValues = organized_attributes[attributeIndex].values.findIndex(e =>
 				Compute.equate(e.id, taskAttribute.id)
 			)
-			console.log('found TA index:', taskAttributeIndexInValues)
 			this.updateAttributeValue(attributeIndex, newValue, taskAttributeIndexInValues) // optimistic update
 			apiPromise = Compute.patchAttributeUpdate(taskAttribute.id, newValue)
 				.catch(e => this.updateAttributeValue(attributeIndex, currValue))
