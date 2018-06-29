@@ -69,6 +69,30 @@ export default class Compute {
 		return _attributesWithValues
 	}
 
+	static updateTaskAttributeValue(index, newValue, taskAttributeIndexInValues, organized_attributes) {
+		// Optimistically set PATCHED newValue as value of most recent taskAttribute
+		return update(organized_attributes, {
+			[index]: {
+				values: {
+					[taskAttributeIndexInValues]: {
+						$merge: { value: newValue },
+					},
+				},
+			},
+		})
+	}
+
+	static storeNewTaskAttribute(index, newTaskAttribute, organized_attributes) {
+		// Set created newTaskAttribute as the first (most recent) taskAttribute in values
+		return update(organized_attributes, {
+			[index]: {
+				values: {
+					$unshift: [newTaskAttribute],
+				},
+			},
+		})
+	}
+
 	static generateNewTask(data) {
 		let date = moment().format('MMDD')
 		let label = [data.processType.code, data.productType.code, date].join('-')
