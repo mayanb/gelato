@@ -56,8 +56,13 @@ export default class RecurrentAttributeLog extends React.Component {
 		)
 	}
 
-	toggleEditingState() {
-		this.setState({ showEditPrompt: !this.state.showEditPrompt })
+	toggleEditingState(newEditingState) {
+		this.setState({
+			showEditPrompt:
+				newEditingState === undefined
+					? !this.state.showEditPrompt
+					: newEditingState,
+		})
 	}
 
 	handleSubmitNewLog(value) {
