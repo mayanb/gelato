@@ -100,13 +100,13 @@ export default class AttributeCell extends React.Component {
 
 	handleSubmit(value, taskAttributeToPatch /* undefined for PUTs */) {
 		const { attribute } = this.props
-		const { is_recurrent, id } = attribute
+		const { is_recurrent, id, datatype } = attribute
 		let _taskAttributeToPatch = taskAttributeToPatch
 		// Non-recurring attributes should update the most recent (displayed) value
 		if (!is_recurrent && !taskAttributeToPatch) {
 			_taskAttributeToPatch = attribute.values[0]
 		}
-		if (this.state.loading || valueUnchanged(_taskAttributeToPatch, value)) {
+		if (this.state.loading || valueUnchanged(_taskAttributeToPatch, value, datatype === BOOL)) {
 			return
 		}
 		this.setState({ loading: true })
@@ -116,7 +116,11 @@ export default class AttributeCell extends React.Component {
 	}
 }
 
-function valueUnchanged(taskAttribute, value) {
+function valueUnchanged(taskAttribute, value, isBool) {
+	// Booleans use 'Yes'/'' for True/False. So for Boolean value === '', we just assume it's changed.
+	if (isBool && value !== 'Yes') {
+		return false
+	}
 	const stillBlank = taskAttribute && fieldIsBlank(taskAttribute.value) && fieldIsBlank(value)
 	const yetToBeCreated = !taskAttribute && fieldIsBlank(value)
 	return stillBlank || yetToBeCreated
