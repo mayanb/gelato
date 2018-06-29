@@ -27,6 +27,7 @@ export default class DateTimePickerComp extends Component {
 
 	render() {
 		const { title } = this.props
+		let timeFormat = this.props.time_format === 'n' ? false : true
 		return (
 			<DateTimePicker
 				confirmTextIOS="Select date"
@@ -36,6 +37,8 @@ export default class DateTimePickerComp extends Component {
 					fontWeight: 'bold',
 					color: Colors.textBlack,
 				}}
+				date = {new Date()}
+				is24Hour = {timeFormat}
 				titleIOS={title}
 				datePickerModeAndroid="spinner"
 				isVisible={this.state.isDateTimePickerVisible}
