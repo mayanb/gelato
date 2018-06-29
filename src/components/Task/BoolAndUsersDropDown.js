@@ -13,6 +13,7 @@ class BoolAndUsersDropDown extends React.Component {
 
 		this.handleChangeText = this.handleChangeText.bind(this)
 	}
+
 	componentDidMount() {
 		if (this.props.type === USER) {
 			this.props.dispatch(actions.fetchUsers())
