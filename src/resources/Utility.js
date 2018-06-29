@@ -74,8 +74,7 @@ export class DateFormatter {
 		if (!this.isValidISODate(dateString)) {
 			return null
 		}
-		let format
-		time_format === 'n' ? format = "MMM D, hh:mm a" : format = "MMM D, HH:mm"
+		let format = time_format === 'n' ? "MMM D, hh:mm a" : "MMM D, HH:mm"
 		return moment(dateString).format(format)
 	}
 	
