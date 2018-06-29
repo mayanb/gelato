@@ -70,11 +70,12 @@ export class DateFormatter {
 		return result
 	}
 
-	static monthDayYearWithTime(dateString) {
+	static monthDayYearWithTime(dateString, time_format) {
 		if (!this.isValidISODate(dateString)) {
 			return null
 		}
-		return moment(dateString).format("MMM D 'YY, h:mma").slice(0,-1)
+		let format = time_format === 'n' ? "MMM D, hh:mm a" : "MMM D, HH:mm"
+		return moment(dateString).format(format)
 	}
 	
 	static isValidISODate(dateString) {
