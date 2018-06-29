@@ -7,23 +7,24 @@ export default class AttributeList extends React.Component {
 	render() {
 		let data = this.props.data || []
 		return (
-			<View>
-				{data.map(attribute => {
-					return (
-						<AttributeCell
-							key={attribute.id}
-							attribute={attribute}
-							onSubmitEditing={this.props.onSubmitEditing}
-							isLoadingTask={this.props.isLoadingTask}
-						/>
-					)
-				})}
-				<TouchableWithoutFeedback>
+			<TouchableWithoutFeedback>
+				<View>
+					{data.map(attribute => {
+						return (
+							<AttributeCell
+								key={attribute.id}
+								attribute={attribute}
+								onSubmitEditing={this.props.onSubmitEditing}
+								isLoadingTask={this.props.isLoadingTask}
+							/>
+						)
+					})}
+
 					<View>
 						<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
 					</View>
-				</TouchableWithoutFeedback>
-			</View>
+				</View>
+			</TouchableWithoutFeedback>
 		)
 	}
 }
