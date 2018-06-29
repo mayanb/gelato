@@ -27,7 +27,7 @@ export default class DateTimePickerComp extends Component {
 
 	render() {
 		const { title, time_format } = this.props
-		const is24Hour = time_format === 'n'
+		const is24Hour = time_format !== 'n'
 		return (
 			<DateTimePicker
 				confirmTextIOS="Select date"
