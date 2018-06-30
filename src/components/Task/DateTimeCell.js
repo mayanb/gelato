@@ -25,13 +25,12 @@ export default class DateTimeCell extends React.Component {
 	}
 
 	render() {
-		const { isLoadingTask, value } = this.props
+		const { isLoadingTask, value, name, loading, time_format } = this.props
 		const { editing } = this.state
 
 		if (isLoadingTask) {
 			return null
 		}
-		const { name, loading } = this.props
 		const showEditButton = !this.state.editing && fieldIsBlank(value)
 		return (
 			<TouchableOpacity onPress={this.toggleEdit} style={styles.container}>
@@ -40,7 +39,7 @@ export default class DateTimeCell extends React.Component {
 					<EditButton onEdit={this.toggleEdit} />
 				) : (
 					<Text style={styles.display}>
-						{value && this.getDateDisplay(value)}
+						{value && this.getDateDisplay(value, time_format)}
 					</Text>
 				)}
 				{editing && (
@@ -48,14 +47,15 @@ export default class DateTimeCell extends React.Component {
 						title={`Edit '${name}'`}
 						onDatePicked={this.handleDatePicked}
 						onCancel={this.toggleEdit}
+						time_format={time_format}
 					/>
 				)}
 			</TouchableOpacity>
 		)
 	}
 
-	getDateDisplay(value) {
-		const displayDate = DateFormatter.monthDayYearWithTime(value) // returns null on fail
+	getDateDisplay(value, time_format) {
+		const displayDate = DateFormatter.monthDayYearWithTime(value, time_format) // returns null on fail
 		// Handle special special case: date input manually before DatePicker existed
 		return displayDate ? displayDate : value
 	}
