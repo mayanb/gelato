@@ -9,7 +9,7 @@ export default class Print {
 		let m = 1.2 // adjust m for scaling, adjust .containerouter height and width for label size
 		const { task_label_type } = getUser()
 
-		let labelTypeStyling = '' // task_label_type === '0' gets default styling
+		let labelTypeStyling = '' // task_label_type === 0 gets default styling
 		if (task_label_type === 1) {
 			labelTypeStyling = `#product {white-space: nowrap; margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
 		} else if (task_label_type === 2) {
