@@ -10,9 +10,9 @@ export default class Print {
 		const { task_label_type } = getUser()
 
 		let labelTypeStyling = '' // task_label_type === '0' gets default styling
-		if (task_label_type === '1') {
+		if (task_label_type === 1) {
 			labelTypeStyling = `#product {white-space: nowrap; margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
-		} else if (task_label_type === '2') {
+		} else if (task_label_type === 2) {
 			labelTypeStyling = `#process {white-space: nowrap; margin-top: -${m*8}px; font-size: ${m*64}px;} #description {font-size: ${m*14}px;}`
 		}
 		let styles = `<style>
