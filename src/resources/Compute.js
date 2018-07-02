@@ -42,8 +42,7 @@ export default class Compute {
 		var attributes = []
 		let allAttributes = task.process_type.attributes
 		const attributeValues = task.attribute_values
-		const _ = this.attributesWithValues(allAttributes, attributeValues)
-		return _
+		return this.attributesWithValues(allAttributes, attributeValues)
 	}
 
 	/*
@@ -61,12 +60,22 @@ export default class Compute {
 			attrByID[attr.id] = attr
 		})
 		// Cluster recurring TaskAttributes into their respective Attributes
-		taskAttributes.forEach(taskAttribute => attrByID[taskAttribute.attribute].values.push(taskAttribute))
+		taskAttributes.forEach(taskAttribute => {
+			const attr = attrByID[taskAttribute.attribute]
+			attr && attr.values.push(taskAttribute)
+		})
 		// Sort Attributes in user-specified order (rank)
 		const _attributesWithValues = Object.values(attrByID).sort((a, b) => a.rank - b.rank)
 		// (In place) sort each attribute's values (TaskAttributes) newest to oldest -- lets us display them properly, and predictably pre-pend new values to the start
 		_attributesWithValues.forEach(attribute => attribute.values.sort((TA1, TA2) => new Date(TA2.created_at) - new Date(TA1.created_at)))
-		return _attributesWithValues
+		// filter to show both attributes that are active (not trashed) and attributes that are trashed but have data in them
+		return _attributesWithValues.filter(attr => {
+			if (attr.is_recurrent) {
+				return !attr.is_trashed || attr.values.length
+			} else {
+				return !attr.is_trashed || (attr.values.length && attr.values[attr.values.length - 1].value.length)
+			}
+		})
 	}
 
 	static updateTaskAttributeValue(index, newValue, taskAttributeIndexInValues, organized_attributes) {
