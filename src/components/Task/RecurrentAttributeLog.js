@@ -32,7 +32,7 @@ export default class RecurrentAttributeLog extends React.Component {
 	render() {
 		const { showEditPrompt } = this.state
 		const { name, log, hideBottomBorder } = this.props
-		const displayDate = moment(log.updated_at).fromNow()
+		const displayDate = moment(log.created_at).fromNow()
 		const displayValue = getDisplayValue(log)
 		return (
 			<TouchableOpacity onPress={this.toggleEditingState}>
