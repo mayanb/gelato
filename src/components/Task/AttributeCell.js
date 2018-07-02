@@ -57,7 +57,7 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderCell() {
-		const { isLoadingTask, attribute } = this.props
+		const { attribute, isLoadingTask, time_format } = this.props
 		const { values, datatype, name } = attribute
 		const { loading } = this.state
 		const value = values.length === 0 ? '' : values[0].value
@@ -85,6 +85,7 @@ export default class AttributeCell extends React.Component {
             value={value}
             onSubmit={this.handleSubmit}
             isLoadingTask={isLoadingTask}
+            time_format={time_format}
           />
 			default:
 				return <TextNumberCell

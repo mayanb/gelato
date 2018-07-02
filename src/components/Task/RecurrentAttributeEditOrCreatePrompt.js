@@ -25,7 +25,7 @@ export default function RecurrentAttributeEditOrCreatePrompt({ name, type, toggl
 			return (
 				<DateTimePickerComp
 					title={`Edit '${name}'`}
-					dateToDisplayWhenOpened={date}
+					dateToDisplayWhenOpened={date || new Date()}
 					onDatePicked={onSubmit}
 					onCancel={toggleEditingState}
 				/>

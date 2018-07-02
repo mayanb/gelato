@@ -14,7 +14,7 @@ import ActionSheet from 'react-native-actionsheet'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ActionButton from 'react-native-action-button'
 import NavHeader from 'react-navigation-header-buttons'
-
+import { withUser } from 'react-native-authentication-helpers'
 import BackButton from '../components/BackButton'
 import Colors from '../resources/Colors'
 import Compute from '../resources/Compute'
@@ -201,7 +201,7 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes, action_options, actionButtonVisible } = this.state
-		let { task } = this.props
+		let { task, time_format } = this.props
 		//Check that full task object is loaded
 		if (!task || task.items === undefined) {
 			return null
@@ -235,6 +235,7 @@ class Task extends Component {
 							data={organized_attributes}
 							onSubmitEditing={this.handleSubmitEditing.bind(this)}
 							isLoadingTask={this.state.isLoadingTask}
+							time_format={time_format}
 						/>
 					</KeyboardAwareScrollView>
 					<ActionSheet
@@ -521,7 +522,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, props) => {
 	return {
 		task: state.tasks.dataByID[props.id],
+		time_format: props.user.time_format
 	}
 }
 
-export default paramsToProps(connect(mapStateToProps)(Task))
+let connected = paramsToProps(connect(mapStateToProps)(Task))
+export default withUser(connected)

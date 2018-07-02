@@ -69,8 +69,10 @@ class App extends React.Component {
 			// delete a lot of code
 
 			// On error, just return zero, the first option
-			const task_label_type = userProfileRes.body ? String(userProfileRes.body.task_label_type) : '0'
-			setUser({ username, team, teamID, token, task_label_type })
+			const body = userProfileRes.body || {}
+			const task_label_type = body.task_label_type || '0'
+			const time_format = body.time_format || 'm'
+			setUser({ username, team, teamID, token, task_label_type, time_format })
 		}
 	}
 

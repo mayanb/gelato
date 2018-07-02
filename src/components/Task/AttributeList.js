@@ -16,10 +16,10 @@ export default class AttributeList extends React.Component {
 								attribute={attribute}
 								onSubmitEditing={this.props.onSubmitEditing}
 								isLoadingTask={this.props.isLoadingTask}
+								time_format={this.props.time_format}
 							/>
 						)
 					})}
-
 					<View>
 						<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
 					</View>
