@@ -21,14 +21,14 @@ class BoolAndUsersDropDown extends React.Component {
 	}
 
 	render() {
-		const { userList, label, toggleEditingState } = this.props
+		const { userList, toggleEditingState } = this.props
 		const boolData = [{ value: 'Yes' }, { value: 'No' }]
 		const data = this.props.type === USER && userList ? userList : boolData
 
 		return (
 			<Dropdown
 				ref={ref => this.openPopup(ref)}
-				label={label}
+				label={'Loading...'}
 				data={data}
 				onChangeText={this.handleChangeText}
 				onBlur={() => toggleEditingState(false)}
