@@ -17,7 +17,7 @@ export default class BooleanCell extends React.Component {
 		if (isLoadingTask) return null
 
 		const booleanValue = value === 'true'
-		const label = getBoolDbStorageValue(booleanValue)
+		const label = getBoolDisplay(booleanValue)
 
 		//Using TouchableWithoutFeedback to allow scrolling (not sure why we need this)
 		return (
