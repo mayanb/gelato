@@ -66,7 +66,7 @@ export default class RecurrentAttributeLog extends React.Component {
 	}
 
 	handleSubmitNewLog(value) {
-		this.toggleEditingState()
+		this.toggleEditingState(false)
 		this.props.onSubmit(value, this.props.log) // including log (taskAttribute) signals a PATCH request
 	}
 }

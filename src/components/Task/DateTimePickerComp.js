@@ -5,23 +5,17 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import Colors from '../../resources/Colors'
 import { DateFormatter } from '../../resources/Utility'
 
+// Note: this component must be shown/hidden by parent components. It can hide itself, but we're not using it.
 export default class DateTimePickerComp extends Component {
-	constructor(props) {
-		super(props)
-		this.state = { isDateTimePickerVisible: true }
-	}
-
 	componentDidMount() {
 		Keyboard.dismiss()
 	}
 
 	hideDateTimePicker = () => {
-		this.setState({ isDateTimePickerVisible: false })
-		this.props.onCancel()
+		this.props.onCancel(false)
 	}
 
 	handleDatePicked = jsDateString => {
-		this.hideDateTimePicker()
 		const ISODateString = moment(new Date(jsDateString)).toISOString()
 		this.props.onDatePicked(ISODateString)
 	}
@@ -43,7 +37,7 @@ export default class DateTimePickerComp extends Component {
 				titleIOS={title}
 				date={date}
 				datePickerModeAndroid="spinner"
-				isVisible={this.state.isDateTimePickerVisible}
+				isVisible={true}
 				onConfirm={this.handleDatePicked}
 				onCancel={this.hideDateTimePicker}
 			/>

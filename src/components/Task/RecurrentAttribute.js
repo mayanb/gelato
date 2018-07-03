@@ -82,7 +82,7 @@ export default class RecurrentAttribute extends React.Component {
 	}
 
 	handleSubmitNewLog(value, taskAttribute /* undefined for PUTs */) {
-		this.toggleEditingState()
+		this.toggleEditingState(false)
 		this.props.onSubmit(value, taskAttribute)
 	}
 
