@@ -45,6 +45,7 @@ export default class DateTimeCell extends React.Component {
 				{editing && (
 					<DateTimePickerComp
 						title={`Edit '${name}'`}
+						dateToDisplayWhenOpened={value}
 						onDatePicked={this.handleDatePicked}
 						onCancel={this.toggleEdit}
 						time_format={time_format}

@@ -18,14 +18,10 @@ export default function RecurrentAttributeEditOrCreatePrompt({ name, type, toggl
 		case USER:
 			return <BoolAndUsersDropDown label={name} type={USER} onSubmit={onSubmit} toggleEditingState={toggleEditingState}/>
 		case TIME:
-			let date
-			if (DateFormatter.isValidISODate(value)) {
-				date = new Date(value)
-			}
 			return (
 				<DateTimePickerComp
 					title={`Edit '${name}'`}
-					dateToDisplayWhenOpened={date || new Date()}
+					dateToDisplayWhenOpened={value}
 					onDatePicked={onSubmit}
 					onCancel={toggleEditingState}
 				/>

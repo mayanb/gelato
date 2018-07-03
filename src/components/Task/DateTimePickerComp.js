@@ -27,8 +27,9 @@ export default class DateTimePickerComp extends Component {
 	}
 
 	render() {
-		const { title, time_format, dateToDisplayWhenOpened /* default: new Date() */ } = this.props
+		const { title, time_format, dateToDisplayWhenOpened /* string */ } = this.props
 		const is24Hour = time_format !== 'n'
+		let date = DateFormatter.isValidISODate(dateToDisplayWhenOpened) ? new Date(dateToDisplayWhenOpened) : new Date()
 		return (
 			<DateTimePicker
 				confirmTextIOS="Select date"
@@ -40,7 +41,7 @@ export default class DateTimePickerComp extends Component {
 				}}
 				is24Hour={is24Hour}
 				titleIOS={title}
-				date={dateToDisplayWhenOpened}
+				date={date}
 				datePickerModeAndroid="spinner"
 				isVisible={this.state.isDateTimePickerVisible}
 				onConfirm={this.handleDatePicked}
