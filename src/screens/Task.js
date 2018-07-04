@@ -28,7 +28,6 @@ import * as errorActions from '../actions/ErrorActions'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import { fieldIsBlank, validTaskNameLength } from '../resources/Utility'
 import AttributeList from '../components/Task/AttributeList'
-import update from 'immutability-helper'
 import QRCode from 'qrcode'
 import RecipeInstructions from '../components/Task/RecipeInstructions'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -399,32 +398,47 @@ class Task extends Component {
 		})
 	}
 
-	handleSubmitEditing(id, newValue) {
+	handleSubmitEditing(id, newValue, taskAttribute) {
 		let { organized_attributes } = this.state
 		let attributeIndex = organized_attributes.findIndex(e =>
 			Compute.equate(e.id, id)
 		)
-
-		// if there's no change, return
-		let currValue = organized_attributes[attributeIndex].value
-		if (newValue === currValue) {
-			return
+		let apiPromise
+		// POST new taskAttribute if taskAttribute is blank or recurrent
+		if (!taskAttribute) {
+			apiPromise = Compute.postAttributeUpdate(this.props.id, id, newValue).then(res =>
+				this.setState({
+					organized_attributes: Compute.storeNewTaskAttribute(
+						attributeIndex,
+						res.body,
+						organized_attributes
+					),
+				})
+			)
+		} else {
+			// PATCH existing taskAttribute
+			const taskAttributeIndexInValues = organized_attributes[attributeIndex].values.findIndex(e => Compute.equate(e.id, taskAttribute.id))
+			// Optimistically update local state
+			this.setState({
+				organized_attributes: Compute.updateTaskAttributeValue(
+					attributeIndex,
+					newValue,
+					taskAttributeIndexInValues,
+					organized_attributes
+				),
+			})
+			apiPromise = Compute.patchAttributeUpdate(taskAttribute.id, newValue).catch(e =>
+				this.setState({
+					organized_attributes: Compute.updateTaskAttributeValue(
+						attributeIndex,
+						taskAttribute.value,
+						taskAttributeIndexInValues,
+						organized_attributes
+					),
+				})
+			)
 		}
-
-		// else, do optimistic update
-		this.updateAttributeValue(attributeIndex, newValue)
-		return Compute.postAttributeUpdate(this.props.id, id, newValue).catch(e =>
-			this.updateAttributeValue(attributeIndex, currValue)
-		)
-	}
-
-	updateAttributeValue(index, newValue) {
-		let ns = update(this.state.organized_attributes, {
-			[index]: {
-				$merge: { value: newValue },
-			},
-		})
-		this.setState({ organized_attributes: ns })
+		return apiPromise
 	}
 
 	renderHeader = task => {

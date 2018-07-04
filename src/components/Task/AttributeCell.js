@@ -5,13 +5,22 @@ import {
 	Dimensions,
 	StyleSheet,
 	ActivityIndicator,
-	TouchableWithoutFeedback,
 } from 'react-native'
+import {
+	TEXT,
+	NUMB,
+	TIME,
+	BOOL,
+	USER,
+} from '../../resources/AttributeTypeConstants'
 import Colors from '../../resources/Colors'
+import { fieldIsBlank } from '../../resources/Utility'
 import TextNumberCell from './TextNumberCell'
 import BooleanCell from './BooleanCell'
 import UserCell from './UserCell'
 import DateTimeCell from './DateTimeCell'
+import RecurrentAttribute from './RecurrentAttribute'
+import { _task } from "../../reducers/TaskReducerExtension";
 
 export default class AttributeCell extends React.Component {
 	constructor(props) {
@@ -23,7 +32,23 @@ export default class AttributeCell extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this)
 	}
 
+
 	render() {
+		const { isLoadingTask, attribute } = this.props
+		const { is_recurrent, values, name, datatype } = attribute
+		const { loading } = this.state
+		if (is_recurrent) {
+			return <RecurrentAttribute
+				name={name}
+				loading={loading}
+				onSubmit={this.handleSubmit}
+				isLoadingTask={isLoadingTask}
+
+				values={values}
+				onSubmit={this.handleSubmit}
+				type={datatype}
+			/>
+		}
 		return (
 			<View style={styles.container}>
 				{this.renderCell()}
@@ -32,10 +57,12 @@ export default class AttributeCell extends React.Component {
 	}
 
 	renderCell() {
-		const { value, isLoadingTask, type, name, time_format } = this.props
+		const { attribute, isLoadingTask, time_format } = this.props
+		const { values, datatype, name } = attribute
 		const { loading } = this.state
-		switch (type) {
-			case 'BOOL':
+		const value = values.length === 0 ? '' : values[0].value
+		switch (datatype) {
+			case BOOL:
 				return <BooleanCell
 					name={name}
 					loading={loading}
@@ -43,7 +70,7 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
-			case 'USER':
+			case USER:
 				return <UserCell
 					name={name}
 					loading={loading}
@@ -51,7 +78,7 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
-      case 'TIME':
+      case TIME:
           return <DateTimeCell
             name={name}
             loading={loading}
@@ -66,20 +93,38 @@ export default class AttributeCell extends React.Component {
 					loading={loading}
 					value={value}
 					onSubmit={this.handleSubmit}
-					type={type}
+					type={datatype}
 					isLoadingTask={isLoadingTask}
 				/>
 		}
 	}
 
-	handleSubmit(value) {
-		if (value !== this.props.value) {
-			this.setState({ loading: true })
-			this.props
-				.onSubmitEditing(this.props.id, value)
-				.finally(() => this.setState({ loading: false }))
+	handleSubmit(value, taskAttributeToPatch /* undefined for PUTs */) {
+		const { attribute } = this.props
+		const { is_recurrent, id, datatype } = attribute
+		let _taskAttributeToPatch = taskAttributeToPatch
+		// Non-recurring attributes should update the most recent (displayed) value
+		if (!is_recurrent && !taskAttributeToPatch) {
+			_taskAttributeToPatch = attribute.values[0]
 		}
+		if (this.state.loading || valueUnchanged(_taskAttributeToPatch, value, datatype === BOOL)) {
+			return
+		}
+		this.setState({ loading: true })
+		this.props
+			.onSubmitEditing(id, value, _taskAttributeToPatch)
+			.finally(() => this.setState({ loading: false }))
 	}
+}
+
+function valueUnchanged(taskAttribute, value, isBool) {
+	// Booleans use 'Yes'/'' for True/False. So for Boolean value === '', we just assume it's changed.
+	if (isBool && value !== 'Yes') {
+		return false
+	}
+	const stillBlank = taskAttribute && fieldIsBlank(taskAttribute.value) && fieldIsBlank(value)
+	const yetToBeCreated = !taskAttribute && fieldIsBlank(value)
+	return stillBlank || yetToBeCreated
 }
 
 export function AttributeName({ name, loading }) {
@@ -93,8 +138,9 @@ export function AttributeName({ name, loading }) {
 			minHeight: 60,
 		},
 		name: {
-			color: Colors.lightGray,
+			fontWeight: 'bold',
 			fontSize: 17,
+			color: Colors.textBlack,
 			marginRight: 20,
 			textAlignVertical: 'top',
 		},
@@ -115,6 +161,7 @@ const styles = StyleSheet.create({
 		minHeight: 60,
 		borderBottomWidth: 1,
 		borderBottomColor: Colors.ultraLightGray,
+		marginBottom: 8,
 		alignItems: 'flex-start',
 		justifyContent: 'center',
 		paddingLeft: 16,
