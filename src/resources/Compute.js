@@ -41,22 +41,65 @@ export default class Compute {
 	static organizeAttributes(task) {
 		var attributes = []
 		let allAttributes = task.process_type.attributes
-		allAttributes.forEach((attr, i) => {
-			let attribute_value = task.attribute_values.find(e =>
-				Compute.equate(e.attribute, attr.id)
-			)
-			if (!attribute_value) {
-				attribute_value = ''
+		const attributeValues = task.attribute_values
+		return this.attributesWithValues(allAttributes, attributeValues)
+	}
+
+	/*
+	 * Matches each attribute (ProcessType.Attribute) with its TaskAttributes.
+	 * If an Task's attribute has never been filled in, it has no taskAttributes.
+	 * Recurring tasks can have an arbitrary number of taskAttributes, though non-recurring may have multiple for legacy reasons (so we use the most recent).
+	 * attribute.values = [taskAttributeA, taskAttributeB, ... taskAttributeN]
+	 * taskAttribute.attribute is the attribute ID of the ProcessType.Attribute the taskAttribute is holding the value for.
+	*/
+	static attributesWithValues(attributes, taskAttributes) {
+		// Hash Attributes by id
+		const attrByID = {}
+		attributes.forEach(attr => {
+			attr.values = []
+			attrByID[attr.id] = attr
+		})
+		// Cluster recurring TaskAttributes into their respective Attributes
+		taskAttributes.forEach(taskAttribute => {
+			const attr = attrByID[taskAttribute.attribute]
+			attr && attr.values.push(taskAttribute)
+		})
+		// Sort Attributes in user-specified order (rank)
+		const _attributesWithValues = Object.values(attrByID).sort((a, b) => a.rank - b.rank)
+		// (In place) sort each attribute's values (TaskAttributes) newest to oldest -- lets us display them properly, and predictably pre-pend new values to the start
+		_attributesWithValues.forEach(attribute => attribute.values.sort((TA1, TA2) => new Date(TA2.created_at) - new Date(TA1.created_at)))
+		// filter to show both attributes that are active (not trashed) and attributes that are trashed but have data in them
+		return _attributesWithValues.filter(attr => {
+			if (attr.is_recurrent) {
+				return !attr.is_trashed || attr.values.length
+			} else {
+				return !attr.is_trashed || (attr.values.length && attr.values[attr.values.length - 1].value.length)
 			}
-			let filled_attribute = update(attr, {
-				$merge: { value: attribute_value.value },
-			})
-			attributes.push(filled_attribute)
 		})
-		attributes.sort(function(obj1, obj2) {
-			return obj1.rank - obj2.rank
+	}
+
+	static updateTaskAttributeValue(index, newValue, taskAttributeIndexInValues, organized_attributes) {
+		// Optimistically set PATCHED newValue as value of most recent taskAttribute
+		return update(organized_attributes, {
+			[index]: {
+				values: {
+					[taskAttributeIndexInValues]: {
+						$merge: { value: newValue },
+					},
+				},
+			},
 		})
-		return attributes
+	}
+
+	static storeNewTaskAttribute(index, newTaskAttribute, organized_attributes) {
+		// Set created newTaskAttribute as the first (most recent) taskAttribute in values
+		return update(organized_attributes, {
+			[index]: {
+				values: {
+					$unshift: [newTaskAttribute],
+				},
+			},
+		})
 	}
 
 	static generateNewTask(data) {
@@ -212,7 +255,14 @@ export default class Compute {
 			attribute: attributeID,
 			value: value,
 		}
-		return Networking.post('/ics/taskAttributes/create/').send(payload)
+		return Networking.post('/ics/taskAttributes/').send(payload)
+	}
+
+	static patchAttributeUpdate(taskAttributeID, value) {
+		let payload = {
+			value: value,
+		}
+		return Networking.patch(`/ics/taskAttributes/${taskAttributeID}/`).send(payload)
 	}
 
 	static getSearchResults(text, teamID) {

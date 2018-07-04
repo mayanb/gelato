@@ -147,7 +147,7 @@ export function updateAttribute(task, attribute_id, new_value) {
 			value: new_value,
 		}
 
-		return Networking.post('/ics/taskAttributes/create/')
+		return Networking.post('/ics/taskAttributes/')
 			.send(payload)
 			.then(res => dispatch(updateAttributeSuccess(res.body)))
 			.catch(e => {
