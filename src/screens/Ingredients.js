@@ -269,7 +269,6 @@ class Ingredients extends Component {
 			expanded: false,
 			outputAmount: default_amount,
 		})
-
 	}
 
 	handleAddInput() {
