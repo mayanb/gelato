@@ -23,6 +23,7 @@ import PanelExpander from '../components/Ingredients/PanelExpander'
 import TaskIngredient from '../components/Ingredients/TaskIngredient'
 import OutputItemList from '../components/Ingredients/OutputItemList'
 
+const TIME_TO_WAIT_BEFORE_RESCANNING_SAME_QR_CODE = 2000 // ms
 
 class Ingredients extends Component {
 	constructor(props) {
@@ -33,6 +34,7 @@ class Ingredients extends Component {
 		this.state = {
 			expanded: false,
 			foundItem: null,
+			previousBarcode: null,
 			semantic: '',
 
 			isFetchingItem: false,
@@ -255,14 +257,19 @@ class Ingredients extends Component {
 	}
 
 	handleCloseModal() {
+		const { barcode } = this.state
+		setTimeout(() => this.setState({ previousBarcode: null }), TIME_TO_WAIT_BEFORE_RESCANNING_SAME_QR_CODE)
+
 		default_amount = this.getDefaultOutputAmount(this.props.task, this.props.mode)
 		this.setState({
 			barcode: null,
 			foundItem: null,
+			previousBarcode: barcode,
 			semantic: '',
 			expanded: false,
 			outputAmount: default_amount,
 		})
+
 	}
 
 	handleAddInput() {
@@ -307,6 +314,10 @@ class Ingredients extends Component {
 			return
 		}
 
+		if (this.wasRecentlyScanned(barcode)) {
+			return
+		}
+
 		let errorSemantic
 		const valid = Compute.validateQR(barcode)
 		if (!valid) {
@@ -329,6 +340,11 @@ class Ingredients extends Component {
 			// fetch all the data about this qr code
 			this.fetchBarcodeData(barcode)
 		}
+	}
+
+	// previousBarcode stored for interval of TIME_TO_WAIT_BEFORE_RESCANNING_SAME_QR_CODE
+	wasRecentlyScanned(barcode) {
+		return barcode && barcode === this.state.previousBarcode
 	}
 
 	fetchBarcodeData(barcode) {
