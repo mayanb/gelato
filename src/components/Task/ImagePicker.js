@@ -56,7 +56,6 @@ export default class ImagePicker extends React.Component {
                     Networking.uploadURI('/ics/files/', uri, extraData)
                         .then(res => {
                             res.json().then(image => {
-                                console.log(image)
                                 this.setState({images: [image]})
                                 this.state.images.push(image)
                             })
