@@ -1,5 +1,6 @@
 import request from 'superagent'
 import * as urls from './urls'
+import moment from 'moment'
 
 let host = urls.getBackend()
 
@@ -37,15 +38,13 @@ function patch(path, id) {
   return request('PATCH', url).set('Content-Type', 'application/json')
 }
 
-function uploadURI(path, uri, extraData) {
+function uploadURI(path, uri, team, task) {
   const host = urls.getBackend()
   const url = urls.latest(host, path)
   const uriParts = uri.split('.')
-  const fileType = uriParts[uriParts.length - 1];
-  const d = new Date()
-  const datestring = ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "-" +
-  d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) +
-  ":" + ("0" + d.getSeconds()).slice(-2)
+  const fileType = uriParts[uriParts.length - 1]
+
+  const datestring = moment().format('MM-DD-YYYY, hh:mm:ss')
 
   const formData = new FormData()
   formData.append('file_binary', {
@@ -53,8 +52,8 @@ function uploadURI(path, uri, extraData) {
       name: `${datestring}`,
       type: `image/${fileType}`,
   })
-  formData.append('team', extraData.team)
-  formData.append('task', extraData.task)
+  formData.append('team', team)
+  formData.append('task', task)
 
   const options = {
     method: 'POST',

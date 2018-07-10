@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
     View,
     TouchableOpacity,
@@ -7,9 +7,9 @@ import {
     Linking,
     Alert,
     Image
-} from 'react-native';
+} from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
-import expo from 'expo';
+import expo from 'expo'
 import Colors from '../../resources/Colors'
 import Networking from '../../resources/Networking-superagent'
 
@@ -22,7 +22,9 @@ export default class ImagePicker extends React.Component {
 
     render() {
         const { isLoadingTask } = this.props
-        if (isLoadingTask) return null
+        if (isLoadingTask) {
+            return null
+        }
 
         return (
             <View style={styles.container}>
@@ -49,15 +51,11 @@ export default class ImagePicker extends React.Component {
                     const { task, user } = this.props
                     const { uri } = result
 
-                    const extraData = {
-                        team: user.teamID,
-                        task: task.id
-                    }
-                    Networking.uploadURI('/ics/files/', uri, extraData)
+                    Networking.uploadURI('/ics/files/', uri, user.teamID, task.id)
                         .then(res => {
                             res.json().then(image => {
-                                this.setState({images: [image]})
-                                this.state.images.push(image)
+                                // image contains { id, name, task, url }
+                                // this will be useful information for displaying photos in the future.
                             })
                         })
                 }
