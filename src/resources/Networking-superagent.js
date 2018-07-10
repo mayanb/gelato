@@ -1,6 +1,5 @@
 import request from 'superagent'
 import * as urls from './urls'
-import moment from 'moment'
 
 let host = urls.getBackend()
 
@@ -44,12 +43,12 @@ function uploadURI(path, uri, team, task) {
   const uriParts = uri.split('.')
   const fileType = uriParts[uriParts.length - 1]
 
-  const datestring = moment().format('MM-DD-YYYY, hh:mm:ss')
-
   const formData = new FormData()
+  // six random digits
+  const randomImgNumber = Math.random().toString().slice(2, 8)
   formData.append('file_binary', {
       uri,
-      name: `${datestring}`,
+      name: `img_${randomImgNumber}.${fileType}`,
       type: `image/${fileType}`,
   })
   formData.append('team', team)
