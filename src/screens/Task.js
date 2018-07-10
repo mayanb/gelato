@@ -32,6 +32,7 @@ import QRCode from 'qrcode'
 import RecipeInstructions from '../components/Task/RecipeInstructions'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import NavbarEditableTaskName from '../components/Task/NavbarEditableTaskName'
+import ImagePicker from '../components/Task/ImagePicker'
 
 const ACTION_TITLE = 'More'
 const ACTION_OPTIONS = ['Cancel', 'Rename', 'Delete', 'Flag', 'Edit batch size']
@@ -201,7 +202,7 @@ class Task extends Component {
 
 	render() {
 		let { organized_attributes, action_options, actionButtonVisible } = this.state
-		let { task, time_format } = this.props
+		let { task, time_format, user } = this.props
 		//Check that full task object is loaded
 		if (!task || task.items === undefined) {
 			return null
@@ -236,6 +237,11 @@ class Task extends Component {
 							onSubmitEditing={this.handleSubmitEditing.bind(this)}
 							isLoadingTask={this.state.isLoadingTask}
 							time_format={time_format}
+						/>
+						<ImagePicker 
+							task={task} 
+							user={user}
+							isLoadingTask={this.state.isLoadingTask}
 						/>
 					</KeyboardAwareScrollView>
 					<ActionSheet
