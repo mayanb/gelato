@@ -21,7 +21,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.usepolymer.polymer",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory."
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes on items in your factory and take pictures for tasks.",
+        "NSPhotoLibraryUsageDescription": "This app uses your photo library to add pictures to a task."
       }
     },
     "android": {

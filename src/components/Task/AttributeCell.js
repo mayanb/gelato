@@ -78,15 +78,15 @@ export default class AttributeCell extends React.Component {
 					onSubmit={this.handleSubmit}
 					isLoadingTask={isLoadingTask}
 				/>
-      case TIME:
-          return <DateTimeCell
-            name={name}
-            loading={loading}
-            value={value}
-            onSubmit={this.handleSubmit}
-            isLoadingTask={isLoadingTask}
-            time_format={time_format}
-          />
+			case TIME:
+				return <DateTimeCell
+					name={name}
+					loading={loading}
+					value={value}
+					onSubmit={this.handleSubmit}
+					isLoadingTask={isLoadingTask}
+					time_format={time_format}
+				/>
 			default:
 				return <TextNumberCell
 					name={name}

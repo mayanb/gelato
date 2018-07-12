@@ -20,22 +20,8 @@ export default class AttributeList extends React.Component {
 							/>
 						)
 					})}
-					<View>
-						<Text style={styles.endOfListMessage}>That’s all for this task!</Text>
-					</View>
 				</View>
 			</TouchableWithoutFeedback>
 		)
 	}
 }
-
-const styles = StyleSheet.create({
-	endOfListMessage: {
-		color: Colors.lightGray,
-		flex: 1,
-		fontSize: 17,
-		margin: 22,
-		paddingBottom: 300,
-		textAlign: 'center',
-	},
-})
