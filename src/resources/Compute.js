@@ -62,6 +62,7 @@ export default class Compute {
 	static generateNewTask(data) {
 		let date = moment().format('MMDD')
 		let label = [data.processType.code, data.productType.code, date].join('-')
+		const totalCost = data.cost === '' ? null : data.cost * data.batch_size
 		let task = {
 			process_type: data.processType.id,
 			product_type: data.productType.id,
@@ -73,6 +74,7 @@ export default class Compute {
 			label_index: 0,
 			custom_display: '',
 			is_trashed: false,
+			cost: totalCost,
 		}
 		return task
 	}
