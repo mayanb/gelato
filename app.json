@@ -29,7 +29,8 @@
       "package": "com.usepolymer.polymer",
       "versionCode": 2,
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "CAMERA_ROLL"
       ]
     },
     "assetBundlePatterns": [
