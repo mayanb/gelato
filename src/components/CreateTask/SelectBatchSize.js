@@ -29,7 +29,14 @@ export default class SelectBatchSize extends Component {
 	}
 
 	render() {
-		let { unit, onBatchSizeInput, batchSize, category, onCostAmountInput, cost } = this.props
+		let {
+			unit,
+			onBatchSizeInput,
+			batchSize,
+			category,
+			onCostAmountInput,
+			cost,
+		} = this.props
 		console.log(category)
 		return (
 			<Animated.View
@@ -47,12 +54,11 @@ export default class SelectBatchSize extends Component {
 				/>
 				{category === RM && (
 					<View>
-						<Heading customMargin={14}>What is the price per {pluralize.singular(unit)}?</Heading>
+						<Heading customMargin={14}>What is the total cost?</Heading>
 						<NumericInputWithUnits
 							unit="USD"
 							value={cost}
 							onChangeText={num => onCostAmountInput(num)}
-							placeholder="0"
 						/>
 					</View>
 				)}

@@ -22,9 +22,9 @@ export default class TaskInputs extends Component {
 		}
 
 		this.handleBatchSizeInput = this.handleBatchSizeInput.bind(this)
+		this.handleNext = this.handleNext.bind(this)
 		this.handleCostInput = this.handleCostInput.bind(this)
 		this.handleSelect = this.handleSelect.bind(this)
-		this.handleNext = this.handleNext.bind(this)
 	}
 
 	render() {
@@ -96,10 +96,9 @@ export default class TaskInputs extends Component {
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
 		const isCostEntered =
-			selectedProcess !== null &&	(selectedProcess.category !== RM || ( selectedProcess.category === RM && this.state.cost !== ''))
-		// if(selectedProcess){
-		// 	var isCostEntered = this.selectedProcess.category === RM && this.state.cost !== ''
-		// } 
+			selectedProcess !== null &&
+			(selectedProcess.category !== RM ||
+				(selectedProcess.category === RM && this.state.cost !== ''))
 		if (this.props.isDandelion && selectedProcess && selectedProcess.name.toLowerCase === "package") {
 			return selectedProcess && selectedProduct && !isCreatingTask
 		} else {
@@ -131,7 +130,6 @@ export default class TaskInputs extends Component {
 	}
 
 	handleNext() {
-		// console.log(this.state)
 		this.props.onNext(
 			this.state.selectedProcess,
 			this.state.selectedProduct,
