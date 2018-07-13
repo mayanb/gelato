@@ -37,4 +37,32 @@ function patch(path, id) {
   return request('PATCH', url).set('Content-Type', 'application/json')
 }
 
-export default { get, post, del, host, put, patch }
+function uploadURI(path, uri, team, task) {
+  const host = urls.getBackend()
+  const url = urls.latest(host, path)
+  const uriParts = uri.split('.')
+  const fileType = uriParts[uriParts.length - 1]
+
+  const formData = new FormData()
+  // six random digits
+  const randomImgNumber = Math.random().toString().slice(2, 8)
+  formData.append('file_binary', {
+      uri,
+      name: `img_${randomImgNumber}.${fileType}`,
+      type: `image/${fileType}`,
+  })
+  formData.append('team', team)
+  formData.append('task', task)
+
+  const options = {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+  }
+  return fetch(url, options)
+}
+
+export default { get, post, del, host, put, patch, uploadURI }

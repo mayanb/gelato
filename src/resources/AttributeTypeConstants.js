@@ -1,0 +1,5 @@
+export const TEXT = 'TEXT'
+export const NUMB = 'NUMB'
+export const TIME = 'TIME'
+export const BOOL = 'BOOL'
+export const USER = 'USER'

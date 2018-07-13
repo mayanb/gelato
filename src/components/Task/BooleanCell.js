@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableWithoutFeedback, Text, Switch } from "react-native";
+import { View, TouchableWithoutFeedback, Text, Switch } from "react-native"
 import { AttributeName } from './AttributeCell'
 
 export default class BooleanCell extends React.Component {
@@ -9,8 +9,7 @@ export default class BooleanCell extends React.Component {
 	}
 
 	handleChange(value) {
-		const storedValue = value ? 'true' : ''
-		this.props.onSubmit(storedValue)
+		this.props.onSubmit(getBoolDbStorageValue(value))
 	}
 
 	render() {
@@ -18,7 +17,7 @@ export default class BooleanCell extends React.Component {
 		if (isLoadingTask) return null
 
 		const booleanValue = value === 'true'
-		const label = booleanValue ? 'Yes' : 'No'
+		const label = getBoolDisplay(booleanValue)
 
 		//Using TouchableWithoutFeedback to allow scrolling (not sure why we need this)
 		return (
@@ -41,3 +40,10 @@ export default class BooleanCell extends React.Component {
 	}
 }
 
+export function getBoolDisplay(booleanValue) {
+	return booleanValue ? 'Yes' : 'No'
+}
+
+export function getBoolDbStorageValue(value) {
+	return value ? 'true' : ''
+}
