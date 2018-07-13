@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Dimensions, Animated, StyleSheet, View } from 'react-native'
 import Heading from './Heading'
 import NumericInputWithUnits from '../NumericInputWithUnits'
-import pluralize from 'pluralize'
 
 import Colors from '../../resources/Colors'
 
@@ -37,7 +36,6 @@ export default class SelectBatchSize extends Component {
 			onCostAmountInput,
 			cost,
 		} = this.props
-		console.log(category)
 		return (
 			<Animated.View
 				style={[
