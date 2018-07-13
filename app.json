@@ -27,7 +27,7 @@
     },
     "android": {
       "package": "com.usepolymer.polymer",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
