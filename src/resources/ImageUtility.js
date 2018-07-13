@@ -179,7 +179,9 @@ export function uxIcon(icon) {
     case 'downarrow':
       return require('../resources/assets/downarrow.png')
 		case 'addentrybutton':
-			return require('../resources/assets/addentrybutton.png')
+      return require('../resources/assets/addentrybutton.png')
+    case 'camera':
+      return require('../resources/assets/camera.png')
     default:
       return require('../resources/assets/system_icons/more_vert.png')
   }
