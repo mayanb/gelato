@@ -28,6 +28,7 @@
     "react-native-actionsheet": "^2.3.0",
     "react-native-authentication-helpers": "^0.1.0",
     "react-native-collapsible": "^0.10.0",
+    "react-native-image-zoom-viewer": "^2.2.14",
     "react-native-keyboard-aware-scroll-view": "^0.4.3",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal-datetime-picker": "^5.1.0",
