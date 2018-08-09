@@ -91,10 +91,7 @@ export default class ImagePicker extends React.Component {
     }
 
     handleSelectImage(index) {
-        this.setState({ 
-            imageUrls: getImageUrls(this.props.task.files),
-            selectedIndex: index 
-        })
+        this.setState({ selectedIndex: index })
     }
 
     handleCloseImageView() {
@@ -149,7 +146,6 @@ export default class ImagePicker extends React.Component {
 }
 
 function getImageUrls(files) {
-    const validImageExtensions = ['.jpg', '.png']
     const urls = []
     if (files) {
         files.forEach(file => {
@@ -180,17 +176,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 8,
-        marginVertical: 8,
+        marginLeft: 16,
+        marginRight: 8,
+        marginVertical: 16,
     },
     uploadingContainer: {
         display: 'flex',
         justifyContent: 'center',
         marginHorizontal: 8,
-        marginVertical: 8,
+        marginVertical: 16,
     },
     imageContainer: {
         marginHorizontal: 8,
-        marginVertical: 8,
+        marginVertical: 16,
     },
 })
