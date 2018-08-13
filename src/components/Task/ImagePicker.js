@@ -7,7 +7,7 @@ import {
     Linking,
     Alert,
     Image,
-    ScrollView
+    ScrollView,
 } from 'react-native'
 import * as ImageUtility from '../../resources/ImageUtility'
 import ImageView from './ImageView'
@@ -76,12 +76,12 @@ export default class ImagePicker extends React.Component {
                             return null
                         }
                         return (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 key={url}
                                 style={styles.imageContainer}
                                 onPress={() => this.handleSelectImage(index)}
                             >
-                                <Image source={{uri: 'https://' + url}} style={styles.icon} />
+                                <Image source={{uri: 'https://' + url}} resizeMethod={'resize'} style={styles.icon} />
                             </TouchableOpacity>
                         )
                     }) }
