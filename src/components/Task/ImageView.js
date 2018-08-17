@@ -1,6 +1,7 @@
 import React from 'react'
-import { Modal } from 'react-native'
+import { Modal, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer'
+import * as ImageUtility from '../../resources/ImageUtility'
 
 export default class ImageView extends React.Component {
     constructor(props) {
@@ -20,7 +21,21 @@ export default class ImageView extends React.Component {
                     enableSwipeDown={true}
                     onCancel={onCancel}
                 />
+                <TouchableOpacity
+                    style={styles.closeBtnContainer}
+                    onPress={() => onCancel()}
+                >
+                    <Image source={ImageUtility.uxIcon('close')} />
+                </TouchableOpacity>
             </Modal>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    closeBtnContainer: {
+        position: 'absolute',
+        right: 20,
+        top: 35,
+    },
+})

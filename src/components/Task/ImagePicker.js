@@ -95,7 +95,7 @@ export default class ImagePicker extends React.Component {
     }
 
     handleCloseImageView() {
-        this.setState({ imageUrls: [], selectedIndex: null })
+        this.setState({ selectedIndex: null })
     }
 
     async takePicture() {

@@ -182,6 +182,8 @@ export function uxIcon(icon) {
       return require('../resources/assets/addentrybutton.png')
     case 'camera':
       return require('../resources/assets/camera.png')
+    case 'close':
+      return require('../resources/assets/close.png')
     default:
       return require('../resources/assets/system_icons/more_vert.png')
   }
