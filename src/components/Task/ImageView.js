@@ -35,7 +35,7 @@ export default class ImageView extends React.Component {
 const styles = StyleSheet.create({
     closeBtnContainer: {
         position: 'absolute',
-        right: 20,
+        left: 20,
         top: 35,
     },
 })
