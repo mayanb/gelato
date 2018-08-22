@@ -118,6 +118,7 @@ export default class Compute {
 			custom_display: '',
 			is_trashed: false,
 			cost: totalCost,
+			cost_set_by_user: totalCost,
 		}
 		return task
 	}
