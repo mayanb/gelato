@@ -92,7 +92,7 @@ export default function TaskHeader({
 				{cost && (
 					<View>
 						<Text style={styles.cost_output}>
-							Total cost: {parseFloat(cost)} $
+							Total cost: ${parseFloat(cost)}
 						</Text>
 					</View>
 				)}
