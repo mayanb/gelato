@@ -99,7 +99,7 @@ class CreateTask extends Component {
 		this.props.navigation.navigate('Task', { id: newTask.id })
 	}
 
-	handleCreateTask(processType, productType, batchSize) {
+	handleCreateTask(processType, productType, batchSize, cost) {
 		if (this.state.isCreatingTask) {
 			return
 		}
@@ -109,6 +109,7 @@ class CreateTask extends Component {
 			processType: processType,
 			productType: productType,
 			batch_size: batchSize,
+			cost: cost,
 		}
 		this.setState({ isCreatingTask: true })
 		dispatch(taskActions.requestCreateTask(taskData))
@@ -117,7 +118,7 @@ class CreateTask extends Component {
 			.finally(() => this.setState({ isCreatingTask: false }))
 	}
 
-	handleCreateTaskDandelion(processType, productType, batchSize) {
+	handleCreateTaskDandelion(processType, productType, batchSize, cost) {
 		if (this.state.isCreatingTask) {
 			return
 		}
@@ -127,6 +128,7 @@ class CreateTask extends Component {
 				processType: processType,
 				productType: productType,
 				batch_size: 0,
+				cost: cost,
 			}
 			this.setState({ isCreatingTask: true })
 			Promise.all([dispatch(taskActions.requestCreatePackageTask(taskData))])
@@ -134,7 +136,7 @@ class CreateTask extends Component {
 				.catch(e => dispatch(errorActions.handleError(Compute.errorText(e))))
 				.finally(() => this.setState({ isCreatingTask: false }))
 		} else {
-			this.handleCreateTask(processType, productType, batchSize)
+			this.handleCreateTask(processType, productType, batchSize, cost)
 		}
 	}
 }

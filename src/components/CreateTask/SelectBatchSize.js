@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Dimensions, Animated, StyleSheet } from 'react-native'
+import { Dimensions, Animated, StyleSheet, View } from 'react-native'
 import Heading from './Heading'
 import NumericInputWithUnits from '../NumericInputWithUnits'
 
@@ -7,7 +7,8 @@ import Colors from '../../resources/Colors'
 
 const TOP_SECTION_HEIGHT = 250
 const MARGIN_TOP = 60
-const HEIGHT = 120
+const HEIGHT = 210
+const RM = 'rm'
 
 export default class SelectBatchSize extends Component {
 	constructor(props) {
@@ -27,7 +28,14 @@ export default class SelectBatchSize extends Component {
 	}
 
 	render() {
-		let { unit, onBatchSizeInput, batchSize } = this.props
+		let {
+			unit,
+			onBatchSizeInput,
+			batchSize,
+			category,
+			onCostAmountInput,
+			cost,
+		} = this.props
 		return (
 			<Animated.View
 				style={[
@@ -42,6 +50,16 @@ export default class SelectBatchSize extends Component {
 					value={batchSize}
 					onChangeText={num => onBatchSizeInput(num)}
 				/>
+				{category === RM && (
+					<View>
+						<Heading customMargin={14}>What is the total cost?</Heading>
+						<NumericInputWithUnits
+							unit="USD"
+							value={cost}
+							onChangeText={num => onCostAmountInput(num)}
+						/>
+					</View>
+				)}
 			</Animated.View>
 		)
 	}
