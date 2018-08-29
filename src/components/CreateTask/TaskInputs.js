@@ -8,6 +8,8 @@ import SelectTypes from './SelectTypes'
 import SelectBatchSize from './SelectBatchSize'
 import pluralize from 'pluralize'
 
+const RM = 'rm'
+
 export default class TaskInputs extends Component {
 	constructor(props) {
 		super(props)
@@ -16,10 +18,12 @@ export default class TaskInputs extends Component {
 			selectedProduct: null,
 			isCreatingTask: false,
 			batchSize: null,
+			cost: '',
 		}
 
 		this.handleBatchSizeInput = this.handleBatchSizeInput.bind(this)
 		this.handleNext = this.handleNext.bind(this)
+		this.handleCostInput = this.handleCostInput.bind(this)
 		this.handleSelect = this.handleSelect.bind(this)
 	}
 
@@ -46,6 +50,9 @@ export default class TaskInputs extends Component {
 							onBatchSizeInput={this.handleBatchSizeInput}
 							unit={pluralize(selectedProcess.unit)}
 							batchSize={this.state.batchSize}
+							category={selectedProcess.category}
+							onCostAmountInput={this.handleCostInput}
+							cost={this.state.cost}
 						/>
 					)}
 				</KeyboardAwareScrollView>
@@ -88,6 +95,10 @@ export default class TaskInputs extends Component {
 		let { selectedProcess, selectedProduct, isCreatingTask } = this.state
 		const isBatchSizeEntered =
 			this.state.batchSize !== null && this.state.batchSize !== ''
+		const isCostEntered =
+			selectedProcess !== null &&
+			(selectedProcess.category !== RM ||
+				(selectedProcess.category === RM && this.state.cost !== ''))
 		if (this.props.isDandelion && selectedProcess && selectedProcess.name.toLowerCase === "package") {
 			return selectedProcess && selectedProduct && !isCreatingTask
 		} else {
@@ -95,7 +106,8 @@ export default class TaskInputs extends Component {
 				selectedProcess &&
 				selectedProduct &&
 				!isCreatingTask &&
-				isBatchSizeEntered
+				isBatchSizeEntered &&
+				isCostEntered
 			)
 		}
 
@@ -113,11 +125,16 @@ export default class TaskInputs extends Component {
 		this.setState({ batchSize: num })
 	}
 
+	handleCostInput(num) {
+		this.setState({ cost: num })
+	}
+
 	handleNext() {
 		this.props.onNext(
 			this.state.selectedProcess,
 			this.state.selectedProduct,
-			this.state.batchSize
+			this.state.batchSize,
+			this.state.cost
 		)
 	}
 }
