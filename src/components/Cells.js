@@ -133,16 +133,9 @@ export class TaskRowHeader extends Component {
   }
 }
 
-export class TagHeader extends Component {
-  render() {
-    return (
-      <CheckBox title='Select/Deselect All' />
-    )
-  }
-}
 export class TagRow extends Component {
   render() {
-    const { name, checked } = this.props
+    const { text, checked, onPress } = this.props
     const styles = StyleSheet.create({
       container: {
         borderWidth: 0,
@@ -167,7 +160,14 @@ export class TagRow extends Component {
     })
 
     return (
-      <CheckBox title={name} checked={!!checked} containerStyle={styles.container} textStyle={styles.text} />
+      <CheckBox 
+        title={text} 
+        checked={!!checked} 
+        containerStyle={styles.container} 
+        textStyle={styles.text} 
+        checkedColor={Colors.gray}
+        onPress={onPress}
+      />
     )
   }
 }

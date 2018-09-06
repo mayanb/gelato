@@ -72,7 +72,10 @@ class Main extends Component {
 
 	componentWillMount() {
 		this.props.navigation.setParams({
-			showSettings: () => this.props.navigation.navigate('Settings', { transitionDirection: 'left' }),
+			showSettings: () => this.props.navigation.navigate('Settings', { 
+				transitionDirection: 'left',
+				backFn: this.refreshTasksOnBack.bind(this)
+			}),
 			showSearch: () => this.props.navigation.navigate('Search'),
 		})
 	}
@@ -96,20 +99,24 @@ class Main extends Component {
 		})
 	}
 
-	refreshTasksOnBack() {
+	refreshTasksOnBack(forceRefresh) {
 		if (this.currentlyLoadingTasks()) {
 			return
 		}
 		const { timeOfLastTaskRefresh } = this.props
 		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
+
 		if (
 			!timeSinceLastTaskRefresh ||
-			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
+			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI ||
+			forceRefresh
 		) {
 			const page = 1
 			this.props.dispatch(actions.fetchRecentTasks(page))
 			// scroll to top of list
-			this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			if (this.flatListRef) {
+				this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			}
 			// full refresh drops previously loaded pages and starts afresh
 			this.setState({ page: 1, noMoreTasks: false })
 		}

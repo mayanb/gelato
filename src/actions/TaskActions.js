@@ -43,7 +43,7 @@ export function fetchRecentTasks(page) {
 			page: page,
 		}
 
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
+		return Storage.multiGet(['teamID', 'userID', 'selectedTags']).then(values => {
 			let localStorage = {}
 			values.forEach((element, i) => {
 				let key = element[0]
@@ -51,6 +51,9 @@ export function fetchRecentTasks(page) {
 				localStorage[key] = val
 			})
 			payload['team'] = localStorage['teamID']
+			if (localStorage['selectedTags']) {
+				payload['tags'] = JSON.parse(localStorage['selectedTags']).join(',')
+			}
 			return Networking.get('/ics/tasks/simple/')
 				.query(payload)
 				.then(res => {

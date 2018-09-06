@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import { TagRow } from '../components/Cells'
 import Colors from '../resources/Colors'
+import Storage from '../resources/Storage'
 import * as ImageUtility from '../resources/ImageUtility'
 import * as tagActions from '../actions/TagActions'
 
@@ -38,9 +39,37 @@ class Settings extends React.Component {
             ),
         }
     }
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            isLoading: true,
+            tags: this.props.tags,
+        }
+        this.props.dispatch(tagActions.fetchTags())
+        Storage.get('selectedTags').then(selectedTagsStr => {
+            const selectedTags = JSON.parse(selectedTagsStr)
+            this.setState({ selectedTags, isLoading: false })
+        })
+
+        this.renderHeader = this.renderHeader.bind(this)
+        this.renderRow = this.renderRow.bind(this)
+        this.handleRowSelect = this.handleRowSelect.bind(this)
+        this.handleSelectDeselectAll = this.handleSelectDeselectAll.bind(this)
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ tags: nextProps.tags })
+    }
+
+    componentWillMount() {
+        this.props.navigation.setParams({
+            handleClose: this.handleClose.bind(this)
+        })
+    }
     
     render() {
-        const { tags } = this.props
+        const { isLoading, tags } = this.state
         return (
             <View style={styles.container}>
                 <View style={styles.headerContainer}>
@@ -52,28 +81,86 @@ class Settings extends React.Component {
                         <Text style={styles.descriptionText}>Choose what data shows up on this device</Text>
                     </View>
                 </View>
-                {!!tags.length && 
+                { !isLoading && !!tags.length && 
                 <FlatList
                     data={tags}
                     style={styles.table}
+                    ListHeaderComponent={this.renderHeader}
                     renderItem={this.renderRow}
                     ListFooterComponent={this.renderFooter}
-                    //ListHeaderComponent={this.renderHeader}
-                />
-                }
+                    extraData={this.state}
+                /> }
             </View>
         )
+    }
+
+    renderHeader() {
+        const { selectedTags } = this.state
+        return <TagRow
+            text={!selectedTags ? 'Deselect All' : 'Select All'}
+            checked={!selectedTags}
+            onPress={this.handleSelectDeselectAll}
+        />
     }
 
     renderRow({ item }) {
         return (
             <TagRow 
-                name={item.name}
+                text={item.name}
+                checked={this.is_selected_tag(item.name)}
                 key={item.id}
                 id={item.id}
-
+                onPress={() => this.handleRowSelect(item.name)}
             />
         )
+    }
+
+    is_selected_tag(name) {
+        const { selectedTags } = this.state
+        return !selectedTags ? true : selectedTags.includes(name)
+    }
+
+    handleSelectDeselectAll() {
+        Storage.get('selectedTags').then(selectedTagsStr => {
+            const selectedTags = JSON.parse(selectedTagsStr)
+            if (selectedTags) {
+                Storage.remove('selectedTags')
+                this.setState({ selectedTags: null })
+            } else {
+                Storage.save('selectedTags', JSON.stringify([]))
+                this.setState({ selectedTags: [] })
+            }
+        })
+
+    }
+
+    handleRowSelect(name) {
+        const { selectedTags, tags } = this.state
+        if (!selectedTags) {
+            const newSelectedTags = []
+            tags.forEach(tag => {
+                if (name !== tag.name) {
+                    newSelectedTags.push(tag.name)
+                }
+            })
+            Storage.save('selectedTags', JSON.stringify(newSelectedTags))
+            this.setState({ selectedTags: newSelectedTags })
+        } else {
+            if (!selectedTags.includes(name)) {
+                Storage.save('selectedTags', JSON.stringify([...selectedTags, name]))
+                this.setState({ selectedTags: [...selectedTags, name] })
+            } else {
+                const removeIndex = selectedTags.indexOf(name)
+                const newSelectedTags = []
+                for (let i = 0; i < selectedTags.length; i++) {
+                    if (i !== removeIndex) {
+                        newSelectedTags.push(selectedTags[i])
+                    }
+                }
+                Storage.save('selectedTags', JSON.stringify(newSelectedTags))
+                this.setState({ selectedTags: newSelectedTags })
+            }
+        }
     }
 
     renderFooter() {
@@ -82,16 +169,8 @@ class Settings extends React.Component {
         )
     }
 
-    componentDidMount() {
-        this.props.dispatch(tagActions.fetchTags())
-    }
-    componentWillMount() {
-        this.props.navigation.setParams({
-            handleClose: this.handleClose.bind(this)
-        })
-    }
-
     handleClose() {
+        this.props.navigation.state.params.backFn(true)
         this.props.navigation.goBack()
     }
 }
@@ -150,6 +229,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     footer: {
-        height: 60, 
+        height: 160, 
     },
 })
