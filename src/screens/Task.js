@@ -459,6 +459,7 @@ class Task extends Component {
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
 				onPress={this.showEditBatchSizePrompt}
+				cost={task.cost}
 			/>
 		)
 	}

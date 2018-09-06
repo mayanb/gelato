@@ -31,7 +31,7 @@ const CANCEL_INDEX = 0
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet, showSearch } = params
+		const { showSettings, showSearch } = params
 
 		return {
 			title: screenProps.team,
@@ -40,7 +40,7 @@ class Main extends Component {
 					<NavHeader.Item
 						label=""
 						iconName="md-menu"
-						onPress={showActionSheet}
+						onPress={showSettings}
 					/>
 				</NavHeader>
 			),
@@ -55,8 +55,9 @@ class Main extends Component {
 	constructor(props) {
 		super(props)
 		console.disableYellowBox = true
-		this.handlePress = this.handlePress.bind(this)
-		this.handleSearch = this.handleSearch.bind(this)
+		//this.handlePress = this.handlePress.bind(this)
+		//this.openSettings = this.openSettings.bind(this)
+		//this.handleSearch = this.handleSearch.bind(this)
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.currentlyLoadingTasks = this.currentlyLoadingTasks.bind(this)
@@ -71,8 +72,8 @@ class Main extends Component {
 
 	componentWillMount() {
 		this.props.navigation.setParams({
-			showActionSheet: () => this.ActionSheet.show(),
-			showSearch: () => this.handleSearch(),
+			showSettings: () => this.props.navigation.navigate('Settings', { transitionDirection: 'left' }),
+			showSearch: () => this.props.navigation.navigate('Search'),
 		})
 	}
 
@@ -147,16 +148,20 @@ class Main extends Component {
 			})
 	}
 
-	handlePress(i) {
-		if (ACTION_OPTIONS[i] === 'Logout') {
-			Storage.clear()
-			clearUser()
-		}
-	}
+	// handlePress(i) {
+	// 	if (ACTION_OPTIONS[i] === 'Logout') {
+	// 		Storage.clear()
+	// 		clearUser()
+	// 	}
+	// }
 
-	handleSearch() {
-		this.props.navigation.navigate('Search')
-	}
+	// handleSearch() {
+	// 	this.props.navigation.navigate('Search')
+	// }
+
+	// openSettings() {
+	// 	this.props.navigation.navigate('Settings')
+	// }
 
 	renderFooter = (data, isFetchingTasksData, loadingMoreTasks) => {
 		if (!isFetchingTasksData && data.length === 0) {
@@ -190,7 +195,7 @@ class Main extends Component {
 					title={ACTION_TITLE}
 					options={ACTION_OPTIONS}
 					cancelButtonIndex={CANCEL_INDEX}
-					onPress={this.handlePress}
+					onPress={this.openSettings}
 				/>
 				{!!data.length && (
 					<FlatList

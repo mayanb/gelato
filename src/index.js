@@ -12,6 +12,7 @@ import Main from './screens/Main'
 import Ingredients from './screens/Ingredients'
 import CreateTask from './screens/CreateTask'
 import Task from './screens/Task'
+import Settings from './screens/Settings'
 import Search from './screens/Search'
 import Snackbar from './components/Snackbar'
 import ShouldUpdateModal from './components/Main/ShouldUpdateModal'
@@ -115,6 +116,7 @@ const MainStack = StackNavigator(
 		Main: { screen: Main },
 		CreateTask: { screen: CreateTask },
 		Task: { screen: Task },
+		Settings: { screen: Settings },
 	},
 	{
 		initialRouteName: 'Main',
@@ -126,6 +128,43 @@ const MainStack = StackNavigator(
 			},
 			headerTintColor: Colors.white,
 		},
+		transitionConfig: () => ({
+			screenInterpolator: sceneProps => {
+				//console.log('sceneProps', sceneProps)
+				const { layout, position, scene } = sceneProps
+				const { index } = scene
+				const width = layout.initWidth
+
+				const sceneParams = scene.route.params || {}
+				//console.log('sceneParams', sceneParams)
+
+				const slideFromLeft = {
+					transform: [{
+						translateX: position.interpolate({
+							inputRange: [index-1, index+1],
+							outputRange: [-width, width],
+						}),
+					}]
+				}
+				const slideFromRight = {
+					opacity: position.interpolate({
+						inputRange: [index - 1, index, index + 1],
+						outputRange: [ 0, 1, 0],
+					}),
+					transform: [{
+						translateX: position.interpolate({
+							inputRange: [index - 1, index, index + 1],
+							outputRange: [width, 0, -width],
+						}),
+					}]
+				}
+				
+				if (sceneParams.transitionDirection == 'left') {
+					return slideFromLeft
+				}
+				return slideFromRight
+			},
+		}),
 	}
 )
 
