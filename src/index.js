@@ -130,31 +130,29 @@ const MainStack = StackNavigator(
 		},
 		transitionConfig: () => ({
 			screenInterpolator: sceneProps => {
-				//console.log('sceneProps', sceneProps)
 				const { layout, position, scene } = sceneProps
 				const { index } = scene
 				const width = layout.initWidth
 
 				const sceneParams = scene.route.params || {}
-				//console.log('sceneParams', sceneParams)
 
 				const slideFromLeft = {
 					transform: [{
 						translateX: position.interpolate({
-							inputRange: [index-1, index+1],
-							outputRange: [-width, width],
+							inputRange: [index-1, index, index+1],
+							outputRange: [-width, 0, 0],
 						}),
 					}]
 				}
 				const slideFromRight = {
 					opacity: position.interpolate({
 						inputRange: [index - 1, index, index + 1],
-						outputRange: [ 0, 1, 0],
+						outputRange: [ 0, 1, 1],
 					}),
 					transform: [{
 						translateX: position.interpolate({
 							inputRange: [index - 1, index, index + 1],
-							outputRange: [width, 0, -width],
+							outputRange: [width, 0, 0],
 						}),
 					}]
 				}
@@ -167,6 +165,8 @@ const MainStack = StackNavigator(
 		}),
 	}
 )
+
+
 
 const Navigation = StackNavigator(
 	{
