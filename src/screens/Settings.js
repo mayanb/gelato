@@ -6,13 +6,15 @@ import {
     StyleSheet,
     Text,
     Image,
+    ScrollView,
 } from 'react-native'
 import NavHeader from 'react-navigation-header-buttons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { clearUser } from 'react-native-authentication-helpers'
 
-import { TagRow } from '../components/Cells'
 import Colors from '../resources/Colors'
 import Storage from '../resources/Storage'
+import { TagRow } from '../components/Cells'
 import * as ImageUtility from '../resources/ImageUtility'
 import * as tagActions from '../actions/TagActions'
 
@@ -56,6 +58,7 @@ class Settings extends React.Component {
         this.renderRow = this.renderRow.bind(this)
         this.handleRowSelect = this.handleRowSelect.bind(this)
         this.handleSelectDeselectAll = this.handleSelectDeselectAll.bind(this)
+        this.handleLogout = this.handleLogout.bind(this)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -71,7 +74,7 @@ class Settings extends React.Component {
     render() {
         const { isLoading, tags } = this.state
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <View style={styles.headerContainer}>
                     <View style={styles.iconContainer}>
                         <Image style={styles.icon} source={ImageUtility.uxIcon('tune')} />
@@ -89,18 +92,24 @@ class Settings extends React.Component {
                     renderItem={this.renderRow}
                     ListFooterComponent={this.renderFooter}
                     extraData={this.state}
+                    scrollEnabled={false}
                 /> }
-            </View>
+                {!tags.length && 
+                <Text style={styles.errorText}>No tags created.</Text> }
+                <Text style={styles.logout} onPress={this.handleLogout}>LOG OUT</Text>
+            </ScrollView>
         )
     }
 
     renderHeader() {
         const { selectedTags } = this.state
-        return <TagRow
-            text={!selectedTags ? 'Deselect All' : 'Select All'}
-            checked={!selectedTags}
-            onPress={this.handleSelectDeselectAll}
-        />
+        return (
+            <TagRow
+                text='Select/Deselect All'
+                checked={!selectedTags}
+                onPress={this.handleSelectDeselectAll}
+            />
+        )
     }
 
     renderRow({ item }) {
@@ -173,6 +182,11 @@ class Settings extends React.Component {
         this.props.navigation.state.params.backFn(true)
         this.props.navigation.goBack()
     }
+
+    handleLogout() {
+        Storage.clear()
+        clearUser()
+    }
 }
 
 const mapStateToProps = (state/*, props*/) => {
@@ -191,7 +205,7 @@ const styles = StyleSheet.create({
     title: {
         color: Colors.white,
         fontSize: 17,
-        fontWeight: 'bold',
+        fontWeight: '600',
     },
     headerContainer: {
         display: 'flex',
@@ -202,9 +216,6 @@ const styles = StyleSheet.create({
         paddingRight: 8,
         paddingTop: 16,
         paddingBottom: 16,
-        // borderColor: 'red',
-        // borderStyle: 'solid',
-        // borderWidth: 1,
     },
     icon: {
         height: 44,
@@ -217,18 +228,26 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         paddingTop: 16,
         paddingBottom: 16,
-        // borderColor: 'black',
-        // borderStyle: 'solid',
-        // borderWidth: 1,
     },
     headerText: {
         fontSize: 22,
-        fontWeight: 'bold',
+        fontWeight: '500',
     },
     descriptionText: {
         fontSize: 16,
     },
     footer: {
-        height: 160, 
+        height: 40, 
+    },
+    errorText: {
+        fontStyle: 'italic',
+        color: Colors.gray,
+        margin: 20,
+    },
+    logout: {
+        margin: 26,
+        color: Colors.base,
+        fontSize: 16,
+        fontWeight: '500',
     },
 })

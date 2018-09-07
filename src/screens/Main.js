@@ -197,6 +197,8 @@ class Main extends Component {
 		const { loadingMoreTasks } = this.state
 		return (
 			<View style={styles.container}>
+				{!data.length && !isFetchingTasksData &&
+                <Text style={styles.errorText}>No results found. Try changing your filters in the settings page.</Text> }
 				<ActionSheet
 					ref={o => (this.ActionSheet = o)}
 					title={ACTION_TITLE}
@@ -293,6 +295,12 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		marginBottom: 20,
 	},
+	errorText: {
+        fontStyle: 'italic',
+        color: Colors.gray,
+		margin: 20,
+		marginBottom: 'auto',
+    },
 })
 
 const mapStateToProps = (state, props) => {
