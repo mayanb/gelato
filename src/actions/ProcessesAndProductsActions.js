@@ -23,17 +23,24 @@ function fetch(name) {
 	return dispatch => {
 		dispatch(request(name))
 
-		let team = 1
-		return Storage.multiGet(['teamID', 'userID']).then(values => {
+		const payload = {
+			team_created_by: 1,
+		}
+
+		return Storage.multiGet(['teamID', 'userID', 'selectedTags']).then(values => {
 			let localStorage = {}
 			values.forEach((element, i) => {
 				let key = element[0]
 				let val = element[1]
 				localStorage[key] = val
 			})
-			team = localStorage['teamID']
+			payload['team_created_by'] = localStorage['teamID']
+			if (localStorage['selectedTags']) {
+				payload['tags'] = JSON.parse(localStorage['selectedTags']).join(',')
+				payload['suggestTags'] = true
+			}
 			 return Networking.get(`/ics/${endpoint}/`)
-				.query({ team_created_by: team })
+				.query(payload)
 				.then(res => {
 					Compute.annotateWithSearchVector(res.body)
 					dispatch(requestSuccess(name, res.body))

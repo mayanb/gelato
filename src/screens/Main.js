@@ -55,9 +55,6 @@ class Main extends Component {
 	constructor(props) {
 		super(props)
 		console.disableYellowBox = true
-		//this.handlePress = this.handlePress.bind(this)
-		//this.openSettings = this.openSettings.bind(this)
-		//this.handleSearch = this.handleSearch.bind(this)
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.currentlyLoadingTasks = this.currentlyLoadingTasks.bind(this)
@@ -154,21 +151,6 @@ class Main extends Component {
 				}
 			})
 	}
-
-	// handlePress(i) {
-	// 	if (ACTION_OPTIONS[i] === 'Logout') {
-	// 		Storage.clear()
-	// 		clearUser()
-	// 	}
-	// }
-
-	// handleSearch() {
-	// 	this.props.navigation.navigate('Search')
-	// }
-
-	// openSettings() {
-	// 	this.props.navigation.navigate('Settings')
-	// }
 
 	renderFooter = (data, isFetchingTasksData, loadingMoreTasks) => {
 		if (!isFetchingTasksData && data.length === 0) {
