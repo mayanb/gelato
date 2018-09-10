@@ -19,7 +19,6 @@ export default function TaskHeader({
 	outputAmount,
 	outputUnit,
 	date,
-	cost,
 }) {
 	const width = Dimensions.get('window').width
 	const styles = StyleSheet.create({
@@ -60,12 +59,6 @@ export default function TaskHeader({
 			height: 38,
 			marginRight: 6,
 		},
-		cost_output: {
-			fontSize: 13,
-			color: Colors.lightGray,
-			fontWeight: 'bold',
-			marginLeft: 22,
-		},
 	})
 	return (
 		<View style={styles.container}>
@@ -89,13 +82,6 @@ export default function TaskHeader({
 						started {moment(date).format('ddd MMM D, hh:mma')}
 					</Text>
 				</View>
-				{cost && (
-					<View>
-						<Text style={styles.cost_output}>
-							Total cost: ${parseFloat(cost)}
-						</Text>
-					</View>
-				)}
 			</TouchableOpacity>
 		</View>
 	)
