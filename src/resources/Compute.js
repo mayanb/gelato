@@ -146,7 +146,7 @@ export default class Compute {
 			if (input_task.is_flagged) {
 				return IS_FLAGGED_INPUT
 			}
-			if (input_task.num_flagged_ancestors > 0) {
+			if (input_task.flagged_ancestors_id_string) {
 				return IS_ANCESTOR_FLAGGED_INPUT
 			}
 
