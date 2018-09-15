@@ -46,7 +46,6 @@ class Settings extends React.Component {
         super(props)
         this.state = {
             isLoading: true,
-            tags: this.props.tags,
         }
         this.props.dispatch(tagActions.fetchTags())
         Storage.get('selectedTags').then(selectedTagsStr => {
@@ -61,10 +60,6 @@ class Settings extends React.Component {
         this.handleLogout = this.handleLogout.bind(this)
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({ tags: nextProps.tags })
-    }
-
     componentWillMount() {
         this.props.navigation.setParams({
             handleClose: this.handleClose.bind(this)
@@ -72,7 +67,8 @@ class Settings extends React.Component {
     }
     
     render() {
-        const { isLoading, tags } = this.state
+        const { isLoading } = this.state
+        const { tags } = this.props
         return (
             <ScrollView style={styles.container}>
                 <View style={styles.headerContainer}>
@@ -85,17 +81,19 @@ class Settings extends React.Component {
                     </View>
                 </View>
                 { !isLoading && !!tags.length && 
-                <FlatList
-                    data={tags}
-                    style={styles.table}
-                    ListHeaderComponent={this.renderHeader}
-                    renderItem={this.renderRow}
-                    ListFooterComponent={this.renderFooter}
-                    extraData={this.state}
-                    scrollEnabled={false}
-                /> }
+                    <FlatList
+                        data={tags}
+                        style={styles.table}
+                        ListHeaderComponent={this.renderHeader}
+                        renderItem={this.renderRow}
+                        ListFooterComponent={this.renderFooter}
+                        extraData={this.state}
+                        scrollEnabled={false}
+                    /> 
+                }
                 {!tags.length && 
-                <Text style={styles.errorText}>No tags created.</Text> }
+                    <Text style={styles.errorText}>No tags created.</Text> 
+                }
                 <Text style={styles.logout} onPress={this.handleLogout}>LOG OUT</Text>
             </ScrollView>
         )
@@ -103,10 +101,11 @@ class Settings extends React.Component {
 
     renderHeader() {
         const { selectedTags } = this.state
+        const { tags } = this.props
         return (
             <TagRow
                 text='Select/Deselect All'
-                checked={!selectedTags}
+                checked={selectedTags && selectedTags.length == tags.length}
                 onPress={this.handleSelectDeselectAll}
             />
         )
@@ -126,48 +125,51 @@ class Settings extends React.Component {
 
     is_selected_tag(name) {
         const { selectedTags } = this.state
-        return !selectedTags ? true : selectedTags.includes(name)
+        return !selectedTags ? false : selectedTags.includes(name)
     }
 
     handleSelectDeselectAll() {
+        const { tags } = this.props
         Storage.get('selectedTags').then(selectedTagsStr => {
             const selectedTags = JSON.parse(selectedTagsStr)
             if (selectedTags) {
                 Storage.remove('selectedTags')
                 this.setState({ selectedTags: null })
             } else {
-                Storage.save('selectedTags', JSON.stringify([]))
-                this.setState({ selectedTags: [] })
+                const newTags = tags.map(tag => tag.name)
+                Storage.save('selectedTags', JSON.stringify(newTags))
+                this.setState({ selectedTags: newTags })
             }
         })
 
     }
 
     handleRowSelect(name) {
-        const { selectedTags, tags } = this.state
+        const { selectedTags } = this.state
         if (!selectedTags) {
-            const newSelectedTags = []
-            tags.forEach(tag => {
-                if (name !== tag.name) {
-                    newSelectedTags.push(tag.name)
-                }
-            })
-            Storage.save('selectedTags', JSON.stringify(newSelectedTags))
-            this.setState({ selectedTags: newSelectedTags })
+            Storage.save('selectedTags', JSON.stringify([name]))
+            this.setState({ selectedTags: [name] })
         } else {
             if (!selectedTags.includes(name)) {
                 Storage.save('selectedTags', JSON.stringify([...selectedTags, name]))
                 this.setState({ selectedTags: [...selectedTags, name] })
             } else {
                 const removeIndex = selectedTags.indexOf(name)
-                const newSelectedTags = []
+                let newSelectedTags = []
                 for (let i = 0; i < selectedTags.length; i++) {
                     if (i !== removeIndex) {
                         newSelectedTags.push(selectedTags[i])
                     }
                 }
-                Storage.save('selectedTags', JSON.stringify(newSelectedTags))
-                this.setState({ selectedTags: newSelectedTags })
+
+                if (newSelectedTags.length > 0) {
+                    Storage.save('selectedTags', JSON.stringify(newSelectedTags))
+                    this.setState({ selectedTags: newSelectedTags })
+                } else {
+                    Storage.remove('selectedTags')
+                    this.setState({ selectedTags: null})
+                }
+                
             }
         }
     }
