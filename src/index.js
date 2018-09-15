@@ -121,12 +121,18 @@ const MainStack = StackNavigator(
 	{
 		initialRouteName: 'Main',
 		//initialRouteParams: { id: 14408 },
-		navigationOptions: {
-			headerStyle: {
-				backgroundColor: Colors.base,
-				borderBottomWidth: 0,
-			},
-			headerTintColor: Colors.white,
+		navigationOptions: params => {
+			const { routeName } = params.navigation.state
+			const gestureDirection = routeName === 'Settings' ? 'inverted' : 'default'
+			return {
+				gesturesEnabled: true,
+				gestureDirection,
+				headerStyle: {
+					backgroundColor: Colors.base,
+					borderBottomWidth: 0,
+				},
+				headerTintColor: Colors.white,
+			}
 		},
 		transitionConfig: () => ({
 			screenInterpolator: sceneProps => {
