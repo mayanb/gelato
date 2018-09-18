@@ -138,7 +138,7 @@ class Login extends Component {
     Storage.save('userAccountID', data.user.user_id)
     Storage.save('accountType', data.user.account_type)
     Storage.save('teamName', data.user.team_name)
-		Storage.save('task_label_type', task_label_type)
+    Storage.save('task_label_type', task_label_type)
 
     setUser({
       token: data.token,

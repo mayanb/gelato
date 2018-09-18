@@ -31,7 +31,7 @@ const CANCEL_INDEX = 0
 class Main extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => {
 		const params = navigation.state.params || {}
-		const { showActionSheet, showSearch } = params
+		const { showSettings, showSearch } = params
 
 		return {
 			title: screenProps.team,
@@ -40,7 +40,7 @@ class Main extends Component {
 					<NavHeader.Item
 						label=""
 						iconName="md-menu"
-						onPress={showActionSheet}
+						onPress={showSettings}
 					/>
 				</NavHeader>
 			),
@@ -55,8 +55,6 @@ class Main extends Component {
 	constructor(props) {
 		super(props)
 		console.disableYellowBox = true
-		this.handlePress = this.handlePress.bind(this)
-		this.handleSearch = this.handleSearch.bind(this)
 		this.fetchRecentTasks = this.fetchRecentTasks.bind(this)
 		this.handleLoadMore = this.handleLoadMore.bind(this)
 		this.currentlyLoadingTasks = this.currentlyLoadingTasks.bind(this)
@@ -71,8 +69,11 @@ class Main extends Component {
 
 	componentWillMount() {
 		this.props.navigation.setParams({
-			showActionSheet: () => this.ActionSheet.show(),
-			showSearch: () => this.handleSearch(),
+			showSettings: () => this.props.navigation.navigate('Settings', { 
+				transitionDirection: 'left',
+				backFn: this.refreshTasksOnBack.bind(this)
+			}),
+			showSearch: () => this.props.navigation.navigate('Search'),
 		})
 	}
 
@@ -95,20 +96,24 @@ class Main extends Component {
 		})
 	}
 
-	refreshTasksOnBack() {
+	refreshTasksOnBack(forceRefresh) {
 		if (this.currentlyLoadingTasks()) {
 			return
 		}
 		const { timeOfLastTaskRefresh } = this.props
 		const timeSinceLastTaskRefresh = Date.now() - timeOfLastTaskRefresh
+
 		if (
 			!timeSinceLastTaskRefresh ||
-			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI
+			timeSinceLastTaskRefresh > TASK_REFRESH_INTERVAL_MILLI ||
+			forceRefresh
 		) {
 			const page = 1
 			this.props.dispatch(actions.fetchRecentTasks(page))
 			// scroll to top of list
-			this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			if (this.flatListRef) {
+				this.flatListRef.scrollToIndex({ animated: false, index: '0' })
+			}
 			// full refresh drops previously loaded pages and starts afresh
 			this.setState({ page: 1, noMoreTasks: false })
 		}
@@ -147,17 +152,6 @@ class Main extends Component {
 			})
 	}
 
-	handlePress(i) {
-		if (ACTION_OPTIONS[i] === 'Logout') {
-			Storage.clear()
-			clearUser()
-		}
-	}
-
-	handleSearch() {
-		this.props.navigation.navigate('Search')
-	}
-
 	renderFooter = (data, isFetchingTasksData, loadingMoreTasks) => {
 		if (!isFetchingTasksData && data.length === 0) {
 			const text = `No recent tasks. Tap the + button to create a new task.`
@@ -185,12 +179,14 @@ class Main extends Component {
 		const { loadingMoreTasks } = this.state
 		return (
 			<View style={styles.container}>
+				{!data.length && !isFetchingTasksData &&
+                <Text style={styles.errorText}>No results found. Try changing your filters in the settings page.</Text> }
 				<ActionSheet
 					ref={o => (this.ActionSheet = o)}
 					title={ACTION_TITLE}
 					options={ACTION_OPTIONS}
 					cancelButtonIndex={CANCEL_INDEX}
-					onPress={this.handlePress}
+					onPress={this.openSettings}
 				/>
 				{!!data.length && (
 					<FlatList
@@ -281,6 +277,12 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		marginBottom: 20,
 	},
+	errorText: {
+        fontStyle: 'italic',
+        color: Colors.gray,
+		margin: 20,
+		marginBottom: 'auto',
+    },
 })
 
 const mapStateToProps = (state, props) => {
