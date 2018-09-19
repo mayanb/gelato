@@ -230,7 +230,7 @@ class Main extends Component {
 				open={item.is_open}
 				name={item.process_type.name}
 				is_flagged={item.is_flagged}
-				is_ancestor_flagged={item.num_flagged_ancestors > 0}
+				is_ancestor_flagged={item.flagged_ancestors_id_string}
 				date={item.updated_at}
 				onPress={this.openTask.bind(this)}
 			/>
