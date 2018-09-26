@@ -106,7 +106,7 @@ class InputRow extends Component {
 	render() {
 		const { input } = this.props
 		const isFlagged = input.input_task_n.is_flagged
-		const isAncestorFlagged = input.input_task_n.num_flagged_ancestors > 0
+		const isAncestorFlagged = input.input_task_n.flagged_ancestors_id_string
 		const styles = StyleSheet.create({
 			container: {
 				paddingRight: 48,

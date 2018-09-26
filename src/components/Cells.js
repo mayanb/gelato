@@ -1,5 +1,3 @@
-import Colors from '../resources/Colors'
-import * as ImageUtility from '../resources/ImageUtility'
 import React, { Component } from 'react'
 import {
   Dimensions,
@@ -9,8 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { CheckBox } from 'react-native-elements'
 import moment from 'moment'
+import Colors from '../resources/Colors'
 import { FlagPill, AncestorFlagPill } from './Flag'
+import * as ImageUtility from '../resources/ImageUtility'
+
 
 export class TaskRow extends Component {
   constructor(props) {
@@ -127,6 +129,45 @@ export class TaskRowHeader extends Component {
       <View style={styles.container}>
         <Text style={styles.title}>{this.props.title}</Text>
       </View>
+    )
+  }
+}
+
+export class TagRow extends Component {
+  render() {
+    const { text, checked, onPress } = this.props
+    const styles = StyleSheet.create({
+      container: {
+        borderWidth: 0,
+        borderRadius: 0,
+        backgroundColor: 'transparent',
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.veryLightGray,
+        paddingTop: 24,
+        paddingBottom: 24,
+        paddingLeft: 20,
+        paddingRight: 20,
+        margin: 0,
+        marginLeft: 0,
+        marginRight: 0,
+      },
+      text: {
+        fontSize: 18,
+        marginLeft: 40,
+        fontWeight: 'normal',
+        color: !!checked ? Colors.textBlack : Colors.lightGray,
+      },
+    })
+
+    return (
+      <CheckBox 
+        title={text} 
+        checked={!!checked} 
+        containerStyle={styles.container} 
+        textStyle={styles.text} 
+        checkedColor={Colors.gray}
+        onPress={onPress}
+      />
     )
   }
 }

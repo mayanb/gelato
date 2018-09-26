@@ -105,6 +105,7 @@ export default class Compute {
 	static generateNewTask(data) {
 		let date = moment().format('MMDD')
 		let label = [data.processType.code, data.productType.code, date].join('-')
+		const totalCost = data.cost === '' ? null : data.cost
 		let task = {
 			process_type: data.processType.id,
 			product_type: data.productType.id,
@@ -116,6 +117,8 @@ export default class Compute {
 			label_index: 0,
 			custom_display: '',
 			is_trashed: false,
+			cost: totalCost,
+			cost_set_by_user: totalCost,
 		}
 		return task
 	}
@@ -143,7 +146,7 @@ export default class Compute {
 			if (input_task.is_flagged) {
 				return IS_FLAGGED_INPUT
 			}
-			if (input_task.num_flagged_ancestors > 0) {
+			if (input_task.flagged_ancestors_id_string) {
 				return IS_ANCESTOR_FLAGGED_INPUT
 			}
 

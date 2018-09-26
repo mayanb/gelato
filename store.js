@@ -10,6 +10,7 @@ export const SEARCHED_TASKS = 'SEARCHED_TASKS'
 export const PROCESSES = 'PROCESSES'
 export const PRODUCTS = 'PRODUCTS'
 export const TEAMS = 'TEAMS'
+export const TAGS = 'TAGS'
 export const TASK = 'TASK'
 export const TASKS = 'TASKS'
 export const ERROR = 'ERROR'
@@ -50,7 +51,7 @@ var reducer = combineReducers({
 		_task,
 		action => action.name === TASKS,
 		tasksDefaultState,
-	),
+  ),
   processes: createFilteredReducer(
     BasicReducer,
     action => action.name === PROCESSES,
@@ -59,6 +60,11 @@ var reducer = combineReducers({
   products: createFilteredReducer(
     BasicReducer,
     action => action.name === PRODUCTS,
+    defaultState
+  ),
+  tags: createFilteredReducer(
+    BasicReducer,
+    action => action.name === TAGS,
     defaultState
   ),
   teams: createFilteredReducer(

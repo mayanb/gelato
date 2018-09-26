@@ -184,6 +184,8 @@ export function uxIcon(icon) {
       return require('../resources/assets/camera.png')
     case 'close':
       return require('../resources/assets/close.png')
+    case 'tune':
+      return require('../resources/assets/tune.png')
     default:
       return require('../resources/assets/system_icons/more_vert.png')
   }

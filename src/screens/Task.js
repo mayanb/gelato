@@ -222,7 +222,7 @@ class Task extends Component {
 				<View style={styles.container}>
 					{task.is_flagged && <Flag />}
 					{!task.is_flagged &&
-						task.num_flagged_ancestors > 0 && <AncestorFlag />}
+						task.flagged_ancestors_id_string && <AncestorFlag />}
 					{this.renderHeader(task)}
 					<KeyboardAwareScrollView
 						enableOnAndroid={true}
@@ -459,6 +459,7 @@ class Task extends Component {
 				outputAmount={outputAmount}
 				outputUnit={task.process_type.unit}
 				onPress={this.showEditBatchSizePrompt}
+				cost={task.cost}
 			/>
 		)
 	}

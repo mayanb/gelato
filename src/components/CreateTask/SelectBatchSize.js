@@ -7,7 +7,7 @@ import Colors from '../../resources/Colors'
 
 const TOP_SECTION_HEIGHT = 250
 const MARGIN_TOP = 60
-const HEIGHT = 120
+const HEIGHT = 210
 
 export default class SelectBatchSize extends Component {
 	constructor(props) {
@@ -27,7 +27,7 @@ export default class SelectBatchSize extends Component {
 	}
 
 	render() {
-		let { unit, onBatchSizeInput, batchSize } = this.props
+		const { unit, onBatchSizeInput, batchSize } = this.props
 		return (
 			<Animated.View
 				style={[
